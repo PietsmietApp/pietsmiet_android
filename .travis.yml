@@ -1,0 +1,26 @@
+language: android
+
+sudo: true
+
+env:
+  global:
+  - MALLOC_ARENA_MAX=2
+
+android:
+  components:
+  - tools
+  - platform-tools
+  - build-tools-24.0.2
+  - android-24
+  - extra-android-m2repository
+  - extra-google-m2repository
+  - extra-google-google_play_services
+
+notifications:
+  email: false
+
+jdk:
+- oraclejdk8
+
+script:
+- ./gradlew build -PdisablePreDex

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PietSmiet Community App</string>
+    <string name="navigation_drawer_open">Themenmenü öffnen</string>
+    <string name="navigation_drawer_close">Themenmenü schließen</string>
 </resources>

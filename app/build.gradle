@@ -35,6 +35,7 @@ dependencies {
     compile 'com.github.ahorn:android-rss:599fdab'
     compile 'io.reactivex:rxjava:1.1.10'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'org.jsoup:jsoup:1.9.2'
 }
 
 

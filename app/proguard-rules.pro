@@ -29,6 +29,29 @@
 -keepclasseswithmembers class * {
     @retrofit.http.* <methods>;
 }
+# retrolambda
+-dontwarn java.lang.invoke.*
+# rxjava (Source: https://gist.github.com/kosiara/487868792fbd3214f9c9)
+-keep class rx.schedulers.Schedulers {
+    public static <methods>;
+}
+-keep class rx.schedulers.ImmediateScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.TestScheduler {
+    public <methods>;
+}
+-keep class rx.schedulers.Schedulers {
+    public static ** test();
+}
+-keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
+    long producerIndex;
+    long consumerIndex;
+}
+-keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
+    long producerNode;
+    long consumerNode;
+}
 
 #Progaurd config based off of http://stackoverflow.com/a/6492478/3697225
 
@@ -81,7 +104,7 @@
 # public void onClickButton(android.view.View);
 #}
 
-#Maintain java native methods 
+#Maintain java native methods
 -keepclasseswithmembernames class * {
     native <methods>;
 }
@@ -130,7 +153,7 @@
 #   void myCallbackMethod(java.lang.String);
 #}
 
-#Uncomment if using Serializable 
+#Uncomment if using Serializable
 #-keepclassmembers class * implements java.io.Serializable {
 #    private static final java.io.ObjectStreamField[] serialPersistentFields;
 #    private void writeObject(java.io.ObjectOutputStream);

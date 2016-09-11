@@ -36,14 +36,15 @@ public class RssHelper {
                 .map(element -> element.getLink().toString())
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io()))
-                .subscribe(content -> Log.v("TAG", content), Throwable::printStackTrace);
+                .subscribe(PsLog::v, Throwable::printStackTrace);
     }
 
     public void displayPietcast() {
         mPietcastSubscription = Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .subscribe(element -> Log.v("TAG", element.getTitle()), Throwable::printStackTrace);
+                .map(element -> element.getTitle())
+                .subscribe(PsLog::v, Throwable::printStackTrace);
     }
 
     private List<RSSItem> loadRss(String url) {
@@ -53,7 +54,7 @@ public class RssHelper {
             RSSFeed feed = reader.load(url);
             return feed.getItems();
         } catch (RSSReaderException rssException) {
-            Log.v("Tag", rssException.toString());
+            PsLog.e(rssException.toString());
         }
         return null;
     }
@@ -66,7 +67,7 @@ public class RssHelper {
             Elements content = doc.select("[itemprop=articleBody]");
             return content.toString();
         } catch (IOException e) {
-            e.printStackTrace();
+            PsLog.e(e.toString());
         }
         return null;
     }

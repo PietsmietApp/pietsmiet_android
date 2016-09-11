@@ -1,7 +1,6 @@
 package de.pscom.pietsmiet.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,6 +18,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 public class RssHelper {
+    public static final int DEFAULT_MAX = 5;
     Context mContext;
     static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
     static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
@@ -29,16 +29,26 @@ public class RssHelper {
         this.mContext = mContext;
     }
 
-    public void displayUploadplan() {
+    /**
+     * Loads the latest uploadplan URLS and parses them
+     *
+     * @param max Max URLs to parse, should be as low as possible
+     */
+    public void displayUploadplan(int max) {
         mPlanSubscription = Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .map(element -> element.getLink().toString())
+                .take(max)
+                .filter(link -> link != null)
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io()))
                 .subscribe(PsLog::v, Throwable::printStackTrace);
     }
 
+    /**
+     * Loads the latests Piecasts
+     */
     public void displayPietcast() {
         mPietcastSubscription = Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())

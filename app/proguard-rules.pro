@@ -16,6 +16,19 @@
 #   public *;
 #}
 
+# Classes that are used for the android-twitter-kit
+-dontwarn com.squareup.okhttp.**
+-dontwarn com.google.appengine.api.urlfetch.**
+-dontwarn rx.**
+-dontwarn retrofit.**
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.squareup.okhttp.** { *; }
+-keep interface com.squareup.okhttp.** { *; }
+-keep class retrofit.** { *; }
+-keepclasseswithmembers class * {
+    @retrofit.http.* <methods>;
+}
 # retrolambda
 -dontwarn java.lang.invoke.*
 # rxjava (Source: https://gist.github.com/kosiara/487868792fbd3214f9c9)

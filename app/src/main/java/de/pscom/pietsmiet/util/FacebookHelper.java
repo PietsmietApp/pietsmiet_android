@@ -25,6 +25,7 @@ public class FacebookHelper {
     }
 
     public void loadPosts() {
+
         Observable.defer(() -> Observable.just(getAllPosts()))
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
@@ -49,6 +50,7 @@ public class FacebookHelper {
                 .filter(response -> response != null)
                 .toSortedList(FacebookHelper::compareModel)
                 .flatMap(Observable::from)
+                .doOnNext(post -> PsLog.v(post.getFrom().getName()))
                 .map(Post::getMessage)
                 .filter(string -> string != null)
                 .subscribe(PsLog::v, e -> PsLog.e(e.toString()));
@@ -63,16 +65,16 @@ public class FacebookHelper {
 
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "174416892612899/feed?limit=5"));
+            batch.add(new BatchRequest(RequestMethod.GET, "174416892612899/feed?limit=5&fields=from,created_time,message"));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "276775629094183/feed?limit=5"));
+            batch.add(new BatchRequest(RequestMethod.GET, "276775629094183/feed?limit=5&fields=from,created_time,message"));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "275192789211423/feed?limit=5"));
+            batch.add(new BatchRequest(RequestMethod.GET, "275192789211423/feed?limit=5&fields=from,created_time,message"));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "411585615549330/feed?limit=5"));
+            batch.add(new BatchRequest(RequestMethod.GET, "411585615549330/feed?limit=5&fields=from,created_time,message"));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "298837886825395/feed?limit=5"));
-            
+            batch.add(new BatchRequest(RequestMethod.GET, "298837886825395/feed?limit=5&fields=from,created_time,message"));
+
             return facebook.executeBatch(batch);
         } catch (Exception e) {
             e.printStackTrace();

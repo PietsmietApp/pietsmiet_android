@@ -9,21 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import java.util.List;
-
-import de.pscom.pietsmiet.util.PsLog;
-import facebook4j.BatchRequest;
-import facebook4j.BatchRequests;
-import facebook4j.BatchResponse;
-import facebook4j.Facebook;
-import facebook4j.FacebookException;
-import facebook4j.FacebookFactory;
-import facebook4j.Post;
-import facebook4j.auth.AccessToken;
-import facebook4j.internal.http.RequestMethod;
-import facebook4j.json.DataObjectFactory;
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import de.pscom.pietsmiet.util.FacebookHelper;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Override
@@ -42,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        new FacebookHelper(this).loadPosts();
 
     }
 

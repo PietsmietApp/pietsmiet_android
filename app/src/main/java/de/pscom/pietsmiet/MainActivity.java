@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Only for testing
         new Thread(() -> {
             ArrayList<CardItem> cardItems = new ArrayList<>();
-            cardItems.add(new CardItem("Neuer Pietcast", "Hallo heute ist ein neuer Pietcast erschienen. Blah Test Blah Blah :DDD \nDauer: 2:50 Stunden",
+            cardItems.add(new CardItem("PietCast #79", "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist \nDauer: 2:50 Stunden",
                     "11.09.2016 13:00 Uhr", getResources().getDrawable(R.drawable.ic_music_note_black_24dp), "http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png", CardItem.TYPE_PIETCAST));
             cardItems.add(new CardItem("Neues Video", "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3\nDauer: 30 Minuten",
                     "11.09.2016 13:00 Uhr", getResources().getDrawable(R.drawable.youtube), "http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg", CardItem.TYPE_VIDEO));

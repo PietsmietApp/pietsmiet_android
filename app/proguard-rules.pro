@@ -52,6 +52,8 @@
     long producerNode;
     long consumerNode;
 }
+# jsoup
+-keeppackagenames org.jsoup.nodes
 
 #Progaurd config based off of http://stackoverflow.com/a/6492478/3697225
 

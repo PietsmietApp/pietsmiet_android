@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         //Only for testing
         new Thread(() -> {
             ArrayList<CardItem> cardItems = new ArrayList<>();
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }).start();
     }
 
-    public void showCardViewItems(ArrayList<CardItem> cardItems){
+    public void showCardViewItems(ArrayList<CardItem> cardItems) {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
 
         CardViewAdapter adapter = new CardViewAdapter(cardItems, this);
@@ -60,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(adapter);
     }
-
 
 
     @Override

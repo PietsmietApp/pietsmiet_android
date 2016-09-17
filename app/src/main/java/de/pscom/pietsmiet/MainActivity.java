@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.ArrayList;
 
 import de.pscom.pietsmiet.adapters.CardItem;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             runOnUiThread(() -> showCardViewItems(cardItems));
         }).start();
+
+        FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
     }
 
     public void showCardViewItems(ArrayList<CardItem> cardItems) {

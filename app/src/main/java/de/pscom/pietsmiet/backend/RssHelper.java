@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.util;
+package de.pscom.pietsmiet.backend;
 
 import android.content.Context;
 

@@ -13,6 +13,7 @@ import org.mcsoxford.rss.RSSReaderException;
 import java.io.IOException;
 import java.util.List;
 
+import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
@@ -43,6 +44,7 @@ public class RssHelper {
                 .filter(link -> link != null)
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io()))
+                .filter(content -> content != null)
                 .subscribe(PsLog::v, Throwable::printStackTrace);
     }
 
@@ -78,8 +80,8 @@ public class RssHelper {
             return content.toString();
         } catch (IOException e) {
             PsLog.e(e.toString());
+            return null;
         }
-        return null;
     }
 
 }

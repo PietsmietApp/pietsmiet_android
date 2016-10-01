@@ -1,69 +1,69 @@
 package de.pscom.pietsmiet.util;
 
-import android.content.Context;
-
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterApiException;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthException;
-import com.twitter.sdk.android.core.TwitterCore;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.models.Search;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.core.services.SearchService;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric.sdk.android.Fabric;
-import retrofit2.Call;
+import rx.Observable;
+import rx.Subscription;
+import rx.schedulers.Schedulers;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 
 public class TwitterHelper {
-    TwitterApiClient twitterApiClient;
-    long lastTweetId;
+    //TODO: Store id!
+    private long lastTweetId;
 
-    public TwitterHelper(Context mContext) {
-        TwitterAuthConfig authConfig = new TwitterAuthConfig("px2E2wOhxNrs4tsr8JqojB2yp", "zyVTNh7x2BUCDChlsZ6OStSqhFBBI8nEBWDGKv2HXcIfMbmLJg");
-        Fabric.with(mContext, new TwitterCore(authConfig));
-        twitterApiClient = TwitterCore.getInstance().getGuestApiClient();
+    Twitter twitterInstance;
+    private static final int maxCount = 10;
+    public Subscription mTwitterSubscription;
+
+    public TwitterHelper() {
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+                .setOAuthConsumerKey("px2E2wOhxNrs4tsr8JqojB2yp")
+                .setOAuthConsumerSecret("zyVTNh7x2BUCDChlsZ6OStSqhFBBI8nEBWDGKv2HXcIfMbmLJg")
+                .setOAuthAccessToken("2563910439-Spw0P4vTwqfxAhvegQGXcDxPuGIFpv9cxHeLn8N")
+                .setOAuthAccessTokenSecret("IDYvhgDMyka6oEWVJgZbBTVyWIk1njDYyjPUnVlRLlgZe");
+        TwitterFactory tf = new TwitterFactory(cb.build());
+        twitterInstance = tf.getInstance();
     }
 
-    public List<Tweet> fetchTweets(int count) {
-        final List<Tweet> tweetsToReturn = new ArrayList<>();
-        try {
-            SearchService searchService = twitterApiClient.getSearchService();
-            Call<Search> call = searchService.tweets("from:pietsmiet, " +
-                            "OR from:kessemak2, " +
-                            "OR from:jaypietsmiet, " +
-                            "OR from:brosator, " +
-                            "OR from:br4mm3n"
-                    , null, null, null, "recent", count, null, null, null, false);
-            call.enqueue(new Callback<Search>() {
-                @Override
-                public void success(Result<Search> result) {
-                    for (Tweet tweet : result.data.tweets) {
-                        PsLog.v(tweet.text);
-                        lastTweetId = tweet.id;
-                        tweetsToReturn.add(tweet);
-                    }
-                }
+    public void displayTweets() {
+        mTwitterSubscription = Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
+                .subscribeOn(Schedulers.io())
+                .flatMap(Observable::from)
+                .filter(tweet -> !tweet.isRetweeted())
+                .doOnNext(tweet -> lastTweetId = tweet.getId())
+                .map(Status::getText)
+                .subscribe(PsLog::v, Throwable::printStackTrace);
+    }
 
-                public void failure(TwitterException exception) {
-                    throw exception;
-                }
-            });
-            return tweetsToReturn;
-        } catch (TwitterApiException apiException) {
-            PsLog.e("Twitter API-Exception: " +
-                    "\nStatus Code: " + apiException.getStatusCode() +
-                    "\n Error message: " + apiException.getErrorMessage());
-            return null;
-        } catch (TwitterAuthException authException) {
-            PsLog.e("Twitter Auth-Exception: " + authException.getMessage());
+
+    private List<Status> fetchTweets(int count) {
+        QueryResult result;
+        try {
+            result = twitterInstance.search(pietsmietTweets(count, lastTweetId));
+        } catch (TwitterException e) {
+            PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             return null;
         }
+
+        return result.getTweets();
+    }
+
+    private Query pietsmietTweets(int count, long sinceId) {
+        return new Query("from:pietsmiet, " +
+                "OR from:kessemak2, " +
+                "OR from:jaypietsmiet, " +
+                "OR from:brosator, " +
+                "OR from:br4mm3n")
+                .count(count)
+                .sinceId(lastTweetId)
+                .resultType(Query.ResultType.recent);
     }
 }

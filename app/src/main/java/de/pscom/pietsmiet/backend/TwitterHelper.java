@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import java.util.List;
 
+import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
@@ -25,14 +26,12 @@ public class TwitterHelper {
     public Subscription mTwitterSubscription;
 
     public TwitterHelper() {
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
-                .setOAuthConsumerKey("px2E2wOhxNrs4tsr8JqojB2yp")
-                .setOAuthConsumerSecret("zyVTNh7x2BUCDChlsZ6OStSqhFBBI8nEBWDGKv2HXcIfMbmLJg")
-                .setOAuthAccessToken("2563910439-Spw0P4vTwqfxAhvegQGXcDxPuGIFpv9cxHeLn8N")
-                .setOAuthAccessTokenSecret("IDYvhgDMyka6oEWVJgZbBTVyWIk1njDYyjPUnVlRLlgZe");
-        TwitterFactory tf = new TwitterFactory(cb.build());
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setApplicationOnlyAuthEnabled(true);
+        if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
+        TwitterFactory tf = new TwitterFactory(builder.build());
         twitterInstance = tf.getInstance();
+        twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", "uDRVzqrNQm4zAjjVnix7w2KglZe0A7K95iCoJNPqXnbe2YAFdH");
     }
 
     public void displayTweets() {
@@ -47,6 +46,7 @@ public class TwitterHelper {
 
 
     private List<Status> fetchTweets(int count) {
+        getToken();
         QueryResult result;
         try {
             result = twitterInstance.search(pietsmietTweets(count, lastTweetId));
@@ -69,6 +69,15 @@ public class TwitterHelper {
                 .resultType(Query.ResultType.recent);
     }
 
+    private void getToken(){
+        try {
+            twitterInstance.getOAuth2Token();
+        } catch (TwitterException e) {
+            PsLog.e("error getting token: " + e.getErrorMessage());
+        } catch (IllegalStateException e){
+            PsLog.d("Token already instantiated");
+        }
+    }
 
     private void getRateLimit() {
         try {

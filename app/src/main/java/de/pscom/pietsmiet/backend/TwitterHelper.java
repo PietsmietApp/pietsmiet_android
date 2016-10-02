@@ -8,6 +8,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.RateLimitStatus;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -19,7 +20,7 @@ public class TwitterHelper {
     //TODO: Store id!
     private long lastTweetId;
 
-    Twitter twitterInstance;
+    private Twitter twitterInstance;
     private static final int maxCount = 10;
     public Subscription mTwitterSubscription;
 
@@ -66,5 +67,19 @@ public class TwitterHelper {
                 .count(count)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
+    }
+
+
+    private void getRateLimit() {
+        try {
+            RateLimitStatus status = twitterInstance.getRateLimitStatus("search").get("/search/tweets");
+            PsLog.v("Limit: " + status.getLimit());
+            PsLog.v("Remaining: " + status.getRemaining());
+            PsLog.v("ResetTimeInSeconds: " + status.getResetTimeInSeconds());
+            PsLog.v("SecondsUntilReset: " + status.getSecondsUntilReset());
+
+        } catch (TwitterException e) {
+            PsLog.w("Couldn't get rate limit: " + e.getErrorMessage());
+        }
     }
 }

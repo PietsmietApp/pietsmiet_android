@@ -39,14 +39,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Only for testing
         new Thread(() -> {
             ArrayList<CardItem> cardItems = new ArrayList<>();
-            cardItems.add(new CardItem("PietCast #79 - Krötenwehr", "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist \nDauer: 2:50 Stunden",
-                    "Hochgeladen am 11. September", ContextCompat.getDrawable(this, R.drawable.ic_music_note_black_24dp), "http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png", CardItem.TYPE_PIETCAST));
+            cardItems.add(new CardItem("PietCast #79 - Krötenwehr", "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
+                    "Montag, 25. Dezember", ContextCompat.getDrawable(this, R.drawable.ic_music_note_black_24dp), "http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png", CardItem.TYPE_PIETCAST));
             cardItems.add(new CardItem("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3", "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3\nDauer: 30 Minuten",
-                    "Hochgeladen am 11. September um 13:00 Uhr", ContextCompat.getDrawable(this, R.drawable.youtube), "http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg", CardItem.TYPE_VIDEO));
+                    "Montag, 25. Dezember um 13.00 Uhr", ContextCompat.getDrawable(this, R.drawable.youtube), "http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg", CardItem.TYPE_VIDEO));
             cardItems.add(new CardItem("Uploadplan vom 11.09.", "14:00 Uhr TTT\n15:00 Uhr TTT\n" + "16:00 Uhr TTT\n18:00 Uhr TTT\n20:00 Uhr TTT",
-                    "Hochgeladen am 11.09.", ContextCompat.getDrawable(this, R.drawable.ic_assignment_black_24dp), CardItem.TYPE_UPLOAD_PLAN));
+                    "Montag, 25. Dezember", ContextCompat.getDrawable(this, R.drawable.ic_assignment_black_24dp), CardItem.TYPE_UPLOAD_PLAN));
             cardItems.add(new CardItem("Dr.Jay auf Twitter", "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP",
-                    "Hochgeladen am 11.09.", ContextCompat.getDrawable(this, R.drawable.ic_assignment_black_24dp), CardItem.TYPE_SOCIAL_MEDIA_TWITTER));
+                    "Montag, 25. Dezember um 14:69 Uhr", ContextCompat.getDrawable(this, R.drawable.ic_assignment_black_24dp), CardItem.TYPE_SOCIAL_MEDIA_TWITTER));
 
             runOnUiThread(() -> showCardViewItems(cardItems));
         }).start();

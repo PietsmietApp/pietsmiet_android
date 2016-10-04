@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -9,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
 
 import de.pscom.pietsmiet.R;
+
+import static de.pscom.pietsmiet.adapters.CardItem.*;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -32,7 +36,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         CardView cv;
         TextView title;
         TextView description;
+        RelativeLayout descriptionContainer;
         TextView timedate;
+        ImageView durationIcon;
         TextView heading;
         Button btnExpand;
 
@@ -44,6 +50,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
             heading = (TextView) itemView.findViewById(R.id.tvNetwork);
             btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
+            durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
+            descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescription);
         }
     }
 
@@ -98,32 +106,35 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         holder.title.setText(items.get(position).getTitle());
         holder.description.setText(items.get(position).getDescription());
         holder.timedate.setText(items.get(position).getDatetime());
+        holder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
         holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
         holder.btnExpand.setOnClickListener(view -> {
-            if (holder.description.getVisibility() == View.GONE) {
-                holder.description.setVisibility(View.VISIBLE);
+            if (holder.descriptionContainer.getVisibility() == View.GONE) {
+                holder.descriptionContainer.setVisibility(View.VISIBLE);
                 view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
             } else {
-                holder.description.setVisibility(View.GONE);
+                holder.descriptionContainer.setVisibility(View.GONE);
                 view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
             }
         });
-        //holder.cv.setCardBackgroundColor(Color.parseColor(getBackgroundColor(items.get(position).getType())));
+        holder.cv.setCardBackgroundColor(Color.parseColor(getBackgroundColor(items.get(position).getType())));
     }
 
     private String getBackgroundColor(int type) {
-        if (type == 0) {
-            return "#43A047";
-        } else if (type == 1) {
-            return "#FFAEAE";
-        } else if (type == 2) {
-            return "#FFAEAE";
-        } else if (type == 3) {
-            return "#FFAEAE";
-        } else if (type == 4) {
-            return "#B2AEFF";
-        } else {
-            return "#FFAEF2";
+        switch (type) {
+            case TYPE_VIDEO:
+            case TYPE_STREAM:
+                return "#ef5350";
+            case TYPE_PIETCAST:
+                return "#5c6bc0";
+            case TYPE_SOCIAL_MEDIA_FACEBOOK:
+            case TYPE_SOCIAL_MEDIA_TWITTER:
+                return "#42a5f5";
+            case TYPE_UPLOAD_PLAN:
+                return "#26a69a";
+            case TYPE_DEFAULT:
+            default:
+                return "#bdbdbd";
         }
     }
 

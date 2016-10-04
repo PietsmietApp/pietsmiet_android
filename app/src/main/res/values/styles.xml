@@ -12,8 +12,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    
-    <style name ="FlatButton" >
+
+    <style name="FlatButton">
         <item name="android:clickable">true</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:textAllCaps">true</item>
@@ -30,6 +30,8 @@
     </style>
 
     <dimen name="buttonHeight">36dp</dimen>
+
+    <dimen name="iconSize">24dp</dimen>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 

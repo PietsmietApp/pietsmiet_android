@@ -1,7 +1,7 @@
 package de.pscom.pietsmiet.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -16,8 +16,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.util.PsLog;
 
-import static de.pscom.pietsmiet.adapters.CardItem.*;
+import static android.view.View.GONE;
+import static de.pscom.pietsmiet.adapters.CardItem.CardItemType;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -36,11 +38,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         CardView cv;
         TextView title;
         TextView description;
-        RelativeLayout descriptionContainer;
         TextView timedate;
-        ImageView durationIcon;
-        TextView heading;
-        Button btnExpand;
 
         CardViewHolder(View itemView) {
             super(itemView);
@@ -48,30 +46,31 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             title = (TextView) itemView.findViewById(R.id.tvTitle);
             description = (TextView) itemView.findViewById(R.id.tvDescription);
             timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
-            heading = (TextView) itemView.findViewById(R.id.tvNetwork);
-            btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
-            durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
-            descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescription);
         }
     }
 
-    public static class VideoCardViewHolder extends CardViewHolder {
+    public static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
         ImageView preview;
+        RelativeLayout descriptionContainer;
+        ImageView durationIcon;
+        Button btnExpand;
 
         VideoCardViewHolder(View itemView) {
             super(itemView);
             preview = (ImageView) itemView.findViewById(R.id.ivPreview);
+            durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
+            btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
+            descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
         }
-    }
 
+    }
 
     @Override
     public CardViewAdapter.CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
-        if (true/*viewType == LAYOUT_VIDEO*/) {
+        if (viewType == LAYOUT_VIDEO) {
             v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.card_view_videos, parent, false);
-
             return new VideoCardViewHolder(v);
         } else {
             v = LayoutInflater.from(parent.getContext())
@@ -82,68 +81,48 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
     @Override
     public void onBindViewHolder(CardViewAdapter.CardViewHolder holder, int position) {
+        CardItem currentItem = items.get(position);
+
         if (holder.getItemViewType() == LAYOUT_VIDEO) {
             VideoCardViewHolder videoHolder = (VideoCardViewHolder) holder;
-            if (items.get(position).getType() == CardItem.TYPE_PIETCAST) {
-                //holder.heading.setText(context.getString(R.string.pietcast));
-            } else if (items.get(position).getType() == CardItem.TYPE_STREAM) {
-                //holder.heading.setText(context.getString(R.string.twitch));
-            } else {
-                //holder.heading.setText(context.getString(R.string.youtube));
-            }
-            if (items.get(position).getPreview() != null) {
-                videoHolder.preview.setImageDrawable(items.get(position).getPreview());
-            }
-        } else {
-            if (items.get(position).getType() == CardItem.TYPE_SOCIAL_MEDIA_FACEBOOK) {
-                //holder.heading.setText(context.getString(R.string.facebook));
-            } else if (items.get(position).getType() == CardItem.TYPE_SOCIAL_MEDIA_TWITTER) {
-                //holder.heading.setText(context.getString(R.string.twitter));
-            } else {
-                //holder.heading.setText(context.getString(R.string.uploadplan));
-            }
-        }
-        holder.title.setText(items.get(position).getTitle());
-        holder.description.setText(items.get(position).getDescription());
-        holder.timedate.setText(items.get(position).getDatetime());
-        holder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
-        holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-        holder.btnExpand.setOnClickListener(view -> {
-            if (holder.descriptionContainer.getVisibility() == View.GONE) {
-                holder.descriptionContainer.setVisibility(View.VISIBLE);
-                view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
-            } else {
-                holder.descriptionContainer.setVisibility(View.GONE);
-                view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-            }
-        });
-        holder.cv.setCardBackgroundColor(Color.parseColor(getBackgroundColor(items.get(position).getType())));
-    }
 
-    private String getBackgroundColor(int type) {
-        switch (type) {
-            case TYPE_VIDEO:
-            case TYPE_STREAM:
-                return "#ef5350";
-            case TYPE_PIETCAST:
-                return "#5c6bc0";
-            case TYPE_SOCIAL_MEDIA_FACEBOOK:
-            case TYPE_SOCIAL_MEDIA_TWITTER:
-                return "#42a5f5";
-            case TYPE_UPLOAD_PLAN:
-                return "#26a69a";
-            case TYPE_DEFAULT:
-            default:
-                return "#bdbdbd";
+            Drawable preview = ((VideoCardItem) currentItem).getPreview();
+            if (preview != null) {
+                videoHolder.preview.setImageDrawable(((VideoCardItem) currentItem).getPreview());
+            } else {
+                videoHolder.preview.setVisibility(GONE); //Todo add placeholder thumbnail instead of hiding
+            }
+
+            videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
+
+            videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+            videoHolder.btnExpand.setOnClickListener(view -> {
+                if (videoHolder.descriptionContainer.getVisibility() == GONE) {
+                    videoHolder.descriptionContainer.setVisibility(View.VISIBLE);
+                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                } else {
+                    videoHolder.descriptionContainer.setVisibility(GONE);
+                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                }
+            });
         }
+        if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
+            holder.timedate.setVisibility(GONE);
+        } else if (currentItem.getDatetime().isEmpty()){
+            PsLog.v("No Date specified");
+            holder.timedate.setVisibility(GONE);
+        }
+
+        holder.title.setText(currentItem.getTitle());
+        holder.description.setText(currentItem.getDescription());
+        holder.timedate.setText(currentItem.getDatetime());
+        holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (items.get(position).getType() <= 3) {
-            return LAYOUT_VIDEO;
-        }
-        return LAYOUT_SOCIAL;
+        if (items.get(position).isVideoView()) return LAYOUT_VIDEO;
+        else return LAYOUT_SOCIAL;
     }
 
     @Override

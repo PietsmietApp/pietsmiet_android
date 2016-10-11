@@ -18,6 +18,8 @@ public class SocialCardItem extends CardItem {
         String hexColor;
         switch (cardItemType) {
             case TYPE_FACEBOOK:
+                hexColor = "#ff7043";
+                break;
             case TYPE_TWITTER:
                 hexColor = "#42a5f5";
                 break;

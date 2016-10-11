@@ -60,7 +60,7 @@ public class TwitterPresenter {
 
     private void publish() {
         if (view != null && tweet != null) {
-            String title = tweet.getUser().getName() + " auf Twitter";
+            String title = getDisplayName(tweet.getUser().getId()) + " auf Twitter";
             Date time = tweet.getCreatedAt();
             view.addNewCard(new SocialCardItem(title, tweet.getText(), time, TYPE_TWITTER));
         }
@@ -94,6 +94,24 @@ public class TwitterPresenter {
                 .count(count)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
+    }
+
+    private String getDisplayName(long userIdAsLong) {
+        int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, userIdAsLong), Integer.MIN_VALUE);
+        switch (userId) {
+            case 109850283:
+                return "Piet";
+            case 832560607:
+                return "Sep";
+            case 120150508:
+                return "Jay";
+            case 400567148:
+                return "Chris";
+            case 394250799:
+                return "Brammen";
+            default:
+                return "";
+        }
     }
 
     private void getToken() {

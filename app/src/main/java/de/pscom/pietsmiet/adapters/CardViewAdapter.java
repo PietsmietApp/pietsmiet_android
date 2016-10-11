@@ -5,6 +5,8 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,7 +110,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
         if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
-        } else if (currentItem.getDatetime() == null){
+        } else if (currentItem.getDatetime() == null) {
             PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
         } else {
@@ -116,7 +118,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
 
         holder.title.setText(currentItem.getTitle());
-        holder.description.setText(currentItem.getDescription());
+        if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+            //PsLog.v(currentItem.getDescription());
+            /*Matcher matcher = Patterns.WEB_URL.matcher(currentItem.getDescription());
+            while (matcher.find()) {
+                String originalLink = matcher.group();
+                String parsedLink = "<a href=\"" + originalLink + "\">"+originalLink+"</a>";
+                currentItem.setDescription(matcher.replaceFirst(parsedLink));
+            }*/
+
+            holder.description.setText(Html.fromHtml(currentItem.getDescription()));
+            holder.description.setMovementMethod(LinkMovementMethod.getInstance());
+        }
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }
 

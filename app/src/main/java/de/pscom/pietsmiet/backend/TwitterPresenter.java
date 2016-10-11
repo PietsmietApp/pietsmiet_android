@@ -3,9 +3,12 @@ package de.pscom.pietsmiet.backend;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
+import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -16,8 +19,10 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_TWITTER;
 
-public class TwitterHelper {
+
+public class TwitterPresenter {
     //TODO: Store id!
     private long lastTweetId;
 
@@ -25,23 +30,44 @@ public class TwitterHelper {
     private static final int maxCount = 10;
     public Subscription mTwitterSubscription;
 
-    public TwitterHelper() {
+    private MainActivity view;
+    private Status tweet;
+
+    public TwitterPresenter() {
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
         TwitterFactory tf = new TwitterFactory(builder.build());
         twitterInstance = tf.getInstance();
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", "uDRVzqrNQm4zAjjVnix7w2KglZe0A7K95iCoJNPqXnbe2YAFdH");
+
+        parseTweets();
     }
 
-    public void displayTweets() {
+    private void parseTweets() {
         mTwitterSubscription = Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .filter(tweet -> !tweet.isRetweeted())
                 .doOnNext(tweet -> lastTweetId = tweet.getId())
-                .map(Status::getText)
-                .subscribe(PsLog::v, Throwable::printStackTrace);
+                .subscribe(tweet -> {
+                    this.tweet = tweet;
+                    publish();
+                }, Throwable::printStackTrace);
+    }
+
+    private void publish() {
+        if (view != null && tweet != null) {
+            String title = tweet.getUser().getName() + " auf Twitter";
+            String time = tweet.getCreatedAt().toString(); //fixme better time
+            view.addNewCard(new SocialCardItem(title, tweet.getText(), time, TYPE_TWITTER));
+        }
+    }
+
+    public void onTakeView(MainActivity view) {
+        this.view = view;
+        publish();
     }
 
 
@@ -69,12 +95,12 @@ public class TwitterHelper {
                 .resultType(Query.ResultType.recent);
     }
 
-    private void getToken(){
+    private void getToken() {
         try {
             twitterInstance.getOAuth2Token();
         } catch (TwitterException e) {
             PsLog.e("error getting token: " + e.getErrorMessage());
-        } catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             PsLog.d("Token already instantiated");
         }
     }

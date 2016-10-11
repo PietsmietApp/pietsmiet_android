@@ -10,13 +10,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.adapters.VideoCardItem;
-import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.backend.RssPresenter;
+import de.pscom.pietsmiet.backend.TwitterPresenter;
 
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_PIETCAST;
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_TWITTER;
@@ -24,6 +28,9 @@ import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_UPLOAD_PLAN
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+
+    private CardViewAdapter adapter;
+    private List<CardItem> cardItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,19 +70,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     "Montag, 25. Dezember um 14:69 Uhr",
                     TYPE_TWITTER));
 
-            runOnUiThread(() -> showCardViewItems(cardItems));
+            runOnUiThread(() -> {
+                for (CardItem cardItem : cardItems) addNewCard(cardItem);
+            });
         }).start();
+        setupRecyclerView();
+
+        new TwitterPresenter().onTakeView(this);
+        new RssPresenter().onTakeView(this);
     }
 
-    public void showCardViewItems(ArrayList<CardItem> cardItems) {
+    public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
 
-        CardViewAdapter adapter = new CardViewAdapter(cardItems, this);
+        adapter = new CardViewAdapter(cardItems, this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(adapter);
     }
 
+    public void addNewCard(CardItem item) {
+        cardItems.add(item);
+        if (adapter != null) adapter.notifyDataSetChanged();
+    }
+
+    public void showError(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

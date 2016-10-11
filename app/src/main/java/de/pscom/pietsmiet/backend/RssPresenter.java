@@ -13,21 +13,29 @@ import org.mcsoxford.rss.RSSReaderException;
 import java.io.IOException;
 import java.util.List;
 
+import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class RssHelper {
-    public static final int DEFAULT_MAX = 5;
+import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_UPLOAD_PLAN;
+
+public class RssPresenter {
+    private static final int DEFAULT_MAX = 10;
     Context mContext;
     static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
     static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
     public Subscription mPlanSubscription;
     public Subscription mPietcastSubscription;
 
-    public RssHelper(Context mContext) {
-        this.mContext = mContext;
+    private MainActivity view;
+    private String uploadplan;
+
+    public RssPresenter() {
+        displayUploadplan(DEFAULT_MAX);
     }
 
     /**
@@ -38,6 +46,7 @@ public class RssHelper {
     public void displayUploadplan(int max) {
         mPlanSubscription = Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .map(element -> element.getLink().toString())
                 .take(max)
@@ -45,7 +54,21 @@ public class RssHelper {
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io()))
                 .filter(content -> content != null)
-                .subscribe(PsLog::v, Throwable::printStackTrace);
+                .subscribe(uploadplan -> {
+                    this.uploadplan = uploadplan;
+                    publish();
+                }, Throwable::printStackTrace);
+    }
+
+    private void publish() {
+        if (view != null && uploadplan != null) {
+            view.addNewCard(new SocialCardItem("Uploadplan vom 21.10.", uploadplan, TYPE_UPLOAD_PLAN));
+        }
+    }
+
+    public void onTakeView(MainActivity view) {
+        this.view = view;
+        publish();
     }
 
     /**
@@ -54,6 +77,7 @@ public class RssHelper {
     public void displayPietcast() {
         mPietcastSubscription = Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .map(element -> element.getTitle())
                 .subscribe(PsLog::v, Throwable::printStackTrace);
@@ -79,7 +103,7 @@ public class RssHelper {
             Elements content = doc.select("[itemprop=articleBody]");
             return content.toString();
         } catch (IOException e) {
-            PsLog.e(e.toString());
+            PsLog.e("Couldn't parse HTML: " + e.toString());
             return null;
         }
     }

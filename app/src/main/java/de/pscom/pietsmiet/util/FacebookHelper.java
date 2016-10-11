@@ -28,8 +28,8 @@ public class FacebookHelper {
 
         Observable.defer(() -> Observable.just(getAllPosts()))
                 .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .map(result -> {
+                .flatMapIterable(l -> l)
+                .flatMapIterable(result -> {
                     try {
                         return result.asResponseList();
                     } catch (FacebookException e) {
@@ -37,8 +37,6 @@ public class FacebookHelper {
                         return null;
                     }
                 })
-                .filter(response -> response != null)
-                .flatMap(Observable::from)
                 .map(rawPost -> {
                     try {
                         return DataObjectFactory.createPost(rawPost.toString());
@@ -48,9 +46,8 @@ public class FacebookHelper {
                     }
                 })
                 .filter(response -> response != null)
-                .toSortedList(FacebookHelper::compareModel)
-                .flatMap(Observable::from)
-                .doOnNext(post -> PsLog.v(post.getFrom().getName()))
+                .toSortedList(FacebookHelper::comparePosts)
+                .flatMapIterable(l -> l)
                 .map(Post::getMessage)
                 .filter(string -> string != null)
                 .subscribe(PsLog::v, e -> PsLog.e(e.toString()));
@@ -65,15 +62,15 @@ public class FacebookHelper {
 
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "174416892612899/feed?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=5&fields=from,created_time,message"));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "276775629094183/feed?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=5&fields=from,created_time,message"));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "275192789211423/feed?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=5&fields=from,created_time,message"));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "411585615549330/feed?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=5&fields=from,created_time,message"));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "298837886825395/feed?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=5&fields=from,created_time,message"));
 
             return facebook.executeBatch(batch);
         } catch (Exception e) {
@@ -82,7 +79,7 @@ public class FacebookHelper {
         return null;
     }
 
-    private static Integer compareModel(Post car1, Post car2) {
-        return car1.getCreatedTime().compareTo(car2.getCreatedTime());
+    private static Integer comparePosts(Post post1, Post post2) {
+        return post1.getCreatedTime().compareTo(post2.getCreatedTime());
     }
 }

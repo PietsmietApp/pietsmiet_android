@@ -6,19 +6,16 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-
-import de.pscom.pietsmiet.util.FacebookHelper;
-
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.util.FacebookHelper;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,9 +35,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        new FacebookHelper(this).loadPosts();
-
 
         //Only for testing
         new Thread(() -> {

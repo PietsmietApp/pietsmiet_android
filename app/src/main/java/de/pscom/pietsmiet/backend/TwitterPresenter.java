@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.backend;
 
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
@@ -60,7 +61,7 @@ public class TwitterPresenter {
     private void publish() {
         if (view != null && tweet != null) {
             String title = tweet.getUser().getName() + " auf Twitter";
-            String time = tweet.getCreatedAt().toString(); //fixme better time
+            Date time = tweet.getCreatedAt();
             view.addNewCard(new SocialCardItem(title, tweet.getText(), time, TYPE_TWITTER));
         }
     }

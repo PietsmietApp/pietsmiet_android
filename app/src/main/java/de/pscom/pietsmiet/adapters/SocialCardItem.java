@@ -2,13 +2,15 @@ package de.pscom.pietsmiet.adapters;
 
 import android.graphics.Color;
 
+import java.util.Date;
+
 public class SocialCardItem extends CardItem {
-    public SocialCardItem(String title, String description, String datetime, CardItemType cardItemType) {
+    public SocialCardItem(String title, String description, Date datetime, CardItemType cardItemType) {
         super(title, description, datetime, null, cardItemType);
     }
 
     public SocialCardItem(String title, String description, CardItemType cardItemType) {
-        super(title, description, "", null, cardItemType);
+        super(title, description, null, null, cardItemType);
     }
 
     @Override

@@ -3,15 +3,17 @@ package de.pscom.pietsmiet.adapters;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
+import java.util.Date;
+
 public class VideoCardItem extends CardItem {
 
 
-    public VideoCardItem(String title, String description, String datetime, Drawable preview, CardItemType cardItemType) {
+    public VideoCardItem(String title, String description, Date datetime, Drawable preview, CardItemType cardItemType) {
         super(title, description, datetime, preview, cardItemType);
 
     }
 
-    public VideoCardItem(String title, String description, String datetime, String preview, CardItemType cardItemType) {
+    public VideoCardItem(String title, String description, Date datetime, String preview, CardItemType cardItemType) {
         super(title, description, datetime, getDrawableFromUrl(preview), cardItemType);
     }
 

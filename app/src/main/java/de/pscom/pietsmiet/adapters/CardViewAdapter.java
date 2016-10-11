@@ -108,14 +108,15 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
         if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
-        } else if (currentItem.getDatetime().isEmpty()){
-            PsLog.v("No Date specified");
+        } else if (currentItem.getDatetime() == null){
+            PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
+        } else {
+            holder.timedate.setText(currentItem.getDatetime().toString()); //Todo more beatiful date and time
         }
 
         holder.title.setText(currentItem.getTitle());
         holder.description.setText(currentItem.getDescription());
-        holder.timedate.setText(currentItem.getDatetime());
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }
 

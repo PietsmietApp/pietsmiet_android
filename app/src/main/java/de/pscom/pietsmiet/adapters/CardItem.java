@@ -2,21 +2,23 @@ package de.pscom.pietsmiet.adapters;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 
 import de.pscom.pietsmiet.util.PsLog;
 
-public class CardItem {
+public class CardItem implements Comparable<CardItem> {
 
     String description;
-    String datetime;
+    Date datetime;
     String title;
     Drawable preview;
     CardItemType cardItemType;
 
-    CardItem(String title, String description, String datetime, Drawable preview, CardItemType cardItemType) {
+    CardItem(String title, String description, Date datetime, Drawable preview, CardItemType cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -32,11 +34,11 @@ public class CardItem {
         this.cardItemType = type;
     }
 
-    public String getDatetime() {
+    public Date getDatetime() {
         return datetime;
     }
 
-    public void setDatetime(String datetime) {
+    public void setDatetime(Date datetime) {
         this.datetime = datetime;
     }
 
@@ -83,5 +85,12 @@ public class CardItem {
         return cardItemType.equals(CardItemType.TYPE_VIDEO)
                 || cardItemType.equals(CardItemType.TYPE_STREAM)
                 || cardItemType.equals(CardItemType.TYPE_PIETCAST);
+    }
+
+    @Override
+    public int compareTo(@NonNull CardItem item) {
+        if (item.getDatetime() == null) return 1;
+        else if (this.getDatetime() == null) return -1;
+        return item.getDatetime().compareTo(this.getDatetime());
     }
 }

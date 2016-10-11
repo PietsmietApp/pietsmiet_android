@@ -1,9 +1,11 @@
-package de.pscom.pietsmiet.util;
+package de.pscom.pietsmiet.backend;
 
-import android.content.Context;
-
+import java.util.Date;
 import java.util.List;
 
+import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.adapters.SocialCardItem;
+import de.pscom.pietsmiet.util.PsLog;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -15,19 +17,25 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class FacebookHelper {
-    Context mContext;
+import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_FACEBOOK;
 
-    public FacebookHelper(Context mContext) {
-        this.mContext = mContext;
+public class FacebookPresenter {
+
+    private MainActivity view;
+    private Post post;
+
+    public FacebookPresenter() {
+        loadPosts();
     }
 
     public void loadPosts() {
 
         Observable.defer(() -> Observable.just(getAllPosts()))
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -46,11 +54,25 @@ public class FacebookHelper {
                     }
                 })
                 .filter(response -> response != null)
-                .toSortedList(FacebookHelper::comparePosts)
-                .flatMapIterable(l -> l)
-                .map(Post::getMessage)
-                .filter(string -> string != null)
-                .subscribe(PsLog::v, e -> PsLog.e(e.toString()));
+                //.toSortedList(FacebookPresenter::comparePosts)
+                //.flatMapIterable(l -> l)
+                .subscribe(post -> {
+                    this.post = post;
+                    publish();
+                }, e -> PsLog.e(e.toString()));
+    }
+
+    private void publish() {
+        if (view != null && post != null) {
+            String title = post.getFrom().getName() + " auf Facebook";
+            Date time = post.getCreatedTime();
+            view.addNewCard(new SocialCardItem(title, post.getMessage(), time, TYPE_FACEBOOK));
+        }
+    }
+
+    public void onTakeView(MainActivity view) {
+        this.view = view;
+        publish();
     }
 
     private List<BatchResponse> getAllPosts() {

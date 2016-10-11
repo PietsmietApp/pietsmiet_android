@@ -13,13 +13,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
-
 import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.adapters.VideoCardItem;
+import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.RssPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 
@@ -55,12 +57,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ArrayList<CardItem> cardItems = new ArrayList<>();
             cardItems.add(new VideoCardItem("PietCast #79 - Krötenwehr",
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
-                    "Montag, 25. Dezember",
+                    new Date(),
                     "http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png",
                     TYPE_PIETCAST));
             cardItems.add(new VideoCardItem("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3\nDauer: 30 Minuten",
-                    "Montag, 25. Dezember um 13.00 Uhr",
+                    new Date(),
                     "http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg",
                     TYPE_VIDEO));
             cardItems.add(new SocialCardItem("Uploadplan am 11.09.2016",
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TYPE_UPLOAD_PLAN));
             cardItems.add(new SocialCardItem("Dr.Jay auf Twitter",
                     "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP",
-                    "Montag, 25. Dezember um 14:69 Uhr",
+                    new Date(),
                     TYPE_TWITTER));
 
             runOnUiThread(() -> {
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new TwitterPresenter().onTakeView(this);
         new RssPresenter().onTakeView(this);
+        new FacebookPresenter().onTakeView(this);
     }
 
     public void setupRecyclerView() {
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void addNewCard(CardItem item) {
         cardItems.add(item);
+        Collections.sort(cardItems);
         if (adapter != null) adapter.notifyDataSetChanged();
     }
 

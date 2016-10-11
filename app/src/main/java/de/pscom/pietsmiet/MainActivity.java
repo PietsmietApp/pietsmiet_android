@@ -17,6 +17,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+
 import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.adapters.VideoCardItem;
 import de.pscom.pietsmiet.backend.RssPresenter;

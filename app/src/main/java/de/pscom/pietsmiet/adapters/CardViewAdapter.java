@@ -41,6 +41,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         TextView title;
         TextView description;
         TextView timedate;
+        ImageView thumbnail;
 
         CardViewHolder(View itemView) {
             super(itemView);
@@ -48,18 +49,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             title = (TextView) itemView.findViewById(R.id.tvTitle);
             description = (TextView) itemView.findViewById(R.id.tvDescription);
             timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
+            thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
         }
     }
 
     public static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
-        ImageView preview;
         RelativeLayout descriptionContainer;
         ImageView durationIcon;
         Button btnExpand;
 
         VideoCardViewHolder(View itemView) {
             super(itemView);
-            preview = (ImageView) itemView.findViewById(R.id.ivPreview);
             durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
             btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
             descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
@@ -88,13 +88,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         if (holder.getItemViewType() == LAYOUT_VIDEO) {
             VideoCardViewHolder videoHolder = (VideoCardViewHolder) holder;
 
-            Drawable preview = ((VideoCardItem) currentItem).getPreview();
-            if (preview != null) {
-                videoHolder.preview.setImageDrawable(((VideoCardItem) currentItem).getPreview());
-            } else {
-                videoHolder.preview.setVisibility(GONE); //Todo add placeholder thumbnail instead of hiding
-            }
-
             videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
 
             videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
@@ -108,25 +101,24 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 }
             });
         }
+
         if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
         } else if (currentItem.getDatetime() == null) {
             PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
         } else {
-            holder.timedate.setText(currentItem.getDatetime().toString()); //Todo more beatiful date and time
+            holder.timedate.setText(currentItem.getDatetime().toString()); //Todo more beautiful date and time
         }
+
+        Drawable thumbnail = currentItem.getThumbnail();
+        if (thumbnail != null) {
+            PsLog.v("Setting p for: "+ currentItem.getTitle());
+            holder.thumbnail.setImageDrawable(thumbnail);
+        } else holder.thumbnail.setVisibility(GONE);
 
         holder.title.setText(currentItem.getTitle());
         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
-            //PsLog.v(currentItem.getDescription());
-            /*Matcher matcher = Patterns.WEB_URL.matcher(currentItem.getDescription());
-            while (matcher.find()) {
-                String originalLink = matcher.group();
-                String parsedLink = "<a href=\"" + originalLink + "\">"+originalLink+"</a>";
-                currentItem.setDescription(matcher.replaceFirst(parsedLink));
-            }*/
-
             holder.description.setText(Html.fromHtml(currentItem.getDescription()));
             holder.description.setMovementMethod(LinkMovementMethod.getInstance());
         }

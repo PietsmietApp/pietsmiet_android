@@ -5,7 +5,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.adapters.SocialCardItem;
+import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
@@ -62,7 +62,8 @@ public class TwitterPresenter {
         if (view != null && tweet != null) {
             String title = getDisplayName(tweet.getUser().getId()) + " auf Twitter";
             Date time = tweet.getCreatedAt();
-            view.addNewCard(new SocialCardItem(title, tweet.getText(), time, TYPE_TWITTER));
+            //    view.addNewCard(new CardItem(title, tweet.getText(), time, mediaEntities[0].getMediaURL(), TYPE_TWITTER));
+            view.addNewCard(new CardItem(title, tweet.getText(), time, TYPE_TWITTER));
         }
     }
 

@@ -11,10 +11,11 @@ import org.mcsoxford.rss.RSSReader;
 import org.mcsoxford.rss.RSSReaderException;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.adapters.SocialCardItem;
+import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.Subscription;
@@ -35,7 +36,7 @@ public class RssPresenter {
     private String uploadplan;
 
     public RssPresenter() {
-        displayUploadplan(DEFAULT_MAX);
+        parseUploadplan(DEFAULT_MAX);
     }
 
     /**
@@ -43,7 +44,7 @@ public class RssPresenter {
      *
      * @param max Max URLs to parse, should be as low as possible
      */
-    public void displayUploadplan(int max) {
+    public void parseUploadplan(int max) {
         mPlanSubscription = Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,7 +63,7 @@ public class RssPresenter {
 
     private void publish() {
         if (view != null && uploadplan != null) {
-            view.addNewCard(new SocialCardItem("Uploadplan vom 21.10.", uploadplan, TYPE_UPLOAD_PLAN));
+            view.addNewCard(new CardItem("Uploadplan vom 21.10.", uploadplan, new Date(), TYPE_UPLOAD_PLAN)); //fixme Date
         }
     }
 
@@ -74,7 +75,7 @@ public class RssPresenter {
     /**
      * Loads the latests Piecasts
      */
-    public void displayPietcast() {
+    public void parsePietcast() {
         mPietcastSubscription = Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

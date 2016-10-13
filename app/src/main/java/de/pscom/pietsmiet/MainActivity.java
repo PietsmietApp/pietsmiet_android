@@ -17,6 +17,7 @@ import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.SocialCardItem;
 import de.pscom.pietsmiet.adapters.VideoCardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.util.FacebookHelper;
 
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_PIETCAST;
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_TWITTER;
@@ -24,7 +25,6 @@ import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_UPLOAD_PLAN
 import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

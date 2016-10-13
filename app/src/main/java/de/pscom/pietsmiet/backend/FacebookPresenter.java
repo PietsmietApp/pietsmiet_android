@@ -1,9 +1,11 @@
-package de.pscom.pietsmiet.util;
+package de.pscom.pietsmiet.backend;
 
-import android.content.Context;
-
+import java.util.Date;
 import java.util.List;
 
+import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.PsLog;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -15,19 +17,25 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class FacebookHelper {
-    Context mContext;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
 
-    public FacebookHelper(Context mContext) {
-        this.mContext = mContext;
+public class FacebookPresenter {
+
+    private MainActivity view;
+    private Post post;
+
+    public FacebookPresenter() {
+        parsePosts();
     }
 
-    public void loadPosts() {
-
-        Observable.defer(() -> Observable.just(getAllPosts()))
+    private void parsePosts() {
+        Observable.defer(() -> Observable.just(loadPosts()))
                 .subscribeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -46,14 +54,26 @@ public class FacebookHelper {
                     }
                 })
                 .filter(response -> response != null)
-                .toSortedList(FacebookHelper::comparePosts)
-                .flatMapIterable(l -> l)
-                .map(Post::getMessage)
-                .filter(string -> string != null)
-                .subscribe(PsLog::v, e -> PsLog.e(e.toString()));
+                .subscribe(post -> {
+                    this.post = post;
+                    publish();
+                }, e -> PsLog.e(e.toString()));
     }
 
-    private List<BatchResponse> getAllPosts() {
+    private void publish() {
+        if (view != null && post != null) {
+            String title = post.getFrom().getName();
+            Date time = post.getCreatedTime();
+            view.addNewCard(new CardItem(title, post.getMessage(), time, TYPE_FACEBOOK));
+        }
+    }
+
+    public void onTakeView(MainActivity view) {
+        this.view = view;
+        publish();
+    }
+
+    private List<BatchResponse> loadPosts() {
         try {
             Facebook facebook = new FacebookFactory().getInstance();
             facebook.setOAuthAppId("664158170415954", "48b0d6be3acddd1a9959943b76acce31");
@@ -62,24 +82,20 @@ public class FacebookHelper {
 
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=5&fields=from,created_time,message,picture"));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=5&fields=from,created_time,message,picture"));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=5&fields=from,created_time,message,picture"));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=5&fields=from,created_time,message,picture"));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=5&fields=from,created_time,message"));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=5&fields=from,created_time,message,picture"));
 
             return facebook.executeBatch(batch);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    private static Integer comparePosts(Post post1, Post post2) {
-        return post1.getCreatedTime().compareTo(post2.getCreatedTime());
     }
 }

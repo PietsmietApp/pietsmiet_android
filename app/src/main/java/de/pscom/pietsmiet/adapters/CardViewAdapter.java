@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,13 +14,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -39,6 +42,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         TextView title;
         TextView description;
         TextView timedate;
+        ImageView thumbnail;
 
         CardViewHolder(View itemView) {
             super(itemView);
@@ -46,18 +50,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             title = (TextView) itemView.findViewById(R.id.tvTitle);
             description = (TextView) itemView.findViewById(R.id.tvDescription);
             timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
+            thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
         }
     }
 
     public static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
-        ImageView preview;
         RelativeLayout descriptionContainer;
         ImageView durationIcon;
         Button btnExpand;
 
         VideoCardViewHolder(View itemView) {
             super(itemView);
-            preview = (ImageView) itemView.findViewById(R.id.ivPreview);
             durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
             btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
             descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
@@ -86,13 +89,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         if (holder.getItemViewType() == LAYOUT_VIDEO) {
             VideoCardViewHolder videoHolder = (VideoCardViewHolder) holder;
 
-            Drawable preview = ((VideoCardItem) currentItem).getPreview();
-            if (preview != null) {
-                videoHolder.preview.setImageDrawable(((VideoCardItem) currentItem).getPreview());
-            } else {
-                videoHolder.preview.setVisibility(GONE); //Todo add placeholder thumbnail instead of hiding
-            }
-
             videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
 
             videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
@@ -106,16 +102,28 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 }
             });
         }
-        if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
+
+        if (currentItem.getCardItemType() == TYPE_UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
-        } else if (currentItem.getDatetime().isEmpty()){
-            PsLog.v("No Date specified");
+        } else if (currentItem.getDatetime() == null) {
+            PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
+        } else {
+            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM", Locale.GERMAN);
+            holder.timedate.setText(formatter.format(currentItem.getDatetime()));
         }
 
+        Drawable thumbnail = currentItem.getThumbnail();
+        if (thumbnail != null) {
+            PsLog.v("Setting p for: " + currentItem.getTitle());
+            holder.thumbnail.setImageDrawable(thumbnail);
+        } else holder.thumbnail.setVisibility(GONE);
+
         holder.title.setText(currentItem.getTitle());
-        holder.description.setText(currentItem.getDescription());
-        holder.timedate.setText(currentItem.getDatetime());
+        if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+            //noinspection deprecation
+            holder.description.setText(Html.fromHtml(currentItem.getDescription()));
+        }
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }
 

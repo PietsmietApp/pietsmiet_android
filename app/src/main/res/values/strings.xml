@@ -8,4 +8,6 @@
     <string name="youtube">YouTube</string>
     <string name="pietcast">PietCast</string>
     <string name="twitch">Twitch</string>
+    <string name="btn_teilen">Teilen</string>
+    <string name="btn_ansehen">Ansehen</string>
 </resources>

@@ -18,22 +18,20 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
 
 public class RssPresenter {
-    private static final int DEFAULT_MAX = 10;
+    private static final int DEFAULT_MAX = 1;
     Context mContext;
     static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
     static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
-    public Subscription mPlanSubscription;
-    public Subscription mPietcastSubscription;
 
     private MainActivity view;
     private String uploadplan;
+    private Date pubDate;
 
     public RssPresenter() {
         parseUploadplan(DEFAULT_MAX);
@@ -45,15 +43,19 @@ public class RssPresenter {
      * @param max Max URLs to parse, should be as low as possible
      */
     public void parseUploadplan(int max) {
-        mPlanSubscription = Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
+        Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
+                .doOnNext(element -> this.pubDate = element.getPubDate())
                 .map(element -> element.getLink().toString())
                 .take(max)
                 .filter(link -> link != null)
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
-                        .subscribeOn(Schedulers.io()))
+                        .subscribeOn(Schedulers.io())
+                        .onBackpressureBuffer()
+                        .observeOn(AndroidSchedulers.mainThread()))
                 .filter(content -> content != null)
                 .subscribe(uploadplan -> {
                     this.uploadplan = uploadplan;
@@ -61,27 +63,28 @@ public class RssPresenter {
                 }, Throwable::printStackTrace);
     }
 
-    private void publish() {
-        if (view != null && uploadplan != null) {
-            view.addNewCard(new CardItem("Uploadplan vom 21.10.", uploadplan, new Date(), TYPE_UPLOAD_PLAN)); //fixme Date
-        }
-    }
-
-    public void onTakeView(MainActivity view) {
-        this.view = view;
-        publish();
-    }
-
     /**
      * Loads the latests Piecasts
      */
     public void parsePietcast() {
-        mPietcastSubscription = Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
+        Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .map(element -> element.getTitle())
                 .subscribe(PsLog::v, Throwable::printStackTrace);
+    }
+
+    private void publish() {
+        if (view != null && uploadplan != null) {
+            view.addNewCard(new CardItem("Uploadplan vom 21.10.", uploadplan, pubDate, TYPE_UPLOAD_PLAN));
+        }
+
+    }
+
+    public void onTakeView(MainActivity view) {
+        this.view = view;
+        publish();
     }
 
     private List<RSSItem> loadRss(String url) {

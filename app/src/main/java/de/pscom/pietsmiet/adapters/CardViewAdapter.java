@@ -6,7 +6,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -102,25 +103,26 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             });
         }
 
-        if (currentItem.getCardItemType() == CardItemType.TYPE_UPLOAD_PLAN) {
+        if (currentItem.getCardItemType() == TYPE_UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
         } else if (currentItem.getDatetime() == null) {
             PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
         } else {
-            holder.timedate.setText(currentItem.getDatetime().toString()); //Todo more beautiful date and time
+            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM", Locale.GERMAN);
+            holder.timedate.setText(formatter.format(currentItem.getDatetime()));
         }
 
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
-            PsLog.v("Setting p for: "+ currentItem.getTitle());
+            PsLog.v("Setting p for: " + currentItem.getTitle());
             holder.thumbnail.setImageDrawable(thumbnail);
         } else holder.thumbnail.setVisibility(GONE);
 
         holder.title.setText(currentItem.getTitle());
         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+            //noinspection deprecation
             holder.description.setText(Html.fromHtml(currentItem.getDescription()));
-            holder.description.setMovementMethod(LinkMovementMethod.getInstance());
         }
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }

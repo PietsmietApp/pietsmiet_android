@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.backend;
 
-import android.graphics.drawable.Drawable;
-
 import java.util.Date;
 import java.util.List;
 
@@ -19,15 +17,15 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
 
 public class FacebookPresenter {
 
     private MainActivity view;
     private Post post;
-    private Drawable thumbnail;
 
     public FacebookPresenter() {
         parsePosts();
@@ -36,6 +34,8 @@ public class FacebookPresenter {
     private void parsePosts() {
         Observable.defer(() -> Observable.just(loadPosts()))
                 .subscribeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -62,7 +62,7 @@ public class FacebookPresenter {
 
     private void publish() {
         if (view != null && post != null) {
-            String title = post.getFrom().getName() + " auf Facebook";
+            String title = post.getFrom().getName();
             Date time = post.getCreatedTime();
             view.addNewCard(new CardItem(title, post.getMessage(), time, TYPE_FACEBOOK));
         }

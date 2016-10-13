@@ -8,7 +8,6 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
@@ -18,9 +17,10 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_TWITTER;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
 
 
 public class TwitterPresenter {
@@ -29,7 +29,6 @@ public class TwitterPresenter {
 
     private Twitter twitterInstance;
     private static final int maxCount = 10;
-    public Subscription mTwitterSubscription;
 
     private MainActivity view;
     private Status tweet;
@@ -46,11 +45,11 @@ public class TwitterPresenter {
     }
 
     private void parseTweets() {
-        mTwitterSubscription = Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
+        Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
                 .subscribeOn(Schedulers.io())
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
-                .filter(tweet -> !tweet.isRetweeted())
                 .doOnNext(tweet -> lastTweetId = tweet.getId())
                 .subscribe(tweet -> {
                     this.tweet = tweet;
@@ -60,9 +59,8 @@ public class TwitterPresenter {
 
     private void publish() {
         if (view != null && tweet != null) {
-            String title = getDisplayName(tweet.getUser().getId()) + " auf Twitter";
+            String title = getDisplayName(tweet.getUser());
             Date time = tweet.getCreatedAt();
-            //    view.addNewCard(new CardItem(title, tweet.getText(), time, mediaEntities[0].getMediaURL(), TYPE_TWITTER));
             view.addNewCard(new CardItem(title, tweet.getText(), time, TYPE_TWITTER));
         }
     }
@@ -91,14 +89,15 @@ public class TwitterPresenter {
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
-                "OR from:br4mm3n")
+                "OR from:br4mm3n " +
+                "exclude:replies")
                 .count(count)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
     }
 
-    private String getDisplayName(long userIdAsLong) {
-        int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, userIdAsLong), Integer.MIN_VALUE);
+    private String getDisplayName(User user) {
+        int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, user.getId()), Integer.MIN_VALUE);
         switch (userId) {
             case 109850283:
                 return "Piet";
@@ -111,7 +110,7 @@ public class TwitterPresenter {
             case 394250799:
                 return "Brammen";
             default:
-                return "";
+                return user.getName();
         }
     }
 

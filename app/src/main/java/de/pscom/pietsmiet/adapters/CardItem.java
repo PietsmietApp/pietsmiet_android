@@ -7,13 +7,22 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 
-public class CardItem implements Comparable<CardItem> {
+import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
+import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
 
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_STREAM;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
+
+public class CardItem implements Comparable<CardItem> {
     String description;
     Date datetime;
     String title;
     Drawable thumbnail;
-    CardItemType cardItemType;
+    int cardItemType;
 
 
     /**
@@ -24,7 +33,8 @@ public class CardItem implements Comparable<CardItem> {
      * @param datetime     Time of the card
      * @param cardItemType Type of the card
      */
-    public CardItem(String title, String description, Date datetime, CardItemType cardItemType) {
+
+    public CardItem(String title, String description, Date datetime, @ItemTypeNoThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -40,7 +50,7 @@ public class CardItem implements Comparable<CardItem> {
      * @param cardItemType Type of the card
      * @param thumbnail    Thumbnail image
      */
-    public CardItem(String title, String description, Date datetime, Drawable thumbnail, CardItemType cardItemType) {
+    public CardItem(String title, String description, Date datetime, Drawable thumbnail, @ItemTypeThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -58,11 +68,11 @@ public class CardItem implements Comparable<CardItem> {
         this.thumbnail = thumbnail;
     }
 
-    public CardItemType getCardItemType() {
+    public int getCardItemType() {
         return cardItemType;
     }
 
-    public void setCardItemType(CardItemType type) {
+    public void setCardItemType(int type) {
         this.cardItemType = type;
     }
 
@@ -118,46 +128,17 @@ public class CardItem implements Comparable<CardItem> {
 
 
     boolean isVideoView() {
-        return cardItemType.equals(CardItemType.TYPE_VIDEO)
-                || cardItemType.equals(CardItemType.TYPE_STREAM)
-                || cardItemType.equals(CardItemType.TYPE_PIETCAST);
+        return cardItemType == TYPE_VIDEO
+                || cardItemType == TYPE_STREAM
+                || cardItemType == TYPE_PIETCAST;
     }
 
     @Override
     public int compareTo(@NonNull CardItem item) {
-        if (item.getDatetime() == null) return 1;
-        else if (this.getDatetime() == null) return -1;
+        if (item.getDatetime() == null) return -1;
+        else if (this.getDatetime() == null) return 1;
         return item.getDatetime().compareTo(this.getDatetime());
     }
 
-    /**
-     * Possible Card types
-     */
-    public enum CardItemType {
-        /**
-         * Youtube Video
-         */
-        TYPE_VIDEO,
-        /**
-         * Twitch Stream
-         */
-        TYPE_STREAM,
-        /**
-         * Pietcast
-         */
-        TYPE_PIETCAST,
-        /**
-         * Tweet
-         */
-        TYPE_TWITTER,
-        /**
-         * Facebook Post
-         */
-        TYPE_FACEBOOK,
-        /**
-         * New Uploadplan from pietsmiet.de
-         */
-        TYPE_UPLOAD_PLAN
-    }
 
 }

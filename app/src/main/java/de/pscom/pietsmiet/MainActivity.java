@@ -24,10 +24,10 @@ import de.pscom.pietsmiet.backend.RssPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_TWITTER;
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.adapters.CardItem.CardItemType.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -60,16 +60,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     DrawableFetcher.getDrawableFromUrl("http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png"),
                     TYPE_PIETCAST));
             cardItems.add(new CardItem("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3\nDauer: 30 Minuten",
+                    "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
                     TYPE_VIDEO));
             cardItems.add(new CardItem("Uploadplan am 11.09.2016",
-                    "14:00 Uhr: Osiris\n15:00 Uhr: Titan 3\n16:00 Uhr: Gears of War 4\n18:00 Uhr: Mario Kart 8",
+                    "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
                     new Date(),
                     TYPE_UPLOAD_PLAN));
             cardItems.add(new CardItem("Dr.Jay auf Twitter",
-                    "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP",
+                    "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
                     new Date(),
                     TYPE_TWITTER));
 
@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-
         adapter = new CardViewAdapter(cardItems, this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
@@ -106,5 +105,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return false;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
     }
 }

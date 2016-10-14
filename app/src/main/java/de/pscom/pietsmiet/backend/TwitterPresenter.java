@@ -60,7 +60,11 @@ public class TwitterPresenter extends MainPresenter {
                         }), Throwable::printStackTrace, () -> PsLog.v("Tweets geladen"));
     }
 
-
+    /**
+     * Fetch a list of tweets
+     * @param count Max count of tweets
+     * @return List of Tweets
+     */
     private List<Status> fetchTweets(int count) {
         getToken();
         QueryResult result;
@@ -74,6 +78,11 @@ public class TwitterPresenter extends MainPresenter {
         return result.getTweets();
     }
 
+    /**
+     * @param count Max count of tweets to fetch
+     * @param sinceId Allows to specifies since which tweet to fetch
+     * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
+     */
     private Query pietsmietTweets(int count, long sinceId) {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
@@ -86,6 +95,10 @@ public class TwitterPresenter extends MainPresenter {
                 .resultType(Query.ResultType.recent);
     }
 
+    /**
+     * @param user User to get the name for
+     * @return A more human readable and static user name
+     */
     private String getDisplayName(User user) {
         int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, user.getId()), Integer.MIN_VALUE);
         switch (userId) {
@@ -104,6 +117,9 @@ public class TwitterPresenter extends MainPresenter {
         }
     }
 
+    /**
+     * This fetches the token
+     */
     private void getToken() {
         try {
             twitterInstance.getOAuth2Token();
@@ -114,6 +130,9 @@ public class TwitterPresenter extends MainPresenter {
         }
     }
 
+    /**
+     * Show the remaining calls to the search api with this app's token.
+     */
     private void getRateLimit() {
         try {
             RateLimitStatus status = twitterInstance.getRateLimitStatus("search").get("/search/tweets");

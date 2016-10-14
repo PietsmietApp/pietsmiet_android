@@ -13,6 +13,10 @@ import java.util.List;
 
 public class RssUtil {
 
+    /**
+     * @param url A rss feed url
+     * @return A list of RssItems from the specified feed
+     */
     public static List<RSSItem> loadRss(String url) {
         RSSReader reader = new RSSReader();
 
@@ -25,6 +29,10 @@ public class RssUtil {
         }
     }
 
+    /**
+     * @param url Url to parse
+     * @return Body of the URL instead of the whole page.
+     */
     public static String parseHtml(String url) {
         try {
             Document doc = Jsoup.connect(url)

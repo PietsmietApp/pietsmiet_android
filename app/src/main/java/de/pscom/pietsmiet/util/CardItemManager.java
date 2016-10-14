@@ -22,6 +22,10 @@ public class CardItemManager {
         mView = view;
     }
 
+    /**
+     * Adds a card to the card list. If the card belongs to the current categorie / type, it'll be shown instant
+     * @param cardItem Card Item
+     */
     public void addCard(CardItem cardItem) {
         allCards.add(cardItem);
         Collections.sort(allCards);
@@ -31,14 +35,20 @@ public class CardItemManager {
                 || currentlyDisplayedType == TYPE_DISPLAY_ALL) {
             currentCards.add(cardItem);
             Collections.sort(currentCards);
+            if (mView != null) mView.updateAdapter();
         }
-        if (mView != null) mView.updateAdapter();
     }
 
+    /**
+     * @return All fetched cards, whether they're currently shown or not
+     */
     public List<CardItem> getAllCardItems() {
         return currentCards;
     }
 
+    /**
+     * Switches back to the "all" category. Shows all cards, independent of their category
+     */
     public void displayAllCards() {
         currentlyDisplayedType = TYPE_DISPLAY_ALL;
         currentCards.clear();
@@ -46,6 +56,10 @@ public class CardItemManager {
         if (mView != null) mView.updateAdapter();
     }
 
+    /**
+     * Show only cards that belong to a certain category / type
+     * @param cardItemType Type that the cards should belong to
+     */
     public void displayOnlyCardsFromType(@ItemTypeDrawer int cardItemType) {
         currentlyDisplayedType = cardItemType;
         Observable.just(allCards)
@@ -61,6 +75,10 @@ public class CardItemManager {
                 });
     }
 
+    /**
+     * @param cardItem Card item
+     * @return If the specified card item belongs to the currently shown category / type or not
+     */
     private boolean isAllowedType(CardItem cardItem) {
         int cardItemType = cardItem.getCardItemType();
         if (currentlyDisplayedType == TYPE_DISPLAY_ALL) return true;

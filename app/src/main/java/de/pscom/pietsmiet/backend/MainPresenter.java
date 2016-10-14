@@ -15,6 +15,9 @@ public class MainPresenter {
         this.cardItemType = cardItemType;
     }
 
+    /**
+     * Publishes the current cardItem to the specified activity
+     */
     void publish() {
         if (view != null) {
             if (cardItem != null) {
@@ -26,6 +29,10 @@ public class MainPresenter {
         }
     }
 
+    /**
+     * Add a "callback" activity to this class
+     * @param view Activity to call back
+     */
     public void onTakeView(MainActivity view) {
         this.view = view;
     }

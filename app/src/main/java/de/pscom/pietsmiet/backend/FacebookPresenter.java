@@ -64,7 +64,9 @@ public class FacebookPresenter extends MainPresenter{
     }
 
 
-
+    /**
+     * @return List of unparsed posts from Team Pietsmiet
+     */
     private List<BatchResponse> loadPosts() {
         try {
             Facebook facebook = new FacebookFactory().getInstance();

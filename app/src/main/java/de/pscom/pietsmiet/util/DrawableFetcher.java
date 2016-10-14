@@ -13,6 +13,10 @@ import twitter4j.Status;
 
 public class DrawableFetcher {
 
+    /**
+     * @param post A facebook posting
+     * @return The drawable from the post, if available
+     */
     @Nullable
     public static Drawable getDrawableFromPost(@Nullable Post post) {
         if (post != null) {
@@ -24,6 +28,10 @@ public class DrawableFetcher {
         return null;
     }
 
+    /**
+     * @param status A tweet
+     * @return The drawable from the tweet, if available
+     */
     @Nullable
     public static Drawable getDrawableFromTweet(@Nullable Status status) {
         if (status != null) {
@@ -35,14 +43,19 @@ public class DrawableFetcher {
         return null;
     }
 
+    /**
+     * @param url Url to the image
+     * @return A drawable from the url
+     */
     @Nullable
     public static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
-            return Drawable.createFromStream(is, "src name");
+            Drawable toReturn = Drawable.createFromStream(is, "src name");
+            if (toReturn.getMinimumHeight() > 0 && toReturn.getMinimumWidth() > 0) return toReturn;
         } catch (Exception e) {
             PsLog.w("Couldn't fetch thumbnail: " + e.toString());
-            return null;
         }
+        return null;
     }
 }

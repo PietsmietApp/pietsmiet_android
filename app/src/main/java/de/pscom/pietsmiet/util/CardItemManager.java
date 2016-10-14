@@ -9,17 +9,14 @@ import de.pscom.pietsmiet.adapters.CardItem;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.CardTypes.*;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_DEFAULT;
+import static de.pscom.pietsmiet.util.CardType.*;
 
 public class CardItemManager {
-
     private List<CardItem> currentCards = new ArrayList<>();
     private List<CardItem> allCards = new ArrayList<>();
     private MainActivity mView;
-
     @ItemTypeDrawer
-    private int currentDisplayMethod = TYPE_DEFAULT;
+    private int currentlyDisplayedType = TYPE_DISPLAY_ALL;
 
     public CardItemManager(MainActivity view) {
         mView = view;
@@ -30,11 +27,12 @@ public class CardItemManager {
         Collections.sort(allCards);
 
         //noinspection WrongConstant
-        if (cardItem.getCardItemType() == currentDisplayMethod || currentDisplayMethod == TYPE_DEFAULT) {
+        if (cardItem.getCardItemType() == currentlyDisplayedType
+                || currentlyDisplayedType == TYPE_DISPLAY_ALL) {
             currentCards.add(cardItem);
             Collections.sort(currentCards);
         }
-        mView.updateAdapter();
+        if (mView != null) mView.updateAdapter();
     }
 
     public List<CardItem> getAllCardItems() {
@@ -42,31 +40,40 @@ public class CardItemManager {
     }
 
     public void displayAllCards() {
+        currentlyDisplayedType = TYPE_DISPLAY_ALL;
         currentCards.clear();
         currentCards.addAll(allCards);
-        mView.updateAdapter();
+        if (mView != null) mView.updateAdapter();
     }
 
     public void displayOnlyCardsFromType(@ItemTypeDrawer int cardItemType) {
-        currentDisplayMethod = cardItemType;
+        currentlyDisplayedType = cardItemType;
         Observable.just(allCards)
                 .flatMap(Observable::from)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .filter(cardItem -> {
-                    if (cardItemType == TYPE_DEFAULT) return true;
-                    else {
-                        //noinspection WrongConstant
-                        if (cardItem.getCardItemType() == cardItemType) return true;
-                    }
-                    return false;
-                })
+                .filter(this::isAllowedType)
                 .toList()
                 .subscribe(cards -> {
                     currentCards.clear();
                     currentCards.addAll(cards);
-                    mView.updateAdapter();
+                    if (mView != null) mView.updateAdapter();
                 });
+    }
+
+    private boolean isAllowedType(CardItem cardItem) {
+        int cardItemType = cardItem.getCardItemType();
+        if (currentlyDisplayedType == TYPE_DISPLAY_ALL) return true;
+        else if (currentlyDisplayedType == TYPE_DISPLAY_SOCIAL) {
+            if (cardItemType == TYPE_TWITTER
+                    || cardItemType == TYPE_FACEBOOK) {
+                return true;
+            }
+        } else {
+            //noinspection WrongConstant
+            if (cardItemType == currentlyDisplayedType) return true;
+        }
+        return false;
     }
 
 

@@ -1,11 +1,11 @@
 package de.pscom.pietsmiet.backend;
 
-import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.CardType;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -20,20 +20,16 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
 
-
-public class TwitterPresenter {
+public class TwitterPresenter extends MainPresenter {
     //TODO: Store id!
     private long lastTweetId;
 
     private Twitter twitterInstance;
     private static final int maxCount = 10;
 
-    private MainActivity view;
-    private Status tweet;
-
     public TwitterPresenter() {
+        super(CardType.TYPE_TWITTER);
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
@@ -48,26 +44,20 @@ public class TwitterPresenter {
         Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .doOnNext(tweet -> lastTweetId = tweet.getId())
-                .subscribe(tweet -> {
-                    this.tweet = tweet;
-                    publish();
-                }, Throwable::printStackTrace);
-    }
-
-    private void publish() {
-        if (view != null && tweet != null) {
-            String title = getDisplayName(tweet.getUser());
-            Date time = tweet.getCreatedAt();
-            view.addNewCard(new CardItem(title, tweet.getText(), time, TYPE_TWITTER));
-        }
-    }
-
-    public void onTakeView(MainActivity view) {
-        this.view = view;
-        publish();
+                .subscribe(tweet -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromTweet(tweet)))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(drawable -> {
+                            cardItem = new CardItem();
+                            cardItem.setThumbnail(drawable);
+                            cardItem.setTitle(getDisplayName(tweet.getUser()));
+                            cardItem.setDescription(tweet.getText());
+                            cardItem.setDatetime(tweet.getCreatedAt());
+                            publish();
+                        }), Throwable::printStackTrace, () -> PsLog.v("Tweets geladen"));
     }
 
 

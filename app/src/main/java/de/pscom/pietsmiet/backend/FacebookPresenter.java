@@ -1,10 +1,9 @@
 package de.pscom.pietsmiet.backend;
 
-import java.util.Date;
 import java.util.List;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
@@ -12,7 +11,6 @@ import facebook4j.BatchResponse;
 import facebook4j.Facebook;
 import facebook4j.FacebookException;
 import facebook4j.FacebookFactory;
-import facebook4j.Post;
 import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
@@ -20,14 +18,12 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardType.TYPE_FACEBOOK;
 
-public class FacebookPresenter {
-
-    private MainActivity view;
-    private Post post;
+public class FacebookPresenter extends MainPresenter{
 
     public FacebookPresenter() {
+        super(TYPE_FACEBOOK);
         parsePosts();
     }
 
@@ -35,7 +31,7 @@ public class FacebookPresenter {
         Observable.defer(() -> Observable.just(loadPosts()))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -54,24 +50,20 @@ public class FacebookPresenter {
                     }
                 })
                 .filter(response -> response != null)
-                .subscribe(post -> {
-                    this.post = post;
-                    publish();
-                }, e -> PsLog.e(e.toString()));
+                .subscribe(post -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromPost(post)))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(drawable -> {
+                            cardItem = new CardItem();
+                            cardItem.setThumbnail(drawable);
+                            cardItem.setTitle(post.getFrom().getName());
+                            cardItem.setDescription(post.getMessage());
+                            cardItem.setDatetime(post.getCreatedTime());
+                            publish();
+                        }), e -> PsLog.e(e.toString()), () -> PsLog.v("facebook posts geladen"));
     }
 
-    private void publish() {
-        if (view != null && post != null) {
-            String title = post.getFrom().getName();
-            Date time = post.getCreatedTime();
-            view.addNewCard(new CardItem(title, post.getMessage(), time, TYPE_FACEBOOK));
-        }
-    }
 
-    public void onTakeView(MainActivity view) {
-        this.view = view;
-        publish();
-    }
 
     private List<BatchResponse> loadPosts() {
         try {

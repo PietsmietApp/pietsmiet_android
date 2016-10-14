@@ -38,7 +38,6 @@ public class DrawableFetcher {
     @Nullable
     public static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
-            PsLog.v("Fetching drawable from URL: " + url);
             InputStream is = (InputStream) new URL(url).getContent();
             return Drawable.createFromStream(is, "src name");
         } catch (Exception e) {

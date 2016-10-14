@@ -11,15 +11,15 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 
-import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
-import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
+import de.pscom.pietsmiet.util.CardType.ItemTypeNoThumbnail;
+import de.pscom.pietsmiet.util.CardType.ItemTypeThumbnail;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_STREAM;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardType.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardType.TYPE_PIETCAST;
+import static de.pscom.pietsmiet.util.CardType.TYPE_STREAM;
+import static de.pscom.pietsmiet.util.CardType.TYPE_TWITTER;
+import static de.pscom.pietsmiet.util.CardType.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardType.TYPE_VIDEO;
 
 public class CardItem implements Comparable<CardItem>, Parcelable {
     String description;
@@ -28,6 +28,8 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
     Drawable thumbnail;
     Date datetime;
 
+    public CardItem() {
+    }
 
     /**
      * Creates a new card item
@@ -68,7 +70,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return this.thumbnail;
     }
 
-    public void setThumbnail(Drawable thumbnail) {
+    public void setThumbnail(@Nullable Drawable thumbnail) {
         this.thumbnail = thumbnail;
     }
 
@@ -84,7 +86,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return datetime;
     }
 
-    public void setDatetime(Date datetime) {
+    public void setDatetime(@NonNull Date datetime) {
         this.datetime = datetime;
     }
 
@@ -92,8 +94,16 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@NonNull String description) {
         this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(@NonNull String title) {
+        this.title = title;
     }
 
     public int getBackgroundColor() {
@@ -120,14 +130,6 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
                 break;
         }
         return Color.parseColor(hexColor);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
 

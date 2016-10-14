@@ -1,7 +1,11 @@
 package de.pscom.pietsmiet.adapters;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -17,12 +21,12 @@ import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
 
-public class CardItem implements Comparable<CardItem> {
+public class CardItem implements Comparable<CardItem>, Parcelable {
     String description;
-    Date datetime;
     String title;
-    Drawable thumbnail;
     int cardItemType;
+    Drawable thumbnail;
+    Date datetime;
 
 
     /**
@@ -139,6 +143,44 @@ public class CardItem implements Comparable<CardItem> {
         else if (this.getDatetime() == null) return 1;
         return item.getDatetime().compareTo(this.getDatetime());
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        Bitmap bitmap = ((BitmapDrawable) thumbnail).getBitmap();
+
+        dest.writeString(description);
+        dest.writeString(title);
+        dest.writeInt(cardItemType);
+        dest.writeParcelable(bitmap, flags);
+        dest.writeLong(datetime.getTime());
+    }
+
+    // "De-parcel object
+    public CardItem(Parcel in) {
+        description = in.readString();
+        title = in.readString();
+        cardItemType = in.readInt();
+        Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
+        //noinspection deprecation
+        thumbnail = new BitmapDrawable(bitmap);
+        datetime = new Date(in.readLong());
+    }
+
+    public static final Parcelable.Creator CREATOR
+            = new Parcelable.Creator<CardItem>() {
+        public CardItem createFromParcel(Parcel in) {
+            return new CardItem(in);
+        }
+
+        public CardItem[] newArray(int size) {
+            return new CardItem[size];
+        }
+    };
 
 
 }

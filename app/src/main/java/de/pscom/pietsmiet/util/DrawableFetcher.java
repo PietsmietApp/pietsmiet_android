@@ -4,8 +4,12 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.mcsoxford.rss.MediaThumbnail;
+import org.mcsoxford.rss.RSSItem;
+
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 import facebook4j.Post;
 import twitter4j.MediaEntity;
@@ -23,6 +27,24 @@ public class DrawableFetcher {
             URL imageUrl = post.getPicture();
             if (imageUrl != null) {
                 return getDrawableFromUrl(imageUrl.toString());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param rssItem A rss item
+     * @return The drawable from the item, if available
+     */
+    @Nullable
+    public static Drawable getDrawableFromRss(@Nullable RSSItem rssItem) {
+        if (rssItem != null) {
+            List<MediaThumbnail> thumbs = rssItem.getThumbnails();
+            if (thumbs != null
+                    && thumbs.size() > 0
+                    && thumbs.get(0) != null
+                    && thumbs.get(0).getUrl() != null) {
+                return getDrawableFromUrl(thumbs.get(0).getUrl().toString());
             }
         }
         return null;

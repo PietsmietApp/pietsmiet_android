@@ -125,9 +125,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 cardManager.displayOnlyCardsFromType(TYPE_PIETCAST);
                 break;
             case R.id.nav_home:
-            default:
                 cardManager.displayAllCards();
                 break;
+            default:
+                return false;
         }
         // Highlight the selected item has been done by NavigationView
         item.setChecked(true);

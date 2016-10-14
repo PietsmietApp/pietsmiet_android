@@ -27,7 +27,7 @@ public class PietcastPresenter extends MainPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .onBackpressureBuffer()
-                .subscribe(element -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromUrl(element.getThumbnails().get(0).toString())))
+                .subscribe(element -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromRss(element)))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(drawable -> {

@@ -13,17 +13,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.RssPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
+import de.pscom.pietsmiet.util.CardItemManager;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
@@ -32,7 +32,8 @@ import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
-    private List<CardItem> cardItems = new ArrayList<>();
+    private DrawerLayout mDrawer;
+    private CardItemManager cardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,14 +43,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         //Navigation Drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.dl_root);
+        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        cardManager = new CardItemManager(this);
 
         //Only for testing
         new Thread(() -> {
@@ -86,15 +89,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-        adapter = new CardViewAdapter(cardItems, this);
+        adapter = new CardViewAdapter(cardManager.getAllCardItems(), this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(adapter);
     }
 
     public void addNewCard(CardItem item) {
-        cardItems.add(item);
-        Collections.sort(cardItems);
+        cardManager.addCard(item);
+    }
+
+    public void updateAdapter(){
         if (adapter != null) adapter.notifyDataSetChanged();
     }
 
@@ -104,7 +109,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        switch (item.getItemId()) {
+            case R.id.nav_upload_plan:
+                cardManager.displayOnlyCardsFromType(TYPE_UPLOAD_PLAN);
+                break;
+            case R.id.nav_social_media:
+                cardManager.displayOnlyCardsFromType(TYPE_FACEBOOK);
+                break;
+            case R.id.nav_pietcast:
+                cardManager.displayOnlyCardsFromType(TYPE_PIETCAST);
+                break;
+            case R.id.nav_home:
+            default:
+                cardManager.displayAllCards();
+                break;
+        }
+        // Highlight the selected item has been done by NavigationView
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
+        // Close the navigation drawer
+        mDrawer.closeDrawers();
+
+        return true;
     }
 
     @Override

@@ -115,7 +115,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
-            PsLog.v("Setting p for: " + currentItem.getTitle());
+            PsLog.v("Setting thumbnail for: " + currentItem.getTitle());
             holder.thumbnail.setImageDrawable(thumbnail);
         } else holder.thumbnail.setVisibility(GONE);
 

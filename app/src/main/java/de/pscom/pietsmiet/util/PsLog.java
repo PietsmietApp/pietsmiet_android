@@ -36,7 +36,7 @@ public class PsLog {
             String name = ste.getFileName();
             int line = ste.getLineNumber();
             if (name == null && line == -1) return "Pietsmiet_App";
-            return "(" + ste.getFileName() + (line == -1 ? ":" + ste.getLineNumber() : "" + ")");
+            return "(" + ste.getFileName() + (line != -1 && line != 0 ? ":" + ste.getLineNumber() + ")" : "" + ")");
 
         } catch (Exception e) {
             return "Pietsmiet_App";

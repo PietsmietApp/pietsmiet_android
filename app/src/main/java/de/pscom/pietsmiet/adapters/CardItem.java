@@ -133,7 +133,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     boolean isVideoView() {
-        return (cardItemType & TYPE_IS_VIDEO) == TYPE_IS_VIDEO ;
+        return (cardItemType & TYPE_IS_VIDEO) == TYPE_IS_VIDEO;
     }
 
     @Override

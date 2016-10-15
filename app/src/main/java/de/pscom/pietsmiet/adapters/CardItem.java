@@ -11,11 +11,13 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 
+import de.pscom.pietsmiet.util.CardTypes;
 import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
 import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
 import de.pscom.pietsmiet.util.ColorUtils;
 
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardTypes.TYPE_IS_VIDEO;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_STREAM;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
@@ -131,9 +133,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     boolean isVideoView() {
-        return cardItemType == TYPE_VIDEO
-                || cardItemType == TYPE_STREAM
-                || cardItemType == TYPE_PIETCAST;
+        return (cardItemType & TYPE_IS_VIDEO) == TYPE_IS_VIDEO ;
     }
 
     @Override

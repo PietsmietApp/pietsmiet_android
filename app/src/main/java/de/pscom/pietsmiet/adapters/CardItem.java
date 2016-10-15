@@ -13,6 +13,7 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
 import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
+import de.pscom.pietsmiet.util.ColorUtils;
 
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
@@ -22,11 +23,11 @@ import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
 
 public class CardItem implements Comparable<CardItem>, Parcelable {
-    String description;
-    String title;
-    int cardItemType;
-    Drawable thumbnail;
-    Date datetime;
+    private String description;
+    private String title;
+    private int cardItemType;
+    private Drawable thumbnail;
+    private Date datetime;
 
 
     /**
@@ -64,7 +65,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     @Nullable
-    public Drawable getThumbnail() {
+    Drawable getThumbnail() {
         return this.thumbnail;
     }
 
@@ -72,7 +73,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    public int getCardItemType() {
+    int getCardItemType() {
         return cardItemType;
     }
 
@@ -80,7 +81,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.cardItemType = type;
     }
 
-    public Date getDatetime() {
+    Date getDatetime() {
         return datetime;
     }
 
@@ -88,7 +89,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.datetime = datetime;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
@@ -96,27 +97,25 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.description = description;
     }
 
-    public int getBackgroundColor() {
+    int getBackgroundColor() {
         String hexColor;
         switch (cardItemType) {
             case TYPE_VIDEO:
             case TYPE_STREAM:
-                hexColor = "#ef5350";
-                break;
-            case TYPE_PIETCAST:
-                hexColor = "#5c6bc0";
-                break;
-            case TYPE_FACEBOOK:
-                hexColor = "#ff7043";
-                break;
-            case TYPE_TWITTER:
-                hexColor = "#42a5f5";
+                hexColor = ColorUtils.Youtube;
                 break;
             case TYPE_UPLOAD_PLAN:
-                hexColor = "#26a69a";
+            case TYPE_PIETCAST:
+                hexColor = ColorUtils.PietSmiet;
+                break;
+            case TYPE_FACEBOOK:
+                hexColor = ColorUtils.Facebook;
+                break;
+            case TYPE_TWITTER:
+                hexColor = ColorUtils.Twitter;
                 break;
             default:
-                hexColor = "#bdbdbd";
+                hexColor = ColorUtils.Default;
                 break;
         }
         return Color.parseColor(hexColor);
@@ -161,7 +160,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
     }
 
     // "De-parcel object
-    public CardItem(Parcel in) {
+    private CardItem(Parcel in) {
         description = in.readString();
         title = in.readString();
         cardItemType = in.readInt();

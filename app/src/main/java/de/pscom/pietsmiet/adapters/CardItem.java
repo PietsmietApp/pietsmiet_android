@@ -16,13 +16,18 @@ import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
 import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
 import de.pscom.pietsmiet.util.ColorUtils;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_IS_VIDEO;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_STREAM;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardTypes.FACEBOOK;
+import static de.pscom.pietsmiet.util.CardTypes.PIETCAST;
+import static de.pscom.pietsmiet.util.CardTypes.STREAM;
+import static de.pscom.pietsmiet.util.CardTypes.TWITTER;
+import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.VIDEO;
+import static de.pscom.pietsmiet.util.CardTypes.VIDEO;
+import static de.pscom.pietsmiet.util.ColorUtils.Default;
+import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
+import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
+import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
+import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 
 public class CardItem implements Comparable<CardItem>, Parcelable {
     private String description;
@@ -99,25 +104,27 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.description = description;
     }
 
+    //UPPER_CASE: CardTypes constants
+    //CamelCase: ColorUtils constants
     int getBackgroundColor() {
         String hexColor;
         switch (cardItemType) {
-            case TYPE_VIDEO:
-            case TYPE_STREAM:
-                hexColor = ColorUtils.Youtube;
+            case VIDEO:
+            case STREAM:
+                hexColor = Youtube;
                 break;
-            case TYPE_UPLOAD_PLAN:
-            case TYPE_PIETCAST:
-                hexColor = ColorUtils.PietSmiet;
+            case UPLOAD_PLAN:
+            case PIETCAST:
+                hexColor = PietSmiet;
                 break;
-            case TYPE_FACEBOOK:
-                hexColor = ColorUtils.Facebook;
+            case FACEBOOK:
+                hexColor = Facebook;
                 break;
-            case TYPE_TWITTER:
-                hexColor = ColorUtils.Twitter;
+            case TWITTER:
+                hexColor = Twitter;
                 break;
             default:
-                hexColor = ColorUtils.Default;
+                hexColor = Default;
                 break;
         }
         return Color.parseColor(hexColor);
@@ -133,7 +140,9 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     boolean isVideoView() {
-        return (cardItemType & TYPE_IS_VIDEO) == TYPE_IS_VIDEO;
+        return cardItemType == VIDEO
+                || cardItemType == STREAM
+                || cardItemType == PIETCAST;
     }
 
     @Override

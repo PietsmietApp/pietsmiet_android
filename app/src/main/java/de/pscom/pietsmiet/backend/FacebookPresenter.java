@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.CardTypes;
 import de.pscom.pietsmiet.util.PsLog;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
@@ -20,7 +21,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardTypes.FACEBOOK;
 
 public class FacebookPresenter {
 
@@ -64,7 +65,7 @@ public class FacebookPresenter {
         if (view != null && post != null) {
             String title = post.getFrom().getName();
             Date time = post.getCreatedTime();
-            view.addNewCard(new CardItem(title, post.getMessage(), time, TYPE_FACEBOOK));
+            view.addNewCard(new CardItem(title, post.getMessage(), time, FACEBOOK));
         }
     }
 

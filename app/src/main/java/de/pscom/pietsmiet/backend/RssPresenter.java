@@ -21,13 +21,13 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
 
 public class RssPresenter {
     private static final int DEFAULT_MAX = 1;
     Context mContext;
-    static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
-    static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
+    private static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
+    private static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
 
     private MainActivity view;
     private String uploadplan;
@@ -42,7 +42,7 @@ public class RssPresenter {
      *
      * @param max Max URLs to parse, should be as low as possible
      */
-    public void parseUploadplan(int max) {
+    private void parseUploadplan(int max) {
         Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
@@ -77,7 +77,7 @@ public class RssPresenter {
 
     private void publish() {
         if (view != null && uploadplan != null) {
-            view.addNewCard(new CardItem("Uploadplan vom 21.10.", uploadplan, pubDate, TYPE_UPLOAD_PLAN));
+            view.addNewCard(new CardItem("Uploadplan vom 21.10.", uploadplan, pubDate, UPLOAD_PLAN));
         }
 
     }

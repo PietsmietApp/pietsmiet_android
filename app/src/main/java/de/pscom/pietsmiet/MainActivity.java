@@ -24,10 +24,10 @@ import de.pscom.pietsmiet.backend.RssPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_TWITTER;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardTypes.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardTypes.PIETCAST;
+import static de.pscom.pietsmiet.util.CardTypes.TWITTER;
+import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardTypes.VIDEO;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -58,20 +58,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png"),
-                    TYPE_PIETCAST));
+                    PIETCAST));
             cardItems.add(new CardItem("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    TYPE_VIDEO));
+                    VIDEO));
             cardItems.add(new CardItem("Uploadplan am 11.09.2016",
                     "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
                     new Date(),
-                    TYPE_UPLOAD_PLAN));
+                    UPLOAD_PLAN));
             cardItems.add(new CardItem("Dr.Jay auf Twitter",
                     "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
                     new Date(),
-                    TYPE_TWITTER));
+                    TWITTER));
 
             runOnUiThread(() -> {
                 for (CardItem cardItem : cardItems) addNewCard(cardItem);

@@ -28,7 +28,7 @@ public class CardItemManager {
     }
 
     /**
-     * Adds a card to the card list. If the card belongs to the current categorie / type, it'll be shown instant
+     * Adds a card to the card list. If the card belongs to the current category / type, it'll be shown instant
      *
      * @param cardItem Card Item
      */
@@ -37,8 +37,7 @@ public class CardItemManager {
         Collections.sort(allCards);
 
         //noinspection WrongConstant
-        if (cardItem.getCardItemType() == currentlyDisplayedType
-                || currentlyDisplayedType == DISPLAY_ALL) {
+        if (isAllowedType(cardItem)) {
             currentCards.add(cardItem);
             Collections.sort(currentCards);
             if (mView != null) mView.updateAdapter();
@@ -78,8 +77,11 @@ public class CardItemManager {
                 .subscribe(cards -> {
                     currentCards.clear();
                     currentCards.addAll(cards);
-                    if (mView != null) mView.updateAdapter();
-                });
+                    if (mView != null) {
+                        mView.updateAdapter();
+                        mView.scrollToTop();
+                    }
+                }, Throwable::printStackTrace);
     }
 
     /**

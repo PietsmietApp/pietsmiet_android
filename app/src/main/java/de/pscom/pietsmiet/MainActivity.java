@@ -34,6 +34,7 @@ import static de.pscom.pietsmiet.util.CardType.VIDEO;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
+    LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private CardItemManager cardManager;
 
@@ -95,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(cardManager.getAllCardItems(), this);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
 
@@ -106,6 +107,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void updateAdapter() {
         if (adapter != null) adapter.notifyDataSetChanged();
+    }
+
+    public void scrollToTop() {
+        if (layoutManager != null) layoutManager.scrollToPosition(0);
     }
 
     public void showError(String msg) {

@@ -4,7 +4,6 @@ import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.adapters.CardItem;
-import de.pscom.pietsmiet.util.CardType;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
@@ -20,6 +19,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
+import static de.pscom.pietsmiet.util.CardType.TWITTER;
+
 
 public class TwitterPresenter extends MainPresenter {
     //TODO: Store id!
@@ -29,7 +30,7 @@ public class TwitterPresenter extends MainPresenter {
     private static final int maxCount = 10;
 
     public TwitterPresenter() {
-        super(CardType.TYPE_TWITTER);
+        super(TWITTER);
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);

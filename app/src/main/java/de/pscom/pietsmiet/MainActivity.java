@@ -25,11 +25,11 @@ import de.pscom.pietsmiet.util.CardItemManager;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 
-import static de.pscom.pietsmiet.util.CardType.TYPE_DISPLAY_SOCIAL;
-import static de.pscom.pietsmiet.util.CardType.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.util.CardType.TYPE_TWITTER;
-import static de.pscom.pietsmiet.util.CardType.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardType.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_SOCIAL;
+import static de.pscom.pietsmiet.util.CardType.PIETCAST;
+import static de.pscom.pietsmiet.util.CardType.TWITTER;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardType.VIDEO;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -63,21 +63,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    TYPE_PIETCAST));
+                    PIETCAST));
             cardItems.add(new CardItem("TESTHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    TYPE_VIDEO));
+                    VIDEO));
             cardItems.add(new CardItem("TESTplan am 11.09.2016",
                     "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
                     new Date(),
-                    TYPE_UPLOAD_PLAN));
+                    UPLOAD_PLAN));
             cardItems.add(new CardItem("TESTJay auf Twitter",
                     "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    TYPE_TWITTER));
+                    TWITTER));
 
             runOnUiThread(() -> {
                 for (CardItem cardItem : cardItems) addNewCard(cardItem);
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardManager.addCard(item);
     }
 
-    public void updateAdapter(){
+    public void updateAdapter() {
         if (adapter != null) adapter.notifyDataSetChanged();
     }
 
@@ -116,13 +116,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_upload_plan:
-                cardManager.displayOnlyCardsFromType(TYPE_UPLOAD_PLAN);
+                cardManager.displayOnlyCardsFromType(UPLOAD_PLAN);
                 break;
             case R.id.nav_social_media:
-                cardManager.displayOnlyCardsFromType(TYPE_DISPLAY_SOCIAL);
+                cardManager.displayOnlyCardsFromType(DISPLAY_SOCIAL);
                 break;
             case R.id.nav_pietcast:
-                cardManager.displayOnlyCardsFromType(TYPE_PIETCAST);
+                cardManager.displayOnlyCardsFromType(PIETCAST);
                 break;
             case R.id.nav_home:
                 cardManager.displayAllCards();

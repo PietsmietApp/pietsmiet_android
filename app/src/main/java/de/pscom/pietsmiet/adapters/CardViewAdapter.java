@@ -23,12 +23,13 @@ import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static de.pscom.pietsmiet.util.CardType.TYPE_UPLOAD_PLAN;
+
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
-    public static final int LAYOUT_VIDEO = 0;
-    public static final int LAYOUT_SOCIAL = 1;
+    private static final int LAYOUT_VIDEO = 0;
+    private static final int LAYOUT_SOCIAL = 1;
 
     private List<CardItem> items;
     private Context context;
@@ -38,7 +39,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         this.context = context;
     }
 
-    public static class CardViewHolder extends RecyclerView.ViewHolder {
+    static class CardViewHolder extends RecyclerView.ViewHolder {
         CardView cv;
         TextView title;
         TextView description;
@@ -55,7 +56,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
     }
 
-    public static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
+    private static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
         RelativeLayout descriptionContainer;
         ImageView durationIcon;
         Button btnExpand;
@@ -104,7 +105,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             });
         }
 
-        if (currentItem.getCardItemType() == TYPE_UPLOAD_PLAN) {
+        if (currentItem.getCardItemType() == UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
         } else if (currentItem.getDatetime() == null) {
             PsLog.w("No Date specified");

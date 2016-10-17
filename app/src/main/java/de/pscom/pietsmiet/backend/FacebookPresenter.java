@@ -18,12 +18,12 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardType.TYPE_FACEBOOK;
+import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
 
-public class FacebookPresenter extends MainPresenter{
+public class FacebookPresenter extends MainPresenter {
 
     public FacebookPresenter() {
-        super(TYPE_FACEBOOK);
+        super(FACEBOOK);
         parsePosts();
     }
 

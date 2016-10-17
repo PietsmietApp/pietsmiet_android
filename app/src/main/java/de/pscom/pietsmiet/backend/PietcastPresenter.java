@@ -1,20 +1,20 @@
 package de.pscom.pietsmiet.backend;
 
 import de.pscom.pietsmiet.adapters.CardItem;
-import de.pscom.pietsmiet.util.CardType;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.util.CardType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
     private static String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
 
     public PietcastPresenter() {
-        super(CardType.TYPE_PIETCAST);
+        super(PIETCAST);
         parsePietcast();
     }
 

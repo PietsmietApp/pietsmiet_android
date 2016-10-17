@@ -14,19 +14,24 @@ import java.util.Date;
 import de.pscom.pietsmiet.util.CardType.ItemTypeNoThumbnail;
 import de.pscom.pietsmiet.util.CardType.ItemTypeThumbnail;
 
-import static de.pscom.pietsmiet.util.CardType.TYPE_FACEBOOK;
-import static de.pscom.pietsmiet.util.CardType.TYPE_PIETCAST;
-import static de.pscom.pietsmiet.util.CardType.TYPE_STREAM;
-import static de.pscom.pietsmiet.util.CardType.TYPE_TWITTER;
-import static de.pscom.pietsmiet.util.CardType.TYPE_UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardType.TYPE_VIDEO;
+import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
+import static de.pscom.pietsmiet.util.CardType.PIETCAST;
+import static de.pscom.pietsmiet.util.CardType.STREAM;
+import static de.pscom.pietsmiet.util.CardType.TWITTER;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardType.VIDEO;
+import static de.pscom.pietsmiet.util.ColorUtils.Default;
+import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
+import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
+import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
+import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 
 public class CardItem implements Comparable<CardItem>, Parcelable {
-    String description;
-    String title;
-    int cardItemType;
-    Drawable thumbnail;
-    Date datetime;
+    private String description;
+    private String title;
+    private int cardItemType;
+    private Drawable thumbnail;
+    private Date datetime;
 
     public CardItem() {
     }
@@ -66,7 +71,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     @Nullable
-    public Drawable getThumbnail() {
+    Drawable getThumbnail() {
         return this.thumbnail;
     }
 
@@ -82,7 +87,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.cardItemType = type;
     }
 
-    public Date getDatetime() {
+    Date getDatetime() {
         return datetime;
     }
 
@@ -90,7 +95,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.datetime = datetime;
     }
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
@@ -106,27 +111,27 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.title = title;
     }
 
-    public int getBackgroundColor() {
+    //UPPER_CASE: CardType constants
+    //CamelCase: ColorUtils constants
+    int getBackgroundColor() {
         String hexColor;
         switch (cardItemType) {
-            case TYPE_VIDEO:
-            case TYPE_STREAM:
-                hexColor = "#ef5350";
+            case VIDEO:
+            case STREAM:
+                hexColor = Youtube;
                 break;
-            case TYPE_PIETCAST:
-                hexColor = "#5c6bc0";
+            case UPLOAD_PLAN:
+            case PIETCAST:
+                hexColor = PietSmiet;
                 break;
-            case TYPE_FACEBOOK:
-                hexColor = "#ff7043";
+            case FACEBOOK:
+                hexColor = Facebook;
                 break;
-            case TYPE_TWITTER:
-                hexColor = "#42a5f5";
-                break;
-            case TYPE_UPLOAD_PLAN:
-                hexColor = "#26a69a";
+            case TWITTER:
+                hexColor = Twitter;
                 break;
             default:
-                hexColor = "#bdbdbd";
+                hexColor = Default;
                 break;
         }
         return Color.parseColor(hexColor);
@@ -134,9 +139,9 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
 
 
     boolean isVideoView() {
-        return cardItemType == TYPE_VIDEO
-                || cardItemType == TYPE_STREAM
-                || cardItemType == TYPE_PIETCAST;
+        return cardItemType == VIDEO
+                || cardItemType == STREAM
+                || cardItemType == PIETCAST;
     }
 
     @Override
@@ -163,7 +168,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
     }
 
     // "De-parcel object
-    public CardItem(Parcel in) {
+    private CardItem(Parcel in) {
         description = in.readString();
         title = in.readString();
         cardItemType = in.readInt();

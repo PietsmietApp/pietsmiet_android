@@ -9,14 +9,19 @@ import de.pscom.pietsmiet.adapters.CardItem;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.CardType.*;
+import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
+import static de.pscom.pietsmiet.util.CardType.TWITTER;
+
 
 public class CardItemManager {
+    public static final int DISPLAY_ALL = 10;
+    public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
+
     private List<CardItem> currentCards = new ArrayList<>();
     private List<CardItem> allCards = new ArrayList<>();
     private MainActivity mView;
-    @ItemTypeDrawer
-    private int currentlyDisplayedType = TYPE_DISPLAY_ALL;
+    @CardType.ItemTypeDrawer
+    private int currentlyDisplayedType = DISPLAY_ALL;
 
     public CardItemManager(MainActivity view) {
         mView = view;
@@ -24,6 +29,7 @@ public class CardItemManager {
 
     /**
      * Adds a card to the card list. If the card belongs to the current categorie / type, it'll be shown instant
+     *
      * @param cardItem Card Item
      */
     public void addCard(CardItem cardItem) {
@@ -32,7 +38,7 @@ public class CardItemManager {
 
         //noinspection WrongConstant
         if (cardItem.getCardItemType() == currentlyDisplayedType
-                || currentlyDisplayedType == TYPE_DISPLAY_ALL) {
+                || currentlyDisplayedType == DISPLAY_ALL) {
             currentCards.add(cardItem);
             Collections.sort(currentCards);
             if (mView != null) mView.updateAdapter();
@@ -50,7 +56,7 @@ public class CardItemManager {
      * Switches back to the "all" category. Shows all cards, independent of their category
      */
     public void displayAllCards() {
-        currentlyDisplayedType = TYPE_DISPLAY_ALL;
+        currentlyDisplayedType = DISPLAY_ALL;
         currentCards.clear();
         currentCards.addAll(allCards);
         if (mView != null) mView.updateAdapter();
@@ -58,9 +64,10 @@ public class CardItemManager {
 
     /**
      * Show only cards that belong to a certain category / type
+     *
      * @param cardItemType Type that the cards should belong to
      */
-    public void displayOnlyCardsFromType(@ItemTypeDrawer int cardItemType) {
+    public void displayOnlyCardsFromType(@CardType.ItemTypeDrawer int cardItemType) {
         currentlyDisplayedType = cardItemType;
         Observable.just(allCards)
                 .flatMap(Observable::from)
@@ -81,10 +88,10 @@ public class CardItemManager {
      */
     private boolean isAllowedType(CardItem cardItem) {
         int cardItemType = cardItem.getCardItemType();
-        if (currentlyDisplayedType == TYPE_DISPLAY_ALL) return true;
-        else if (currentlyDisplayedType == TYPE_DISPLAY_SOCIAL) {
-            if (cardItemType == TYPE_TWITTER
-                    || cardItemType == TYPE_FACEBOOK) {
+        if (currentlyDisplayedType == DISPLAY_ALL) return true;
+        else if (currentlyDisplayedType == DISPLAY_SOCIAL) {
+            if (cardItemType == TWITTER
+                    || cardItemType == FACEBOOK) {
                 return true;
             }
         } else {

@@ -6,7 +6,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardType.TYPE_UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
 
@@ -16,7 +16,7 @@ public class UploadplanPresenter extends MainPresenter {
 
 
     public UploadplanPresenter() {
-        super(TYPE_UPLOAD_PLAN);
+        super(UPLOAD_PLAN);
 
         parseUploadplan(DEFAULT_MAX);
     }

@@ -1,18 +1,29 @@
 package de.pscom.pietsmiet.generic;
 
-import android.graphics.drawable.Drawable;
-
 import java.util.Date;
 
+import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.Converter;
+import de.pscom.pietsmiet.util.DrawableFetcher;
+
+
 /**
- * Created by User on 17.10.2016.
+ * Represents a post with a thumbnail
  */
-
 public class ThumbnailPost extends Post {
-    private final Drawable thumbnail;
+    private final String thumbnail;
 
-    public ThumbnailPost(String title, String description, Date date, Drawable thumbnail) {
-        super(title, description, date);
+    public ThumbnailPost(String title, String description, String type, Date date, String thumbnail) {
+        super(title, description, type, date);
         this.thumbnail = thumbnail;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    @Override
+    public CardItem getCardItem() {
+        return new CardItem(title, description, date, DrawableFetcher.getDrawableFromUrl(thumbnail), Converter.convertType(type));
     }
 }

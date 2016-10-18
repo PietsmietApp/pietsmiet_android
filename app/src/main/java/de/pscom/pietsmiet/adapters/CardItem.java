@@ -92,7 +92,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
     }
 
     @Nullable
-    Drawable getThumbnail() {
+    public Drawable getThumbnail() {
         return this.thumbnail;
     }
 
@@ -100,7 +100,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    int getCardItemType() {
+    public int getCardItemType() {
         return cardItemType;
     }
 
@@ -108,7 +108,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.cardItemType = type;
     }
 
-    Date getDatetime() {
+    public Date getDatetime() {
         return datetime;
     }
 
@@ -116,7 +116,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.datetime = datetime;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 

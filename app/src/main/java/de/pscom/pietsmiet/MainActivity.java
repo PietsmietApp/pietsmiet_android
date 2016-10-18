@@ -131,7 +131,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void addNewCard(CardItem item) {
-        cardItems.add(item);
+        boolean add = true;
+        for (CardItem card : cardItems) {
+            if (card.getTitle().equals(item.getTitle()) || card.getDescription().equals(item.getDescription())) {
+                add = false;
+            }
+        }
+
+        if (add) {
+            cardItems.add(item);
+        }
         Collections.sort(cardItems);
         if (adapter != null) adapter.notifyDataSetChanged();
     }

@@ -104,7 +104,7 @@ public class PostCache {
      * @return
      */
     private static String unionize(String input) {
-        return input.replace("&", "&amp;").replace("\r", "&cr;").replace("\n", "&lf;");
+        return input == null ? input : input.replace("&", "&amp;").replace("\r", "&cr;").replace("\n", "&lf;");
     }
 
     /**
@@ -114,7 +114,7 @@ public class PostCache {
      * @return
      */
     private static String normalize(String input) {
-        return input.replace("&lf;", "\n").replace("&cr;", "\r").replace("&amp;", "&");
+        return input == null ? input : input.replace("&lf;", "\n").replace("&cr;", "\r").replace("&amp;", "&");
     }
 
     private static Drawable drawableFromFile(String name) {

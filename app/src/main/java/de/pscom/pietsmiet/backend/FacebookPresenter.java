@@ -2,7 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import java.util.List;
 
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
@@ -23,7 +23,7 @@ import rx.schedulers.Schedulers;
 import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
 
 public class FacebookPresenter extends MainPresenter {
-    Facebook mFacebook;
+    private Facebook mFacebook;
 
     public FacebookPresenter() {
         super(FACEBOOK);
@@ -66,11 +66,11 @@ public class FacebookPresenter extends MainPresenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(drawable -> {
-                            cardItem = new CardItem();
-                            cardItem.setThumbnail(drawable);
-                            cardItem.setTitle(post.getFrom().getName());
-                            cardItem.setDescription(post.getMessage());
-                            cardItem.setDatetime(post.getCreatedTime());
+                            this.post = new Post();
+                            this.post.setThumbnail(drawable);
+                            this.post.setTitle(post.getFrom().getName());
+                            this.post.setDescription(post.getMessage());
+                            this.post.setDatetime(post.getCreatedTime());
                             publish();
                         }), e -> PsLog.e(e.toString()), () -> PsLog.v("facebook posts geladen"));
     }

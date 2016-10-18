@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -17,8 +17,8 @@ public class CardItemManager {
     public static final int DISPLAY_ALL = 10;
     public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
 
-    private List<CardItem> currentCards = new ArrayList<>();
-    private List<CardItem> allCards = new ArrayList<>();
+    private List<Post> currentCards = new ArrayList<>();
+    private List<Post> allCards = new ArrayList<>();
     private MainActivity mView;
     @CardType.ItemTypeDrawer
     private int currentlyDisplayedType = DISPLAY_ALL;
@@ -30,9 +30,9 @@ public class CardItemManager {
     /**
      * Adds a card to the card list. If the card belongs to the current category / type, it'll be shown instant
      *
-     * @param cardItem Card Item
+     * @param post Card Item
      */
-    public void addCard(CardItem cardItem) {
+    public void addCard(Post post) {
 /*
         Observable.just(getAllCardItems())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -57,22 +57,22 @@ public class CardItemManager {
         //todo: do this iteration asynchrounous! (rxjava?) like above, but better & working
         boolean add = true;
         try {
-            for (CardItem card : getAllCardItems()) {
-                if (card.getTitle().equals(cardItem.getTitle()) && card.getDescription().equals(cardItem.getDescription())) {
+            for (Post card : getAllCardItems()) {
+                if (card.getTitle().equals(post.getTitle()) && card.getDescription().equals(post.getDescription())) {
                     add = false;
                 }
             }
         } catch (Exception e){
-            e.printStackTrace();
+            PsLog.i(e.getMessage());
         }
 
 
         if (add) {
-            allCards.add(cardItem);
+            allCards.add(post);
             Collections.sort(allCards);
 
-            if (isAllowedType(cardItem)) {
-                currentCards.add(cardItem);
+            if (isAllowedType(post)) {
+                currentCards.add(post);
                 Collections.sort(currentCards);
                 if (mView != null) mView.updateAdapter();
             }
@@ -84,7 +84,7 @@ public class CardItemManager {
     /**
      * @return All fetched cards, whether they're currently shown or not
      */
-    public List<CardItem> getAllCardItems() {
+    public List<Post> getAllCardItems() {
         return currentCards;
     }
 
@@ -122,11 +122,11 @@ public class CardItemManager {
     }
 
     /**
-     * @param cardItem Card item
+     * @param post Card item
      * @return If the specified card item belongs to the currently shown category / type or not
      */
-    private boolean isAllowedType(CardItem cardItem) {
-        int cardItemType = cardItem.getCardItemType();
+    private boolean isAllowedType(Post post) {
+        int cardItemType = post.getCardItemType();
         if (currentlyDisplayedType == DISPLAY_ALL) return true;
         else if (currentlyDisplayedType == DISPLAY_SOCIAL) {
             if (cardItemType == TWITTER

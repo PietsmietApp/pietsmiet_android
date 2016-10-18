@@ -1,7 +1,7 @@
 package de.pscom.pietsmiet.backend;
 
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 
 import static de.pscom.pietsmiet.util.CardType.ItemTypeAll;
 
@@ -9,7 +9,7 @@ public class MainPresenter {
     @ItemTypeAll
     private int cardItemType;
     private MainActivity view;
-    CardItem cardItem;
+    Post post;
 
     MainPresenter(@ItemTypeAll int cardItemType) {
         this.cardItemType = cardItemType;
@@ -20,9 +20,9 @@ public class MainPresenter {
      */
     void publish() {
         if (view != null) {
-            if (cardItem != null) {
-                cardItem.setCardItemType(cardItemType);
-                view.addNewCard(cardItem);
+            if (post != null) {
+                post.setCardItemType(cardItemType);
+                view.addNewCard(post);
             } else {
                 view.showError("Typ" + Integer.toString(cardItemType) + " konnte nicht geladen werden :(");
             }

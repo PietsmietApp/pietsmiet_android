@@ -1,6 +1,6 @@
 package de.pscom.pietsmiet.backend;
 
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
@@ -31,11 +31,11 @@ public class PietcastPresenter extends MainPresenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(drawable -> {
-                            cardItem = new CardItem();
-                            cardItem.setDescription(element.getDescription());
-                            cardItem.setTitle(element.getTitle());
-                            cardItem.setDatetime(element.getPubDate());
-                            cardItem.setThumbnail(drawable);
+                            post = new Post();
+                            post.setDescription(element.getDescription());
+                            post.setTitle(element.getTitle());
+                            post.setDatetime(element.getPubDate());
+                            post.setThumbnail(drawable);
                             publish();
                         }), Throwable::printStackTrace, () -> PsLog.v("Pietcasts geladen"));
     }

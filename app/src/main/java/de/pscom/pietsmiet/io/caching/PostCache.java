@@ -6,18 +6,17 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.generic.ThumbnailPost;
-import de.pscom.pietsmiet.generic.VideoPost;
 import de.pscom.pietsmiet.io.Managers;
+import de.pscom.pietsmiet.util.PsLog;
 
 /**
  * Created by User on 17.10.2016.
@@ -31,7 +30,7 @@ public class PostCache {
     /**
      * Loads all posts from the cache (/data/data/de.pscom.pietsmiet/cache/posts.txt)
      *
-     * @return
+     * @return the loaded posts
      */
     public static List<Post> getPosts() {
         List<Post> posts = new ArrayList<>();
@@ -42,23 +41,20 @@ public class PostCache {
         //Do not try this at home
         //Crashes on malformed but not empty files
         String[] lines = Managers.getCacheManager().readLines("posts.txt");
-        if (lines == null) {
-            return null;
-        }
 
-        for (int i = 0; i < lines.length; i++) {
+        for (int i = 0; i < (lines != null ? lines.length : 0); i++) {
             try {
                 switch (lines[i]) {
                     case "video":
-                        posts.add(new VideoPost(normalize(lines[++i]), normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i])), drawableFromFile(normalize(lines[++i])), Integer.parseInt(normalize(lines[++i]))));
+                        posts.add(new Post(normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i])), drawableFromFile(normalize(lines[++i])), Integer.parseInt(normalize(lines[++i])), Integer.parseInt(normalize(lines[++i]))));
                         i++;
                         break;
                     case "thumbnail":
-                        posts.add(new ThumbnailPost(normalize(lines[++i]), normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i])), drawableFromFile(normalize(lines[++i]))));
+                        posts.add(new Post(normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i])), drawableFromFile(normalize(lines[++i])), Integer.parseInt(normalize(lines[++i]))));
                         i++;
                         break;
                     default:
-                        posts.add(new Post(normalize(lines[++i]), normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i]))));
+                        posts.add(new Post(normalize(lines[++i]), normalize(lines[++i]), simpleDateFormat.parse(normalize(lines[++i])), Integer.parseInt(normalize(lines[++i]))));
                         ++i;
                         break;
                 }
@@ -73,51 +69,55 @@ public class PostCache {
     /**
      * Saves all the posts to the cache (/data/data/de.pscom.pietsmiet/cache/posts.txt)
      *
-     * @param posts
+     * @param posts The posts to cache
      */
     public static void setPosts(List<Post> posts) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
 
         for (Post post : posts) {
-            stringBuilder.append(post instanceof VideoPost ? "video" : post instanceof ThumbnailPost ? "thumbnail" : "post").append(lineSeparator);
+            stringBuilder.append(post.isVideoView() ? "video" : post.getThumbnail() != null ? "thumbnail" : "post").append(lineSeparator);
             stringBuilder.append(unionize(post.getTitle())).append(lineSeparator);
             stringBuilder.append(unionize(post.getDescription())).append(lineSeparator);
-            stringBuilder.append(unionize(post.getType())).append(lineSeparator);
             stringBuilder.append(unionize(simpleDateFormat.format(post.getDate()))).append(lineSeparator);
 
-            if (post instanceof ThumbnailPost) {
-                ThumbnailPost thumbnailPost = (ThumbnailPost) post;
-                stringBuilder.append(unionize(drawableToFile(thumbnailPost.getThumbnail()))).append(lineSeparator);
+            if (post.getThumbnail() != null) {
+                stringBuilder.append(unionize(drawableToFile(post.getThumbnail()))).append(lineSeparator);
             }
-            if (post instanceof VideoPost) {
-                VideoPost videoPost = (VideoPost) post;
-                stringBuilder.append(unionize(String.valueOf(videoPost.getDurationInSeconds()))).append(lineSeparator);
+            if (post.isVideoView()) {
+                stringBuilder.append(unionize(String.valueOf(post.getDuration()))).append(lineSeparator);
             }
+
+            stringBuilder.append(unionize(Integer.toString(post.getCardItemType()))).append(lineSeparator);
+
             stringBuilder.append(lineSeparator);
         }
-        Managers.getCacheManager().writeText("posts.txt", stringBuilder.toString());
+        try {
+            Managers.getCacheManager().writeText("posts.txt", stringBuilder.toString());
+        } catch (Exception e) {
+            PsLog.w("Couldn't write file: " + e.getMessage());
+        }
     }
 
     /**
      * Forces all text on a single line
      *
-     * @param input
-     * @return
+     * @param input Text to put on a line
+     * @return Text on a single ine
      */
     private static String unionize(String input) {
-        return input == null ? input : input.replace("&", "&amp;").replace("\r", "&cr;").replace("\n", "&lf;");
+        return input == null ? null : input.replace("&", "&amp;").replace("\r", "&cr;").replace("\n", "&lf;");
     }
 
     /**
      * Split text on multiple lines
      *
-     * @param input
-     * @return
+     * @param input Text to split
+     * @return Splitted text
      */
     private static String normalize(String input) {
-        return input == null ? input : input.replace("&lf;", "\n").replace("&cr;", "\r").replace("&amp;", "&");
+        return input == null ? null : input.replace("&lf;", "\n").replace("&cr;", "\r").replace("&amp;", "&");
     }
 
     private static Drawable drawableFromFile(String name) {
@@ -144,8 +144,6 @@ public class PostCache {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
             fileOutputStream.flush();
             fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

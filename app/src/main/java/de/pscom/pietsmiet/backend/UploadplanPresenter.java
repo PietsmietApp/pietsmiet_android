@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -12,11 +13,16 @@ import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
 
 public class UploadplanPresenter extends MainPresenter {
     private static final int DEFAULT_MAX = 1;
-    private static String uploadplanUrl = "http://pietsmiet.de/news?format=feed&type=rss";
+    private static String uploadplanUrl;
 
 
     public UploadplanPresenter() {
         super(UPLOAD_PLAN);
+        if (SecretConstants.rssUrl == null) {
+            PsLog.w("No rssUrl specified");
+            return;
+        }
+        uploadplanUrl = SecretConstants.rssUrl;
 
         parseUploadplan(DEFAULT_MAX);
     }
@@ -26,7 +32,7 @@ public class UploadplanPresenter extends MainPresenter {
      *
      * @param max Max URLs to parse, should be as low as possible
      */
-    public void parseUploadplan(int max) {
+    private void parseUploadplan(int max) {
         Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()

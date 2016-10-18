@@ -33,12 +33,39 @@ public class CardItemManager {
      * @param cardItem Card Item
      */
     public void addCard(CardItem cardItem) {
+/*
+        Observable.just(getAllCardItems())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(Observable::from)
+                .filter(card -> !card.getTitle().equals(cardItem.getTitle()) || !card.getDescription().equals(cardItem.getDescription()))
+                .doOnNext(card -> {
+                    if (isAllowedType(cardItem)) {
+                        currentCards.add(cardItem);
+                        Collections.sort(currentCards);
+                        if (mView != null) {
+                            mView.updateAdapter();
+                        }
+                    }
+                })
+                .toSortedList()
+                .subscribe(list -> {
+                    allCards.clear();
+                    allCards.addAll(list);
+                });
+        */
+
+        //todo: do this iteration asynchrounous! (rxjava?) like above, but better & working
         boolean add = true;
-        for (CardItem card : getAllCardItems()) {
-            if (card.getTitle().equals(cardItem.getTitle()) || card.getDescription().equals(cardItem.getDescription())) {
-                add = false;
+        try {
+            for (CardItem card : getAllCardItems()) {
+                if (card.getTitle().equals(cardItem.getTitle()) && card.getDescription().equals(cardItem.getDescription())) {
+                    add = false;
+                }
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
 
         if (add) {
             allCards.add(cardItem);
@@ -46,6 +73,7 @@ public class CardItemManager {
 
             if (isAllowedType(cardItem)) {
                 currentCards.add(cardItem);
+                Collections.sort(currentCards);
                 if (mView != null) mView.updateAdapter();
             }
         }

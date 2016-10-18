@@ -25,6 +25,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.io.caching.PostCache;
 import de.pscom.pietsmiet.util.CardItemManager;
+import de.pscom.pietsmiet.util.SecretConstants;
 
 import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_SOCIAL;
 import static de.pscom.pietsmiet.util.CardType.PIETCAST;
@@ -122,10 +123,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }).start();*/
 
         new Thread(() -> {
-            for (Post post : PostCache.getPosts()) addNewCard(post.getCardItem());
+            try {
+                for (Post post : PostCache.getPosts()) addNewCard(post.getCardItem());
+            } catch(Exception e){
+                e.printStackTrace();
+            }
         }).start();
 
         setupRecyclerView();
+
+        new SecretConstants(this);
 
         new TwitterPresenter().onTakeView(this);
         new UploadplanPresenter().onTakeView(this);
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void addNewCard(CardItem item) {
-        cardManager.addCard(item);
+        if(cardManager != null) cardManager.addCard(item);
     }
 
     public void updateAdapter() {

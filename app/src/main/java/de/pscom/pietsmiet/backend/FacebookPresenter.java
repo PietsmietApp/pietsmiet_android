@@ -6,6 +6,7 @@ import de.pscom.pietsmiet.adapters.CardItem;
 
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SecretConstants;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -22,9 +23,19 @@ import rx.schedulers.Schedulers;
 import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
 
 public class FacebookPresenter extends MainPresenter {
+    Facebook mFacebook;
 
     public FacebookPresenter() {
         super(FACEBOOK);
+        if (SecretConstants.facebookToken == null || SecretConstants.twitterSecret == null) {
+            PsLog.w("No twitter secret specified");
+            return;
+        }
+        PsLog.v(SecretConstants.facebookToken);
+        mFacebook = new FacebookFactory().getInstance();
+        mFacebook.setOAuthAppId("664158170415954", SecretConstants.facebookSecret);
+        //facebook.setOAuthPermissions("public_profile");
+        mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
         parsePosts();
     }
 
@@ -69,11 +80,6 @@ public class FacebookPresenter extends MainPresenter {
      */
     private List<BatchResponse> loadPosts() {
         try {
-            Facebook facebook = new FacebookFactory().getInstance();
-            facebook.setOAuthAppId("664158170415954", "48b0d6be3acddd1a9959943b76acce31");
-            facebook.setOAuthPermissions("public_profile");
-            facebook.setOAuthAccessToken(new AccessToken("664158170415954|eLOYv9Ms5CriMN8yB0s3vJ6vZZ4", null));
-
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
             batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=5&fields=from,created_time,message,picture"));
@@ -86,7 +92,7 @@ public class FacebookPresenter extends MainPresenter {
             //Brammen
             batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=5&fields=from,created_time,message,picture"));
 
-            return facebook.executeBatch(batch);
+            return mFacebook.executeBatch(batch);
         } catch (Exception e) {
             e.printStackTrace();
         }

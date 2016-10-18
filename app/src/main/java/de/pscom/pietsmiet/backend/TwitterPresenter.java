@@ -6,6 +6,7 @@ import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -30,12 +31,16 @@ public class TwitterPresenter extends MainPresenter {
 
     public TwitterPresenter() {
         super(TWITTER);
+        if (SecretConstants.twitterSecret == null) {
+            PsLog.w("No twitter secret specified");
+            return;
+        }
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
         TwitterFactory tf = new TwitterFactory(builder.build());
         twitterInstance = tf.getInstance();
-        twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", "uDRVzqrNQm4zAjjVnix7w2KglZe0A7K95iCoJNPqXnbe2YAFdH");
+        twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
 
         parseTweets();
     }
@@ -62,6 +67,7 @@ public class TwitterPresenter extends MainPresenter {
 
     /**
      * Fetch a list of tweets
+     *
      * @param count Max count of tweets
      * @return List of Tweets
      */
@@ -79,7 +85,7 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     /**
-     * @param count Max count of tweets to fetch
+     * @param count   Max count of tweets to fetch
      * @param sinceId Allows to specifies since which tweet to fetch
      * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
      */

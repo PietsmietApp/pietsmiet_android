@@ -11,14 +11,14 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 
-import de.pscom.pietsmiet.util.CardType;
+import de.pscom.pietsmiet.util.PostType;
 
-import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
-import static de.pscom.pietsmiet.util.CardType.PIETCAST;
-import static de.pscom.pietsmiet.util.CardType.STREAM;
-import static de.pscom.pietsmiet.util.CardType.TWITTER;
-import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.STREAM;
+import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
 import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
@@ -28,7 +28,7 @@ import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 public class Post implements Comparable<Post>, Parcelable {
     private String description;
     private String title;
-    private int cardItemType;
+    private int postType;
     @Nullable
     private Drawable thumbnail;
     private Date datetime;
@@ -38,55 +38,55 @@ public class Post implements Comparable<Post>, Parcelable {
     }
 
     /**
-     * Creates a new card item
+     * Creates a new post item
      *
-     * @param title        Title of the card
-     * @param description  Description or message of the card
-     * @param datetime     Time of the card
-     * @param cardItemType Type of the card
+     * @param title        Title of the post
+     * @param description  Description or message of the post
+     * @param datetime     Time of the post
+     * @param postType Type of the post
      */
 
-    public Post(String title, String description, Date datetime, @CardType.ItemTypeNoThumbnail int cardItemType) {
+    public Post(String title, String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
-        this.cardItemType = cardItemType;
+        this.postType = postType;
     }
 
 
     /**
-     * Creates a new card item with a thumbnail
+     * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the card
-     * @param description  Description or message of the card
-     * @param datetime     Time of the card
-     * @param cardItemType Type of the card
+     * @param title        Title of the post
+     * @param description  Description or message of the post
+     * @param datetime     Time of the post
+     * @param postType Type of the post
      * @param thumbnail    Thumbnail image
      */
-    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, @CardType.ItemTypeThumbnail int cardItemType) {
+    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
         this.thumbnail = thumbnail;
-        this.cardItemType = cardItemType;
+        this.postType = postType;
     }
 
     /**
-     * Creates a new card item with a thumbnail
+     * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the card
-     * @param description  Description or message of the card
-     * @param datetime     Time of the card
-     * @param cardItemType Type of the card
+     * @param title        Title of the post
+     * @param description  Description or message of the post
+     * @param datetime     Time of the post
+     * @param postType Type of the post
      * @param duration     Duration of the video / pietcast
      * @param thumbnail    Thumbnail image
      */
-    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, int duration, @CardType.ItemTypeThumbnail int cardItemType) {
+    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
         this.thumbnail = thumbnail;
-        this.cardItemType = cardItemType;
+        this.postType = postType;
         this.duration = duration;
     }
 
@@ -99,12 +99,12 @@ public class Post implements Comparable<Post>, Parcelable {
         this.thumbnail = thumbnail;
     }
 
-    public int getCardItemType() {
-        return cardItemType;
+    public int getPostType() {
+        return postType;
     }
 
-    public void setCardItemType(int type) {
-        this.cardItemType = type;
+    public void setPostType(int type) {
+        this.postType = type;
     }
 
     public Date getDate() {
@@ -140,11 +140,11 @@ public class Post implements Comparable<Post>, Parcelable {
     }
 
 
-    //UPPER_CASE: CardType constants
+    //UPPER_CASE: PostType constants
     //CamelCase: ColorUtils constants
     public int getBackgroundColor() {
         String hexColor;
-        switch (cardItemType) {
+        switch (postType) {
             case VIDEO:
             case STREAM:
                 hexColor = Youtube;
@@ -167,9 +167,9 @@ public class Post implements Comparable<Post>, Parcelable {
     }
 
     public boolean isVideoView() {
-        return cardItemType == VIDEO
-                || cardItemType == STREAM
-                || cardItemType == PIETCAST;
+        return postType == VIDEO
+                || postType == STREAM
+                || postType == PIETCAST;
     }
 
     @Override
@@ -190,7 +190,7 @@ public class Post implements Comparable<Post>, Parcelable {
 
         dest.writeString(description);
         dest.writeString(title);
-        dest.writeInt(cardItemType);
+        dest.writeInt(postType);
         dest.writeParcelable(bitmap, flags);
         dest.writeLong(datetime.getTime());
     }
@@ -199,7 +199,7 @@ public class Post implements Comparable<Post>, Parcelable {
     private Post(Parcel in) {
         description = in.readString();
         title = in.readString();
-        cardItemType = in.readInt();
+        postType = in.readInt();
         Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
         //noinspection deprecation
         thumbnail = new BitmapDrawable(bitmap);

@@ -7,7 +7,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
 

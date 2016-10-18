@@ -7,7 +7,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {

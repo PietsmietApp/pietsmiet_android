@@ -1,6 +1,6 @@
 package de.pscom.pietsmiet.backend;
 
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
@@ -39,9 +39,9 @@ public class UploadplanPresenter extends MainPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
                 .doOnNext(element -> {
-                    cardItem = new CardItem();
-                    cardItem.setDatetime(element.getPubDate());
-                    cardItem.setTitle(element.getTitle());
+                    post = new Post();
+                    post.setDatetime(element.getPubDate());
+                    post.setTitle(element.getTitle());
                 })
                 .map(element -> element.getLink().toString())
                 .take(max)
@@ -51,7 +51,7 @@ public class UploadplanPresenter extends MainPresenter {
                         .observeOn(AndroidSchedulers.mainThread()))
                 .filter(content -> content != null)
                 .subscribe(uploadplan -> {
-                    cardItem.setDescription(uploadplan);
+                    post.setDescription(uploadplan);
                     publish();
                 }, Throwable::printStackTrace, () -> PsLog.v("Uploadplan geladen"));
     }

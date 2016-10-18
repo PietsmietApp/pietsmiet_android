@@ -3,7 +3,7 @@ package de.pscom.pietsmiet.backend;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
-import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -56,11 +56,11 @@ public class TwitterPresenter extends MainPresenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(drawable -> {
-                            cardItem = new CardItem();
-                            cardItem.setThumbnail(drawable);
-                            cardItem.setTitle(getDisplayName(tweet.getUser()));
-                            cardItem.setDescription(tweet.getText());
-                            cardItem.setDatetime(tweet.getCreatedAt());
+                            post = new Post();
+                            post.setThumbnail(drawable);
+                            post.setTitle(getDisplayName(tweet.getUser()));
+                            post.setDescription(tweet.getText());
+                            post.setDatetime(tweet.getCreatedAt());
                             publish();
                         }), Throwable::printStackTrace, () -> PsLog.v("Tweets geladen"));
     }

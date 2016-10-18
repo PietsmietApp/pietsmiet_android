@@ -1,12 +1,12 @@
 package de.pscom.pietsmiet.io;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,15 +48,15 @@ public abstract class IoManager {
             while ((line = bufferedReader.readLine()) != null)
                 sb.append(line);
             return sb.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            try {
-                bufferedReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
@@ -68,6 +68,7 @@ public abstract class IoManager {
      * @param path
      * @return
      */
+    @Nullable
     public String[] readLines(String path) {
         BufferedReader bufferedReader = null;
         try {
@@ -75,12 +76,10 @@ public abstract class IoManager {
                 return null;
             bufferedReader = new BufferedReader(new FileReader(getActualFile(path)));
             List<String> lines = new ArrayList<>();
-            String line = null;
+            String line;
             while ((line = bufferedReader.readLine()) != null)
                 lines.add(line);
             return lines.toArray(new String[]{});
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -97,22 +96,26 @@ public abstract class IoManager {
     /**
      * Write all text to a file
      *
-     * @param path
-     * @param content
+     * @param path    Path to store the file to
+     * @param content Content of the file
      */
     public void writeText(String path, String content) {
         BufferedWriter bufferedWriter = null;
         try {
-            if (!getActualFile(path).exists())
+            if (!getActualFile(path).exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 getActualFile(path).createNewFile();
+            }
             bufferedWriter = new BufferedWriter(new FileWriter(getActualFile(path)));
             bufferedWriter.write(content);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                bufferedWriter.flush();
-                bufferedWriter.close();
+                if (bufferedWriter != null) {
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -138,18 +141,20 @@ public abstract class IoManager {
     public void appendText(String path, String content) {
         BufferedWriter bufferedWriter = null;
         try {
-            if (!getActualFile(path).exists())
+            if (!getActualFile(path).exists()) {
+                //noinspection ResultOfMethodCallIgnored
                 getActualFile(path).createNewFile();
+            }
             bufferedWriter = new BufferedWriter(new FileWriter(getActualFile(path), true));
             bufferedWriter.write(content);
-            bufferedWriter.flush();
-            bufferedWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                bufferedWriter.flush();
-                bufferedWriter.close();
+                if (bufferedWriter != null) {
+                    bufferedWriter.flush();
+                    bufferedWriter.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

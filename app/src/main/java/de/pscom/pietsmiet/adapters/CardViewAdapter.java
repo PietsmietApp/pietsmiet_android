@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
@@ -30,10 +31,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     private static final int LAYOUT_VIDEO = 0;
     private static final int LAYOUT_SOCIAL = 1;
 
-    private List<CardItem> items;
+    private List<Post> items;
     private Context context;
 
-    public CardViewAdapter(List<CardItem> items, Context context) {
+    public CardViewAdapter(List<Post> items, Context context) {
         this.items = items;
         this.context = context;
     }
@@ -85,7 +86,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
     @Override
     public void onBindViewHolder(CardViewAdapter.CardViewHolder holder, int position) {
-        CardItem currentItem = items.get(position);
+        Post currentItem = items.get(position);
 
         if (holder.getItemViewType() == LAYOUT_VIDEO) {
             VideoCardViewHolder videoHolder = (VideoCardViewHolder) holder;
@@ -106,12 +107,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         if (currentItem.getCardItemType() == UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
-        } else if (currentItem.getDatetime() == null) {
+        } else if (currentItem.getDate() == null) {
             PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
         } else {
             SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN);
-            holder.timedate.setText(formatter.format(currentItem.getDatetime()) + " Uhr");
+            holder.timedate.setText(formatter.format(currentItem.getDate()) + " Uhr");
         }
 
         Drawable thumbnail = currentItem.getThumbnail();

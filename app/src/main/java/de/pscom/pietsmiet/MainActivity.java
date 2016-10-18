@@ -12,10 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
@@ -124,8 +120,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new Thread(() -> {
             try {
-                for (Post post : PostCache.getPosts()) addNewCard(post.getCardItem());
-            } catch(Exception e){
+                //noinspection Convert2streamapi
+                for (Post post : PostCache.getPosts()) addNewCard(post);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
@@ -148,8 +145,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
     }
 
-    public void addNewCard(CardItem item) {
-        if(cardManager != null) cardManager.addCard(item);
+    public void addNewCard(Post item) {
+        if (cardManager != null) cardManager.addCard(item);
     }
 
     public void updateAdapter() {
@@ -193,19 +190,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         if (cardManager != null) {
-            List<Post> posts = new ArrayList<>();
-            //noinspection Convert2streamapi
-            for (CardItem card : cardManager.getAllCardItems())
-                posts.add(card.toPost());
-            PostCache.setPosts(posts);
+            PostCache.setPosts(cardManager.getAllCardItems());
         }
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import java.util.List;
+
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
@@ -19,7 +22,9 @@ import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.io.Managers;
+import de.pscom.pietsmiet.io.caching.CacheManager;
 import de.pscom.pietsmiet.io.caching.PostCache;
+import de.pscom.pietsmiet.io.files.FileManager;
 import de.pscom.pietsmiet.util.CardItemManager;
 import de.pscom.pietsmiet.util.SecretConstants;
 
@@ -33,6 +38,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private CardItemManager cardManager;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+
+    //Do not use Managers.getXxxManager() -- memory leak
+
+    private FileManager fileManager;
+    private CacheManager cacheManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +60,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        Managers.initialize(this);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateData();
+            }
+        });
+
+        swipeRefreshLayout.setColorSchemeColors(R.color.pietsmiet);
+
+        fileManager = new FileManager(this);
+        cacheManager = new CacheManager(this);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -118,23 +142,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }).start();*/
 
-        new Thread(() -> {
+        /*new Thread(() -> {
             try {
                 //noinspection Convert2streamapi
                 for (Post post : PostCache.getPosts()) addNewCard(post);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }).start();
+        }).start();*/
 
         setupRecyclerView();
 
-        new SecretConstants(this);
+        /*new SecretConstants(this);
 
         new TwitterPresenter().onTakeView(this);
         new UploadplanPresenter().onTakeView(this);
         new PietcastPresenter().onTakeView(this);
-        new FacebookPresenter().onTakeView(this);
+        new FacebookPresenter().onTakeView(this);*/
     }
 
     public void setupRecyclerView() {
@@ -195,5 +219,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (cardManager != null) {
             PostCache.setPosts(cardManager.getAllCardItems());
         }
+    }
+
+    private void updateData()
+    {
+        if(cardManager == null)
+            return;
+        List<Post> cards = cardManager.getAllCardItems();
+        // (optional?)
+        PostCache.setPosts(cards);
+        cards.clear();
+        cards.addAll(PostCache.getPosts());
+
+        swipeRefreshLayout.setRefreshing(false);
+
+        //Twitter.blah(this);
     }
 }

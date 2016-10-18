@@ -33,15 +33,24 @@ public class CardItemManager {
      * @param cardItem Card Item
      */
     public void addCard(CardItem cardItem) {
-        allCards.add(cardItem);
-        Collections.sort(allCards);
-
-        //noinspection WrongConstant
-        if (isAllowedType(cardItem)) {
-            currentCards.add(cardItem);
-            Collections.sort(currentCards);
-            if (mView != null) mView.updateAdapter();
+        boolean add = true;
+        for (CardItem card : getAllCardItems()) {
+            if (card.getTitle().equals(cardItem.getTitle()) || card.getDescription().equals(cardItem.getDescription())) {
+                add = false;
+            }
         }
+
+        if (add) {
+            allCards.add(cardItem);
+            Collections.sort(allCards);
+
+            if (isAllowedType(cardItem)) {
+                currentCards.add(cardItem);
+                if (mView != null) mView.updateAdapter();
+            }
+        }
+
+
     }
 
     /**

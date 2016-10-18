@@ -23,7 +23,6 @@ import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
 import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {

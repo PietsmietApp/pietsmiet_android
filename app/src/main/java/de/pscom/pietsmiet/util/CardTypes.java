@@ -8,7 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 public class CardTypes {
     //Scales dynamically
     //Renamed to shorter version
-    public static final int VIDEO = 0;
+    public static final int NONE = 0;
+    public static final int VIDEO = NONE + 1;
     public static final int STREAM = VIDEO + 1;
     public static final int PIETCAST = STREAM + 1;
     public static final int TWITTER = PIETCAST + 1;

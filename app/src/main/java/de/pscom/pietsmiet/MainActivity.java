@@ -26,6 +26,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ThumbnailPost;
 import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.io.caching.PostCache;
+import de.pscom.pietsmiet.util.Types;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -83,21 +84,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<Post> posts = new ArrayList<>();
             posts.add(new ThumbnailPost("[DEBUG] PietCast #79 - Krötenwehr",
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
-                    "pietcast",
+                    Types.PIETCAST.getName(),
                     new Date(),
                     "http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png"));
             posts.add(new ThumbnailPost("[DEBUG] HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
                     "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    "video",
+                    Types.VIDEO.getName(),
                     new Date(),
                     "http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"));
             posts.add(new Post("[DEBUG] Uploadplan am 11.09.2016",
                     "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
-                    "uploadplan",
+                    Types.UPLOAD_PLAN.getName(),
                     new Date()));
             posts.add(new Post("[DEBUG] Dr.Jay auf Twitter",
                     "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
-                    "twitter",
+                    Types.TWITTER.getName(),
                     new Date()));
 
             //save to files

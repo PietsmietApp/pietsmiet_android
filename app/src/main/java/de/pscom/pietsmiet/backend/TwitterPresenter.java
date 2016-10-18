@@ -21,7 +21,6 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import static de.pscom.pietsmiet.util.CardType.TWITTER;
 
-
 public class TwitterPresenter extends MainPresenter {
     //TODO: Store id!
     private long lastTweetId;

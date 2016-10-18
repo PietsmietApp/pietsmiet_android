@@ -11,15 +11,12 @@ import android.support.annotation.Nullable;
 
 import java.util.Date;
 
-import de.pscom.pietsmiet.util.CardType.ItemTypeNoThumbnail;
-import de.pscom.pietsmiet.util.CardType.ItemTypeThumbnail;
+import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.generic.ThumbnailPost;
+import de.pscom.pietsmiet.util.CardType;
+import de.pscom.pietsmiet.util.Types;
 
-import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
-import static de.pscom.pietsmiet.util.CardType.PIETCAST;
-import static de.pscom.pietsmiet.util.CardType.STREAM;
-import static de.pscom.pietsmiet.util.CardType.TWITTER;
-import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardType.VIDEO;
+import static de.pscom.pietsmiet.util.CardType.*;
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
 import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
@@ -27,6 +24,16 @@ import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
 import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 
 public class CardItem implements Comparable<CardItem>, Parcelable {
+    public static final Parcelable.Creator CREATOR
+            = new Parcelable.Creator<CardItem>() {
+        public CardItem createFromParcel(Parcel in) {
+            return new CardItem(in);
+        }
+
+        public CardItem[] newArray(int size) {
+            return new CardItem[size];
+        }
+    };
     private String description;
     private String title;
     private int cardItemType;
@@ -45,12 +52,13 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
      * @param cardItemType Type of the card
      */
 
-    public CardItem(String title, String description, Date datetime, @ItemTypeNoThumbnail int cardItemType) {
+    public CardItem(String title, String description, Date datetime, @CardType.ItemTypeNoThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
         this.cardItemType = cardItemType;
     }
+
 
     /**
      * Creates a new card item with a thumbnail
@@ -61,7 +69,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
      * @param cardItemType Type of the card
      * @param thumbnail    Thumbnail image
      */
-    public CardItem(String title, String description, Date datetime, Drawable thumbnail, @ItemTypeThumbnail int cardItemType) {
+    public CardItem(String title, String description, Date datetime, Drawable thumbnail, @CardType.ItemTypeThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -69,9 +77,19 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.cardItemType = cardItemType;
     }
 
+    // "De-parcel object
+    private CardItem(Parcel in) {
+        description = in.readString();
+        title = in.readString();
+        cardItemType = in.readInt();
+        Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
+        //noinspection deprecation
+        thumbnail = new BitmapDrawable(bitmap);
+        datetime = new Date(in.readLong());
+    }
 
     @Nullable
-    Drawable getThumbnail() {
+    public Drawable getThumbnail() {
         return this.thumbnail;
     }
 
@@ -87,7 +105,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.cardItemType = type;
     }
 
-    Date getDatetime() {
+    public Date getDatetime() {
         return datetime;
     }
 
@@ -95,13 +113,14 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         this.datetime = datetime;
     }
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
     public void setDescription(@NonNull String description) {
         this.description = description;
     }
+
 
     public String getTitle() {
         return title;
@@ -137,7 +156,6 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return Color.parseColor(hexColor);
     }
 
-
     boolean isVideoView() {
         return cardItemType == VIDEO
                 || cardItemType == STREAM
@@ -167,27 +185,10 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         dest.writeLong(datetime.getTime());
     }
 
-    // "De-parcel object
-    private CardItem(Parcel in) {
-        description = in.readString();
-        title = in.readString();
-        cardItemType = in.readInt();
-        Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
-        //noinspection deprecation
-        thumbnail = new BitmapDrawable(bitmap);
-        datetime = new Date(in.readLong());
+
+    public Post toPost() {
+        if (thumbnail != null)
+            return new ThumbnailPost(title, description, Types.fromId(cardItemType).getName(), datetime, thumbnail);
+        return new Post(title, description, Types.fromId(cardItemType).getName(), datetime);
     }
-
-    public static final Parcelable.Creator CREATOR
-            = new Parcelable.Creator<CardItem>() {
-        public CardItem createFromParcel(Parcel in) {
-            return new CardItem(in);
-        }
-
-        public CardItem[] newArray(int size) {
-            return new CardItem[size];
-        }
-    };
-
-
 }

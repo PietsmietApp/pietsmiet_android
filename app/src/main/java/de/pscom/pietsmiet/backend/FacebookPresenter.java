@@ -3,6 +3,7 @@ package de.pscom.pietsmiet.backend;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
+
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import facebook4j.BatchRequest;
@@ -62,7 +63,6 @@ public class FacebookPresenter extends MainPresenter {
                             publish();
                         }), e -> PsLog.e(e.toString()), () -> PsLog.v("facebook posts geladen"));
     }
-
 
     /**
      * @return List of unparsed posts from Team Pietsmiet

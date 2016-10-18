@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
@@ -23,10 +22,8 @@ import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.RssPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.generic.ThumbnailPost;
 import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.io.caching.PostCache;
-import de.pscom.pietsmiet.util.Types;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }).start();*/
 
         //only for testing
-        new Thread(() -> {
+        /*new Thread(() -> {
             List<Post> posts = new ArrayList<>();
             posts.add(new ThumbnailPost("[DEBUG] PietCast #79 - Krötenwehr",
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
@@ -112,7 +109,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             runOnUiThread(() -> {
                 for (Post post : posts2) addNewCard(post.getCardItem());
             });
+        }).start();*/
+
+        new Thread(() -> {
+            for (Post post : PostCache.getPosts()) addNewCard(post.getCardItem());
         }).start();
+
         setupRecyclerView();
 
         new TwitterPresenter().onTakeView(this);
@@ -132,6 +134,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardItems.add(item);
         Collections.sort(cardItems);
         if (adapter != null) adapter.notifyDataSetChanged();
+        List<Post> posts = new ArrayList<>();
+        for (CardItem card : cardItems)
+            posts.add(card.toPost());
+        PostCache.setPosts(posts);
     }
 
     public void showError(String msg) {

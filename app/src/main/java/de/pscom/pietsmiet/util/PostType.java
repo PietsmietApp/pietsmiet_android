@@ -5,11 +5,11 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_ALL;
-import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_SOCIAL;
+import static de.pscom.pietsmiet.util.PostManager.DISPLAY_ALL;
+import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
 
 
-public class CardType {
+public class PostType {
     //Scales dynamically
     //Renamed to shorter version
     public static final int VIDEO = 0;
@@ -21,21 +21,21 @@ public class CardType {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FACEBOOK, TWITTER, UPLOAD_PLAN})
-    public @interface ItemTypeNoThumbnail {
+    public @interface TypeNoThumbnail {
     }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({VIDEO, FACEBOOK, TWITTER, PIETCAST, STREAM})
-    public @interface ItemTypeThumbnail {
+    public @interface TypeThumbnail {
     }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PIETCAST, UPLOAD_PLAN, DISPLAY_SOCIAL, DISPLAY_ALL})
-    public @interface ItemTypeDrawer {
+    public @interface TypeDrawer {
     }
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PIETCAST, UPLOAD_PLAN, FACEBOOK, TWITTER, STREAM, VIDEO})
-    public @interface ItemTypeAll {
+    public @interface TypeAllPosts {
     }
 }

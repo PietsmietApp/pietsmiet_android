@@ -20,19 +20,19 @@ import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.io.caching.PostCache;
-import de.pscom.pietsmiet.util.CardItemManager;
+import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.SecretConstants;
 
-import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_SOCIAL;
-import static de.pscom.pietsmiet.util.CardType.PIETCAST;
-import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
     LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
-    private CardItemManager cardManager;
+    private PostManager postManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        cardManager = new CardItemManager(this);
+        postManager = new PostManager(this);
 
         //Only for testing
         /*new Thread(() -> {
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TWITTER));
 
             runOnUiThread(() -> {
-                for (CardItem cardItem : cardItems) addNewCard(cardItem);
+                for (CardItem cardItem : cardItems) addNewPost(cardItem);
                 PsLog.v("Test cards geladen");
             });
         }).start();*/
@@ -114,14 +114,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             List<Post> posts2 = PostCache.getPosts();
 
             runOnUiThread(() -> {
-                for (Post post : posts2) addNewCard(post.getCardItem());
+                for (Post post : posts2) addNewPost(post.getCardItem());
             });
         }).start();*/
 
         new Thread(() -> {
             try {
                 //noinspection Convert2streamapi
-                for (Post post : PostCache.getPosts()) addNewCard(post);
+                for (Post post : PostCache.getPosts()) addNewPost(post);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -139,14 +139,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-        adapter = new CardViewAdapter(cardManager.getAllCardItems(), this);
+        adapter = new CardViewAdapter(postManager.getAllPosts(), this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
 
-    public void addNewCard(Post item) {
-        if (cardManager != null) cardManager.addCard(item);
+    public void addNewPost(Post item) {
+        if (postManager != null) postManager.addPost(item);
     }
 
     public void updateAdapter() {
@@ -165,16 +165,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_upload_plan:
-                cardManager.displayOnlyCardsFromType(UPLOAD_PLAN);
+                postManager.displayOnlyPostsFromType(UPLOAD_PLAN);
                 break;
             case R.id.nav_social_media:
-                cardManager.displayOnlyCardsFromType(DISPLAY_SOCIAL);
+                postManager.displayOnlyPostsFromType(DISPLAY_SOCIAL);
                 break;
             case R.id.nav_pietcast:
-                cardManager.displayOnlyCardsFromType(PIETCAST);
+                postManager.displayOnlyPostsFromType(PIETCAST);
                 break;
             case R.id.nav_home:
-                cardManager.displayAllCards();
+                postManager.displayAllPosts();
                 break;
             default:
                 return false;
@@ -192,8 +192,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        if (cardManager != null) {
-            PostCache.setPosts(cardManager.getAllCardItems());
+        if (postManager != null) {
+            PostCache.setPosts(postManager.getAllPosts());
         }
     }
 }

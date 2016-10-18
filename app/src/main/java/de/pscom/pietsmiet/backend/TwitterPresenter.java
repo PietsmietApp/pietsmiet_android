@@ -20,7 +20,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
-import static de.pscom.pietsmiet.util.CardType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 public class TwitterPresenter extends MainPresenter {
     //TODO: Store id!

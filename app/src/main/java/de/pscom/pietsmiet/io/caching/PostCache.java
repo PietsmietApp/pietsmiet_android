@@ -89,7 +89,7 @@ public class PostCache {
                 stringBuilder.append(unionize(String.valueOf(post.getDuration()))).append(lineSeparator);
             }
 
-            stringBuilder.append(unionize(Integer.toString(post.getCardItemType()))).append(lineSeparator);
+            stringBuilder.append(unionize(Integer.toString(post.getPostType()))).append(lineSeparator);
 
             stringBuilder.append(lineSeparator);
         }

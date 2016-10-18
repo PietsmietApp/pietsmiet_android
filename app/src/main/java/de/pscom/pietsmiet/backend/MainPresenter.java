@@ -3,28 +3,28 @@ package de.pscom.pietsmiet.backend;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 
-import static de.pscom.pietsmiet.util.CardType.ItemTypeAll;
+import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 
 public class MainPresenter {
-    @ItemTypeAll
-    private int cardItemType;
+    @TypeAllPosts
+    private int postType;
     private MainActivity view;
     Post post;
 
-    MainPresenter(@ItemTypeAll int cardItemType) {
-        this.cardItemType = cardItemType;
+    MainPresenter(@TypeAllPosts int postType) {
+        this.postType = postType;
     }
 
     /**
-     * Publishes the current cardItem to the specified activity
+     * Publishes the current post to the specified activity
      */
     void publish() {
         if (view != null) {
             if (post != null) {
-                post.setCardItemType(cardItemType);
-                view.addNewCard(post);
+                post.setPostType(postType);
+                view.addNewPost(post);
             } else {
-                view.showError("Typ" + Integer.toString(cardItemType) + " konnte nicht geladen werden :(");
+                view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");
             }
         }
     }

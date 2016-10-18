@@ -20,7 +20,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardType.FACEBOOK;
+import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
 public class FacebookPresenter extends MainPresenter {
     private Facebook mFacebook;

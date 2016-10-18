@@ -13,22 +13,29 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardItem;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.RssPresenter;
+import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
+import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.io.caching.PostCache;
+import de.pscom.pietsmiet.util.CardItemManager;
+
+import static de.pscom.pietsmiet.util.CardItemManager.DISPLAY_SOCIAL;
+import static de.pscom.pietsmiet.util.CardType.PIETCAST;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
-    private List<CardItem> cardItems = new ArrayList<>();
+    LinearLayoutManager layoutManager;
+    private DrawerLayout mDrawer;
+    private CardItemManager cardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +45,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         //Navigation Drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.dl_root);
+        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
         Managers.initialize(this);
@@ -49,10 +56,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        cardManager = new CardItemManager(this);
+
         //Only for testing
         /*new Thread(() -> {
             ArrayList<CardItem> cardItems = new ArrayList<>();
-            cardItems.add(new CardItem("PietCast #79 - Krötenwehr",
+            cardItems.add(new CardItem("TESTCast #79 - Krötenwehr",
                     "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
                     new Date(),
                     DrawableFetcher.getDrawableFromUrl("http://www.pietcast.de/pietcast/wp-content/uploads/2016/09/thumbnail-672x372.png"),
@@ -73,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             runOnUiThread(() -> {
                 for (CardItem cardItem : cardItems) addNewCard(cardItem);
+                PsLog.v("Test cards geladen");
             });
         }).start();*/
 
@@ -118,31 +128,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupRecyclerView();
 
         new TwitterPresenter().onTakeView(this);
-        new RssPresenter().onTakeView(this);
+        new UploadplanPresenter().onTakeView(this);
+        new PietcastPresenter().onTakeView(this);
         new FacebookPresenter().onTakeView(this);
     }
 
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-        adapter = new CardViewAdapter(cardItems, this);
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
+        adapter = new CardViewAdapter(cardManager.getAllCardItems(), this);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
     }
 
     public void addNewCard(CardItem item) {
-        boolean add = true;
-        for (CardItem card : cardItems) {
-            if (card.getTitle().equals(item.getTitle()) || card.getDescription().equals(item.getDescription())) {
-                add = false;
-            }
-        }
+        cardManager.addCard(item);
+    }
 
-        if (add) {
-            cardItems.add(item);
-        }
-        Collections.sort(cardItems);
+    public void updateAdapter() {
         if (adapter != null) adapter.notifyDataSetChanged();
+    }
+
+    public void scrollToTop() {
+        if (layoutManager != null) layoutManager.scrollToPosition(0);
     }
 
     public void showError(String msg) {
@@ -151,7 +159,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+        switch (item.getItemId()) {
+            case R.id.nav_upload_plan:
+                cardManager.displayOnlyCardsFromType(UPLOAD_PLAN);
+                break;
+            case R.id.nav_social_media:
+                cardManager.displayOnlyCardsFromType(DISPLAY_SOCIAL);
+                break;
+            case R.id.nav_pietcast:
+                cardManager.displayOnlyCardsFromType(PIETCAST);
+                break;
+            case R.id.nav_home:
+                cardManager.displayAllCards();
+                break;
+            default:
+                return false;
+        }
+        // Highlight the selected item has been done by NavigationView
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
+        // Close the navigation drawer
+        mDrawer.closeDrawers();
+
+        return true;
     }
 
     @Override
@@ -162,9 +193,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        List<Post> posts = new ArrayList<>();
-        for (CardItem card : cardItems)
-            posts.add(card.toPost());
-        PostCache.setPosts(posts);
+        if (cardManager != null) {
+            List<Post> posts = new ArrayList<>();
+            //noinspection Convert2streamapi
+            for (CardItem card : cardManager.getAllCardItems())
+                posts.add(card.toPost());
+            PostCache.setPosts(posts);
+        }
     }
 }

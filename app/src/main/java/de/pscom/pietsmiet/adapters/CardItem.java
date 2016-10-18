@@ -13,16 +13,10 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ThumbnailPost;
-import de.pscom.pietsmiet.util.CardTypes.ItemTypeNoThumbnail;
-import de.pscom.pietsmiet.util.CardTypes.ItemTypeThumbnail;
+import de.pscom.pietsmiet.util.CardType;
 import de.pscom.pietsmiet.util.Types;
 
-import static de.pscom.pietsmiet.util.CardTypes.FACEBOOK;
-import static de.pscom.pietsmiet.util.CardTypes.PIETCAST;
-import static de.pscom.pietsmiet.util.CardTypes.STREAM;
-import static de.pscom.pietsmiet.util.CardTypes.TWITTER;
-import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.CardTypes.VIDEO;
+import static de.pscom.pietsmiet.util.CardType.*;
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
 import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
@@ -46,6 +40,9 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
     private Drawable thumbnail;
     private Date datetime;
 
+    public CardItem() {
+    }
+
     /**
      * Creates a new card item
      *
@@ -55,7 +52,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
      * @param cardItemType Type of the card
      */
 
-    public CardItem(String title, String description, Date datetime, @ItemTypeNoThumbnail int cardItemType) {
+    public CardItem(String title, String description, Date datetime, @CardType.ItemTypeNoThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -72,7 +69,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
      * @param cardItemType Type of the card
      * @param thumbnail    Thumbnail image
      */
-    public CardItem(String title, String description, Date datetime, Drawable thumbnail, @ItemTypeThumbnail int cardItemType) {
+    public CardItem(String title, String description, Date datetime, Drawable thumbnail, @CardType.ItemTypeThumbnail int cardItemType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -96,7 +93,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return this.thumbnail;
     }
 
-    public void setThumbnail(Drawable thumbnail) {
+    public void setThumbnail(@Nullable Drawable thumbnail) {
         this.thumbnail = thumbnail;
     }
 
@@ -112,7 +109,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return datetime;
     }
 
-    public void setDatetime(Date datetime) {
+    public void setDatetime(@NonNull Date datetime) {
         this.datetime = datetime;
     }
 
@@ -120,11 +117,20 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@NonNull String description) {
         this.description = description;
     }
 
-    //UPPER_CASE: CardTypes constants
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(@NonNull String title) {
+        this.title = title;
+    }
+
+    //UPPER_CASE: CardType constants
     //CamelCase: ColorUtils constants
     int getBackgroundColor() {
         String hexColor;
@@ -148,14 +154,6 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
                 break;
         }
         return Color.parseColor(hexColor);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     boolean isVideoView() {
@@ -186,6 +184,7 @@ public class CardItem implements Comparable<CardItem>, Parcelable {
         dest.writeParcelable(bitmap, flags);
         dest.writeLong(datetime.getTime());
     }
+
 
     public Post toPost() {
         if (thumbnail != null)

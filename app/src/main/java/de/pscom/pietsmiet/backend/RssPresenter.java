@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 
 public class RssPresenter {
     private static final int DEFAULT_MAX = 1;

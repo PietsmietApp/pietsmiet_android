@@ -22,7 +22,8 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
-import static de.pscom.pietsmiet.util.CardTypes.UPLOAD_PLAN;
+import static android.view.View.VISIBLE;
+import static de.pscom.pietsmiet.util.CardType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -94,7 +95,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
             videoHolder.btnExpand.setOnClickListener(view -> {
                 if (videoHolder.descriptionContainer.getVisibility() == GONE) {
-                    videoHolder.descriptionContainer.setVisibility(View.VISIBLE);
+                    videoHolder.descriptionContainer.setVisibility(VISIBLE);
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
                 } else {
                     videoHolder.descriptionContainer.setVisibility(GONE);
@@ -109,15 +110,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             PsLog.w("No Date specified");
             holder.timedate.setVisibility(GONE);
         } else {
-            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM", Locale.GERMAN);
-            holder.timedate.setText(formatter.format(currentItem.getDatetime()));
+            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN);
+            holder.timedate.setText(formatter.format(currentItem.getDatetime()) + " Uhr");
         }
 
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
-            PsLog.v("Setting thumbnail for: " + currentItem.getTitle());
+            holder.thumbnail.setVisibility(VISIBLE);
             holder.thumbnail.setImageDrawable(thumbnail);
-        } else holder.thumbnail.setVisibility(GONE);
+        } else {
+            holder.thumbnail.setVisibility(GONE);
+        }
 
         holder.title.setText(currentItem.getTitle());
         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {

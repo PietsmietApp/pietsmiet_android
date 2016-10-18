@@ -1,11 +1,10 @@
 package de.pscom.pietsmiet.backend;
 
-import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.adapters.CardItem;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -20,20 +19,17 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
-import static de.pscom.pietsmiet.util.CardTypes.TWITTER;
+import static de.pscom.pietsmiet.util.CardType.TWITTER;
 
-
-public class TwitterPresenter {
+public class TwitterPresenter extends MainPresenter {
     //TODO: Store id!
     private long lastTweetId;
 
     private Twitter twitterInstance;
     private static final int maxCount = 10;
 
-    private MainActivity view;
-    private Status tweet;
-
     public TwitterPresenter() {
+        super(TWITTER);
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
@@ -48,29 +44,27 @@ public class TwitterPresenter {
         Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .doOnNext(tweet -> lastTweetId = tweet.getId())
-                .subscribe(tweet -> {
-                    this.tweet = tweet;
-                    publish();
-                }, Throwable::printStackTrace);
+                .subscribe(tweet -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromTweet(tweet)))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(drawable -> {
+                            cardItem = new CardItem();
+                            cardItem.setThumbnail(drawable);
+                            cardItem.setTitle(getDisplayName(tweet.getUser()));
+                            cardItem.setDescription(tweet.getText());
+                            cardItem.setDatetime(tweet.getCreatedAt());
+                            publish();
+                        }), Throwable::printStackTrace, () -> PsLog.v("Tweets geladen"));
     }
 
-    private void publish() {
-        if (view != null && tweet != null) {
-            String title = getDisplayName(tweet.getUser());
-            Date time = tweet.getCreatedAt();
-            view.addNewCard(new CardItem(title, tweet.getText(), time, TWITTER));
-        }
-    }
-
-    public void onTakeView(MainActivity view) {
-        this.view = view;
-        publish();
-    }
-
-
+    /**
+     * Fetch a list of tweets
+     * @param count Max count of tweets
+     * @return List of Tweets
+     */
     private List<Status> fetchTweets(int count) {
         getToken();
         QueryResult result;
@@ -84,6 +78,11 @@ public class TwitterPresenter {
         return result.getTweets();
     }
 
+    /**
+     * @param count Max count of tweets to fetch
+     * @param sinceId Allows to specifies since which tweet to fetch
+     * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
+     */
     private Query pietsmietTweets(int count, long sinceId) {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
@@ -96,6 +95,10 @@ public class TwitterPresenter {
                 .resultType(Query.ResultType.recent);
     }
 
+    /**
+     * @param user User to get the name for
+     * @return A more human readable and static user name
+     */
     private String getDisplayName(User user) {
         int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, user.getId()), Integer.MIN_VALUE);
         switch (userId) {
@@ -114,6 +117,9 @@ public class TwitterPresenter {
         }
     }
 
+    /**
+     * This fetches the token
+     */
     private void getToken() {
         try {
             twitterInstance.getOAuth2Token();
@@ -124,6 +130,9 @@ public class TwitterPresenter {
         }
     }
 
+    /**
+     * Show the remaining calls to the search api with this app's token.
+     */
     private void getRateLimit() {
         try {
             RateLimitStatus status = twitterInstance.getRateLimitStatus("search").get("/search/tweets");

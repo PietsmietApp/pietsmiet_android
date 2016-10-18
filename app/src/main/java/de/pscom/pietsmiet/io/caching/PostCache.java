@@ -41,8 +41,11 @@ public class PostCache {
         //Highly dangerous
         //Do not try this at home
         //Crashes on malformed but not empty files
-
         String[] lines = Managers.getCacheManager().readLines("posts.txt");
+        if (lines == null) {
+            return null;
+        }
+
         for (int i = 0; i < lines.length; i++) {
             try {
                 switch (lines[i]) {

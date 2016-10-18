@@ -134,10 +134,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         cardItems.add(item);
         Collections.sort(cardItems);
         if (adapter != null) adapter.notifyDataSetChanged();
-        List<Post> posts = new ArrayList<>();
-        for (CardItem card : cardItems)
-            posts.add(card.toPost());
-        PostCache.setPosts(posts);
     }
 
     public void showError(String msg) {
@@ -152,5 +148,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        List<Post> posts = new ArrayList<>();
+        for (CardItem card : cardItems)
+            posts.add(card.toPost());
+        PostCache.setPosts(posts);
     }
 }

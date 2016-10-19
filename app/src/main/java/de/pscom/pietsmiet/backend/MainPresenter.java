@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 
@@ -27,6 +28,11 @@ public class MainPresenter {
                 view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");
             }
         }
+    }
+
+    void finished() {
+        PsLog.v("Type" + postType + " finished loading;");
+        if (view != null) view.sortPosts();
     }
 
     /**

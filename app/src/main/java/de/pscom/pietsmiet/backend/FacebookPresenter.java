@@ -31,10 +31,8 @@ public class FacebookPresenter extends MainPresenter {
             PsLog.w("No twitter secret specified");
             return;
         }
-        PsLog.v(SecretConstants.facebookToken);
         mFacebook = new FacebookFactory().getInstance();
         mFacebook.setOAuthAppId("664158170415954", SecretConstants.facebookSecret);
-        //facebook.setOAuthPermissions("public_profile");
         mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
         parsePosts();
     }
@@ -72,7 +70,7 @@ public class FacebookPresenter extends MainPresenter {
                             this.post.setDescription(post.getMessage());
                             this.post.setDatetime(post.getCreatedTime());
                             publish();
-                        }), e -> PsLog.e(e.toString()), () -> PsLog.v("facebook posts geladen"));
+                        }), e -> PsLog.e(e.toString()), this::finished);
     }
 
     /**

@@ -2,7 +2,6 @@ package de.pscom.pietsmiet.backend;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
-import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -37,7 +36,7 @@ public class PietcastPresenter extends MainPresenter {
                             post.setDatetime(element.getPubDate());
                             post.setThumbnail(drawable);
                             publish();
-                        }), Throwable::printStackTrace, () -> PsLog.v("Pietcasts geladen"));
+                        }), Throwable::printStackTrace, this::finished);
     }
 
 }

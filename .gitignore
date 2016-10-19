@@ -37,14 +37,11 @@ captures/
 *.iml
 .idea/workspace.xml
 /.idea/libraries
+/projectFilesBackup/
 
 # Keystore files
 *.jks
 
 .DS_Store
-
-*.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
+/app/src/main/assets/secrets.properties
 

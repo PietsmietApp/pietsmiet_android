@@ -33,10 +33,13 @@ public class PsLog {
     public static String getTag() {
         try {
             final StackTraceElement ste = Thread.currentThread().getStackTrace()[CALLING_METHOD_INDEX];
-            return "(" + ste.getFileName() + ":" + ste.getLineNumber() + ")";
+            String name = ste.getFileName();
+            int line = ste.getLineNumber();
+            if (name == null && line == -1) return "Pietsmiet_App";
+            return "(" + ste.getFileName() + (line != -1 && line != 0 ? ":" + ste.getLineNumber() + ")" : "" + ")");
 
         } catch (Exception e) {
-            return "Slide";
+            return "Pietsmiet_App";
         }
     }
 

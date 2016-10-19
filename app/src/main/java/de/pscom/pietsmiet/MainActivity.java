@@ -161,6 +161,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
+    public void sortPosts(){
+        if (postManager != null) postManager.sortPosts();
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {

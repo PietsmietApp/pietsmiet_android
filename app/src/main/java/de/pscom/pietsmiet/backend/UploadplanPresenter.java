@@ -53,7 +53,7 @@ public class UploadplanPresenter extends MainPresenter {
                 .subscribe(uploadplan -> {
                     post.setDescription(uploadplan);
                     publish();
-                }, Throwable::printStackTrace, () -> PsLog.v("Uploadplan geladen"));
+                }, Throwable::printStackTrace, this::finished);
     }
 
 

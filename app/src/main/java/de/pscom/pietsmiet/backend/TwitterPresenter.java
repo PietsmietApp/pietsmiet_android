@@ -62,7 +62,7 @@ public class TwitterPresenter extends MainPresenter {
                             post.setDescription(tweet.getText());
                             post.setDatetime(tweet.getCreatedAt());
                             publish();
-                        }), Throwable::printStackTrace, () -> PsLog.v("Tweets geladen"));
+                        }), Throwable::printStackTrace, this::finished);
     }
 
     /**

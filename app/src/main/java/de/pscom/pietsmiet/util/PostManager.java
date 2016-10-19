@@ -8,6 +8,7 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
@@ -17,7 +18,7 @@ public class PostManager {
     public static final int DISPLAY_ALL = 10;
     public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
 
-    private List<Post> currentPorts = new ArrayList<>();
+    private List<Post> currentPosts = new ArrayList<>();
     private List<Post> allPosts = new ArrayList<>();
     private MainActivity mView;
     @PostType.TypeDrawer
@@ -33,59 +34,57 @@ public class PostManager {
      * @param post Post Item
      */
     public void addPost(Post post) {
-/*
-        Observable.just(getAllPosts())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(Observable::from)
-                .filter(card -> !card.getTitle().equals(cardItem.getTitle()) || !card.getDescription().equals(cardItem.getDescription()))
-                .doOnNext(card -> {
-                    if (isAllowedType(cardItem)) {
-                        currentPorts.add(cardItem);
-                        Collections.sort(currentPorts);
-                        if (mView != null) {
-                            mView.updateAdapter();
-                        }
+
+        Observable.just(post)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .filter(item -> {
+                    // Use an array to avoid concurrent modification exceptions
+                    Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
+                    for (Post post1 : posts) {
+                        if (post.getTitle() == null)
+                            if (item.getTitle().equals(post1.getTitle()) && item.getDescription().equals(post1.getDescription()) && item.getDate().equals(post1.getDate())) {
+                                return false;
+                            }
+
                     }
+                    return true;
                 })
+                .doOnNext(item -> {
+
+                })
+                .subscribe(item -> {
+                    allPosts.add(item);
+
+                    if (isAllowedType(item)) {
+                        currentPosts.add(item);
+                    }
+                }, Throwable::printStackTrace);
+    }
+
+    /**
+     * Sorts all posts. This should be called as few times as possible because it kills performance otherwise
+     */
+    public void sortPosts() {
+        Collections.sort(allPosts);
+
+        Observable.just(currentPosts)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(Observable::from)
                 .toSortedList()
                 .subscribe(list -> {
-                    allPosts.clear();
-                    allPosts.addAll(list);
-                });
-        */
-
-        //todo: do this iteration asynchrounous! (rxjava?) like above, but better & working
-        boolean add = true;
-        try {
-            for (Post post1 : getAllPosts()) {
-                if (post1.getTitle().equals(post.getTitle()) && post1.getDescription().equals(post.getDescription())) {
-                    add = false;
-                }
-            }
-        } catch (Exception e){
-            PsLog.i(e.getMessage());
-        }
-
-
-        if (add) {
-            allPosts.add(post);
-            Collections.sort(allPosts);
-
-            if (isAllowedType(post)) {
-                currentPorts.add(post);
-                Collections.sort(currentPorts);
-                if (mView != null) mView.updateAdapter();
-            }
-        }
-
-
+                    currentPosts.clear();
+                    currentPosts.addAll(list);
+                    if (mView != null) mView.updateAdapter();
+                }, Throwable::printStackTrace);
     }
 
     /**
      * @return All fetched posts, whether they're currently shown or not
      */
     public List<Post> getAllPosts() {
-        return currentPorts;
+        return currentPosts;
     }
 
     /**
@@ -93,8 +92,8 @@ public class PostManager {
      */
     public void displayAllPosts() {
         currentlyDisplayedType = DISPLAY_ALL;
-        currentPorts.clear();
-        currentPorts.addAll(allPosts);
+        currentPosts.clear();
+        currentPosts.addAll(allPosts);
         if (mView != null) mView.updateAdapter();
     }
 
@@ -112,8 +111,8 @@ public class PostManager {
                 .filter(this::isAllowedType)
                 .toList()
                 .subscribe(posts -> {
-                    currentPorts.clear();
-                    currentPorts.addAll(posts);
+                    currentPosts.clear();
+                    currentPosts.addAll(posts);
                     if (mView != null) {
                         mView.updateAdapter();
                         mView.scrollToTop();

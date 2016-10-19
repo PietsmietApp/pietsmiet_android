@@ -43,8 +43,8 @@ dependencies {
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'org.facebook4j:facebook4j-core:2.4.7'
     compile 'org.jsoup:jsoup:1.9.2'
-    compile 'com.google.firebase:firebase-core:9.4.0'
-    compile 'com.google.firebase:firebase-messaging:9.4.0'
+    compile 'com.google.firebase:firebase-core:9.6.1'
+    compile 'com.google.firebase:firebase-messaging:9.6.1'
     compile 'org.twitter4j:twitter4j-core:4.0.5'
 }
 

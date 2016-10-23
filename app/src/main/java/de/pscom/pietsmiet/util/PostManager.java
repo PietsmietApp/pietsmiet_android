@@ -84,6 +84,13 @@ public class PostManager {
      * @return All fetched posts, whether they're currently shown or not
      */
     public List<Post> getAllPosts() {
+        return allPosts;
+    }
+
+    /**
+     * @return All posts that should be displayed (the adapter is "linked" to this "symbol")
+     */
+    public List<Post> getPostsToDisplay() {
         return currentPosts;
     }
 
@@ -93,7 +100,7 @@ public class PostManager {
     public void displayAllPosts() {
         currentlyDisplayedType = DISPLAY_ALL;
         currentPosts.clear();
-        currentPosts.addAll(allPosts);
+        currentPosts.addAll(getAllPosts());
         if (mView != null) mView.updateAdapter();
     }
 
@@ -104,7 +111,7 @@ public class PostManager {
      */
     public void displayOnlyPostsFromType(@PostType.TypeDrawer int postType) {
         currentlyDisplayedType = postType;
-        Observable.just(allPosts)
+        Observable.just(getAllPosts())
                 .flatMap(Observable::from)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())

@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-        adapter = new CardViewAdapter(postManager.getAllPosts(), this);
+        adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

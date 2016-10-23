@@ -13,17 +13,17 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.util.PostType;
 
+import static de.pscom.pietsmiet.util.ColorUtils.Default;
+import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
+import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
+import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
+import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.STREAM;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
-import static de.pscom.pietsmiet.util.ColorUtils.Default;
-import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
-import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
-import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
-import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 
 public class Post implements Comparable<Post>, Parcelable {
     private String description;
@@ -40,10 +40,10 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
      */
 
     public Post(String title, String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
@@ -57,11 +57,11 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
-     * @param thumbnail    Thumbnail image
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
+     * @param thumbnail   Thumbnail image
      */
     public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
         this.title = title;
@@ -74,12 +74,12 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
-     * @param duration     Duration of the video / pietcast
-     * @param thumbnail    Thumbnail image
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
+     * @param duration    Duration of the video / pietcast
+     * @param thumbnail   Thumbnail image
      */
     public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
         this.title = title;
@@ -216,4 +216,25 @@ public class Post implements Comparable<Post>, Parcelable {
             return new Post[size];
         }
     };
+
+    @Override
+    public int hashCode() {
+        int result = 5;
+        int random = 87;
+        result = random * result + (getTitle() != null ? getTitle().hashCode() : 0);
+        result = random * result + getDescription().hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        Post other = (Post) obj;
+        if (!getDescription().equals(other.getDescription())) return false;
+        else if (!getTitle().equals(other.getTitle())) return false;
+        return true;
+    }
 }

@@ -75,7 +75,7 @@ public class TwitterPresenter extends MainPresenter {
         getToken();
         QueryResult result;
         try {
-            result = twitterInstance.search(pietsmietTweets(count, lastTweetId));
+            result = twitterInstance.search(pietsmietTweets(count));
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             return null;
@@ -85,11 +85,10 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     /**
-     * @param count   Max count of tweets to fetch
-     * @param sinceId Allows to specifies since which tweet to fetch
+     * @param count Max count of tweets to fetch
      * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
      */
-    private Query pietsmietTweets(int count, long sinceId) {
+    private Query pietsmietTweets(int count) {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +

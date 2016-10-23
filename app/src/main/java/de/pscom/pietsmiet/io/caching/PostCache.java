@@ -66,7 +66,7 @@ public class PostCache {
                         ++i;
                         break;
                 }
-            } catch (ParseException e) {
+            } catch (ParseException | NumberFormatException e) {
                 PsLog.w("Can't parse cache: " + e.getMessage());
             }
         }

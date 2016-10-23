@@ -29,55 +29,54 @@ public class PostManager {
     }
 
     /**
-     * Adds a post to the post list. If the post belongs to the current category / type, it'll be shown instant
+     * Adds a post to the "global" post list.
      *
      * @param post Post Item
      */
     public void addPost(Post post) {
+        List<Post> toReturn = new ArrayList<>();
+        toReturn.add(post);
+        addPosts(toReturn);
+    }
 
-        Observable.just(post)
+    /**
+     * Adds posts to the "global" post list, removes duplicates and sorts it. This is done asynchronous!
+     *
+     * @param posts Post Items
+     */
+    public void addPosts(List<Post> posts) {
+        posts.addAll(getAllPosts());
+
+        Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .filter(item -> {
-                    // Use an array to avoid concurrent modification exceptions
-                    Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
-                    for (Post post1 : posts) {
-                        if (post.getTitle() == null)
-                            if (item.getTitle().equals(post1.getTitle()) && item.getDescription().equals(post1.getDescription()) && item.getDate().equals(post1.getDate())) {
-                                return false;
-                            }
-
-                    }
-                    return true;
-                })
-                .doOnNext(item -> {
-
-                })
-                .subscribe(item -> {
-                    allPosts.add(item);
-
-                    if (isAllowedType(item)) {
-                        currentPosts.add(item);
-                    }
+                .flatMap(Observable::from)
+                .distinct()
+                .toSortedList()
+                .subscribe(items -> {
+                    allPosts.clear();
+                    allPosts.addAll(items);
                 }, Throwable::printStackTrace);
     }
 
     /**
      * Sorts all posts. This should be called as few times as possible because it kills performance otherwise
      */
-    public void sortPosts() {
-        Collections.sort(allPosts);
+    public void updateCurrentPosts() {
+        // Use an array to avoid concurrent modification exceptions
+        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
-        Observable.just(currentPosts)
+        Observable.just(posts)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(Observable::from)
-                .toSortedList()
-                .subscribe(list -> {
-                    currentPosts.clear();
-                    currentPosts.addAll(list);
-                    if (mView != null) mView.updateAdapter();
-                }, Throwable::printStackTrace);
+                .filter(post -> !currentPosts.contains(post) && isAllowedType(post))
+                .subscribe(list -> currentPosts.add(list),
+                        Throwable::printStackTrace,
+                        () -> {
+                            Collections.sort(currentPosts);
+                            if (mView != null) mView.updateAdapter();
+                        });
     }
 
     /**

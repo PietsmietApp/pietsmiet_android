@@ -32,7 +32,7 @@ public class MainPresenter {
 
     void finished() {
         PsLog.v("Type" + postType + " finished loading;");
-        if (view != null) view.sortPosts();
+        if (view != null) view.updateCurrentPosts();
     }
 
     /**

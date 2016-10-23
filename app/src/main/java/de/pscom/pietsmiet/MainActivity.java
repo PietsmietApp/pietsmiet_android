@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawer;
     private PostManager postManager;
 
+    TwitterPresenter twitterPresenter;
+
     private SwipeRefreshLayout refreshLayout;
 
     @Override
@@ -50,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        postManager = new PostManager(this);
 
         setupRecyclerView();
 
@@ -71,8 +76,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        postManager = new PostManager(this);
+        new SecretConstants(this);
 
+        new Thread(() -> {
+            addNewPosts(new PostCache(new CacheManager(this)).getPosts());
+        }).start();
+
+        new SecretConstants(this);
+
+        updateData();
+    }
+
+    public void setupRecyclerView() {
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
+        adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+    }
+
+    public void addNewPost(Post item) {
+        if (postManager != null) postManager.addPost(item);
+    }
+
+    public void addNewPosts(List<Post> items) {
+        if (postManager != null) postManager.addPosts(items);
+    }
+
+    public void updateAdapter() {
+        if (adapter != null) adapter.notifyDataSetChanged();
+        if (refreshLayout != null) refreshLayout.setRefreshing(false);
+    }
+
+    public void scrollToTop() {
+        if (layoutManager != null) layoutManager.scrollToPosition(0);
+    }
+
+    public void showError(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    public void updateCurrentPosts() {
+        if (postManager != null) postManager.updateCurrentPosts();
+    }
+
+    private void updateData() {
+        new TwitterPresenter().onTakeView(this);
+        //new UploadplanPresenter().onTakeView(this);
+        new PietcastPresenter().onTakeView(this);
+        new FacebookPresenter().onTakeView(this);
+        if (BuildConfig.DEBUG) addTestingCards();
+    }
+
+    private void addTestingCards() {
         //Only for testing
         new Thread(() -> {
             ArrayList<Post> cardItems = new ArrayList<>();
@@ -96,55 +152,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     TWITTER));
 
             runOnUiThread(() -> {
-                for (Post cardItem : cardItems) addNewPost(cardItem);
+                addNewPosts(cardItems);
                 PsLog.v("Test cards geladen");
             });
-        }).start();
-
-        new SecretConstants(this);
-
-        updateData();
-    }
-
-    public void setupRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
-        adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-    }
-
-    public void addNewPost(Post item) {
-        if (postManager != null) postManager.addPost(item);
-    }
-
-    public void updateAdapter() {
-        if (adapter != null) adapter.notifyDataSetChanged();
-        if (refreshLayout != null) refreshLayout.setRefreshing(false);
-    }
-
-    public void scrollToTop() {
-        if (layoutManager != null) layoutManager.scrollToPosition(0);
-    }
-
-    public void showError(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-    }
-
-    public void sortPosts() {
-        PsLog.v("Sorting posts");
-        if (postManager != null) postManager.sortPosts();
-    }
-
-    private void updateData() {
-        new TwitterPresenter().onTakeView(this);
-        //new UploadplanPresenter().onTakeView(this);
-        new PietcastPresenter().onTakeView(this);
-        new FacebookPresenter().onTakeView(this);
-
-        new Thread(() -> {
-            //noinspection Convert2streamapi
-            for (Post post : new PostCache(new CacheManager(this)).getPosts()) addNewPost(post);
         }).start();
     }
 

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.io.Managers;
 import de.pscom.pietsmiet.util.PsLog;
 
 /**
@@ -24,6 +23,11 @@ import de.pscom.pietsmiet.util.PsLog;
 
 public class PostCache {
 
+    private CacheManager cacheManager;
+
+    public PostCache(CacheManager cacheManager){
+        this.cacheManager = cacheManager;
+    }
     private static String lineSeparator = "\r\n";
     private static int postId = 0;
 
@@ -32,15 +36,19 @@ public class PostCache {
      *
      * @return the loaded posts
      */
-    public static List<Post> getPosts() {
+    public List<Post> getPosts() {
         List<Post> posts = new ArrayList<>();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
-        //Highly dangerous
-        //Do not try this at home
-        //Crashes on malformed but not empty files
-        String[] lines = Managers.getCacheManager().readLines("posts.txt");
+
+        String[] lines;
+        try {
+            lines = cacheManager.readLines("posts.txt");
+        } catch (Exception e) {
+            PsLog.w("Error opening cache: " + e.getMessage());
+            return posts;
+        }
 
         for (int i = 0; i < (lines != null ? lines.length : 0); i++) {
             try {
@@ -59,7 +67,7 @@ public class PostCache {
                         break;
                 }
             } catch (ParseException e) {
-                e.printStackTrace();
+                PsLog.w("Can't parse cache: " + e.getMessage());
             }
         }
 
@@ -71,7 +79,7 @@ public class PostCache {
      *
      * @param posts The posts to cache
      */
-    public static void setPosts(List<Post> posts) {
+    public void setPosts(List<Post> posts) {
         StringBuilder stringBuilder = new StringBuilder();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.US);
@@ -89,12 +97,12 @@ public class PostCache {
                 stringBuilder.append(unionize(String.valueOf(post.getDuration()))).append(lineSeparator);
             }
 
-            stringBuilder.append(unionize(Integer.toString(post.getCardItemType()))).append(lineSeparator);
+            stringBuilder.append(unionize(Integer.toString(post.getPostType()))).append(lineSeparator);
 
             stringBuilder.append(lineSeparator);
         }
         try {
-            Managers.getCacheManager().writeText("posts.txt", stringBuilder.toString());
+            cacheManager.writeText("posts.txt", stringBuilder.toString());
         } catch (Exception e) {
             PsLog.w("Couldn't write file: " + e.getMessage());
         }
@@ -120,17 +128,17 @@ public class PostCache {
         return input == null ? null : input.replace("&lf;", "\n").replace("&cr;", "\r").replace("&amp;", "&");
     }
 
-    private static Drawable drawableFromFile(String name) {
+    private Drawable drawableFromFile(String name) {
         if (!name.startsWith("cache://"))
             return null;
         String id = name.substring("cache://".length());
 
         //Bitmap bitmap = BitmapFactory.decodeFile(new File(Managers.getCacheManager().getDefaultDirectory(), id + ".png").getAbsolutePath());
 
-        return BitmapDrawable.createFromPath(new File(Managers.getCacheManager().getDefaultDirectory(), id + ".png").getAbsolutePath());
+        return BitmapDrawable.createFromPath(new File(cacheManager.getDefaultDirectory(), id + ".png").getAbsolutePath());
     }
 
-    private static String drawableToFile(Drawable drawable) {
+    private String drawableToFile(Drawable drawable) {
         String id = String.valueOf(postId++);
 
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -140,7 +148,7 @@ public class PostCache {
         drawable.draw(canvas);
 
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(Managers.getCacheManager().getDefaultDirectory(), id + ".png"));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(cacheManager.getDefaultDirectory(), id + ".png"));
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
             fileOutputStream.flush();
             fileOutputStream.close();

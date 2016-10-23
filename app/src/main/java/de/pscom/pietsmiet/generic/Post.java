@@ -1,11 +1,7 @@
 package de.pscom.pietsmiet.generic;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -25,7 +21,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
-public class Post implements Comparable<Post>, Parcelable {
+public class Post implements Comparable<Post> {
     private String description;
     private String title;
     private int postType;
@@ -180,49 +176,12 @@ public class Post implements Comparable<Post>, Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        Bitmap bitmap = ((BitmapDrawable) thumbnail).getBitmap();
-
-        dest.writeString(description);
-        dest.writeString(title);
-        dest.writeInt(postType);
-        dest.writeParcelable(bitmap, flags);
-        dest.writeLong(datetime.getTime());
-    }
-
-    // "De-parcel object
-    private Post(Parcel in) {
-        description = in.readString();
-        title = in.readString();
-        postType = in.readInt();
-        Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
-        //noinspection deprecation
-        thumbnail = new BitmapDrawable(bitmap);
-        datetime = new Date(in.readLong());
-    }
-
-    public static final Parcelable.Creator CREATOR
-            = new Parcelable.Creator<Post>() {
-        public Post createFromParcel(Parcel in) {
-            return new Post(in);
-        }
-
-        public Post[] newArray(int size) {
-            return new Post[size];
-        }
-    };
-
-    @Override
     public int hashCode() {
         int result = 5;
         int random = 87;
         result = random * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = random * result + getDescription().hashCode();
+        result = random * result + Long.valueOf(getDate().getTime()).intValue();
         return result;
     }
 
@@ -230,11 +189,12 @@ public class Post implements Comparable<Post>, Parcelable {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this.getClass() != obj.getClass()) return false;
 
         Post other = (Post) obj;
-        if (!getDescription().equals(other.getDescription())) return false;
-        else if (!getTitle().equals(other.getTitle())) return false;
+        if (!this.getDescription().equals(other.getDescription())) return false;
+        else if (!this.getTitle().equals(other.getTitle())) return false;
+        else if (this.getDate().getTime() != other.getDate().getTime()) return false;
         return true;
     }
 }

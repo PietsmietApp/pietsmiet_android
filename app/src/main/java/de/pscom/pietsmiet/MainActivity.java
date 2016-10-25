@@ -19,12 +19,11 @@ import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.backend.DatabaseHelper;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.io.caching.CacheManager;
-import de.pscom.pietsmiet.io.caching.PostCache;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PsLog;
@@ -42,8 +41,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
-
-    TwitterPresenter twitterPresenter;
 
     private SwipeRefreshLayout refreshLayout;
 
@@ -79,12 +76,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new SecretConstants(this);
 
         new Thread(() -> {
-            addNewPosts(new PostCache(new CacheManager(this)).getPosts());
+            addNewPosts(new DatabaseHelper(this).getPostsFromCache());
         }).start();
 
         new SecretConstants(this);
 
-        updateData();
+        //updateData();
     }
 
     public void setupRecyclerView() {
@@ -190,7 +187,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
         if (postManager != null) {
-            new PostCache(new CacheManager(this)).setPosts(postManager.getAllPosts());
+            new DatabaseHelper(this).insertPosts(postManager.getAllPosts());
         }
+        PsLog.v(Integer.toString(new DatabaseHelper(this).numberOfRows()));
     }
 }

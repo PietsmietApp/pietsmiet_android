@@ -1,5 +1,9 @@
 package de.pscom.pietsmiet.util;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,6 +11,11 @@ import android.support.annotation.Nullable;
 import org.mcsoxford.rss.MediaThumbnail;
 import org.mcsoxford.rss.RSSItem;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
@@ -73,11 +82,64 @@ public class DrawableFetcher {
     public static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
-            Drawable toReturn = Drawable.createFromStream(is, "src name");
-            if (toReturn.getMinimumHeight() > 0 && toReturn.getMinimumWidth() > 0) return toReturn;
+            Drawable toReturn = BitmapDrawable.createFromStream(is, "src name");
+            if (toReturn.getMinimumHeight() > 0 && toReturn.getMinimumWidth() > 0) {
+                return toReturn;
+            }
         } catch (Exception e) {
             PsLog.w("Couldn't fetch thumbnail: " + e.toString());
         }
         return null;
     }
+
+    /**
+     * http://stackoverflow.com/a/673014/4026792
+     */
+    public static void saveDrawableToFile(Drawable drawable, Context context, String fileName) {
+        FileOutputStream out = null;
+        try {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            File path = context.getCacheDir();
+            out = new FileOutputStream(path.getAbsolutePath() + fileName);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            // PNG is a lossless format, the compression factor (100) is ignored
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
+
+    /**
+     * http://stackoverflow.com/a/8711059/4026792
+     *
+     * @param context
+     * @param fileName
+     * @return
+     */
+    public static Drawable loadDrawableFromFile(Context context, String fileName) {
+        Bitmap bitmap;
+
+        File path = context.getCacheDir();
+        File f = new File(path.getAbsolutePath() + fileName);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        try {
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+            return new BitmapDrawable(context.getResources(), bitmap);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

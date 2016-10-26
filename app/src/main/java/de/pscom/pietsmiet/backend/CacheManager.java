@@ -13,7 +13,7 @@ public class CacheManager {
     }
 
     public void displayPostsFromCache() {
-        Observable.defer(() -> Observable.just(new DatabaseHelper(view).getPostsFromCache()))
+        Observable.defer(() -> Observable.just(new DatabaseHelper(view).getPostsFromCache(view)))
                 .subscribeOn(Schedulers.io())
                 .subscribe(list -> view.addNewPosts(list), Throwable::printStackTrace, () -> PsLog.v("Database finished loading"));
     }

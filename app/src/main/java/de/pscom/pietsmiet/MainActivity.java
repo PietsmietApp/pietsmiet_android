@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new SecretConstants(this);
 
-       new CacheManager(this).displayPostsFromCache();
+        new CacheManager(this).displayPostsFromCache();
 
         updateData();
     }
@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onPause() {
         super.onPause();
         if (postManager != null) {
-            new DatabaseHelper(this).insertPosts(postManager.getAllPosts());
+            new DatabaseHelper(this).insertPosts(postManager.getAllPosts(), this);
         }
     }
 }

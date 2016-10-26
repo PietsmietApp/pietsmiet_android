@@ -31,7 +31,7 @@ public class MainPresenter {
     }
 
     void finished() {
-        PsLog.v("Type" + postType + " finished loading;");
+        PsLog.v("Type" + postType + " finished loading");
         if (view != null) view.updateCurrentPosts();
     }
 

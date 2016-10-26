@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -19,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.backend.CacheManager;
 import de.pscom.pietsmiet.backend.DatabaseHelper;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
@@ -66,22 +66,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            refreshLayout.setProgressViewOffset(false, 0, 100);
-        }
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         new SecretConstants(this);
 
-        new Thread(() -> {
-            addNewPosts(new DatabaseHelper(this).getPostsFromCache());
-        }).start();
+       new CacheManager(this).displayPostsFromCache();
 
-        new SecretConstants(this);
-
-        //updateData();
+        updateData();
     }
 
     public void setupRecyclerView() {
@@ -97,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void addNewPosts(List<Post> items) {
-        if (postManager != null) postManager.addPosts(items);
+        if (postManager != null) postManager.addPosts(items, true);
     }
 
     public void updateAdapter() {
@@ -189,6 +181,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (postManager != null) {
             new DatabaseHelper(this).insertPosts(postManager.getAllPosts());
         }
-        PsLog.v(Integer.toString(new DatabaseHelper(this).numberOfRows()));
     }
 }

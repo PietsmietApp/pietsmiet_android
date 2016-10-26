@@ -1,18 +1,21 @@
 package de.pscom.pietsmiet.backend;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -28,6 +31,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_THUMBNAIL = "thumbnail";
+
+    @SuppressLint("SimpleDateFormat")
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
@@ -62,23 +68,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
                 .flatMap(Observable::from)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_TITLE, post.getTitle());
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
                     contentValues.put(POSTS_COLUMN_TYPE, post.getPostType());
-                    contentValues.put(POSTS_COLUMN_TIME, Long.valueOf(post.getDate().getTime()).intValue());
+                    contentValues.put(POSTS_COLUMN_TIME, dateFormat.format(post.getDate()));
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     //contentValues.put(POSTS_COLUMN_THUMBNAIL, post.getThumbnail().toString()); //// FIXME: 25.10.2016
                     db.insert(POST_TABLE_NAME, null, contentValues);
-                });
+                }, Throwable::printStackTrace, () -> PsLog.v("Stored posts in db"));
     }
 
-    public int numberOfRows() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        return (int) DatabaseUtils.queryNumEntries(db, POST_TABLE_NAME);
-    }
-
+    @SuppressWarnings("WeakerAccess")
     public List<Post> getPostsFromCache() {
 
         List<Post> toReturn = new ArrayList<>();
@@ -90,14 +94,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             res.moveToFirst();
 
             while (!res.isAfterLast()) {
-                Post post = new Post();
-                post.setTitle(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)));
-                post.setDescription(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)));
-                post.setPostType(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)));
-                post.setDatetime(new Date(res.getInt(res.getColumnIndex(POSTS_COLUMN_TIME))));
-                post.setDuration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)));
+                try {
+                    Post post = new Post();
+                    post.setTitle(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)));
+                    post.setDescription(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)));
+                    post.setPostType(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)));
+                    post.setDuration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)));
+                    post.setDatetime(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
+
+                    toReturn.add(post);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 res.moveToNext();
-                toReturn.add(post);
             }
         } finally {
             res.close();

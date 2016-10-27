@@ -76,7 +76,7 @@ public class DrawableFetcher {
 
     /**
      * @param url Url to the image
-     * @return A drawable from the url
+     * @return A BitmapDrawable from the url
      */
     @Nullable
     public static Drawable getDrawableFromUrl(@NonNull String url) {
@@ -93,7 +93,12 @@ public class DrawableFetcher {
     }
 
     /**
-     * http://stackoverflow.com/a/673014/4026792
+     * Converts a BitmapDrawable to a bitmap and stores it
+     *
+     * Source: http://stackoverflow.com/a/673014/4026792
+     * @param drawable BitmapDrawable to store
+     * @param context Context for getting the dir
+     * @param fileName Filename to store to
      */
     public static void saveDrawableToFile(Drawable drawable, Context context, String fileName) {
         FileOutputStream out = null;
@@ -102,9 +107,9 @@ public class DrawableFetcher {
             File path = context.getCacheDir();
             out = new FileOutputStream(path.getAbsolutePath() + fileName);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            // PNG is a lossless format, the compression factor (100) is ignored
+            // PNG is a lossless format, the compression factor (100) is ignored; it's just for saving
         } catch (Exception e) {
-            e.printStackTrace();
+            PsLog.w("Couldn't save drawable: " + e.getMessage());
         } finally {
             try {
                 if (out != null) {
@@ -119,11 +124,13 @@ public class DrawableFetcher {
     }
 
     /**
-     * http://stackoverflow.com/a/8711059/4026792
+     * Loads a Bitmap from file and convert it to BitmapDrawable
      *
-     * @param context
-     * @param fileName
-     * @return
+     * Source: http://stackoverflow.com/a/8711059/4026792
+     *
+     * @param context Context for getting the directory
+     * @param fileName Filename
+     * @return BitmapDrawable from the file
      */
     public static Drawable loadDrawableFromFile(Context context, String fileName) {
         Bitmap bitmap;
@@ -136,7 +143,7 @@ public class DrawableFetcher {
             bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
             return new BitmapDrawable(context.getResources(), bitmap);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            PsLog.i("Couldn't find thumbnail: " + f.getAbsolutePath());
         }
         return null;
     }

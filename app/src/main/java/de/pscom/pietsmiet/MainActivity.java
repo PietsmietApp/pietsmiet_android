@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -18,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
-import de.pscom.pietsmiet.backend.CacheManager;
 import de.pscom.pietsmiet.backend.DatabaseHelper;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new SecretConstants(this);
 
-        new CacheManager(this).displayPostsFromCache();
+        new DatabaseHelper(this).displayPostsFromCache(this);
 
         updateData();
     }

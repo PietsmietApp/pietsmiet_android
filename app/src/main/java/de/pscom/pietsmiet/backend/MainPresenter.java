@@ -1,5 +1,8 @@
 package de.pscom.pietsmiet.backend;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
@@ -11,32 +14,30 @@ public class MainPresenter {
     private int postType;
     private MainActivity view;
     Post post;
+    List<Post> posts = new ArrayList<>();
 
     MainPresenter(@TypeAllPosts int postType) {
         this.postType = postType;
     }
 
     /**
-     * Publishes the current post to the specified activity
+     * Publishes the current posts to the specified activity
      */
-    void publish() {
+    void finished() {
+        PsLog.v("Type" + postType + " finished loading");
         if (view != null) {
-            if (post != null) {
-                post.setPostType(postType);
-                view.addNewPost(post);
+            if (posts != null) {
+                PsLog.v("Type" +postType+ " posts:" + posts.size());
+                view.addNewPosts(posts);
             } else {
                 view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");
             }
         }
     }
 
-    void finished() {
-        PsLog.v("Type" + postType + " finished loading;");
-        if (view != null) view.updateCurrentPosts();
-    }
-
     /**
      * Add a "callback" activity to this class
+     *
      * @param view Activity to call back
      */
     public void onTakeView(MainActivity view) {

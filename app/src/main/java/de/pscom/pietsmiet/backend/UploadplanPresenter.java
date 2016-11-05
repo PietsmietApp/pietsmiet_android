@@ -4,7 +4,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
@@ -14,7 +13,6 @@ import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
 public class UploadplanPresenter extends MainPresenter {
     private static final int DEFAULT_MAX = 1;
     private static String uploadplanUrl;
-
 
     public UploadplanPresenter() {
         super(UPLOAD_PLAN);
@@ -36,7 +34,7 @@ public class UploadplanPresenter extends MainPresenter {
         Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .doOnNext(element -> {
                     post = new Post();
@@ -47,12 +45,12 @@ public class UploadplanPresenter extends MainPresenter {
                 .take(max)
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
-                        .onBackpressureBuffer()
-                        .observeOn(AndroidSchedulers.mainThread()))
+                        .onBackpressureBuffer())
                 .filter(content -> content != null)
                 .subscribe(uploadplan -> {
                     post.setDescription(uploadplan);
-                    publish();
+                    post.setPostType(UPLOAD_PLAN);
+                    posts.add(post);
                 }, Throwable::printStackTrace, this::finished);
     }
 

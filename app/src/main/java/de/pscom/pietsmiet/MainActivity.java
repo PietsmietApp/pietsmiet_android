@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -113,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void showError(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
     }
 
     public void updateCurrentPosts() {

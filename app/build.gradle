@@ -1,15 +1,19 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
+def storePw = hasProperty('RELEASE_STORE_PASSWORD') ? RELEASE_STORE_PASSWORD : System.getenv('RELEASE_STORE_PASSWORD')
+def alias = hasProperty('RELEASE_KEY_ALIAS') ? RELEASE_KEY_ALIAS : System.getenv('RELEASE_KEY_ALIAS')
+def keyPw = hasProperty('RELEASE_KEY_PASSWORD') ? RELEASE_KEY_PASSWORD : System.getenv('RELEASE_KEY_PASSWORD')
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.2"
     signingConfigs {
         release {
             storeFile file('../pietsmiet_android.jks')
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storePassword storePw
+            keyAlias alias
+            keyPassword keyPw
         }
     }
     defaultConfig {

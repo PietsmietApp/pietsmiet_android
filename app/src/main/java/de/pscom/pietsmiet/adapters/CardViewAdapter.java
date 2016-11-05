@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -29,8 +28,8 @@ import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
-    private static final int LAYOUT_VIDEO = 0;
-    private static final int LAYOUT_SOCIAL = 1;
+    private static final int LAYOUT_THUMBNAIL = 0;
+    private static final int LAYOUT_WIDE_IMAGE = 1;
 
     private final List<Post> items;
     private final Context context;
@@ -57,12 +56,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
     }
 
-    private static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
+    private static class ThumbnailCardViewHolder extends CardViewAdapter.CardViewHolder {
         final RelativeLayout descriptionContainer;
         final ImageView durationIcon;
         final Button btnExpand;
 
-        VideoCardViewHolder(View itemView) {
+        ThumbnailCardViewHolder(View itemView) {
             super(itemView);
             durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
             btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
@@ -74,13 +73,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     @Override
     public CardViewAdapter.CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
-        if (viewType == LAYOUT_VIDEO) {
+        if (viewType == LAYOUT_THUMBNAIL) {
             v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.card_view_videos, parent, false);
-            return new VideoCardViewHolder(v);
+                    .inflate(R.layout.card_view_thumbnail, parent, false);
+            return new ThumbnailCardViewHolder(v);
         } else {
             v = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.card_view_social_media, parent, false);
+                    .inflate(R.layout.card_view_wide_image, parent, false);
             return new CardViewHolder(v);
         }
     }
@@ -90,8 +89,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     public void onBindViewHolder(CardViewAdapter.CardViewHolder holder, int position) {
         Post currentItem = items.get(position);
 
-        if (holder.getItemViewType() == LAYOUT_VIDEO) {
-            VideoCardViewHolder videoHolder = (VideoCardViewHolder) holder;
+        if (holder.getItemViewType() == LAYOUT_THUMBNAIL) {
+            ThumbnailCardViewHolder videoHolder = (ThumbnailCardViewHolder) holder;
 
             videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
 
@@ -109,11 +108,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         if (currentItem.getPostType() == UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
-        } else if (currentItem.getDate() == null) {
-            PsLog.w("No Date specified");
-            holder.timedate.setVisibility(GONE);
         } else {
-            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN);
+            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN); //hardcode Language?
             holder.timedate.setText(formatter.format(currentItem.getDate()) + " Uhr");
         }
 
@@ -135,8 +131,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
     @Override
     public int getItemViewType(int position) {
-        if (items.get(position).isVideoView()) return LAYOUT_VIDEO;
-        else return LAYOUT_SOCIAL;
+        if (items.get(position).isThumbnailView()) return LAYOUT_THUMBNAIL;
+        else return LAYOUT_WIDE_IMAGE;
     }
 
     @Override

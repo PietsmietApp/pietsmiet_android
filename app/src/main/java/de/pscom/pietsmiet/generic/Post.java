@@ -166,7 +166,7 @@ public class Post implements Comparable<Post> {
         return Color.parseColor(hexColor);
     }
 
-    public boolean isVideoView() {
+    public boolean isThumbnailView() {
         return postType == VIDEO
                 || postType == STREAM
                 || postType == PIETCAST;

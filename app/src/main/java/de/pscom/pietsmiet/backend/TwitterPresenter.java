@@ -1,5 +1,7 @@
 package de.pscom.pietsmiet.backend;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
@@ -8,7 +10,6 @@ import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -52,17 +53,17 @@ public class TwitterPresenter extends MainPresenter {
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .doOnNext(tweet -> lastTweetId = tweet.getId())
-                .subscribe(tweet -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromTweet(tweet)))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(drawable -> {
-                            post = new Post();
-                            post.setThumbnail(drawable);
-                            post.setTitle(getDisplayName(tweet.getUser()));
-                            post.setDescription(tweet.getText());
-                            post.setDatetime(tweet.getCreatedAt());
-                            publish();
-                        }), Throwable::printStackTrace, this::finished);
+                .subscribe(tweet -> {
+                    Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
+                    post = new Post();
+                    post.setThumbnail(thumb);
+                    post.setTitle(getDisplayName(tweet.getUser()));
+                    post.setDescription(tweet.getText());
+                    post.setDatetime(tweet.getCreatedAt());
+                    post.setPostType(TWITTER);
+                    posts.add(post);
+                    PsLog.v("Added tweet: Size: " + posts.size());
+                }, Throwable::printStackTrace, this::finished);
     }
 
     /**

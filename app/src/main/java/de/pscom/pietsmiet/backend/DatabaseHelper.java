@@ -93,7 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
                     db.insert(POST_TABLE_NAME, null, contentValues);
                 }, Throwable::printStackTrace, () -> {
-                    PsLog.v("Stored posts in db");
+                    PsLog.v("Stored " + posts.size() + " posts in db");
                     this.close();
                 });
     }
@@ -110,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + POST_TABLE_NAME, null);
 
-        Observable.empty()
+        Observable.just("")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe(ignored -> {
@@ -137,10 +137,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             }
                             res.moveToNext();
                         }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     } finally {
                         res.close();
                         this.close();
                     }
+                    PsLog.v("Loaded " + toReturn.size() + " posts from db");
                     if (context != null) context.addNewPosts(toReturn);
                     else PsLog.e("Context is null!");
                 });

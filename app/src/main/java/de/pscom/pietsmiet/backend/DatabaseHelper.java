@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.drawable.Drawable;
@@ -17,6 +18,7 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -98,6 +100,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 });
     }
 
+    public int getPostCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        long cnt = DatabaseUtils.queryNumEntries(db, POST_TABLE_NAME);
+        db.close();
+        return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
+    }
+
     /**
      * Loads all post objects from the database and displays it
      *
@@ -141,11 +150,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         e.printStackTrace();
                     } finally {
                         res.close();
-                        this.close();
+                        db.close();
                     }
-                    PsLog.v("Loaded " + toReturn.size() + " posts from db");
-                    if (context != null) context.addNewPosts(toReturn);
-                    else PsLog.e("Context is null!");
+                    if (getPostCount() != toReturn.size()) {
+                        PsLog.w("Couldn't load all posts from cache; not using cache");
+                        SharedPreferenceHelper.shouldUseCache = false;
+                    } else if (context != null) {
+                        PsLog.v("Loaded " + toReturn.size() + " posts from db");
+                        context.addNewPosts(toReturn);
+                    } else {
+                        PsLog.e("Context is null!");
+                    }
                 });
     }
 }

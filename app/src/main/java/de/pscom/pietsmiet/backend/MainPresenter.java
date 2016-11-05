@@ -12,7 +12,7 @@ import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 public class MainPresenter {
     @TypeAllPosts
     private final int postType;
-    private MainActivity view;
+    MainActivity view;
     Post post;
     List<Post> posts = new ArrayList<>();
 
@@ -24,7 +24,6 @@ public class MainPresenter {
      * Publishes the current posts to the specified activity
      */
     void finished() {
-        PsLog.v("Type" + postType + " finished loading");
         if (view != null) {
             if (posts != null) {
                 PsLog.v("Type" + postType + " posts:" + posts.size());

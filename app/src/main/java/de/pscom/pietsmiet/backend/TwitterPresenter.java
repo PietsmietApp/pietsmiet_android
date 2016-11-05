@@ -5,10 +5,12 @@ import android.graphics.drawable.Drawable;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
@@ -22,9 +24,9 @@ import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class TwitterPresenter extends MainPresenter {
-    //TODO: Store id!
     private long lastTweetId;
 
     private Twitter twitterInstance;
@@ -46,13 +48,20 @@ public class TwitterPresenter extends MainPresenter {
         parseTweets();
     }
 
+    @Override
+    public void onTakeView(MainActivity view) {
+        super.onTakeView(view);
+        if (view != null && SharedPreferenceHelper.shouldUseCache) {
+            lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
+        }
+    }
+
     private void parseTweets() {
         Observable.defer(() -> Observable.just(fetchTweets()))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .doOnNext(tweet -> lastTweetId = tweet.getId())
                 .subscribe(tweet -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
                     post = new Post();
@@ -62,7 +71,13 @@ public class TwitterPresenter extends MainPresenter {
                     post.setDatetime(tweet.getCreatedAt());
                     post.setPostType(TWITTER);
                     posts.add(post);
-                }, Throwable::printStackTrace, this::finished);
+                    if (posts.size() == 1) lastTweetId = tweet.getId();
+                }, Throwable::printStackTrace, () -> {
+                    finished();
+                    if (view != null) {
+                        SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
+                    }
+                });
     }
 
     /**

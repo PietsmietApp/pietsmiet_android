@@ -26,6 +26,7 @@ public class PietcastPresenter extends MainPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
+                .take(15)
                 .onBackpressureBuffer()
                 .subscribe(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);

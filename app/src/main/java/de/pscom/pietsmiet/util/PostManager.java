@@ -36,7 +36,7 @@ public class PostManager {
     public void addPost(Post post) {
         List<Post> toReturn = new ArrayList<>();
         toReturn.add(post);
-        addPosts(toReturn);
+        addPosts(toReturn, false);
     }
 
     /**
@@ -44,7 +44,7 @@ public class PostManager {
      *
      * @param posts Post Items
      */
-    public void addPosts(List<Post> posts) {
+    public void addPosts(List<Post> posts, boolean updateWhenFinished) {
         posts.addAll(getAllPosts());
 
         Observable.just(posts)
@@ -56,11 +56,13 @@ public class PostManager {
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
-                }, Throwable::printStackTrace);
+                }, Throwable::printStackTrace, () -> {
+                    if (updateWhenFinished) updateCurrentPosts();
+                });
     }
 
     /**
-     * Sorts all posts. This should be called as few times as possible because it kills performance otherwise
+     * Update current posts. This should be called as few times as possible because it kills performance otherwise
      */
     public void updateCurrentPosts() {
         // Use an array to avoid concurrent modification exceptions

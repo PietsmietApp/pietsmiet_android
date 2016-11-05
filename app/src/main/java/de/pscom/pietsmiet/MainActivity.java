@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //new UploadplanPresenter().onTakeView(this);
         new PietcastPresenter().onTakeView(this);
         new FacebookPresenter().onTakeView(this);
-        if (BuildConfig.DEBUG) addTestingCards();
+        //if (BuildConfig.DEBUG) addTestingCards();
     }
 
     private void addTestingCards() {

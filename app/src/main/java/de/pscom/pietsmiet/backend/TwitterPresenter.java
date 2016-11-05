@@ -62,7 +62,6 @@ public class TwitterPresenter extends MainPresenter {
                     post.setDatetime(tweet.getCreatedAt());
                     post.setPostType(TWITTER);
                     posts.add(post);
-                    PsLog.v("Added tweet: Size: " + posts.size());
                 }, Throwable::printStackTrace, this::finished);
     }
 

@@ -1,12 +1,9 @@
 package de.pscom.pietsmiet.backend;
 
-import android.graphics.drawable.Drawable;
-
 import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import facebook4j.BatchRequest;
@@ -65,15 +62,14 @@ public class FacebookPresenter extends MainPresenter {
                 })
                 .filter(response -> response != null)
                 .subscribe(post -> {
-                    Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
+                    //Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
                     this.post = new Post();
-                    this.post.setThumbnail(thumb);
+                    //this.post.setThumbnail(thumb);
                     this.post.setTitle(post.getFrom().getName());
                     this.post.setDescription(post.getMessage());
                     this.post.setDatetime(post.getCreatedTime());
                     this.post.setPostType(FACEBOOK);
                     posts.add(this.post);
-                    PsLog.v("Added Fb post: Size: " + posts.size());
                 }, e -> PsLog.e(e.toString()), () -> {
                     finished();
                     lastFetchedDate = new Date();

@@ -32,8 +32,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     private static final int LAYOUT_VIDEO = 0;
     private static final int LAYOUT_SOCIAL = 1;
 
-    private List<Post> items;
-    private Context context;
+    private final List<Post> items;
+    private final Context context;
 
     public CardViewAdapter(List<Post> items, Context context) {
         this.items = items;
@@ -41,11 +41,11 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     }
 
     static class CardViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
-        TextView title;
-        TextView description;
-        TextView timedate;
-        ImageView thumbnail;
+        final CardView cv;
+        final TextView title;
+        final TextView description;
+        final TextView timedate;
+        final ImageView thumbnail;
 
         CardViewHolder(View itemView) {
             super(itemView);
@@ -58,9 +58,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     }
 
     private static class VideoCardViewHolder extends CardViewAdapter.CardViewHolder {
-        RelativeLayout descriptionContainer;
-        ImageView durationIcon;
-        Button btnExpand;
+        final RelativeLayout descriptionContainer;
+        final ImageView durationIcon;
+        final Button btnExpand;
 
         VideoCardViewHolder(View itemView) {
             super(itemView);

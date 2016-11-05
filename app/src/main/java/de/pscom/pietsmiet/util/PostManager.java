@@ -15,12 +15,12 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 
 public class PostManager {
-    public static final int DISPLAY_ALL = 10;
+    static final int DISPLAY_ALL = 10;
     public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
 
     private List<Post> currentPosts = new ArrayList<>();
     private List<Post> allPosts = new ArrayList<>();
-    private MainActivity mView;
+    private final MainActivity mView;
     @PostType.TypeDrawer
     private int currentlyDisplayedType = DISPLAY_ALL;
 
@@ -29,22 +29,11 @@ public class PostManager {
     }
 
     /**
-     * Adds a post to the "global" post list.
-     *
-     * @param post Post Item
-     */
-    public void addPost(Post post) {
-        List<Post> toReturn = new ArrayList<>();
-        toReturn.add(post);
-        addPosts(toReturn, false);
-    }
-
-    /**
      * Adds posts to the "global" post list, removes duplicates and sorts it. This is done asynchronous!
      *
      * @param posts Post Items
      */
-    public void addPosts(List<Post> posts, boolean updateWhenFinished) {
+    public void addPosts(List<Post> posts) {
         posts.addAll(getAllPosts());
 
         Observable.just(posts)
@@ -56,16 +45,19 @@ public class PostManager {
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
-                }, Throwable::printStackTrace, () -> {
-                    if (updateWhenFinished) updateCurrentPosts();
-                });
+                }, Throwable::printStackTrace, this::updateCurrentPosts);
     }
 
     /**
-     * Update current posts. This should be called as few times as possible because it kills performance otherwise
+     * 1) Iterates through all posts
+     * 2) Add post to displayed post list if they belong to the current displayed category
+     * 3) Sorts the displayed post list
+     * 4) Notifies the adapter about the change
+     * <p>
+     * This should be called as few times as possible because it kills performance if it's called too often
      */
-    public void updateCurrentPosts() {
-        // Use an array to avoid concurrent modification exceptions
+    private void updateCurrentPosts() {
+        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
         Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
         Observable.just(posts)
@@ -89,7 +81,7 @@ public class PostManager {
     }
 
     /**
-     * @return All posts that should be displayed (the adapter is "linked" to this "symbol")
+     * @return All posts that should be displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
         return currentPosts;
@@ -130,7 +122,7 @@ public class PostManager {
 
     /**
      * @param post Post item
-     * @return If the specified post belongs to the currently shown category / type or not
+     * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
      */
     private boolean isAllowedType(Post post) {
         int postType = post.getPostType();
@@ -141,7 +133,6 @@ public class PostManager {
                 return true;
             }
         } else {
-            //noinspection WrongConstant
             if (postType == currentlyDisplayedType) return true;
         }
         return false;

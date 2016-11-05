@@ -11,7 +11,7 @@ import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 
 public class MainPresenter {
     @TypeAllPosts
-    private int postType;
+    private final int postType;
     private MainActivity view;
     Post post;
     List<Post> posts = new ArrayList<>();

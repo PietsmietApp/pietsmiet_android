@@ -22,15 +22,14 @@ public class UploadplanPresenter extends MainPresenter {
         }
         uploadplanUrl = SecretConstants.rssUrl;
 
-        parseUploadplan(DEFAULT_MAX);
+        parseUploadplan();
     }
 
     /**
      * Loads the latest uploadplan URLS and parses them
      *
-     * @param max Max URLs to parse, should be as low as possible
      */
-    private void parseUploadplan(int max) {
+    private void parseUploadplan() {
         Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
@@ -42,7 +41,7 @@ public class UploadplanPresenter extends MainPresenter {
                     post.setTitle(element.getTitle());
                 })
                 .map(element -> element.getLink().toString())
-                .take(max)
+                .take(DEFAULT_MAX)
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
                         .onBackpressureBuffer())

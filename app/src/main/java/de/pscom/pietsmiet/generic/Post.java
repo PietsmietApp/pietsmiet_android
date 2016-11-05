@@ -95,7 +95,7 @@ public class Post implements Comparable<Post> {
         this.thumbnail = thumbnail;
     }
 
-    public boolean hasThumbnail(){
+    public boolean hasThumbnail() {
         return thumbnail != null;
     }
 
@@ -184,8 +184,9 @@ public class Post implements Comparable<Post> {
         int result = 5;
         int random = 87;
         result = random * result + (getTitle() != null ? getTitle().hashCode() : 0);
-        result = random * result + getDescription().hashCode();
+        result = random * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = random * result + Long.valueOf(getDate().getTime()).intValue();
+        result = random * result + getPostType();
         return result;
     }
 
@@ -196,9 +197,18 @@ public class Post implements Comparable<Post> {
         if (this.getClass() != obj.getClass()) return false;
 
         Post other = (Post) obj;
-        if (!this.getDescription().equals(other.getDescription())) return false;
-        else if (!this.getTitle().equals(other.getTitle())) return false;
-        else if (this.getDate().getTime() != other.getDate().getTime()) return false;
+        if (this.getDescription() != null) {
+            if (other.getDescription() == null) return false;
+            if (!this.getDescription().equals(other.getDescription())) return false;
+        } else if (other.getDescription() != null) return false;
+
+        if (this.getTitle() != null){
+            if (other.getTitle() == null) return false;
+            if (!this.getTitle().equals(other.getTitle())) return false;
+        } else if (other.getTitle() != null) return false;
+
+        if (this.getDate().getTime() != other.getDate().getTime()) return false;
+        else if (this.getPostType() != other.getPostType()) return false;
         return true;
     }
 }

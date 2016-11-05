@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -84,6 +85,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(CardViewAdapter.CardViewHolder holder, int position) {
         Post currentItem = items.get(position);

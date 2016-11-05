@@ -27,7 +27,7 @@ public class MainPresenter {
         PsLog.v("Type" + postType + " finished loading");
         if (view != null) {
             if (posts != null) {
-                PsLog.v("Type" +postType+ " posts:" + posts.size());
+                PsLog.v("Type" + postType + " posts:" + posts.size());
                 view.addNewPosts(posts);
             } else {
                 view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");

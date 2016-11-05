@@ -95,6 +95,10 @@ public class Post implements Comparable<Post> {
         this.thumbnail = thumbnail;
     }
 
+    public boolean hasThumbnail(){
+        return thumbnail != null;
+    }
+
     public int getPostType() {
         return postType;
     }

@@ -28,8 +28,8 @@ public class FacebookPresenter extends MainPresenter {
 
     public FacebookPresenter() {
         super(FACEBOOK);
-        if (SecretConstants.facebookToken == null || SecretConstants.twitterSecret == null) {
-            PsLog.w("No twitter secret specified");
+        if (SecretConstants.facebookToken == null || SecretConstants.facebookSecret == null) {
+            PsLog.w("No facebook secret or token specified");
             return;
         }
         mFacebook = new FacebookFactory().getInstance();

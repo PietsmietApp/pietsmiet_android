@@ -1,5 +1,7 @@
 package de.pscom.pietsmiet.backend;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +19,6 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
@@ -63,18 +64,17 @@ public class FacebookPresenter extends MainPresenter {
                     }
                 })
                 .filter(response -> response != null)
-                .subscribe(post -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromPost(post)))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(drawable -> {
-                            this.post = new Post();
-                            this.post.setThumbnail(drawable);
-                            this.post.setTitle(post.getFrom().getName());
-                            this.post.setDescription(post.getMessage());
-                            this.post.setDatetime(post.getCreatedTime());
-                            publish();
-                            PsLog.v(post.getId());
-                        }), e -> PsLog.e(e.toString()), () -> {
+                .subscribe(post -> {
+                    Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
+                    this.post = new Post();
+                    this.post.setThumbnail(thumb);
+                    this.post.setTitle(post.getFrom().getName());
+                    this.post.setDescription(post.getMessage());
+                    this.post.setDatetime(post.getCreatedTime());
+                    this.post.setPostType(FACEBOOK);
+                    posts.add(this.post);
+                    PsLog.v("Added Fb post: Size: " + posts.size());
+                }, e -> PsLog.e(e.toString()), () -> {
                     finished();
                     lastFetchedDate = new Date();
                 });

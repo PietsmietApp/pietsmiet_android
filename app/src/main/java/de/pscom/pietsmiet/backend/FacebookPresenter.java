@@ -3,9 +3,11 @@ package de.pscom.pietsmiet.backend;
 import java.util.Date;
 import java.util.List;
 
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -19,12 +21,13 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 
 public class FacebookPresenter extends MainPresenter {
     private static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
 
-    private Date lastFetchedDate;
+    private String lastFetchedTime;
 
     public FacebookPresenter() {
         super(FACEBOOK);
@@ -36,6 +39,14 @@ public class FacebookPresenter extends MainPresenter {
         mFacebook.setOAuthAppId("664158170415954", SecretConstants.facebookSecret);
         mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
         parsePosts();
+    }
+
+    @Override
+    public void onTakeView(MainActivity view) {
+        super.onTakeView(view);
+        if (view != null && SharedPreferenceHelper.shouldUseCache) {
+            lastFetchedTime = SharedPreferenceHelper.getSharedPreferenceString(view, KEY_FACEBOOK_DATE, "");
+        }
     }
 
     private void parsePosts() {
@@ -72,7 +83,10 @@ public class FacebookPresenter extends MainPresenter {
                     posts.add(this.post);
                 }, e -> PsLog.e(e.toString()), () -> {
                     finished();
-                    lastFetchedDate = new Date();
+                    lastFetchedTime = String.valueOf(new Date().getTime() / 1000);
+                    if (view != null) {
+                        SharedPreferenceHelper.setSharedPreferenceString(view, KEY_FACEBOOK_DATE, lastFetchedTime);
+                    }
                 });
     }
 
@@ -81,8 +95,8 @@ public class FacebookPresenter extends MainPresenter {
      */
     private List<BatchResponse> loadPosts() {
         String sinceTime = "";
-        if (lastFetchedDate != null) {
-            sinceTime = "&since=" + String.valueOf(lastFetchedDate.getTime() / 1000);
+        if (lastFetchedTime != null && !lastFetchedTime.isEmpty()) {
+            sinceTime = "&since=" + lastFetchedTime;
         }
 
         try {

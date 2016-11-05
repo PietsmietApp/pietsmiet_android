@@ -19,5 +19,4 @@ jdk:
 script:
 - "./gradlew build -PdisablePreDex"
 before_install:
-- openssl aes-256-cbc -K $encrypted_9fa7c8bbd59d_key -iv $encrypted_9fa7c8bbd59d_iv
-  -in pietsmiet_android.jks.enc -out pietsmiet_android.jks -d
+- openssl aes-256-cbc -K $encrypted_e70b979cd64c_key -iv $encrypted_e70b979cd64c_iv -in pietsmiet_android.jks.enc -out pietsmiet_android.jks -d

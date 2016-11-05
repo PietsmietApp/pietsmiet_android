@@ -47,7 +47,7 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     private void parseTweets() {
-        Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
+        Observable.defer(() -> Observable.just(fetchTweets()))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
@@ -69,14 +69,13 @@ public class TwitterPresenter extends MainPresenter {
     /**
      * Fetch a list of tweets
      *
-     * @param count Max count of tweets
      * @return List of Tweets
      */
-    private List<Status> fetchTweets(int count) {
+    private List<Status> fetchTweets() {
         getToken();
         QueryResult result;
         try {
-            result = twitterInstance.search(pietsmietTweets(count));
+            result = twitterInstance.search(pietsmietTweets(maxCount));
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             return null;

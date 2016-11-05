@@ -6,6 +6,7 @@ import android.util.Log;
 /**
  * Source: https://github.com/ccrama/Slide/blob/master/app/src/main/java/me/ccrama/redditslide/util/LogUtil.java
  */
+@SuppressWarnings("SameParameterValue")
 public class PsLog {
     private static final int CALLING_METHOD_INDEX;
 
@@ -30,7 +31,7 @@ public class PsLog {
      *
      * @return Log tag in format (CLASSNAME.java:LINENUMBER); which makes it clickable in logcat
      */
-    public static String getTag() {
+    private static String getTag() {
         try {
             final StackTraceElement ste = Thread.currentThread().getStackTrace()[CALLING_METHOD_INDEX];
             String name = ste.getFileName();

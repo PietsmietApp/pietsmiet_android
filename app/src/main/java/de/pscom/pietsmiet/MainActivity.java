@@ -36,7 +36,7 @@ import static de.pscom.pietsmiet.util.PostType.VIDEO;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
-    LinearLayoutManager layoutManager;
+    private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
 
@@ -71,10 +71,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new DatabaseHelper(this).displayPostsFromCache(this);
 
-        //updateData();
+        updateData();
     }
 
-    public void setupRecyclerView() {
+    private void setupRecyclerView() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
         layoutManager = new LinearLayoutManager(this);
@@ -82,12 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
     }
 
-    public void addNewPost(Post item) {
-        if (postManager != null) postManager.addPost(item);
-    }
-
     public void addNewPosts(List<Post> items) {
-        if (postManager != null) postManager.addPosts(items, true);
+        if (postManager != null) postManager.addPosts(items);
     }
 
     public void updateAdapter() {
@@ -101,10 +97,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void showError(String msg) {
         //Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); fixme
-    }
-
-    public void updateCurrentPosts() {
-        if (postManager != null) postManager.updateCurrentPosts();
     }
 
     private void updateData() {

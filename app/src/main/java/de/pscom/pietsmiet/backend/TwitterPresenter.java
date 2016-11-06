@@ -27,10 +27,9 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class TwitterPresenter extends MainPresenter {
-    private long lastTweetId;
-
-    private Twitter twitterInstance;
     private static final int maxCount = 10;
+    private long lastTweetId;
+    private Twitter twitterInstance;
 
     public TwitterPresenter() {
         super(TWITTER);
@@ -89,7 +88,7 @@ public class TwitterPresenter extends MainPresenter {
         getToken();
         QueryResult result;
         try {
-            result = twitterInstance.search(pietsmietTweets(maxCount));
+            result = twitterInstance.search(pietsmietTweets());
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             return null;
@@ -99,17 +98,16 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     /**
-     * @param count Max count of tweets to fetch
      * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
      */
-    private Query pietsmietTweets(int count) {
+    private Query pietsmietTweets() {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .count(count)
+                .count(maxCount)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
     }

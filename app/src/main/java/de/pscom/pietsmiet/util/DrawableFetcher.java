@@ -94,10 +94,11 @@ public class DrawableFetcher {
 
     /**
      * Converts a BitmapDrawable to a bitmap and stores it
-     *
+     * <p>
      * Source: http://stackoverflow.com/a/673014/4026792
+     *
      * @param drawable BitmapDrawable to store
-     * @param context Context for getting the dir
+     * @param context  Context for getting the dir
      * @param fileName Filename to store to
      */
     public static void saveDrawableToFile(Drawable drawable, Context context, String fileName) {
@@ -125,10 +126,10 @@ public class DrawableFetcher {
 
     /**
      * Loads a Bitmap from file and convert it to BitmapDrawable
-     *
+     * <p>
      * Source: http://stackoverflow.com/a/8711059/4026792
      *
-     * @param context Context for getting the directory
+     * @param context  Context for getting the directory
      * @param fileName Filename
      * @return BitmapDrawable from the file
      */

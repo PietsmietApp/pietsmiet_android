@@ -27,7 +27,6 @@ public class UploadplanPresenter extends MainPresenter {
 
     /**
      * Loads the latest uploadplan URLS and parses them
-     *
      */
     private void parseUploadplan() {
         Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))

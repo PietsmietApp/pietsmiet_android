@@ -39,37 +39,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         this.context = context;
     }
 
-    static class CardViewHolder extends RecyclerView.ViewHolder {
-        final CardView cv;
-        final TextView title;
-        final TextView description;
-        final TextView timedate;
-        final ImageView thumbnail;
-
-        CardViewHolder(View itemView) {
-            super(itemView);
-            cv = (CardView) itemView.findViewById(R.id.cv);
-            title = (TextView) itemView.findViewById(R.id.tvTitle);
-            description = (TextView) itemView.findViewById(R.id.tvDescription);
-            timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
-            thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
-        }
-    }
-
-    private static class ThumbnailCardViewHolder extends CardViewAdapter.CardViewHolder {
-        final RelativeLayout descriptionContainer;
-        final ImageView durationIcon;
-        final Button btnExpand;
-
-        ThumbnailCardViewHolder(View itemView) {
-            super(itemView);
-            durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
-            btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
-            descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
-        }
-
-    }
-
     @Override
     public CardViewAdapter.CardViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
@@ -143,5 +112,36 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    static class CardViewHolder extends RecyclerView.ViewHolder {
+        final CardView cv;
+        final TextView title;
+        final TextView description;
+        final TextView timedate;
+        final ImageView thumbnail;
+
+        CardViewHolder(View itemView) {
+            super(itemView);
+            cv = (CardView) itemView.findViewById(R.id.cv);
+            title = (TextView) itemView.findViewById(R.id.tvTitle);
+            description = (TextView) itemView.findViewById(R.id.tvDescription);
+            timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
+            thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
+        }
+    }
+
+    private static class ThumbnailCardViewHolder extends CardViewAdapter.CardViewHolder {
+        final RelativeLayout descriptionContainer;
+        final ImageView durationIcon;
+        final Button btnExpand;
+
+        ThumbnailCardViewHolder(View itemView) {
+            super(itemView);
+            durationIcon = (ImageView) itemView.findViewById(R.id.ivDuration);
+            btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
+            descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
+        }
+
     }
 }

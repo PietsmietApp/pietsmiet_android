@@ -100,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 });
     }
 
-    public int getPostCount() {
+    private int getPostCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         long cnt = DatabaseUtils.queryNumEntries(db, POST_TABLE_NAME);
         db.close();

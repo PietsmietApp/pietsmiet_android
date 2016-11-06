@@ -202,7 +202,7 @@ public class Post implements Comparable<Post> {
             if (!this.getDescription().equals(other.getDescription())) return false;
         } else if (other.getDescription() != null) return false;
 
-        if (this.getTitle() != null){
+        if (this.getTitle() != null) {
             if (other.getTitle() == null) return false;
             if (!this.getTitle().equals(other.getTitle())) return false;
         } else if (other.getTitle() != null) return false;

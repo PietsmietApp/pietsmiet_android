@@ -68,8 +68,8 @@ public class PostManager {
         Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
         Observable.just(posts)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(post -> !currentPosts.contains(post) && isAllowedType(post))
                 .subscribe(list -> currentPosts.add(list),

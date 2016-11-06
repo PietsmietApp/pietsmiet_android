@@ -6,10 +6,11 @@ import android.content.SharedPreferences;
 /**
  * Source: https://github.com/nickescobedo/Android-Shared-Preferences-Helper/blob/master/SharedPreferenceHelper.java
  */
+@SuppressWarnings("SameParameterValue")
 public class SharedPreferenceHelper {
-    private final static String PREF_FILE = "PREF";
     public static final String KEY_TWITTER_ID = "KEY_TWITTER_ID";
     public static final String KEY_FACEBOOK_DATE = "KEY_FACEBOOK_DATE";
+    private final static String PREF_FILE = "PREF";
     public static boolean shouldUseCache = true;
 
     /**

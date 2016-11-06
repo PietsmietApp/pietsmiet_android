@@ -6,7 +6,7 @@ import android.util.Log;
 /**
  * Source: https://github.com/ccrama/Slide/blob/master/app/src/main/java/me/ccrama/redditslide/util/LogUtil.java
  */
-@SuppressWarnings("SameParameterValue")
+@SuppressWarnings({"SameParameterValue", "unused"})
 public class PsLog {
     private static final int CALLING_METHOD_INDEX;
 

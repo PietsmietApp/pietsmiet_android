@@ -9,11 +9,12 @@ import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 
-public class MainPresenter {
+class MainPresenter {
     @TypeAllPosts
     private final int postType;
     MainActivity view;
     Post post;
+    @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 
     MainPresenter(@TypeAllPosts int postType) {

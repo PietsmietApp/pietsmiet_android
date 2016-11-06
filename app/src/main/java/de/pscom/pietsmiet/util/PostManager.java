@@ -17,10 +17,11 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 public class PostManager {
     static final int DISPLAY_ALL = 10;
     public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
-
-    private List<Post> currentPosts = new ArrayList<>();
-    private List<Post> allPosts = new ArrayList<>();
     private final MainActivity mView;
+    @SuppressWarnings("CanBeFinal")
+    private List<Post> currentPosts = new ArrayList<>();
+    @SuppressWarnings("CanBeFinal")
+    private List<Post> allPosts = new ArrayList<>();
     @PostType.TypeDrawer
     private int currentlyDisplayedType = DISPLAY_ALL;
 
@@ -42,7 +43,7 @@ public class PostManager {
                 .flatMap(Observable::from)
                 .distinct()
                 .filter(post -> {
-                    if (post.getDate() == null){
+                    if (post.getDate() == null) {
                         PsLog.w("Date is null!");
                         return false;
                     }

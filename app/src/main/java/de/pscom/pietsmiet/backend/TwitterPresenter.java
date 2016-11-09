@@ -1,14 +1,17 @@
 package de.pscom.pietsmiet.backend;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -21,13 +24,12 @@ import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class TwitterPresenter extends MainPresenter {
-    //TODO: Store id!
-    private long lastTweetId;
-
-    private Twitter twitterInstance;
     private static final int maxCount = 10;
+    private long lastTweetId;
+    private Twitter twitterInstance;
 
     public TwitterPresenter() {
         super(TWITTER);
@@ -45,37 +47,48 @@ public class TwitterPresenter extends MainPresenter {
         parseTweets();
     }
 
+    @Override
+    public void onTakeView(MainActivity view) {
+        super.onTakeView(view);
+        if (view != null && SharedPreferenceHelper.shouldUseCache) {
+            lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
+        }
+    }
+
     private void parseTweets() {
-        Observable.defer(() -> Observable.just(fetchTweets(maxCount)))
+        Observable.defer(() -> Observable.just(fetchTweets()))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .doOnNext(tweet -> lastTweetId = tweet.getId())
-                .subscribe(tweet -> Observable.defer(() -> Observable.just(DrawableFetcher.getDrawableFromTweet(tweet)))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(drawable -> {
-                            post = new Post();
-                            post.setThumbnail(drawable);
-                            post.setTitle(getDisplayName(tweet.getUser()));
-                            post.setDescription(tweet.getText());
-                            post.setDatetime(tweet.getCreatedAt());
-                            publish();
-                        }), Throwable::printStackTrace, this::finished);
+                .subscribe(tweet -> {
+                    Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
+                    post = new Post();
+                    post.setThumbnail(thumb);
+                    post.setTitle(getDisplayName(tweet.getUser()));
+                    post.setDescription(tweet.getText());
+                    post.setDatetime(tweet.getCreatedAt());
+                    post.setPostType(TWITTER);
+                    posts.add(post);
+                    if (posts.size() == 1) lastTweetId = tweet.getId();
+                }, Throwable::printStackTrace, () -> {
+                    finished();
+                    if (view != null) {
+                        SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
+                    }
+                });
     }
 
     /**
      * Fetch a list of tweets
      *
-     * @param count Max count of tweets
      * @return List of Tweets
      */
-    private List<Status> fetchTweets(int count) {
+    private List<Status> fetchTweets() {
         getToken();
         QueryResult result;
         try {
-            result = twitterInstance.search(pietsmietTweets(count, lastTweetId));
+            result = twitterInstance.search(pietsmietTweets());
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             return null;
@@ -85,18 +98,16 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     /**
-     * @param count   Max count of tweets to fetch
-     * @param sinceId Allows to specifies since which tweet to fetch
      * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
      */
-    private Query pietsmietTweets(int count, long sinceId) {
+    private Query pietsmietTweets() {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .count(count)
+                .count(maxCount)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
     }

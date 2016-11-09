@@ -1,11 +1,7 @@
 package de.pscom.pietsmiet.generic;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -13,19 +9,19 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.util.PostType;
 
+import static de.pscom.pietsmiet.util.ColorUtils.Default;
+import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
+import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
+import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
+import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.STREAM;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
-import static de.pscom.pietsmiet.util.ColorUtils.Default;
-import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
-import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
-import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
-import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 
-public class Post implements Comparable<Post>, Parcelable {
+public class Post implements Comparable<Post> {
     private String description;
     private String title;
     private int postType;
@@ -40,10 +36,10 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
      */
 
     public Post(String title, String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
@@ -57,11 +53,11 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
-     * @param thumbnail    Thumbnail image
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
+     * @param thumbnail   Thumbnail image
      */
     public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
         this.title = title;
@@ -74,12 +70,12 @@ public class Post implements Comparable<Post>, Parcelable {
     /**
      * Creates a new post item with a thumbnail
      *
-     * @param title        Title of the post
-     * @param description  Description or message of the post
-     * @param datetime     Time of the post
-     * @param postType Type of the post
-     * @param duration     Duration of the video / pietcast
-     * @param thumbnail    Thumbnail image
+     * @param title       Title of the post
+     * @param description Description or message of the post
+     * @param datetime    Time of the post
+     * @param postType    Type of the post
+     * @param duration    Duration of the video / pietcast
+     * @param thumbnail   Thumbnail image
      */
     public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
         this.title = title;
@@ -97,6 +93,10 @@ public class Post implements Comparable<Post>, Parcelable {
 
     public void setThumbnail(@Nullable Drawable thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public boolean hasThumbnail() {
+        return thumbnail != null;
     }
 
     public int getPostType() {
@@ -166,7 +166,7 @@ public class Post implements Comparable<Post>, Parcelable {
         return Color.parseColor(hexColor);
     }
 
-    public boolean isVideoView() {
+    public boolean isThumbnailView() {
         return postType == VIDEO
                 || postType == STREAM
                 || postType == PIETCAST;
@@ -180,40 +180,35 @@ public class Post implements Comparable<Post>, Parcelable {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public int hashCode() {
+        int result = 5;
+        int random = 87;
+        result = random * result + (getTitle() != null ? getTitle().hashCode() : 0);
+        result = random * result + (getDescription() != null ? getDescription().hashCode() : 0);
+        result = random * result + Long.valueOf(getDate().getTime()).intValue();
+        result = random * result + getPostType();
+        return result;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        Bitmap bitmap = ((BitmapDrawable) thumbnail).getBitmap();
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (this.getClass() != obj.getClass()) return false;
 
-        dest.writeString(description);
-        dest.writeString(title);
-        dest.writeInt(postType);
-        dest.writeParcelable(bitmap, flags);
-        dest.writeLong(datetime.getTime());
+        Post other = (Post) obj;
+        if (this.getDescription() != null) {
+            if (other.getDescription() == null) return false;
+            if (!this.getDescription().equals(other.getDescription())) return false;
+        } else if (other.getDescription() != null) return false;
+
+        if (this.getTitle() != null) {
+            if (other.getTitle() == null) return false;
+            if (!this.getTitle().equals(other.getTitle())) return false;
+        } else if (other.getTitle() != null) return false;
+
+        if (this.getDate().getTime() != other.getDate().getTime()) return false;
+        else if (this.getPostType() != other.getPostType()) return false;
+        return true;
     }
-
-    // "De-parcel object
-    private Post(Parcel in) {
-        description = in.readString();
-        title = in.readString();
-        postType = in.readInt();
-        Bitmap bitmap = in.readParcelable(getClass().getClassLoader());
-        //noinspection deprecation
-        thumbnail = new BitmapDrawable(bitmap);
-        datetime = new Date(in.readLong());
-    }
-
-    public static final Parcelable.Creator CREATOR
-            = new Parcelable.Creator<Post>() {
-        public Post createFromParcel(Parcel in) {
-            return new Post(in);
-        }
-
-        public Post[] newArray(int size) {
-            return new Post[size];
-        }
-    };
 }

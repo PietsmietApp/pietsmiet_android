@@ -15,12 +15,13 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 
 public class PostManager {
-    public static final int DISPLAY_ALL = 10;
+    static final int DISPLAY_ALL = 10;
     public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
-
+    private final MainActivity mView;
+    @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
+    @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    private MainActivity mView;
     @PostType.TypeDrawer
     private int currentlyDisplayedType = DISPLAY_ALL;
 
@@ -29,61 +30,68 @@ public class PostManager {
     }
 
     /**
-     * Adds a post to the post list. If the post belongs to the current category / type, it'll be shown instant
+     * Adds posts to the "global" post list, removes duplicates and sorts it. This is done asynchronous!
      *
-     * @param post Post Item
+     * @param posts Post Items
      */
-    public void addPost(Post post) {
+    public void addPosts(List<Post> posts) {
+        posts.addAll(getAllPosts());
 
-        Observable.just(post)
+        Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .filter(item -> {
-                    // Use an array to avoid concurrent modification exceptions
-                    Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
-                    for (Post post1 : posts) {
-                        if (post.getTitle() == null)
-                            if (item.getTitle().equals(post1.getTitle()) && item.getDescription().equals(post1.getDescription()) && item.getDate().equals(post1.getDate())) {
-                                return false;
-                            }
-
+                .flatMap(Observable::from)
+                .distinct()
+                .filter(post -> {
+                    if (post.getDate() == null) {
+                        PsLog.w("Date is null!");
+                        return false;
                     }
                     return true;
                 })
-                .doOnNext(item -> {
-
-                })
-                .subscribe(item -> {
-                    allPosts.add(item);
-
-                    if (isAllowedType(item)) {
-                        currentPosts.add(item);
-                    }
-                }, Throwable::printStackTrace);
+                .toSortedList()
+                .subscribe(items -> {
+                    allPosts.clear();
+                    allPosts.addAll(items);
+                }, Throwable::printStackTrace, this::updateCurrentPosts);
     }
 
     /**
-     * Sorts all posts. This should be called as few times as possible because it kills performance otherwise
+     * 1) Iterates through all posts
+     * 2) Add post to displayed post list if they belong to the current displayed category
+     * 3) Sorts the displayed post list
+     * 4) Notifies the adapter about the change
+     * <p>
+     * This should be called as few times as possible because it kills performance if it's called too often
      */
-    public void sortPosts() {
-        Collections.sort(allPosts);
+    private void updateCurrentPosts() {
+        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
+        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
-        Observable.just(currentPosts)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
+        Observable.just(posts)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .toSortedList()
-                .subscribe(list -> {
-                    currentPosts.clear();
-                    currentPosts.addAll(list);
-                    if (mView != null) mView.updateAdapter();
-                }, Throwable::printStackTrace);
+                .filter(post -> !currentPosts.contains(post) && isAllowedType(post))
+                .subscribe(list -> currentPosts.add(list),
+                        Throwable::printStackTrace,
+                        () -> {
+                            Collections.sort(currentPosts);
+                            if (mView != null) mView.updateAdapter();
+                        });
     }
 
     /**
      * @return All fetched posts, whether they're currently shown or not
      */
     public List<Post> getAllPosts() {
+        return allPosts;
+    }
+
+    /**
+     * @return All posts that should be displayed (the adapter is "linked" to this arrayList)
+     */
+    public List<Post> getPostsToDisplay() {
         return currentPosts;
     }
 
@@ -93,7 +101,7 @@ public class PostManager {
     public void displayAllPosts() {
         currentlyDisplayedType = DISPLAY_ALL;
         currentPosts.clear();
-        currentPosts.addAll(allPosts);
+        currentPosts.addAll(getAllPosts());
         if (mView != null) mView.updateAdapter();
     }
 
@@ -104,7 +112,7 @@ public class PostManager {
      */
     public void displayOnlyPostsFromType(@PostType.TypeDrawer int postType) {
         currentlyDisplayedType = postType;
-        Observable.just(allPosts)
+        Observable.just(getAllPosts())
                 .flatMap(Observable::from)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -122,7 +130,7 @@ public class PostManager {
 
     /**
      * @param post Post item
-     * @return If the specified post belongs to the currently shown category / type or not
+     * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
      */
     private boolean isAllowedType(Post post) {
         int postType = post.getPostType();
@@ -133,7 +141,6 @@ public class PostManager {
                 return true;
             }
         } else {
-            //noinspection WrongConstant
             if (postType == currentlyDisplayedType) return true;
         }
         return false;

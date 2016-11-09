@@ -1,11 +1,8 @@
 language: android
-
 sudo: true
-
 env:
   global:
   - MALLOC_ARENA_MAX=2
-
 android:
   components:
   - tools
@@ -15,12 +12,11 @@ android:
   - extra-android-m2repository
   - extra-google-m2repository
   - extra-google-google_play_services
-
 notifications:
   email: false
-
 jdk:
 - oraclejdk8
-
 script:
-- ./gradlew build -PdisablePreDex
+- "./gradlew build -PdisablePreDex"
+before_install:
+- openssl aes-256-cbc -K $encrypted_e70b979cd64c_key -iv $encrypted_e70b979cd64c_iv -in pietsmiet_android.jks.enc -out pietsmiet_android.jks -d

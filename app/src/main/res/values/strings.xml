@@ -2,12 +2,13 @@
     <string name="app_name">PietSmiet Community App</string>
     <string name="navigation_drawer_open">Themenmenü öffnen</string>
     <string name="navigation_drawer_close">Themenmenü schließen</string>
-    <string name="twitter">Twitter</string>
-    <string name="facebook">Facebook</string>
-    <string name="uploadplan">Uploadplan</string>
-    <string name="youtube">YouTube</string>
-    <string name="pietcast">PietCast</string>
-    <string name="twitch">Twitch</string>
     <string name="btn_teilen">Teilen</string>
     <string name="btn_ansehen">Ansehen</string>
+    <string name="drawer_home">Home</string>
+    <string name="drawer_uploadplan">Uploadplan</string>
+    <string name="drawer_social">Social Media</string>
+    <string name="drawer_pietcast">Pietcast</string>
+    <string name="drawer_sonstiges">Sonstiges</string>
+    <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
+    <string name="drawer_einstellungen">Einstellungen</string>
 </resources>

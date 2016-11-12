@@ -1,5 +1,13 @@
 package de.pscom.pietsmiet.backend;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Date;
+
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -22,7 +30,71 @@ public class UploadplanPresenter extends MainPresenter {
         }
         uploadplanUrl = SecretConstants.rssUrl;
 
-        parseUploadplan();
+        parseUploadplanFromDb();
+    }
+
+    private void parseUploadplanFromDb() {
+        DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child("uploadplan");
+
+        mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Post post = new Post();
+                post.setPostType(UPLOAD_PLAN);
+                PsLog.v(dataSnapshot.toString());
+                Observable.just(dataSnapshot.getChildren())
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .onBackpressureBuffer()
+                        .map(snapshots -> {
+                            for (DataSnapshot snapshot :
+                                    snapshots) {
+                                String value = (String) snapshot.getValue();
+                                PsLog.v(value);
+                                PsLog.v(snapshot.getRef().getKey() + " \n<<<<<<<<");
+                                switch (snapshot.getRef().getKey()) {
+                                    case "date":
+                                        post.setDatetime(new Date(value));
+                                        break;
+                                    case "title":
+                                        post.setTitle(value);
+                                        break;
+                                    case "link":
+                                        return value;
+                                    default:
+                                        break;
+                                }
+                            }
+                            return null;
+                        })
+                        .filter(link -> link != null)
+                        .flatMap(link -> Observable.just(parseHtml(link))
+                                .subscribeOn(Schedulers.io())
+                                .onBackpressureBuffer())
+                        .subscribe(description -> {
+                            if (post.getTitle() == null || post.getDate() == null || description.isEmpty()) {
+                                PsLog.i("Falling back to fetching uploadplan directly; " +
+                                        "Database loading failed because a value was empty");
+                                parseUploadplan();
+                            } else {
+                                post.setDescription(description);
+                                posts.add(post);
+                                finished();
+                                PsLog.v("added uploadplan from firebase db");
+                            }
+                        }, Throwable::printStackTrace);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if (databaseError != null)
+                    PsLog.i("Falling back to fetching uploadplan directly;" +
+                            " Database loading failed because: " + databaseError.toString());
+                parseUploadplan();
+            }
+        });
     }
 
     /**

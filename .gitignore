@@ -45,4 +45,5 @@ captures/
 
 .DS_Store
 /app/src/main/assets/secrets.properties
+/app/google-services.json
 

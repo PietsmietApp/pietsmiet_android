@@ -58,6 +58,7 @@ public class UploadplanPresenter extends MainPresenter {
                                         post.setTitle(value);
                                         break;
                                     case "link":
+                                        post.setUrl(value);
                                         toReturn = value;
                                     default:
                                         break;

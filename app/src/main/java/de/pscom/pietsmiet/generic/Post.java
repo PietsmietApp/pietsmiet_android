@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import java.util.Date;
 
 import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
@@ -152,7 +151,6 @@ public class Post implements Comparable<Post> {
             if (!url.startsWith("http://") && !url.startsWith("https://")) {
                 url = "http://" + url;
             }
-            PsLog.v(" " + url);
             this.url = url;
         }
     }

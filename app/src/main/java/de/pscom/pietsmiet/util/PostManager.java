@@ -35,6 +35,11 @@ public class PostManager {
      * @param posts Post Items
      */
     public void addPosts(List<Post> posts) {
+        if (posts.size() == 0){
+            PsLog.w("addPosts called with zero posts");
+            return;
+        }
+
         posts.addAll(getAllPosts());
 
         Observable.just(posts)

@@ -38,6 +38,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
 
+    private static final int MAX_ADDITIONAL_POSTS_STORED = 50;
+
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -112,6 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Loads all post objects from the database and displays it
+     * Clears the database if it's too big
      *
      * @param context For loading the drawable & displaying the post after finished loading
      */
@@ -157,20 +160,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.close();
                     }
                     int postsInDb = getPostsInDbCount();
+                    // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
+                    // The loaded posts from db are applied nevertheless.
                     if (postsInDb != toReturn.size() || toReturn.size() < getPostsLoadedCount()) {
-                        PsLog.w("Not using cache db.\n" +
+                        PsLog.w("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
                                 ", Posts loaded from DB: " + toReturn.size() +
                                 ", Should have loaded at least: " + getPostsLoadedCount());
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
                         this.close();
-                    } else if (context != null) {
+                    }
+                    // Clear db when it's too big / old
+                    if (postsInDb > (getPostsLoadedCount() + MAX_ADDITIONAL_POSTS_STORED)) {
+                        PsLog.i("Db cleared because it was too big (" + postsInDb + " entries)\n" +
+                                "Loading all posts this time.");
+                        SharedPreferenceHelper.shouldUseCache = false;
+                        deleteTable();
+                        this.close();
+                        return;
+                    }
+                    // Apply posts otherwise
+                    if (context != null) {
                         PsLog.v("Applying " + toReturn.size() + " posts from db");
                         context.addNewPosts(toReturn);
                     } else {
                         PsLog.e("Context is null!");
                     }
+
+
                 });
     }
 

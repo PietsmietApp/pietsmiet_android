@@ -99,9 +99,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
                     db.insert(TABLE_POSTS, null, contentValues);
-                }, Throwable::printStackTrace, () -> {
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    db.close();
+                }, () -> {
                     PsLog.v("Stored " + posts.size() + " posts in db");
-                    this.close();
+                    db.close();
                 });
     }
 

@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateAdapter() {
-        Observable.defer(() -> Observable.just(null))
+        Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
@@ -103,7 +104,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void showError(String msg) {
-        //Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); fixme
+        Observable.defer(() -> Observable.just(""))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        }
+                );
     }
 
     private void updateData() {

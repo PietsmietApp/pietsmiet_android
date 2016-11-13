@@ -12,6 +12,7 @@ import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
     private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
+    public static final int MAX_COUNT = 15;
 
     public PietcastPresenter() {
         super(PIETCAST);
@@ -26,7 +27,7 @@ public class PietcastPresenter extends MainPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .take(15)
+                .take(MAX_COUNT)
                 .onBackpressureBuffer()
                 .subscribe(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);

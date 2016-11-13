@@ -20,3 +20,4 @@ script:
 - "./gradlew build -PdisablePreDex"
 before_install:
 - openssl aes-256-cbc -K $encrypted_e70b979cd64c_key -iv $encrypted_e70b979cd64c_iv -in pietsmiet_android.jks.enc -out pietsmiet_android.jks -d
+- openssl aes-256-cbc -K $encrypted_e70b979cd64c_key -iv $encrypted_e70b979cd64c_iv -in google-services.json.enc -out app/google-services.json -d

@@ -152,9 +152,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         res.close();
                         db.close();
                     }
-                    if (getPostCount() != toReturn.size()) {
-                        PsLog.w("Couldn't load all posts from cache; not using cache");
+                    int postsInDb = getPostsInDbCount();
+                    if (postsInDb != toReturn.size() || toReturn.size() < getPostsLoadedCount()) {
+                        PsLog.w("Not using cache / db. Posts in DB: " + postsInDb +
+                                ", Posts loaded from DB: " + toReturn.size() +
+                                ", Should have loaded at least: " + getPostsLoadedCount());
                         SharedPreferenceHelper.shouldUseCache = false;
+                        deleteTable();
+                        this.close();
                     } else if (context != null) {
                         PsLog.v("Loaded " + toReturn.size() + " posts from db");
                         context.addNewPosts(toReturn);
@@ -162,5 +167,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         PsLog.e("Context is null!");
                     }
                 });
+    }
+
+    private int getPostsLoadedCount() {
+        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5;
     }
 }

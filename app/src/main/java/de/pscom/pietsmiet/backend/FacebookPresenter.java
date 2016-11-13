@@ -24,7 +24,7 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 
 public class FacebookPresenter extends MainPresenter {
-    private static final int LIMIT_PER_USER = 4;
+    public static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
 
     private String lastFetchedTime;

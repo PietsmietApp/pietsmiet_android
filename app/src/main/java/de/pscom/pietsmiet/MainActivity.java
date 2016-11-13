@@ -21,7 +21,6 @@ import de.pscom.pietsmiet.backend.DatabaseHelper;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateData() {
         new TwitterPresenter().onTakeView(this);
-        new UploadplanPresenter().onTakeView(this);
+        //new UploadplanPresenter().onTakeView(this);
         new PietcastPresenter().onTakeView(this);
         new FacebookPresenter().onTakeView(this);
         //if (BuildConfig.DEBUG) addTestingCards();

@@ -44,8 +44,11 @@ public class PostManager {
                 .distinct()
                 .filter(post -> {
                     if (post.getDate() == null) {
-                        PsLog.w("Date is null!");
+                        PsLog.e("Date is null!");
                         return false;
+                    } else if(post.getTitle() == null){
+                        PsLog.e("Title is null");
+                        return null;
                     }
                     return true;
                 })

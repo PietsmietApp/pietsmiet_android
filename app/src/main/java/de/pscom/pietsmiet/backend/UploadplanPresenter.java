@@ -34,13 +34,14 @@ public class UploadplanPresenter extends MainPresenter {
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
+                .take(MAX_COUNT)
                 .doOnNext(element -> {
                     post = new Post();
                     post.setDatetime(element.getPubDate());
                     post.setTitle(element.getTitle());
                 })
                 .map(element -> element.getLink().toString())
-                .take(MAX_COUNT)
+                .doOnNext(link -> post.setUrl(link))
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
                         .onBackpressureBuffer())

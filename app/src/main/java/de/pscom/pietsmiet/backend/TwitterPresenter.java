@@ -68,6 +68,10 @@ public class TwitterPresenter extends MainPresenter {
                     post.setTitle(getDisplayName(tweet.getUser()));
                     post.setDescription(tweet.getText());
                     post.setDatetime(tweet.getCreatedAt());
+                    if (tweet.getUser() != null && tweet.getId() != 0) {
+                        post.setUrl("https://twitter.com/" + tweet.getUser().getScreenName()
+                                + "/status/" + tweet.getId());
+                    }
                     post.setPostType(TWITTER);
                     posts.add(post);
                     if (posts.size() == 1) lastTweetId = tweet.getId();

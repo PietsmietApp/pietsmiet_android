@@ -34,6 +34,7 @@ public class PietcastPresenter extends MainPresenter {
                     post = new Post();
                     post.setDescription(element.getDescription());
                     post.setTitle(element.getTitle());
+                    post.setUrl(element.getLink().toString());
                     post.setDatetime(element.getPubDate());
                     post.setThumbnail(thumb);
                     post.setPostType(PIETCAST);

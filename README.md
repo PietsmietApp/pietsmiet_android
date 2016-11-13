@@ -22,6 +22,8 @@ SQLite is used to cache objects. The app communicates with the Twitter & Faceboo
 [Here](https://github.com/l3d00m/pietsmiet_android/blob/develop/ressources/ps_app_overview.png) is a professional overview over the classes made with paint ;)
 
 ## Git Workflow
-**Feature branches:** When a feature requires a lot of work, it has a separate branch that is merged (via a PR) into `develop` as soon as the feature is complete
-**[develop](https://github.com/l3d00m/pietsmiet_android/tree/develop) branch:** Mostly stable and buildable code, there may be exceptions
-**[release](https://github.com/l3d00m/pietsmiet_android/tree/release) branch:** develop is merged into this branch when a new version is released
+**[`release`](https://github.com/l3d00m/pietsmiet_android/tree/release) branch:** `develop` is merged into this branch when a new version is released  
+**[`develop`](https://github.com/l3d00m/pietsmiet_android/tree/develop) branch:** mostly stable and buildable code, there may be exceptions  
+**feature branches:** When a feature requires a lot of work, it has a separate branch that is merged (via a PR) into `develop` as soon as the feature is complete  
+
+

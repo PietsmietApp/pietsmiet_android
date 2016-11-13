@@ -24,6 +24,7 @@ import de.pscom.pietsmiet.generic.Post;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
@@ -84,8 +85,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
-            holder.thumbnail.setVisibility(VISIBLE);
             holder.thumbnail.setImageDrawable(thumbnail);
+        } else if (currentItem.getPostType() == PIETCAST){
+            holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
         } else {
             holder.thumbnail.setVisibility(GONE);
         }

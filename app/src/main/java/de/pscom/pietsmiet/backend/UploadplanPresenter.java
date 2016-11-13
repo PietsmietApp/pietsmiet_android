@@ -41,17 +41,15 @@ public class UploadplanPresenter extends MainPresenter {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Post post = new Post();
                 post.setPostType(UPLOAD_PLAN);
-                PsLog.v(dataSnapshot.toString());
                 Observable.just(dataSnapshot.getChildren())
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .onBackpressureBuffer()
                         .map(snapshots -> {
+                            String toReturn = null;
                             for (DataSnapshot snapshot :
                                     snapshots) {
                                 String value = (String) snapshot.getValue();
-                                PsLog.v(value);
-                                PsLog.v(snapshot.getRef().getKey() + " \n<<<<<<<<");
                                 switch (snapshot.getRef().getKey()) {
                                     case "date":
                                         post.setDatetime(new Date(value));
@@ -60,12 +58,12 @@ public class UploadplanPresenter extends MainPresenter {
                                         post.setTitle(value);
                                         break;
                                     case "link":
-                                        return value;
+                                        toReturn = value;
                                     default:
                                         break;
                                 }
                             }
-                            return null;
+                            return toReturn;
                         })
                         .filter(link -> link != null)
                         .flatMap(link -> Observable.just(parseHtml(link))
@@ -83,8 +81,6 @@ public class UploadplanPresenter extends MainPresenter {
                                 PsLog.v("added uploadplan from firebase db");
                             }
                         }, Throwable::printStackTrace);
-
-
             }
 
             @Override

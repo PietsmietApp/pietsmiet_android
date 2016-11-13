@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import java.util.Date;
 
 import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
@@ -30,6 +31,7 @@ public class Post implements Comparable<Post> {
     private Drawable thumbnail;
     private Date datetime;
     private int duration;
+    private String url;
 
     public Post() {
     }
@@ -139,6 +141,20 @@ public class Post implements Comparable<Post> {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        if (url != null && !url.isEmpty()) {
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://" + url;
+            }
+            PsLog.v(" " + url);
+            this.url = url;
+        }
     }
 
 

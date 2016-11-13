@@ -80,6 +80,9 @@ public class FacebookPresenter extends MainPresenter {
                     this.post.setDescription(post.getMessage());
                     this.post.setDatetime(post.getCreatedTime());
                     this.post.setPostType(FACEBOOK);
+                    if (post.getId() != null && !post.getId().isEmpty()) {
+                        this.post.setUrl("http://www.facebook.com/" + post.getId());
+                    }
                     posts.add(this.post);
                 }, e -> PsLog.e(e.toString()), () -> {
                     finished();

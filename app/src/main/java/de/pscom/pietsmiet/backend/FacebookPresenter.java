@@ -24,7 +24,7 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 
 public class FacebookPresenter extends MainPresenter {
-    private static final int LIMIT_PER_USER = 4;
+    public static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
 
     private String lastFetchedTime;
@@ -80,6 +80,9 @@ public class FacebookPresenter extends MainPresenter {
                     this.post.setDescription(post.getMessage());
                     this.post.setDatetime(post.getCreatedTime());
                     this.post.setPostType(FACEBOOK);
+                    if (post.getId() != null && !post.getId().isEmpty()) {
+                        this.post.setUrl("http://www.facebook.com/" + post.getId());
+                    }
                     posts.add(this.post);
                 }, e -> PsLog.e(e.toString()), () -> {
                     finished();

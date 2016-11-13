@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import static de.pscom.pietsmiet.util.PostManager.DISPLAY_ALL;
 import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
 
-
+@SuppressWarnings("WeakerAccess")
 public class PostType {
     //Scales dynamically
     //Renamed to shorter version

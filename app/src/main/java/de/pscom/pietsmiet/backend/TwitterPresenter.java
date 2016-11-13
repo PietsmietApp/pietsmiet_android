@@ -27,7 +27,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class TwitterPresenter extends MainPresenter {
-    private static final int maxCount = 10;
+    public static final int MAX_COUNT = 10;
     private long lastTweetId;
     private Twitter twitterInstance;
 
@@ -68,6 +68,10 @@ public class TwitterPresenter extends MainPresenter {
                     post.setTitle(getDisplayName(tweet.getUser()));
                     post.setDescription(tweet.getText());
                     post.setDatetime(tweet.getCreatedAt());
+                    if (tweet.getUser() != null && tweet.getId() != 0) {
+                        post.setUrl("https://twitter.com/" + tweet.getUser().getScreenName()
+                                + "/status/" + tweet.getId());
+                    }
                     post.setPostType(TWITTER);
                     posts.add(post);
                     if (posts.size() == 1) lastTweetId = tweet.getId();
@@ -107,7 +111,7 @@ public class TwitterPresenter extends MainPresenter {
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .count(maxCount)
+                .count(MAX_COUNT)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
     }

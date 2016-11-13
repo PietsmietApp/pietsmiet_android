@@ -28,14 +28,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int VERSION_NUMBER = 1;
 
     private static final String DATABASE_NAME = "PietSmiet.db";
-    private static final String POST_TABLE_NAME = "posts";
+    private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
     private static final String POSTS_COLUMN_TITLE = "title";
     private static final String POSTS_COLUMN_DESC = "desc";
+    private static final String POSTS_COLUMN_URL = "url";
     private static final String POSTS_COLUMN_TYPE = "type";
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
+
+    private static final int MAX_ADDITIONAL_POSTS_STORED = 50;
 
     @SuppressLint("SimpleDateFormat")
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -47,10 +50,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
-                "create table " + POST_TABLE_NAME + " (" +
+                "create table " + TABLE_POSTS + " (" +
                         POSTS_COLUMN_ID + " INTEGER PRIMARY KEY," +
                         POSTS_COLUMN_TITLE + " TINY_TEXT, " +
                         POSTS_COLUMN_DESC + " TEXT," +
+                        POSTS_COLUMN_URL + " TEXT," +
                         POSTS_COLUMN_TYPE + " INT," +
                         POSTS_COLUMN_TIME + " INT," +
                         POSTS_COLUMN_DURATION + " INT," +
@@ -60,12 +64,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
-        db.execSQL("DROP TABLE IF EXISTS " + POST_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
         onCreate(db);
     }
 
     private void deleteTable() {
-        getWritableDatabase().delete(POST_TABLE_NAME, null, null);
+        getWritableDatabase().delete(TABLE_POSTS, null, null);
     }
 
     /**
@@ -89,26 +93,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
                     contentValues.put(POSTS_COLUMN_TITLE, post.getTitle());
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
+                    contentValues.put(POSTS_COLUMN_URL, post.getUrl());
                     contentValues.put(POSTS_COLUMN_TYPE, post.getPostType());
                     contentValues.put(POSTS_COLUMN_TIME, dateFormat.format(post.getDate()));
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
-                    db.insert(POST_TABLE_NAME, null, contentValues);
-                }, Throwable::printStackTrace, () -> {
+                    db.insert(TABLE_POSTS, null, contentValues);
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    db.close();
+                }, () -> {
                     PsLog.v("Stored " + posts.size() + " posts in db");
-                    this.close();
+                    db.close();
                 });
     }
 
-    private int getPostCount() {
+    private int getPostsInDbCount() {
         SQLiteDatabase db = this.getReadableDatabase();
-        long cnt = DatabaseUtils.queryNumEntries(db, POST_TABLE_NAME);
+        long cnt = DatabaseUtils.queryNumEntries(db, TABLE_POSTS);
         db.close();
         return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
     }
 
     /**
      * Loads all post objects from the database and displays it
+     * Clears the database if it's too big
      *
      * @param context For loading the drawable & displaying the post after finished loading
      */
@@ -117,7 +126,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Post> toReturn = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + POST_TABLE_NAME, null);
+        Cursor res = db.rawQuery("select * from " + TABLE_POSTS, null);
 
         Observable.just("")
                 .subscribeOn(Schedulers.io())
@@ -131,6 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 Post post = new Post();
                                 post.setTitle(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)));
                                 post.setDescription(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)));
+                                post.setUrl(res.getString(res.getColumnIndex(POSTS_COLUMN_URL)));
                                 post.setPostType(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)));
                                 post.setDuration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)));
                                 post.setDatetime(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
@@ -152,15 +162,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         res.close();
                         db.close();
                     }
-                    if (getPostCount() != toReturn.size()) {
-                        PsLog.w("Couldn't load all posts from cache; not using cache");
+                    int postsInDb = getPostsInDbCount();
+                    // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
+                    // The loaded posts from db are applied nevertheless.
+                    if (postsInDb != toReturn.size() || toReturn.size() < getPostsLoadedCount()) {
+                        PsLog.w("Loading all posts this time because database was incomplete.\n" +
+                                " Posts in DB: " + postsInDb +
+                                ", Posts loaded from DB: " + toReturn.size() +
+                                ", Should have loaded at least: " + getPostsLoadedCount());
                         SharedPreferenceHelper.shouldUseCache = false;
-                    } else if (context != null) {
-                        PsLog.v("Loaded " + toReturn.size() + " posts from db");
+                        deleteTable();
+                        this.close();
+                    }
+                    // Clear db when it's too big / old
+                    if (postsInDb > (getPostsLoadedCount() + MAX_ADDITIONAL_POSTS_STORED)) {
+                        PsLog.i("Db cleared because it was too big (" + postsInDb + " entries)\n" +
+                                "Loading all posts this time.");
+                        SharedPreferenceHelper.shouldUseCache = false;
+                        deleteTable();
+                        this.close();
+                        return;
+                    }
+                    // Apply posts otherwise
+                    if (context != null) {
+                        PsLog.v("Applying " + toReturn.size() + " posts from db");
                         context.addNewPosts(toReturn);
                     } else {
                         PsLog.e("Context is null!");
                     }
+
+
                 });
+    }
+
+    private int getPostsLoadedCount() {
+        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5;
     }
 }

@@ -22,6 +22,7 @@ import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class Post implements Comparable<Post> {
+    @Nullable
     private String description;
     private String title;
     private int postType;
@@ -29,6 +30,7 @@ public class Post implements Comparable<Post> {
     private Drawable thumbnail;
     private Date datetime;
     private int duration;
+    private String url;
 
     public Post() {
     }
@@ -42,7 +44,7 @@ public class Post implements Comparable<Post> {
      * @param postType    Type of the post
      */
 
-    public Post(String title, String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
+    public Post(String title, @Nullable String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -59,7 +61,7 @@ public class Post implements Comparable<Post> {
      * @param postType    Type of the post
      * @param thumbnail   Thumbnail image
      */
-    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
+    public Post(String title, @Nullable String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -77,7 +79,7 @@ public class Post implements Comparable<Post> {
      * @param duration    Duration of the video / pietcast
      * @param thumbnail   Thumbnail image
      */
-    public Post(String title, String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
+    public Post(String title, @Nullable String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
         this.title = title;
         this.description = description;
         this.datetime = datetime;
@@ -115,6 +117,7 @@ public class Post implements Comparable<Post> {
         this.datetime = datetime;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }
@@ -137,6 +140,19 @@ public class Post implements Comparable<Post> {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        if (url != null && !url.isEmpty()) {
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://" + url;
+            }
+            this.url = url;
+        }
     }
 
 

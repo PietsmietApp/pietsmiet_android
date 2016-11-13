@@ -35,6 +35,11 @@ public class PostManager {
      * @param posts Post Items
      */
     public void addPosts(List<Post> posts) {
+        if (posts.size() == 0){
+            PsLog.w("addPosts called with zero posts");
+            return;
+        }
+
         posts.addAll(getAllPosts());
 
         Observable.just(posts)
@@ -44,8 +49,11 @@ public class PostManager {
                 .distinct()
                 .filter(post -> {
                     if (post.getDate() == null) {
-                        PsLog.w("Date is null!");
+                        PsLog.e("Date is null!");
                         return false;
+                    } else if(post.getTitle() == null){
+                        PsLog.e("Title is null");
+                        return null;
                     }
                     return true;
                 })

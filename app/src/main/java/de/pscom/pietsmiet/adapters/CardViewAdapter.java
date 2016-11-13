@@ -1,8 +1,11 @@
 package de.pscom.pietsmiet.adapters;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -21,9 +24,11 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.PsLog;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
@@ -84,8 +89,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
-            holder.thumbnail.setVisibility(VISIBLE);
             holder.thumbnail.setImageDrawable(thumbnail);
+        } else if (currentItem.getPostType() == PIETCAST){
+            holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
         } else {
             holder.thumbnail.setVisibility(GONE);
         }
@@ -95,6 +101,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             //noinspection deprecation
             holder.description.setText(Html.fromHtml(currentItem.getDescription()));
         }
+
+        holder.itemView.setOnClickListener(view -> {
+            try {
+                final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));
+                context.startActivity(browserIntent);
+            } catch (ActivityNotFoundException | NullPointerException e) {
+                PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
+                //todo display some kind of error
+            }
+        });
+
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
     }
 

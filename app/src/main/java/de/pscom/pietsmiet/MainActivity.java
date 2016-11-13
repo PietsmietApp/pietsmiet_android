@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -23,7 +24,6 @@ import de.pscom.pietsmiet.backend.DatabaseHelper;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateAdapter() {
-        Observable.defer(() -> Observable.just(null))
+        Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
@@ -107,12 +107,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void showError(String msg) {
-        //Toast.makeText(this, msg, Toast.LENGTH_LONG).show(); fixme
+        Observable.defer(() -> Observable.just(""))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                        }
+                );
     }
 
     private void updateData() {
         new TwitterPresenter().onTakeView(this);
-        new UploadplanPresenter().onTakeView(this);
+        //new UploadplanPresenter().onTakeView(this);
         new PietcastPresenter().onTakeView(this);
         new FacebookPresenter().onTakeView(this);
         //if (BuildConfig.DEBUG) addTestingCards();

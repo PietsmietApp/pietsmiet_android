@@ -19,7 +19,7 @@ import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
 
 public class UploadplanPresenter extends MainPresenter {
-    private static final int DEFAULT_MAX = 1;
+    public static final int MAX_COUNT = 1;
     private static String uploadplanUrl;
 
     public UploadplanPresenter() {
@@ -102,13 +102,14 @@ public class UploadplanPresenter extends MainPresenter {
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
+                .take(MAX_COUNT)
                 .doOnNext(element -> {
                     post = new Post();
                     post.setDatetime(element.getPubDate());
                     post.setTitle(element.getTitle());
                 })
                 .map(element -> element.getLink().toString())
-                .take(DEFAULT_MAX)
+                .doOnNext(link -> post.setUrl(link))
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
                         .onBackpressureBuffer())

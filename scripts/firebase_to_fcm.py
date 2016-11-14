@@ -3,33 +3,38 @@ from pyfcm import FCMNotification
 from firebase import firebase
 import time
 
-firebase_fcm = FCMNotification(api_key="thisissecretyo")
+firebase_fcm = FCMNotification(api_key="AIzaSyDCX8fZ8Y5yemDLx54PMhepzGYs76Ar_Os")
 firebase_db = firebase.FirebaseApplication('https://pietsmiet-de5ff.firebaseio.com/', None)
 
 
-def write(text):
-    with open("latest.txt", "w+") as text_file:
+def write(text, filename):
+    with open(filename, "w+") as text_file:
         print(text, file=text_file)
 
 
-def read():
+def read(filename):
     try:
-        with open("latest.txt", "r") as text_file:
+        with open(filename, "r") as text_file:
             return text_file.read().rstrip()
     except Exception:
         print("No file created yet? ENOENT")
 
 
-def sendFCM(message):
-    result = firebase_fcm.notify_topic_subscribers(message_body=message, topic_name="uploadplan")
+def send_fcm(message):
+    firebase_fcm.notify_topic_subscribers(message_body=message, topic_name="uploadplan")
+
+
+def check_for_update(scope):
+    new = firebase_db.get('/' + scope, "title")
+    old = read(filename=scope)
+
+    if new != old:
+        write(new, scope)
+        print("New: \"" + new + "\"")
+        send_fcm(new)
 
 
 while (1):
-    result = firebase_db.get('/uploadplan', "title")
-    old = read()
-
-    if (result != old):
-        write(result)
-        print("New: \"" + result + "\"")
-        sendFCM(result)
+    check_for_update("uploadplan")
+    check_for_update("pietcast")
     time.sleep(300)

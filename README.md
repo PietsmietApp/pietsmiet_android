@@ -1,4 +1,7 @@
-# PietSmiet-App für Android [![Build Status](https://travis-ci.org/l3d00m/pietsmiet_android.svg?branch=master)](https://travis-ci.org/l3d00m/pietsmiet_android)
+# PietSmiet-App für Android
+
+`develop`: [![Build Status](https://travis-ci.org/l3d00m/pietsmiet_android.svg?branch=develop)](https://travis-ci.org/l3d00m/pietsmiet_android)  
+`release`: [![Build Status](https://travis-ci.org/l3d00m/pietsmiet_android.svg?branch=release)](https://travis-ci.org/l3d00m/pietsmiet_android)  
 
 Still under active development and pre-alpha.
 

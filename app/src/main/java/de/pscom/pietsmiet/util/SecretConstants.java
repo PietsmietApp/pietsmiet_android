@@ -28,7 +28,6 @@ public class SecretConstants {
             facebookToken = properties.getProperty("facebookToken");
             facebookSecret = properties.getProperty("facebookSecret");
         } catch (IOException e) {
-            e.printStackTrace();
             PsLog.w("You haven't included a '/app/src/main/assets/secrets.properties' file in your project with the API-Keys and RSS-URLs!\n" +
                     "=> Twitter, Facebook & Uploadplan won't work");
         }

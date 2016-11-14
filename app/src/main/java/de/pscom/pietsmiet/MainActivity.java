@@ -13,6 +13,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);

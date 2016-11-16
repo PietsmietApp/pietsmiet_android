@@ -9,6 +9,7 @@ import android.content.Context;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
 
@@ -40,6 +41,8 @@ public class Settings extends AppCompatActivity {
             }
         });
 
+
+        newsSwitch.setChecked(SettingsHelper.uploadPlanNotification);
 
 
     }

@@ -32,6 +32,7 @@ import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -77,10 +78,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
+        SettingsHelper.loadAllSettings(this);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        boolean isChecked = SharedPreferenceHelper.getSharedPreferenceBoolean(this,KEY_NEWS_SETTING,true);
+        boolean isChecked = SettingsHelper.uploadPlanNotification;
         if (isChecked){
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         }else {

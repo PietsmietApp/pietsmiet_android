@@ -6,12 +6,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.mcsoxford.rss.RSSItem;
+
 import java.util.Date;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
@@ -104,21 +108,32 @@ public class UploadplanPresenter extends MainPresenter {
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .take(MAX_COUNT)
-                .doOnNext(element -> {
-                    post = new Post();
-                    post.setDatetime(element.getPubDate());
-                    post.setTitle(element.getTitle());
+                .doOnNext(new Action1<RSSItem>() {
+                    @Override
+                    public void call(RSSItem element) {
+                        post = new Post();
+                        post.setDatetime(element.getPubDate());
+                        post.setTitle(element.getTitle());
+                    }
                 })
-                .map(element -> element.getLink().toString())
+                .map(new Func1<RSSItem, String>() {
+                    @Override
+                    public String call(RSSItem element) {
+                        return element.getLink().toString();
+                    }
+                })
                 .doOnNext(link -> post.setUrl(link))
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
                         .onBackpressureBuffer())
                 .filter(content -> content != null)
-                .subscribe(uploadplan -> {
-                    post.setDescription(uploadplan);
-                    post.setPostType(UPLOAD_PLAN);
-                    posts.add(post);
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String uploadplan) {
+                        post.setDescription(uploadplan);
+                        post.setPostType(UPLOAD_PLAN);
+                        posts.add(post);
+                    }
                 }, Throwable::printStackTrace, this::finished);
     }
 

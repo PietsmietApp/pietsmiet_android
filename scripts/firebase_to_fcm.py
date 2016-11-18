@@ -2,15 +2,41 @@
 from pyfcm import FCMNotification
 from firebase import firebase
 import time
+import praw
+import datetime
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
-from api_keys import fcm_key, fb_db_key
+import api_keys
+import html2text
 
-firebase_fcm = FCMNotification(api_key=fcm_key)
-firebase_db = firebase.FirebaseApplication('https://pietsmiet-de5ff.firebaseio.com/', authentication=fb_db_key)
+firebase_fcm = FCMNotification(api_key=api_keys.fcm_key)
+firebase_db = firebase.FirebaseApplication('https://pietsmiet-de5ff.firebaseio.com/', authentication=api_keys.fb_db_key)
+
+reddit_auth = praw.Reddit(user_agent="Twitter X-Poster by l3d00m")
+reddit_auth.set_oauth_app_info(client_id="eoAG6V7plEDeAA", client_secret=api_keys.reddit_client_secret,
+                               redirect_uri="http://127.0.0.1")
+subreddit = "pietsmiet"
 
 SCOPE_UPLOADPLAN = "uploadplan"
 SCOPE_PIETCAST = "pietcast"
+
+
+def submit_to_reddit(text):
+    """
+    Posts a link to the given subreddit
+    :param url: Url to add to the reddit link post
+    """
+
+    if text == '':
+        return
+
+    now = datetime.datetime.now()
+    title = 'Uploadplan vom ' + str(now.day) + "." + str(now.month) + "." + str(now.year)
+
+    # use the refresh token to get new access information regularly (at least every hour):
+    reddit_auth.refresh_access_information(api_keys.reddit_client_refresh)
+    # Submit the post
+    reddit_auth.submit(subreddit, title, text=text)
 
 
 def write(text, filename):
@@ -33,6 +59,12 @@ def send_fcm(message):
         print("Error making new fcm")
 
 
+def formatText(text, link):
+    text = html2text.html2text(text)
+    text += '\n[Link zum aktuellen Uploadplan](' + link + ')\n\n--- \n[Code vom Bot](https://github.com/l3d00m/pietsmiet_android/blob/develop/scripts/firebase_to_fcm.py) | by /u/l3d00m'
+    return text
+
+
 def check_for_update(scope):
     new = get_thing_from_db(scope, "title")
     old = read(filename=scope)
@@ -41,17 +73,20 @@ def check_for_update(scope):
         write(new, scope)
         print("New: \"" + new + "\"")
         send_fcm(new)
-        if scope == "uploadplan":
-            put_desc_into_db()
+        if scope == SCOPE_UPLOADPLAN:
+            link = get_thing_from_db(SCOPE_UPLOADPLAN, "link")
+            put_desc_into_db(link)
+            time.sleep(10)
+            submit_to_reddit(formatText(get_thing_from_db(SCOPE_UPLOADPLAN, "desc"), link))
 
 
 def get_thing_from_db(scope, thing):
     return firebase_db.get('/' + scope, thing)
 
 
-def put_desc_into_db():
+def put_desc_into_db(link):
     try:
-        content = scrape_site(get_thing_from_db(SCOPE_UPLOADPLAN, "link"))
+        content = scrape_site(link)
         if content is not None:
             firebase_db.put(url="/uploadplan", name="desc", data=content)
     except Exception:

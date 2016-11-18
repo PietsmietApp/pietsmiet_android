@@ -45,8 +45,7 @@ public class UploadplanPresenter extends MainPresenter {
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .onBackpressureBuffer()
-                        .map(snapshots -> {
-                            String toReturn = null;
+                        .subscribe(snapshots -> {
                             for (DataSnapshot snapshot :
                                     snapshots) {
                                 String value = (String) snapshot.getValue();
@@ -59,24 +58,18 @@ public class UploadplanPresenter extends MainPresenter {
                                         break;
                                     case "link":
                                         post.setUrl(value);
-                                        toReturn = value;
+                                        break;
+                                    case "desc":
+                                        post.setDescription(value);
                                     default:
                                         break;
                                 }
                             }
-                            return toReturn;
-                        })
-                        .filter(link -> link != null)
-                        .flatMap(link -> Observable.just(parseHtml(link))
-                                .subscribeOn(Schedulers.io())
-                                .onBackpressureBuffer())
-                        .subscribe(description -> {
-                            if (post.getTitle() == null || post.getDate() == null || description.isEmpty()) {
+                            if (post.getTitle() == null || post.getDate() == null || post.getDescription() == null || post.getDescription().isEmpty()) {
                                 PsLog.i("Falling back to fetching uploadplan directly; " +
                                         "Database loading failed because a value was empty");
                                 parseUploadplan();
                             } else {
-                                post.setDescription(description);
                                 posts.add(post);
                                 finished();
                                 PsLog.v("added uploadplan from firebase db");

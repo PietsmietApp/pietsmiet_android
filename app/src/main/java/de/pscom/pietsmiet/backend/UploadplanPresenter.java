@@ -8,6 +8,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -22,8 +23,8 @@ public class UploadplanPresenter extends MainPresenter {
     public static final int MAX_COUNT = 1;
     private static String uploadplanUrl;
 
-    public UploadplanPresenter() {
-        super(UPLOAD_PLAN);
+    public UploadplanPresenter(MainActivity view) {
+        super(view, UPLOAD_PLAN);
         if (SecretConstants.rssUrl == null) {
             PsLog.w("No rssUrl specified");
             return;

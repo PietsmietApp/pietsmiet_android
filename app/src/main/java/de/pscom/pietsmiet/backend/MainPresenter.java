@@ -17,7 +17,7 @@ class MainPresenter {
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 
-    MainPresenter(@TypeAllPosts int postType) {
+    MainPresenter(MainActivity view, @TypeAllPosts int postType) {
         this.postType = postType;
     }
 
@@ -33,14 +33,5 @@ class MainPresenter {
                 view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");
             }
         }
-    }
-
-    /**
-     * Add a "callback" activity to this class
-     *
-     * @param view Activity to call back
-     */
-    public void onTakeView(MainActivity view) {
-        this.view = view;
     }
 }

@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
-        // -------------------- Was wenn DB unvollständig ? Läd nicht selbst neu! evtl. zumindest ne Anzeige das man aktualisieren soll!!!!!
         updateData();
     }
 
@@ -117,10 +116,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateData() {
-        new TwitterPresenter().onTakeView(this);
-        new UploadplanPresenter().onTakeView(this);
-        new PietcastPresenter().onTakeView(this);
-        new FacebookPresenter().onTakeView(this);
+        new TwitterPresenter(this);
+        new UploadplanPresenter(this);
+        new PietcastPresenter(this);
+        new FacebookPresenter(this);
         //if (BuildConfig.DEBUG) addTestingCards();
     }
 

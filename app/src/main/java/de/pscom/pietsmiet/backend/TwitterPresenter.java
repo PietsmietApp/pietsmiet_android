@@ -31,8 +31,11 @@ public class TwitterPresenter extends MainPresenter {
     private long lastTweetId;
     private Twitter twitterInstance;
 
-    public TwitterPresenter() {
-        super(TWITTER);
+    public TwitterPresenter(MainActivity view) {
+        super(view, TWITTER);
+        if (view != null && SharedPreferenceHelper.shouldUseCache) {
+            lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
+        }
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
             return;
@@ -45,14 +48,6 @@ public class TwitterPresenter extends MainPresenter {
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
 
         parseTweets();
-    }
-
-    @Override
-    public void onTakeView(MainActivity view) {
-        super.onTakeView(view);
-        if (view != null && SharedPreferenceHelper.shouldUseCache) {
-            lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
-        }
     }
 
     private void parseTweets() {

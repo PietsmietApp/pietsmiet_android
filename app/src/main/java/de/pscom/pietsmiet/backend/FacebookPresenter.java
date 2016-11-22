@@ -29,8 +29,11 @@ public class FacebookPresenter extends MainPresenter {
 
     private String lastFetchedTime;
 
-    public FacebookPresenter() {
-        super(FACEBOOK);
+    public FacebookPresenter(MainActivity view) {
+        super(view, FACEBOOK);
+        if (view != null && SharedPreferenceHelper.shouldUseCache) {
+            lastFetchedTime = SharedPreferenceHelper.getSharedPreferenceString(view, KEY_FACEBOOK_DATE, "");
+        }
         if (SecretConstants.facebookToken == null || SecretConstants.facebookSecret == null) {
             PsLog.w("No facebook secret or token specified");
             return;
@@ -39,14 +42,6 @@ public class FacebookPresenter extends MainPresenter {
         mFacebook.setOAuthAppId("664158170415954", SecretConstants.facebookSecret);
         mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
         parsePosts();
-    }
-
-    @Override
-    public void onTakeView(MainActivity view) {
-        super.onTakeView(view);
-        if (view != null && SharedPreferenceHelper.shouldUseCache) {
-            lastFetchedTime = SharedPreferenceHelper.getSharedPreferenceString(view, KEY_FACEBOOK_DATE, "");
-        }
     }
 
     private void parsePosts() {

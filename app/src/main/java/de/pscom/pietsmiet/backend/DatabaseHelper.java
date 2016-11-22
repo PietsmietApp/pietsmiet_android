@@ -163,16 +163,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.close();
                     }
                     int postsInDb = getPostsInDbCount();
-                    // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
-                    // The loaded posts from db are applied nevertheless.
-                    if (postsInDb != toReturn.size() || toReturn.size() < getPostsLoadedCount()) {
+                    if (postsInDb != toReturn.size()) {
+                        // Reload all posts when not all posts from db not all posts are stored in db (/ db defect).
                         PsLog.w("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
-                                ", Posts loaded from DB: " + toReturn.size() +
-                                ", Should have loaded at least: " + getPostsLoadedCount());
+                                ", Posts loaded from DB: " + toReturn.size());
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
                         this.close();
+                    } else if (toReturn.size() < getPostsLoadedCount()) {
+                        // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
+                        // The loaded posts from db are applied nevertheless.
+                        PsLog.w("Loading all posts this time because database was incomplete.\n" +
+                                " Posts in DB: " + postsInDb +
+                                ", Should have loaded at least: " + getPostsLoadedCount());
+                        SharedPreferenceHelper.shouldUseCache = false;
                     }
                     // Clear db when it's too big / old
                     if (postsInDb > (getPostsLoadedCount() + MAX_ADDITIONAL_POSTS_STORED)) {

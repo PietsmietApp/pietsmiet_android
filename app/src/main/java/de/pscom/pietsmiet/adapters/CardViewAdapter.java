@@ -79,10 +79,11 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 }
             });
         }
-
+        // todo if holder.timedate.setVisibility(GONE); it also sets it for next posts maybe its the same object? i guess!
         if (currentItem.getPostType() == UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
         } else {
+            holder.timedate.setVisibility(VISIBLE);
             SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN); //hardcode Language?
             holder.timedate.setText(formatter.format(currentItem.getDate()) + " Uhr");
         }

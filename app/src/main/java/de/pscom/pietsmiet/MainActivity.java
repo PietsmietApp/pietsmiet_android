@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
-
+        // -------------------- Was wenn DB unvollständig ? Läd nicht selbst neu! evtl. zumindest ne Anzeige das man aktualisieren soll!!!!!
         updateData();
     }
 

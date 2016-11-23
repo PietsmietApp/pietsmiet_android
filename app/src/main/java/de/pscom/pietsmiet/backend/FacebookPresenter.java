@@ -18,9 +18,6 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
@@ -48,15 +45,9 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     private void parsePosts() {
-        Observable.defer(new Func0<Observable<List<BatchResponse>>>() {
-            @Override
-            public Observable<List<BatchResponse>> call() {
-                return Observable.just(FacebookPresenter.this.loadPosts());
-            }
-        })
+        Observable.defer(() -> Observable.just(loadPosts()))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-
                 .observeOn(Schedulers.io())
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
@@ -76,21 +67,18 @@ public class FacebookPresenter extends MainPresenter {
                     }
                 })
                 .filter(response -> response != null)
-                .subscribe(new Action1<facebook4j.Post>() {
-                    @Override
-                    public void call(facebook4j.Post post) {
-                        //Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
-                        FacebookPresenter.this.post = new Post();
-                        //this.post.setThumbnail(thumb);
-                        FacebookPresenter.this.post.setTitle(post.getFrom().getName());
-                        FacebookPresenter.this.post.setDescription(post.getMessage());
-                        FacebookPresenter.this.post.setDatetime(post.getCreatedTime());
-                        FacebookPresenter.this.post.setPostType(FACEBOOK);
-                        if (post.getId() != null && !post.getId().isEmpty()) {
-                            FacebookPresenter.this.post.setUrl("http://www.facebook.com/" + post.getId());
-                        }
-                        posts.add(FacebookPresenter.this.post);
+                .subscribe(post -> {
+                    //Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
+                    this.post = new Post();
+                    //this.post.setThumbnail(thumb);
+                    this.post.setTitle(post.getFrom().getName());
+                    this.post.setDescription(post.getMessage());
+                    this.post.setDatetime(post.getCreatedTime());
+                    this.post.setPostType(FACEBOOK);
+                    if (post.getId() != null && !post.getId().isEmpty()) {
+                        this.post.setUrl("http://www.facebook.com/" + post.getId());
                     }
+                    posts.add(this.post);
                 }, e -> PsLog.e(e.toString()), () -> {
                     finished();
                     lastFetchedTime = String.valueOf(new Date().getTime() / 1000);

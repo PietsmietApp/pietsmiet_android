@@ -1,6 +1,10 @@
 package de.pscom.pietsmiet;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.DatabaseHelper;
@@ -30,6 +35,8 @@ import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -38,6 +45,8 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -45,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
-
     private SwipeRefreshLayout refreshLayout;
 
     @Override
@@ -59,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupRecyclerView();
 
+
         //Navigation Drawer
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -70,10 +79,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
+        SettingsHelper.loadAllSettings(this);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+
+        boolean newsSwitch = SharedPreferenceHelper.getSharedPreferenceBoolean(this,KEY_NEWS_SETTING,true);
+
+        if(newsSwitch){
+            FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+            Toast.makeText(this, "Subscribe", Toast.LENGTH_SHORT).show();
+        }else{
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+            Toast.makeText(this, "Unsubscribe", Toast.LENGTH_SHORT).show();
+        }
+
+
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
@@ -167,6 +189,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_home:
                 postManager.displayAllPosts();
+                break;
+            case R.id.nav_settings:
+                startActivity(new Intent(MainActivity.this, Settings.class));
+
                 break;
             default:
                 return false;

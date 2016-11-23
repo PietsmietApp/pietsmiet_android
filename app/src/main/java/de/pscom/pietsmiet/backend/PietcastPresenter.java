@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import android.graphics.drawable.Drawable;
 
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import rx.Observable;
@@ -12,10 +13,10 @@ import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
     private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
-    public static final int MAX_COUNT = 15;
+    static final int MAX_COUNT = 15;
 
-    public PietcastPresenter() {
-        super(PIETCAST);
+    public PietcastPresenter(MainActivity view) {
+        super(view, PIETCAST);
         parsePietcast();
     }
 

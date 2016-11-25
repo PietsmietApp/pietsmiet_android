@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -79,7 +80,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 }
             });
         }
-        // todo if holder.timedate.setVisibility(GONE); it also sets it for next posts maybe its the same object? i guess!
+
         if (currentItem.getPostType() == UPLOAD_PLAN) {
             holder.timedate.setVisibility(GONE);
         } else {
@@ -109,7 +110,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 context.startActivity(browserIntent);
             } catch (ActivityNotFoundException | NullPointerException e) {
                 PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
-                //todo display some kind of error
+                //Error Toast Notification todo evtl eigene Funktion in seperater Klasse ?
+                CharSequence errMsg = "Cannot open browser. Retry";
+                Toast errToast = Toast.makeText(context, errMsg, Toast.LENGTH_SHORT);
+                errToast.show();
             }
         });
 

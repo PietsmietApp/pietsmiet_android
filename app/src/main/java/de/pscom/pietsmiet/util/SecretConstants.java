@@ -16,6 +16,8 @@ public class SecretConstants {
     public static String facebookToken;
     @Nullable
     public static String facebookSecret;
+    @Nullable
+    public static String youtubeAPIkey;
 
     public SecretConstants(Context context) {
         try {
@@ -27,6 +29,7 @@ public class SecretConstants {
             rssUrl = properties.getProperty("rssUrl");
             facebookToken = properties.getProperty("facebookToken");
             facebookSecret = properties.getProperty("facebookSecret");
+            youtubeAPIkey = properties.getProperty("youtubeAPIkey");
         } catch (IOException e) {
             PsLog.w("You haven't included a '/app/src/main/assets/secrets.properties' file in your project with the API-Keys and RSS-URLs!\n" +
                     "=> Twitter, Facebook & Uploadplan won't work");

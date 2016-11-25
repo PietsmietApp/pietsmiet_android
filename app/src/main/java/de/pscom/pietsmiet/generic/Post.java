@@ -162,6 +162,8 @@ public class Post implements Comparable<Post> {
         String hexColor;
         switch (postType) {
             case VIDEO:
+                hexColor = Youtube;
+                break;
             case STREAM:
                 hexColor = Youtube;
                 break;

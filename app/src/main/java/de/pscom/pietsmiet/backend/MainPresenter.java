@@ -18,6 +18,7 @@ class MainPresenter {
     List<Post> posts = new ArrayList<>();
 
     MainPresenter(MainActivity view, @TypeAllPosts int postType) {
+        this.view = view;
         this.postType = postType;
     }
 

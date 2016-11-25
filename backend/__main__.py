@@ -42,23 +42,24 @@ def check_for_update(scope):
         if scope == SCOPE_UPLOADPLAN:
             submit_to_reddit(new_feed.title, format_text(new_feed))
         elif scope == SCOPE_NEWS:
-            submit_to_reddit(new_feed.title + " (x-post pietsmiet.de)", format_text(new_feed))
+            submit_to_reddit("Neuer Post auf pietsmiet.de: " + new_feed.title, format_text(new_feed))
 
 
 while 1:
     # Check for updates:
-    # 1) Every hour for PietCast
+    # 1) Every 2.5 hours for PietCast
     # 2) Every half hour between 9am and 1pm for Uploadplan
-    # 3) Every two hours for news on pietsmiet.de
+    # 3) Every 10 hours for news on pietsmiet.de
     # (I'm two lazy to do it asynchronous)
     i = 0
-    if in_between_time(9, 13):
+    if True:
+    #if in_between_time(9, 13):
         check_for_update(SCOPE_UPLOADPLAN)
-    if i == 3:
+    #if (i == 4) or (i == 9) or (i == 14) or (i == 19):
+        check_for_update(SCOPE_PIETCAST)
+    #if i == 19:
         check_for_update(SCOPE_NEWS)
         i = 0
-    if (i == 1) or (i == 3):
-        check_for_update(SCOPE_PIETCAST)
 
     i += 1
 

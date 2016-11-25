@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 import html2text
+from backend.scopes import SCOPE_NEWS
 
 
 def scrape_site(url):
@@ -35,8 +36,21 @@ def format_text(feed):
     :param link: Link to the current uploadplan
     :return: formatted text
     """
-    text = feed.desc
+    text = html2text.html2text(feed.desc)
     link = feed.link
-    text = html2text.html2text(text)
-    text += '\n*[Link zum Post](' + link + ')*\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
+    scope = feed.scope
+
+    if scope == SCOPE_NEWS:
+        text = smart_truncate(text)
+        text += '\n\n*[Weiterlesen auf pietsmiet.de](' + link + ')*\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
+    else:
+        text = '*[Link zum Post auf pietsmiet.de](' + link + ')*\n\n' + text + '\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
+
     return text
+
+
+def smart_truncate(content, length=200):
+    if len(content) <= length:
+        return content
+    else:
+        return content[:length].rsplit('.', 1)[0] + '.'

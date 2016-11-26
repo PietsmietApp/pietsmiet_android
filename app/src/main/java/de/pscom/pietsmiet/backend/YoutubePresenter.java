@@ -25,11 +25,16 @@ public class YoutubePresenter extends MainPresenter {
 
     public YoutubePresenter(MainActivity view) {
         super(view, VIDEO);
+        if (SecretConstants.youtubeAPIkey == null || SecretConstants.youtubeAPIkey == null) {
+            PsLog.w("No Youtube API-key or token specified");
+            return;
+        }
         parsePlaylist();
     }
 
     /**
      * Parsing upload Playlist from YT
+     * Adding found Videos to posts array
      */
     private void parsePlaylist() {
         Observable.defer(() -> Observable.from(loadJSON()))
@@ -54,12 +59,20 @@ public class YoutubePresenter extends MainPresenter {
                         }
                     } catch (Exception e) {
                         PsLog.e(e.getMessage());
+                        view.showError("YouTube parsing error");
                     }
                     posts.add(post);
-                }, e -> PsLog.e(e.toString()), this::finished);
+                }, e -> {
+                    PsLog.e(e.toString());
+                    view.showError("YouTube parsing error");
+                }, this::finished);
 
     }
 
+    /**
+     * Load the JSON answer from Googles YT-API
+     * @return JSONObject[] list of videos in Playlist 'uploads'
+     */
     private JSONObject[] loadJSON() {
         JSONObject[] items = null;
         try {
@@ -78,6 +91,7 @@ public class YoutubePresenter extends MainPresenter {
 
         } catch (Exception e) {
             PsLog.e(e.getMessage());
+            view.showError("YouTube API unreachable");
         }
         return items;
     }

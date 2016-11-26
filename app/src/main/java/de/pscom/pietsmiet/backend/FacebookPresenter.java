@@ -26,7 +26,6 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 public class FacebookPresenter extends MainPresenter {
     public static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
-
     private String lastFetchedTime;
 
     public FacebookPresenter(MainActivity view) {
@@ -63,6 +62,7 @@ public class FacebookPresenter extends MainPresenter {
                         return DataObjectFactory.createPost(rawPost.toString());
                     } catch (FacebookException e) {
                         PsLog.w(e.getMessage());
+                        view.showError("Facebook parsing error");
                         return null;
                     }
                 })
@@ -79,7 +79,10 @@ public class FacebookPresenter extends MainPresenter {
                         this.post.setUrl("http://www.facebook.com/" + post.getId());
                     }
                     posts.add(this.post);
-                }, e -> PsLog.e(e.toString()), () -> {
+                }, e -> {
+                    PsLog.e(e.toString());
+                    view.showError("Facebook parsing error");
+                }, () -> {
                     finished();
                     lastFetchedTime = String.valueOf(new Date().getTime() / 1000);
                     if (view != null) {
@@ -112,7 +115,8 @@ public class FacebookPresenter extends MainPresenter {
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {
-            e.printStackTrace();
+            view.showError("Facebook API unreachable");
+            PsLog.e(e.getMessage());
         }
         return null;
     }

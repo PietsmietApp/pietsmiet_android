@@ -38,4 +38,28 @@ public class PostType {
     @IntDef({PIETCAST, UPLOAD_PLAN, FACEBOOK, TWITTER, STREAM, VIDEO})
     public @interface TypeAllPosts {
     }
+
+    /**
+     * Converts from int to name
+     * @param i
+     * @return String Name of Posttype
+     */
+    public static String ToName(int i) {
+        switch (i) {
+            case VIDEO:
+                return "VIDEO";
+            case STREAM:
+                return "STREAM";
+            case PIETCAST:
+                return "PIETCAST";
+            case TWITTER:
+                return "TWITTER";
+            case FACEBOOK:
+                return "FACEBOOK";
+            case UPLOAD_PLAN:
+                return "UPLOAD_PLAN";
+            default:
+                return "NO INT LISTED";
+        }
+    }
 }

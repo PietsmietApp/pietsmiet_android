@@ -40,7 +40,10 @@ public class PietcastPresenter extends MainPresenter {
                     post.setThumbnail(thumb);
                     post.setPostType(PIETCAST);
                     posts.add(post);
-                }, Throwable::printStackTrace, this::finished);
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    view.showError("Pietcast parsing error");
+                }, this::finished);
     }
 
 }

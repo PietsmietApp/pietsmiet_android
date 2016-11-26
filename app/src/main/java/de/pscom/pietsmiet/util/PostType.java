@@ -44,7 +44,7 @@ public class PostType {
      * @param i
      * @return String Name of Posttype
      */
-    public static String ToName(int i) {
+    public static String getName(int i) {
         switch (i) {
             case VIDEO:
                 return "VIDEO";

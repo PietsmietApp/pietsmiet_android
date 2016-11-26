@@ -29,10 +29,10 @@ class MainPresenter {
     void finished() {
         if (view != null) {
             if (posts != null) {
-                PsLog.v("Type " + PostType.ToName(postType) + " posts: " + posts.size());
+                PsLog.v("Type " + PostType.getName(postType) + " posts: " + posts.size());
                 view.addNewPosts(posts);
             } else {
-                view.showError("Typ " + PostType.ToName(postType) + " konnte nicht geladen werden :(");
+                view.showError("Typ " + PostType.getName(postType) + " konnte nicht geladen werden :(");
             }
         }
     }

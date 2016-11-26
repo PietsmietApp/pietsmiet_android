@@ -75,7 +75,10 @@ public class UploadplanPresenter extends MainPresenter {
                                 finished();
                                 PsLog.v("added uploadplan from firebase db");
                             }
-                        }, Throwable::printStackTrace);
+                        }, (throwable) -> {
+                            throwable.printStackTrace();
+                            view.showError("Uploadplan from DB Error");
+                        });
             }
 
             @Override
@@ -83,6 +86,7 @@ public class UploadplanPresenter extends MainPresenter {
                 if (databaseError != null)
                     PsLog.i("Falling back to fetching uploadplan directly;" +
                             " Database loading failed because: " + databaseError.toString());
+                    view.showError("Uploadplan from DB Error");
                 parseUploadplan();
             }
         });
@@ -113,7 +117,10 @@ public class UploadplanPresenter extends MainPresenter {
                     post.setDescription(uploadplan);
                     post.setPostType(UPLOAD_PLAN);
                     posts.add(post);
-                }, Throwable::printStackTrace, this::finished);
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    view.showError("Uploadplan parsing Error");
+                }, this::finished);
     }
 
 

@@ -31,6 +31,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -66,19 +67,24 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         if (holder.getItemViewType() == LAYOUT_THUMBNAIL) {
             ThumbnailCardViewHolder videoHolder = (ThumbnailCardViewHolder) holder;
+            if(currentItem.getPostType() != VIDEO) {
+                videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
+                videoHolder.btnExpand.setVisibility(VISIBLE);
+                videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                videoHolder.btnExpand.setOnClickListener(view -> {
+                    if (videoHolder.descriptionContainer.getVisibility() == GONE) {
+                        videoHolder.descriptionContainer.setVisibility(VISIBLE);
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                    } else {
+                        videoHolder.descriptionContainer.setVisibility(GONE);
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                    }
+                });
+            } else {
+                videoHolder.btnExpand.setVisibility(GONE);
+                videoHolder.descriptionContainer.setVisibility(GONE);
 
-            videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
-
-            videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-            videoHolder.btnExpand.setOnClickListener(view -> {
-                if (videoHolder.descriptionContainer.getVisibility() == GONE) {
-                    videoHolder.descriptionContainer.setVisibility(VISIBLE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
-                } else {
-                    videoHolder.descriptionContainer.setVisibility(GONE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-                }
-            });
+            }
         }
 
         if (currentItem.getPostType() == UPLOAD_PLAN) {

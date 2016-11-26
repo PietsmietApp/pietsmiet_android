@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
@@ -28,10 +29,10 @@ class MainPresenter {
     void finished() {
         if (view != null) {
             if (posts != null) {
-                PsLog.v("Type" + postType + " posts:" + posts.size());
+                PsLog.v("Type " + PostType.ToName(postType) + " posts: " + posts.size());
                 view.addNewPosts(posts);
             } else {
-                view.showError("Typ" + Integer.toString(postType) + " konnte nicht geladen werden :(");
+                view.showError("Typ " + PostType.ToName(postType) + " konnte nicht geladen werden :(");
             }
         }
     }

@@ -70,7 +70,10 @@ public class TwitterPresenter extends MainPresenter {
                     post.setPostType(TWITTER);
                     posts.add(post);
                     if (posts.size() == 1) lastTweetId = tweet.getId();
-                }, Throwable::printStackTrace, () -> {
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    view.showError("Twitter parsing error");
+                }, () -> {
                     finished();
                     if (view != null) {
                         SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
@@ -90,6 +93,7 @@ public class TwitterPresenter extends MainPresenter {
             result = twitterInstance.search(pietsmietTweets());
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
+            view.showError("Twitter unreachable");
             return null;
         }
 
@@ -159,6 +163,7 @@ public class TwitterPresenter extends MainPresenter {
 
         } catch (TwitterException e) {
             PsLog.w("Couldn't get rate limit: " + e.getErrorMessage());
+            view.showError("Twitter error");
         }
     }
 }

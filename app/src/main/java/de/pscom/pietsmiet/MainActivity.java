@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
+
         updateData();
     }
 

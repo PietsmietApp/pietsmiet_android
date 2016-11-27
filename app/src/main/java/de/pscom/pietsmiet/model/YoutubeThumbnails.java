@@ -1,24 +1,28 @@
 package de.pscom.pietsmiet.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class YoutubeThumbnails {
+    @SerializedName("default")
+    private YoutubeThumbnail _default;
 
-    private YoutubeThumbnailDefault _default;
+    private YoutubeThumbnail medium;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
      * @return The _default
      */
-    public YoutubeThumbnailDefault getDefault() {
+    public YoutubeThumbnail getDefault() {
         return _default;
     }
 
     /**
      * @param _default The default
      */
-    public void setDefault(YoutubeThumbnailDefault _default) {
+    public void setDefault(YoutubeThumbnail _default) {
         this._default = _default;
     }
 

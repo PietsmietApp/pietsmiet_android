@@ -3,7 +3,7 @@ package de.pscom.pietsmiet.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class YoutubeThumbnailDefault {
+public class YoutubeThumbnail {
 
     private String url;
     private Integer width;

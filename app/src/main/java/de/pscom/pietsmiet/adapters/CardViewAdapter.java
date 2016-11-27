@@ -98,8 +98,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
             holder.thumbnail.setImageDrawable(thumbnail);
+            holder.thumbnail.setVisibility(VISIBLE);
         } else if (currentItem.getPostType() == PIETCAST){
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
+            holder.thumbnail.setVisibility(VISIBLE);
         } else {
             holder.thumbnail.setVisibility(GONE);
         }

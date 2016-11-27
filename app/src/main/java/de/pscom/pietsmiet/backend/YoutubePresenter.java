@@ -14,6 +14,7 @@ import de.pscom.pietsmiet.model.YoutubeItem;
 import de.pscom.pietsmiet.model.YoutubeRoot;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -59,7 +60,7 @@ public class YoutubePresenter extends MainPresenter {
                 .map(YoutubeItem::getSnippet)
                 .subscribe(snippet -> {
                     try {
-                        //fixme post.setThumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
+                        post.setThumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
                         post.setTitle(snippet.getTitle());
                         post.setDescription(snippet.getDescription());
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
@@ -92,7 +93,8 @@ public class YoutubePresenter extends MainPresenter {
         try {
             response = call.execute();
         } catch (IOException e) {
-            e.printStackTrace();
+            PsLog.e(e.getMessage());
+            view.showError("YouTube-API unreachable");
         }
         return response;
     }

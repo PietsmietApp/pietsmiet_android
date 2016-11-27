@@ -15,7 +15,7 @@ public class YoutubeSnippet {
     private String channelTitle;
     private String playlistId;
     private Integer position;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
      * @return The publishedAt

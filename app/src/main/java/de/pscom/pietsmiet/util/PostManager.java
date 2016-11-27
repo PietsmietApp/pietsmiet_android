@@ -35,7 +35,7 @@ public class PostManager {
      * @param posts Post Items
      */
     public void addPosts(List<Post> posts) {
-        if (posts.size() == 0){
+        if (posts.size() == 0) {
             PsLog.w("addPosts called with zero posts");
             return;
         }
@@ -51,7 +51,7 @@ public class PostManager {
                     if (post.getDate() == null) {
                         PsLog.e("Date is null!");
                         return false;
-                    } else if(post.getTitle() == null){
+                    } else if (post.getTitle() == null) {
                         PsLog.e("Title is null");
                         return null;
                     }

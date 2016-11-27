@@ -86,7 +86,7 @@ public class UploadplanPresenter extends MainPresenter {
                 if (databaseError != null)
                     PsLog.i("Falling back to fetching uploadplan directly;" +
                             " Database loading failed because: " + databaseError.toString());
-                    view.showError("Uploadplan from DB Error");
+                view.showError("Uploadplan from DB Error");
                 parseUploadplan();
             }
         });

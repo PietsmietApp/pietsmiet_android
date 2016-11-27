@@ -15,11 +15,13 @@ import de.pscom.pietsmiet.model.YoutubeRoot;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.DrawableFetcher;
+import retrofit2.adapter.rxjava.*;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
@@ -43,11 +45,25 @@ public class YoutubePresenter extends MainPresenter {
      * Adding found Videos to posts array
      */
     private void parsePlaylist() {
-        Observable.defer(() -> Observable.just(loadApi()))
-                .subscribeOn(Schedulers.io())
+        Gson gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                .create();
+
+        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlYTAPI)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(rxAdapter)
+                .build();
+
+        YoutubeApiInterface apiService = retrofit.create(YoutubeApiInterface.class);
+        Observable<YoutubeRoot> call = apiService.getPlaylist(MAX_COUNT, SecretConstants.youtubeAPIkey, "UUqwGaUvq_l0RKszeHhZ5leA");
+
+        call.subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
-                .map(response -> response.body().getItems())
+                .map(response -> response.getItems())
                 .flatMap(Observable::from)
                 .filter(result -> result != null)
                 .doOnNext(item -> {
@@ -76,27 +92,6 @@ public class YoutubePresenter extends MainPresenter {
                     view.showError("YouTube parsing error");
                 }, this::finished);
 
-    }
-
-    private Response<YoutubeRoot> loadApi() {
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlYTAPI)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-        YoutubeApiInterface apiService = retrofit.create(YoutubeApiInterface.class);
-        Call<YoutubeRoot> call = apiService.getPlaylist(MAX_COUNT, SecretConstants.youtubeAPIkey, "UUqwGaUvq_l0RKszeHhZ5leA");
-        Response<YoutubeRoot> response = null;
-        try {
-            response = call.execute();
-        } catch (IOException e) {
-            PsLog.e(e.getMessage());
-            view.showError("YouTube-API unreachable");
-        }
-        return response;
     }
 
 }

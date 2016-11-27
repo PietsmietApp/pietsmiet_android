@@ -201,6 +201,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int getPostsLoadedCount() {
-        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5 + YoutubePresenter.MAX_COUNT;
+        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5 + YoutubePresenter.MAX_COUNT + UploadplanPresenter.MAX_COUNT;
     }
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 public class YoutubeContent {
 
     private String videoId;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
      * @return The videoId

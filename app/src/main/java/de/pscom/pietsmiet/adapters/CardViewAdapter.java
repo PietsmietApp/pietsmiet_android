@@ -67,7 +67,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         if (holder.getItemViewType() == LAYOUT_THUMBNAIL) {
             ThumbnailCardViewHolder videoHolder = (ThumbnailCardViewHolder) holder;
-            if(currentItem.getPostType() != VIDEO) {
+            if (currentItem.getPostType() != VIDEO) {
                 videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
                 videoHolder.btnExpand.setVisibility(VISIBLE);
                 videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
@@ -99,7 +99,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         if (thumbnail != null) {
             holder.thumbnail.setImageDrawable(thumbnail);
             holder.thumbnail.setVisibility(VISIBLE);
-        } else if (currentItem.getPostType() == PIETCAST){
+        } else if (currentItem.getPostType() == PIETCAST) {
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
             holder.thumbnail.setVisibility(VISIBLE);
         } else {

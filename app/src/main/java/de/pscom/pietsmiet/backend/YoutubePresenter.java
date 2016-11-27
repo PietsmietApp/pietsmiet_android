@@ -1,9 +1,5 @@
 package de.pscom.pietsmiet.backend;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -12,24 +8,21 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.YoutubeApiInterface;
 import de.pscom.pietsmiet.model.YoutubeItem;
 import de.pscom.pietsmiet.model.YoutubeRoot;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.DrawableFetcher;
-import retrofit2.adapter.rxjava.*;
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class YoutubePresenter extends MainPresenter {
 
-    private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
     static final int MAX_COUNT = 10;
+    private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
     public YoutubePresenter(MainActivity view) {
         super(view, VIDEO);
@@ -45,15 +38,11 @@ public class YoutubePresenter extends MainPresenter {
      * Adding found Videos to posts array
      */
     private void parsePlaylist() {
-        Gson gson = new GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                .create();
-
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(urlYTAPI)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(rxAdapter)
                 .build();
 
@@ -63,8 +52,7 @@ public class YoutubePresenter extends MainPresenter {
         call.subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
-                .map(response -> response.getItems())
-                .flatMap(Observable::from)
+                .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
                 .doOnNext(item -> {
                     this.post = new Post();

@@ -19,6 +19,31 @@ public class PostType {
     public static final int FACEBOOK = TWITTER + 1;
     public static final int UPLOAD_PLAN = FACEBOOK + 1;
 
+    /**
+     * Converts from int to name
+     *
+     * @param i Post type as int
+     * @return String Name of Posttype
+     */
+    public static String getName(@TypeAllPosts int i) {
+        switch (i) {
+            case VIDEO:
+                return "VIDEO";
+            case STREAM:
+                return "STREAM";
+            case PIETCAST:
+                return "PIETCAST";
+            case TWITTER:
+                return "TWITTER";
+            case FACEBOOK:
+                return "FACEBOOK";
+            case UPLOAD_PLAN:
+                return "UPLOAD_PLAN";
+            default:
+                return "NO INT LISTED";
+        }
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({FACEBOOK, TWITTER, UPLOAD_PLAN})
     public @interface TypeNoThumbnail {
@@ -37,29 +62,5 @@ public class PostType {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PIETCAST, UPLOAD_PLAN, FACEBOOK, TWITTER, STREAM, VIDEO})
     public @interface TypeAllPosts {
-    }
-
-    /**
-     * Converts from int to name
-     * @param i
-     * @return String Name of Posttype
-     */
-    public static String getName(int i) {
-        switch (i) {
-            case VIDEO:
-                return "VIDEO";
-            case STREAM:
-                return "STREAM";
-            case PIETCAST:
-                return "PIETCAST";
-            case TWITTER:
-                return "TWITTER";
-            case FACEBOOK:
-                return "FACEBOOK";
-            case UPLOAD_PLAN:
-                return "UPLOAD_PLAN";
-            default:
-                return "NO INT LISTED";
-        }
     }
 }

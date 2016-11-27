@@ -8,7 +8,7 @@ public class YoutubeThumbnail {
     private String url;
     private Integer width;
     private Integer height;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
      * @return The url

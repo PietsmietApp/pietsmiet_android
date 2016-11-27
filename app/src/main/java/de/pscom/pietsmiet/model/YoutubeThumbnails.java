@@ -10,7 +10,7 @@ public class YoutubeThumbnails {
     private YoutubeThumbnail _default;
 
     private YoutubeThumbnail medium;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
      * @return The _default

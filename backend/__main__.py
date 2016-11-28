@@ -13,7 +13,7 @@ def in_between_time(start_hour, end_hour):
     now = int(datetime.datetime.now().hour)
     if start_hour <= end_hour:
         return start_hour <= now < end_hour
-    else:  # over midnight e.g., 23:30-04:15
+    else:  # over midnight e.g., 23-04
         return start_hour <= now or now < end_hour
 
 
@@ -43,7 +43,11 @@ def check_for_update(scope):
             submit_to_reddit(new_feed.title, format_text(new_feed))
         elif scope == SCOPE_NEWS:
             submit_to_reddit("Neuer Post auf pietsmiet.de: " + new_feed.title, format_text(new_feed))
+        return True
+    return False
 
+
+fetched_today = False
 
 while 1:
     # Check for updates:
@@ -52,12 +56,14 @@ while 1:
     # 3) Every 10 hours for news on pietsmiet.de
     # (I'm two lazy to do it asynchronous)
     i = 0
-    if True:
-    #if in_between_time(9, 13):
-        check_for_update(SCOPE_UPLOADPLAN)
-    #if (i == 4) or (i == 9) or (i == 14) or (i == 19):
+    if in_between_time(9, 13):
+        if not fetched_today:
+            fetched_today = check_for_update(SCOPE_UPLOADPLAN)
+    else:
+        fetched_today = False
+    if (i == 4) or (i == 9) or (i == 14) or (i == 19):
         check_for_update(SCOPE_PIETCAST)
-    #if i == 19:
+    if i == 19:
         check_for_update(SCOPE_NEWS)
         i = 0
 

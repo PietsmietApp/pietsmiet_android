@@ -1,6 +1,9 @@
 #! /usr/bin/python3
 import time
 import datetime
+import sys
+
+sys.path.append("/home/pi");
 
 from backend.firebase_util import send_fcm, put_feed_into_db
 from backend.reddit_util import submit_to_reddit
@@ -38,7 +41,7 @@ def check_for_update(scope):
         print("New: \"" + new_title + "\"")
         write(new_title, scope)
         put_feed_into_db(new_feed)
-        send_fcm(new_title, scope)
+        send_fcm(new_feed)
         if scope == SCOPE_UPLOADPLAN:
             submit_to_reddit(new_feed.title, format_text(new_feed))
         elif scope == SCOPE_NEWS:

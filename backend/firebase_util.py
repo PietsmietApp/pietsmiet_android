@@ -22,14 +22,13 @@ def put_feed_into_db(feed):
         print('Error putting feed into fb db')
 
 
-def send_fcm(message, topic):
-    """
-    Sends a firebase cloud messaging message
-    :param message: Message to send
-    :param topic: Topic to send to
-    :return: None
-    """
+def send_fcm(feed):
+    data_message = {
+        "title" : feed.title,
+        "topic" : feed.scope,
+		"message" : feed.desc
+    }
     try:
-        firebase_fcm.notify_topic_subscribers(message_body=message, topic_name=topic)
+        firebase_fcm.notify_topic_subscribers(data_message=data_message, topic_name=scope)
     except Exception:
         print("Error making new fcm")

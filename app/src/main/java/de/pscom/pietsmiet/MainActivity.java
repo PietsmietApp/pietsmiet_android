@@ -27,8 +27,10 @@ import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
+import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
@@ -73,6 +75,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
+
+        if (category != -1) {
+            if (category == PostType.UPLOAD_PLAN) {
+                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_upload_plan));
+            } else if (category == PostType.PIETCAST) {
+                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_pietcast));
+            }
+        }
 
         FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         new SecretConstants(this);

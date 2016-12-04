@@ -2,7 +2,9 @@ package de.pscom.pietsmiet.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
@@ -10,20 +12,14 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-
 
 public class PostManager {
-    static final int DISPLAY_ALL = 10;
-    public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
     private final MainActivity mView;
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    @PostType.TypeDrawer
-    private int currentlyDisplayedType = DISPLAY_ALL;
+    private Map<Integer, Boolean> allowedTypes = new HashMap<>();
 
     public PostManager(MainActivity view) {
         mView = view;
@@ -104,22 +100,12 @@ public class PostManager {
     }
 
     /**
-     * Switches back to the "all" category. Shows all posts, independent of their category
-     */
-    public void displayAllPosts() {
-        currentlyDisplayedType = DISPLAY_ALL;
-        currentPosts.clear();
-        currentPosts.addAll(getAllPosts());
-        if (mView != null) mView.updateAdapter();
-    }
-
-    /**
      * Show only posts that belong to a certain category / type
      *
      * @param postType Type that the posts should belong to
      */
-    public void displayOnlyPostsFromType(@PostType.TypeDrawer int postType) {
-        currentlyDisplayedType = postType;
+    public void displayOnlyPostsFromType(@PostType.AllTypes int postType, boolean isVisible) {
+        allowedTypes.put(postType, isVisible);
         Observable.just(getAllPosts())
                 .flatMap(Observable::from)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -131,7 +117,6 @@ public class PostManager {
                     currentPosts.addAll(posts);
                     if (mView != null) {
                         mView.updateAdapter();
-                        mView.scrollToTop();
                     }
                 }, Throwable::printStackTrace);
     }
@@ -141,16 +126,8 @@ public class PostManager {
      * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
      */
     private boolean isAllowedType(Post post) {
-        int postType = post.getPostType();
-        if (currentlyDisplayedType == DISPLAY_ALL) return true;
-        else if (currentlyDisplayedType == DISPLAY_SOCIAL) {
-            if (postType == TWITTER
-                    || postType == FACEBOOK) {
-                return true;
-            }
-        } else {
-            if (postType == currentlyDisplayedType) return true;
-        }
+        @PostType.AllTypes int postType = post.getPostType();
+
         return false;
     }
 

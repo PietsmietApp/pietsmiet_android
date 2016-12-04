@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home_black_24dp"
-            android:title="@string/drawer_home"/>
-        <item
-            android:id="@+id/nav_upload_plan"
-            android:icon="@drawable/ic_assignment_black_24dp"
-            android:title="@string/drawer_uploadplan"/>
-        <item
-            android:id="@+id/nav_social_media"
-            android:icon="@drawable/ic_share_black_24dp"
-            android:title="@string/drawer_social"/>
-        <item
-            android:id="@+id/nav_pietcast"
-            android:icon="@drawable/ic_music_note_black_24dp"
-            android:title="@string/drawer_pietcast"/>
-    </group>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/nav_upload_plan"
+        app:actionLayout="@layout/widget_slider"
+        android:icon="@drawable/ic_assignment_black_24dp"
+        android:title="@string/drawer_uploadplan"/>
+    <item
+        android:id="@+id/nav_facebook"
+        app:actionLayout="@layout/widget_slider"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:title="@string/drawer_facebook"/>
+
+    <item
+        android:id="@+id/nav_twitter"
+        app:actionLayout="@layout/widget_slider"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:title="@string/drawer_twitter"/>
+
+    <item
+        android:id="@+id/nav_pietcast"
+        app:actionLayout="@layout/widget_slider"
+        android:icon="@drawable/ic_music_note_black_24dp"
+        android:title="@string/drawer_pietcast"/>
+
+    <item
+        android:id="@+id/nav_youtube"
+        app:actionLayout="@layout/widget_slider"
+        android:icon="@drawable/ic_watch_later_black_24dp"
+        android:title="@string/drawer_youtube"/>
+
 
     <item android:title="@string/drawer_sonstiges">
         <menu>

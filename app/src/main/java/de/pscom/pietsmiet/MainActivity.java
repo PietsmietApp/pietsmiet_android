@@ -36,7 +36,6 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
@@ -171,25 +170,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.nav_upload_plan:
-                postManager.displayOnlyPostsFromType(UPLOAD_PLAN);
+            case R.id.nav_help:
+                //todo
                 break;
-            case R.id.nav_social_media:
-                postManager.displayOnlyPostsFromType(DISPLAY_SOCIAL);
-                break;
-            case R.id.nav_pietcast:
-                postManager.displayOnlyPostsFromType(PIETCAST);
-                break;
-            case R.id.nav_home:
-                postManager.displayAllPosts();
+            case R.id.nav_settings:
+                //todo
                 break;
             default:
                 return false;
         }
-        // Highlight the selected item has been done by NavigationView
-        item.setChecked(true);
-        // Set action bar title
-        setTitle(item.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
 

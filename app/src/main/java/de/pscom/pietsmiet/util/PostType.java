@@ -5,9 +5,6 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static de.pscom.pietsmiet.util.PostManager.DISPLAY_ALL;
-import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
-
 @SuppressWarnings("WeakerAccess")
 public class PostType {
     //Scales dynamically
@@ -25,7 +22,7 @@ public class PostType {
      * @param i Post type as int
      * @return String Name of Posttype
      */
-    public static String getName(@TypeAllPosts int i) {
+    public static String getName(@AllTypes int i) {
         switch (i) {
             case VIDEO:
                 return "VIDEO";
@@ -55,12 +52,7 @@ public class PostType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PIETCAST, UPLOAD_PLAN, DISPLAY_SOCIAL, DISPLAY_ALL})
-    public @interface TypeDrawer {
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
     @IntDef({PIETCAST, UPLOAD_PLAN, FACEBOOK, TWITTER, STREAM, VIDEO})
-    public @interface TypeAllPosts {
+    public @interface AllTypes {
     }
 }

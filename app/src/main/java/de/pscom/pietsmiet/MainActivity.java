@@ -43,6 +43,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,9 +68,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
 
         if (PostType.getDrawerIdForType(category) != -1) {
-            onNavigationItemSelected(mNavigationView.getMenu().findItem(PostType.getDrawerIdForType(category)));
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
             postManager.displayOnlyType(category);
-            //fixme update switches in drawer
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -191,6 +191,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.nav_upload_plan:
+            case R.id.nav_facebook:
+            case R.id.nav_twitter:
+            case R.id.nav_pietcast:
+            case R.id.nav_video:
+                for (int i : getPossibleTypes()) {
+                    int id = getDrawerIdForType(i);
+                    Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
+                    if (id == item.getItemId()) {
+                        aSwitch.setChecked(true);
+                        postManager.displayOnlyType(i);
+                    } else aSwitch.setChecked(false);
+                }
+
+                break;
             case R.id.nav_help:
                 //todo
                 break;

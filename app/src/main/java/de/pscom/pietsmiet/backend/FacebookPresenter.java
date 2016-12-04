@@ -72,16 +72,15 @@ public class FacebookPresenter extends MainPresenter {
                 .filter(response -> response != null)
                 .subscribe(post -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
-                    this.post = new Post();
-                    this.post.setThumbnail(thumb);
-                    this.post.setTitle(post.getFrom().getName());
-                    this.post.setDescription(post.getMessage());
-                    this.post.setDatetime(post.getCreatedTime());
-                    this.post.setPostType(FACEBOOK);
+                    postBuilder = new Post.PostBuilder(FACEBOOK);
+                    postBuilder.thumbnail(thumb);
+                    postBuilder.title(post.getFrom().getName());
+                    postBuilder.description(post.getMessage());
+                    postBuilder.date(post.getCreatedTime());
                     if (post.getId() != null && !post.getId().isEmpty()) {
-                        this.post.setUrl("http://www.facebook.com/" + post.getId());
+                        postBuilder.url("http://www.facebook.com/" + post.getId());
                     }
-                    posts.add(this.post);
+                    posts.add(this.postBuilder.build());
                 }, e -> {
                     PsLog.e(e.toString());
                     view.showError("Facebook parsing error");

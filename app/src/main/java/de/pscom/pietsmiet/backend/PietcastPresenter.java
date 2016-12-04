@@ -46,4 +46,13 @@ public class PietcastPresenter extends MainPresenter {
                 }, this::finished);
     }
 
+    @Override
+    public void getNewPosts() {
+
+    }
+
+    @Override
+    public void getPostsAfter() {
+
+    }
 }

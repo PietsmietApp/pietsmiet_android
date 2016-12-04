@@ -166,4 +166,14 @@ public class TwitterPresenter extends MainPresenter {
             view.showError("Twitter error");
         }
     }
+
+    @Override
+    public void getNewPosts() {
+
+    }
+
+    @Override
+    public void getPostsAfter() {
+
+    }
 }

@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
@@ -152,6 +153,14 @@ public class PostManager {
             if (postType == currentlyDisplayedType) return true;
         }
         return false;
+    }
+
+    public Date getLastPostDate() {
+        if (allPosts.isEmpty()) {
+            return new Date();
+            // todo sinnvoll?
+        }
+        return allPosts.get(allPosts.size() - 1).getDate();
     }
 
 

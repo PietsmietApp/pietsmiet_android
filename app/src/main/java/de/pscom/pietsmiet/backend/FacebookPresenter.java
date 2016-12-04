@@ -120,4 +120,14 @@ public class FacebookPresenter extends MainPresenter {
         }
         return null;
     }
+
+    @Override
+    public void getNewPosts() {
+
+    }
+
+    @Override
+    public void getPostsAfter() {
+
+    }
 }

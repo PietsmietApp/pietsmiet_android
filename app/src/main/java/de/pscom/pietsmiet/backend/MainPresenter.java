@@ -10,7 +10,7 @@ import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
 
-class MainPresenter {
+abstract class MainPresenter {
     final MainActivity view;
     @TypeAllPosts
     private final int postType;
@@ -36,4 +36,16 @@ class MainPresenter {
             }
         }
     }
+
+    /**
+     *
+     */
+    public abstract void getNewPosts();
+
+    /**
+     *
+     */
+    public abstract void getPostsAfter();
+
+
 }

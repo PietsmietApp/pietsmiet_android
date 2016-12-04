@@ -124,4 +124,13 @@ public class UploadplanPresenter extends MainPresenter {
     }
 
 
+    @Override
+    public void getNewPosts() {
+
+    }
+
+    @Override
+    public void getPostsAfter() {
+
+    }
 }

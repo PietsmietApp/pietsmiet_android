@@ -10,6 +10,9 @@ import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+
 
 public class PostManager {
     private final MainActivity mView;
@@ -24,9 +27,10 @@ public class PostManager {
     }
 
     /**
-     * Adds posts to the "global" post list, removes duplicates and sorts it. This is done asynchronous!
+     * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
+     * This happens on a background thread
      *
-     * @param posts Post Items
+     * @param posts posts to add
      */
     public void addPosts(List<Post> posts) {
         if (posts.size() == 0) {
@@ -51,15 +55,15 @@ public class PostManager {
 
     /**
      * 1) Iterates through all posts
-     * 2) Add post to displayed post list if they belong to the current displayed category
-     * 3) Sorts the displayed post list
+     * 2) Check if posts has to get shown or not
+     * 3) Adds all posts to the currentPosts list
      * 4) Notifies the adapter about the change
      * <p>
      * This should be called as few times as possible because it kills performance if it's called too often
      */
     public void updateCurrentPosts() {
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size() - 1]);
+        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
         Observable.just(posts)
                 .observeOn(Schedulers.io())
@@ -75,23 +79,31 @@ public class PostManager {
                 });
     }
 
+    public void displayOnlyType(@AllTypes int postType) {
+        for (int type : getPossibleTypes()) {
+            if (type == postType) allowedTypes.put(type, true);
+            else allowedTypes.put(type, false);
+        }
+        updateCurrentPosts();
+    }
+
     /**
-     * @return All fetched posts, whether they're currently shown or not
+     * @return All fetched posts, whether they are currently shown or not
      */
     public List<Post> getAllPosts() {
         return allPosts;
     }
 
     /**
-     * @return All posts that should be displayed (the adapter is "linked" to this arrayList)
+     * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
         return currentPosts;
     }
 
     /**
-     * @param post Post item
-     * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
+     * @param post Post object
+     * @return returns true if the specified post is allowed (belongs to the currently shown categories / types)
      */
     private boolean isAllowedType(Post post) {
         Boolean allowed = allowedTypes.get(post.getPostType());

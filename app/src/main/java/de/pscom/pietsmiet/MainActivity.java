@@ -58,44 +58,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         postManager = new PostManager(this);
 
         setupRecyclerView();
-
-        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                for (Integer item : PostType.getPossibleTypes()) {
-                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
-                    postManager.allowedTypes.put(item, checker.isChecked());
-                }
-
-                postManager.updateCurrentPosts();
-            }
-        };
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        refreshLayout.setOnRefreshListener(this::updateData);
-        refreshLayout.setColorSchemeColors(R.color.pietsmiet);
-
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        mNavigationView.setNavigationItemSelectedListener(this);
+        setupDrawer();
 
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
 
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(PostType.getDrawerIdForType(category)));
+            postManager.displayOnlyType(category);
+            //fixme update switches in drawer
         }
 
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        refreshLayout.setOnRefreshListener(this::updateData);
+        refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+
         FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
@@ -109,6 +91,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void setupDrawer() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                for (Integer item : PostType.getPossibleTypes()) {
+                    // Iterate through every menu item and save it's state in a map
+                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                    postManager.allowedTypes.put(item, checker.isChecked());
+                }
+                postManager.updateCurrentPosts();
+            }
+        };
+        mDrawer.addDrawerListener(toggle);
+        toggle.syncState();
     }
 
     public void addNewPosts(List<Post> items) {

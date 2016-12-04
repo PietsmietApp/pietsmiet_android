@@ -6,27 +6,27 @@
         android:id="@+id/nav_video"
         android:icon="@drawable/ic_watch_later_black_24dp"
         android:title="@string/drawer_youtube"
-        app:actionLayout="@layout/widget_slider"/>
+        app:actionLayout="@layout/widget_switch"/>
     <item
         android:id="@+id/nav_facebook"
         android:icon="@drawable/ic_share_black_24dp"
         android:title="@string/drawer_facebook"
-        app:actionLayout="@layout/widget_slider"/>
+        app:actionLayout="@layout/widget_switch"/>
     <item
         android:id="@+id/nav_twitter"
         android:icon="@drawable/ic_share_black_24dp"
         android:title="@string/drawer_twitter"
-        app:actionLayout="@layout/widget_slider"/>
+        app:actionLayout="@layout/widget_switch"/>
     <item
         android:id="@+id/nav_upload_plan"
         android:icon="@drawable/ic_assignment_black_24dp"
         android:title="@string/drawer_uploadplan"
-        app:actionLayout="@layout/widget_slider"/>
+        app:actionLayout="@layout/widget_switch"/>
     <item
         android:id="@+id/nav_pietcast"
         android:icon="@drawable/ic_music_note_black_24dp"
         android:title="@string/drawer_pietcast"
-        app:actionLayout="@layout/widget_slider"/>
+        app:actionLayout="@layout/widget_switch"/>
 
 
     <item android:title="@string/drawer_sonstiges">

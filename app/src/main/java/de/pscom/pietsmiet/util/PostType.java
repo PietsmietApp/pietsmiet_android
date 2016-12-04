@@ -53,24 +53,6 @@ public class PostType {
         }
     }
 
-    public static int getTypeForDrawerId(int drawerId) {
-        switch (drawerId) {
-            case R.id.nav_video:
-                return VIDEO;
-            case R.id.nav_pietcast:
-                return PIETCAST;
-            case R.id.nav_twitter:
-                return TWITTER;
-            case R.id.nav_facebook:
-                return FACEBOOK;
-            case R.id.nav_upload_plan:
-                return UPLOAD_PLAN;
-            default:
-                return 10;
-
-        }
-    }
-
     public static int getDrawerIdForType(int postType) {
         switch (postType) {
             case VIDEO:
@@ -85,9 +67,7 @@ public class PostType {
                 return R.id.nav_upload_plan;
             default:
                 return -1;
-
         }
-
     }
 
     @Retention(RetentionPolicy.SOURCE)

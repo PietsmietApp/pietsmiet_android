@@ -87,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
+                        //todo don't use hashcode for storing
                         DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
                     }
                     ContentValues contentValues = new ContentValues();
@@ -144,7 +145,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                         .duration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)))
                                         .date(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
                                 if (res.getInt(res.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(postBuilder.hashCode()));
+                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(postBuilder.build().hashCode()));
                                     if (thumb != null) {
                                         postBuilder.thumbnail(thumb);
                                     }

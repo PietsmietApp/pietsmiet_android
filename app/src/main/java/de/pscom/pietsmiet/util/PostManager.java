@@ -42,17 +42,8 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
+                .filter(post -> post != null)
                 .distinct()
-                .filter(post -> {
-                    if (post.getDate() == null) {
-                        PsLog.e("Date is null!");
-                        return false;
-                    } else if (post.getTitle() == null) {
-                        PsLog.e("Title is null");
-                        return null;
-                    }
-                    return true;
-                })
                 .toSortedList()
                 .subscribe(items -> {
                     allPosts.clear();

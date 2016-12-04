@@ -14,7 +14,7 @@ class MainPresenter {
     final MainActivity view;
     @AllTypes
     private final int postType;
-    Post post;
+    Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 

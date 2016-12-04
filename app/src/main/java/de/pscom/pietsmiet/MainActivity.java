@@ -11,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -36,11 +38,12 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
+    private NavigationView mNavigationView;
 
     private SwipeRefreshLayout refreshLayout;
 
@@ -55,38 +59,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         postManager = new PostManager(this);
 
         setupRecyclerView();
+        setupDrawer();
 
-        //Navigation Drawer
-        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
+
+        if (PostType.getDrawerIdForType(category) != -1) {
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
+            postManager.displayOnlyType(category);
+        }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
-
-        if (category != -1) {
-            if (category == PostType.UPLOAD_PLAN) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_upload_plan));
-            } else if (category == PostType.PIETCAST) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_pietcast));
-            }
-        }
-
         FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
@@ -102,12 +93,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
     }
 
+    private void setupDrawer() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                for (Integer item : PostType.getPossibleTypes()) {
+                    // Iterate through every menu item and save it's state in a map
+                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                    postManager.allowedTypes.put(item, checker.isChecked());
+                }
+                postManager.updateCurrentPosts();
+            }
+        };
+        mDrawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
     public void addNewPosts(List<Post> items) {
         if (postManager != null) postManager.addPosts(items);
     }
 
     public void updateAdapter() {
-        Observable.defer(() -> Observable.just(""))
+        Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
@@ -123,9 +139,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showError(String msg) {
         Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        }
+                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 );
     }
 
@@ -178,24 +192,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_upload_plan:
-                postManager.displayOnlyPostsFromType(UPLOAD_PLAN);
-                break;
-            case R.id.nav_social_media:
-                postManager.displayOnlyPostsFromType(DISPLAY_SOCIAL);
-                break;
+            case R.id.nav_facebook:
+            case R.id.nav_twitter:
             case R.id.nav_pietcast:
-                postManager.displayOnlyPostsFromType(PIETCAST);
+            case R.id.nav_video:
+                for (int i : getPossibleTypes()) {
+                    int id = getDrawerIdForType(i);
+                    Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
+                    if (id == item.getItemId()) {
+                        aSwitch.setChecked(true);
+                        postManager.displayOnlyType(i);
+                    } else aSwitch.setChecked(false);
+                }
+
                 break;
-            case R.id.nav_home:
-                postManager.displayAllPosts();
+            case R.id.nav_help:
+                //todo
+                break;
+            case R.id.nav_settings:
+                //todo
                 break;
             default:
                 return false;
         }
-        // Highlight the selected item has been done by NavigationView
-        item.setChecked(true);
-        // Set action bar title
-        setTitle(item.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
 

@@ -55,21 +55,21 @@ public class YoutubePresenter extends MainPresenter {
                 .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
                 .doOnNext(item -> {
-                    this.post = new Post.PostBuilder(VIDEO);
+                    this.postBuilder = new Post.PostBuilder(VIDEO);
                     String videoID = item.getContentDetails().getVideoId();
                     if (videoID != null && !videoID.isEmpty()) {
-                        post.url("http://www.youtube.com/watch?v=" + videoID);
+                        postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
                     }
                 })
                 .map(YoutubeItem::getSnippet)
                 .subscribe(snippet -> {
                     try {
-                        post.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
-                        post.title(snippet.getTitle());
-                        post.description(snippet.getDescription());
+                        postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
+                        postBuilder.title(snippet.getTitle());
+                        postBuilder.description(snippet.getDescription());
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
-                        post.date(dateFormat.parse(snippet.getPublishedAt()));
-                        posts.add(post.build());
+                        postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
+                        posts.add(postBuilder.build());
                     } catch (Exception e) {
                         PsLog.e(e.getMessage());
                         view.showError("YouTube parsing error");

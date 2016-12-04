@@ -142,7 +142,9 @@ public class DrawableFetcher {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         try {
             bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
-            return new BitmapDrawable(context.getResources(), bitmap);
+            BitmapDrawable drawable = new BitmapDrawable(context.getResources(), bitmap);
+            PsLog.v("loaded " + f.getAbsolutePath());
+            return drawable;
         } catch (FileNotFoundException e) {
             PsLog.i("Couldn't find thumbnail: " + f.getAbsolutePath());
         }

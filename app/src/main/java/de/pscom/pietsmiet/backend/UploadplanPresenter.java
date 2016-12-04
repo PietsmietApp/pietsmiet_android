@@ -40,7 +40,7 @@ public class UploadplanPresenter extends MainPresenter {
         mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                post = new Post.PostBuilder(UPLOAD_PLAN);
+                postBuilder = new Post.PostBuilder(UPLOAD_PLAN);
                 Observable.just(dataSnapshot.getChildren())
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
@@ -51,27 +51,27 @@ public class UploadplanPresenter extends MainPresenter {
                                 String value = (String) snapshot.getValue();
                                 switch (snapshot.getRef().getKey()) {
                                     case "date":
-                                        post.date(new Date(value));
+                                        postBuilder.date(new Date(value));
                                         break;
                                     case "title":
-                                        post.title(value);
+                                        postBuilder.title(value);
                                         break;
                                     case "link":
-                                        post.url(value);
+                                        postBuilder.url(value);
                                         break;
                                     case "desc":
-                                        post.description(value);
+                                        postBuilder.description(value);
                                     default:
                                         break;
                                 }
                             }
-                            Post toReturn = post.build();
-                            if (toReturn == null || toReturn.getDescription() == null) {
+                            Post post = postBuilder.build();
+                            if (post == null || post.getDescription() == null) {
                                 PsLog.i("Falling back to fetching uploadplan directly; " +
                                         "Database loading failed because a value was empty");
                                 parseUploadplan();
                             } else {
-                                posts.add(toReturn);
+                                posts.add(post);
                                 finished();
                                 PsLog.v("added uploadplan from firebase db");
                             }
@@ -103,19 +103,19 @@ public class UploadplanPresenter extends MainPresenter {
                 .flatMap(Observable::from)
                 .take(MAX_COUNT)
                 .doOnNext(element -> {
-                    post = new Post.PostBuilder(UPLOAD_PLAN);
-                    post.date(element.getPubDate());
-                    post.title(element.getTitle());
+                    postBuilder = new Post.PostBuilder(UPLOAD_PLAN);
+                    postBuilder.date(element.getPubDate());
+                    postBuilder.title(element.getTitle());
                 })
                 .map(element -> element.getLink().toString())
-                .doOnNext(link -> post.url(link))
+                .doOnNext(link -> postBuilder.url(link))
                 .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
                         .subscribeOn(Schedulers.io())
                         .onBackpressureBuffer())
                 .filter(content -> content != null)
                 .subscribe(uploadplan -> {
-                    post.description(uploadplan);
-                    posts.add(post.build());
+                    postBuilder.description(uploadplan);
+                    posts.add(postBuilder.build());
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Uploadplan parsing Error");

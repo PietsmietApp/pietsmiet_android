@@ -32,13 +32,13 @@ public class PietcastPresenter extends MainPresenter {
                 .onBackpressureBuffer()
                 .subscribe(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);
-                    post = new Post.PostBuilder(PIETCAST);
-                    post.description(element.getDescription());
-                    post.title(element.getTitle());
-                    post.url(element.getLink().toString());
-                    post.date(element.getPubDate());
-                    post.thumbnail(thumb);
-                    posts.add(post.build());
+                    postBuilder = new Post.PostBuilder(PIETCAST);
+                    postBuilder.description(element.getDescription());
+                    postBuilder.title(element.getTitle());
+                    postBuilder.url(element.getLink().toString());
+                    postBuilder.date(element.getPubDate());
+                    postBuilder.thumbnail(thumb);
+                    posts.add(postBuilder.build());
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");

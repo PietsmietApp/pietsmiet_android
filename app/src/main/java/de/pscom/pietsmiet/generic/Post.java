@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import java.util.Date;
 
 import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
@@ -32,69 +33,19 @@ public class Post implements Comparable<Post> {
     private int duration;
     private String url;
 
-    public Post() {
-    }
-
-    /**
-     * Creates a new post item
-     *
-     * @param title       Title of the post
-     * @param description Description or message of the post
-     * @param datetime    Time of the post
-     * @param postType    Type of the post
-     */
-
-    public Post(String title, @Nullable String description, Date datetime, @PostType.TypeNoThumbnail int postType) {
-        this.title = title;
-        this.description = description;
-        this.datetime = datetime;
-        this.postType = postType;
-    }
-
-
-    /**
-     * Creates a new post item with a thumbnail
-     *
-     * @param title       Title of the post
-     * @param description Description or message of the post
-     * @param datetime    Time of the post
-     * @param postType    Type of the post
-     * @param thumbnail   Thumbnail image
-     */
-    public Post(String title, @Nullable String description, Date datetime, @Nullable Drawable thumbnail, @PostType.TypeThumbnail int postType) {
-        this.title = title;
-        this.description = description;
-        this.datetime = datetime;
-        this.thumbnail = thumbnail;
-        this.postType = postType;
-    }
-
-    /**
-     * Creates a new post item with a thumbnail
-     *
-     * @param title       Title of the post
-     * @param description Description or message of the post
-     * @param datetime    Time of the post
-     * @param postType    Type of the post
-     * @param duration    Duration of the video / pietcast
-     * @param thumbnail   Thumbnail image
-     */
-    public Post(String title, @Nullable String description, Date datetime, @Nullable Drawable thumbnail, int duration, @PostType.TypeThumbnail int postType) {
-        this.title = title;
-        this.description = description;
-        this.datetime = datetime;
-        this.thumbnail = thumbnail;
-        this.postType = postType;
-        this.duration = duration;
+    private Post(PostBuilder builder) {
+        description = builder.description;
+        title = builder.title;
+        postType = builder.postType;
+        thumbnail = builder.thumbnail;
+        datetime = builder.date;
+        duration = builder.duration;
+        url = builder.url;
     }
 
     @Nullable
     public Drawable getThumbnail() {
         return this.thumbnail;
-    }
-
-    public void setThumbnail(@Nullable Drawable thumbnail) {
-        this.thumbnail = thumbnail;
     }
 
     public boolean hasThumbnail() {
@@ -105,16 +56,8 @@ public class Post implements Comparable<Post> {
         return postType;
     }
 
-    public void setPostType(int type) {
-        this.postType = type;
-    }
-
     public Date getDate() {
         return datetime;
-    }
-
-    public void setDatetime(@NonNull Date datetime) {
-        this.datetime = datetime;
     }
 
     @Nullable
@@ -122,24 +65,12 @@ public class Post implements Comparable<Post> {
         return description;
     }
 
-    public void setDescription(@NonNull String description) {
-        this.description = description;
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(@NonNull String title) {
-        this.title = title;
-    }
-
     public int getDuration() {
         return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
     }
 
     public String getUrl() {
@@ -192,8 +123,6 @@ public class Post implements Comparable<Post> {
 
     @Override
     public int compareTo(@NonNull Post item) {
-        if (item.getDate() == null) return -1;
-        else if (this.getDate() == null) return 1;
         return item.getDate().compareTo(this.getDate());
     }
 
@@ -228,5 +157,67 @@ public class Post implements Comparable<Post> {
         if (this.getDate().getTime() != other.getDate().getTime()) return false;
         else if (this.getPostType() != other.getPostType()) return false;
         return true;
+    }
+
+    public static class PostBuilder {
+        private String title;
+        private int postType;
+        @Nullable
+        private String description;
+        @Nullable
+        private Drawable thumbnail;
+        private Date date;
+        private int duration;
+        private String url;
+
+        public PostBuilder(@PostType.TypeAllPosts int postType) {
+            this.postType = postType;
+        }
+
+        public PostBuilder description(@Nullable String description) {
+            this.description = description;
+            return this;
+        }
+
+        public PostBuilder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public PostBuilder thumbnail(@Nullable Drawable thumbnail) {
+            this.thumbnail = thumbnail;
+            return this;
+        }
+
+        public PostBuilder date(Date date) {
+            this.date = date;
+            return this;
+        }
+
+        public PostBuilder duration(int duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        public PostBuilder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Post build() {
+            if (title == null || title.isEmpty()) {
+                PsLog.e("Title is not given");
+                return null;
+            }
+            if (date == null) {
+                PsLog.e("Date is not given");
+                return null;
+            }
+            if ((description == null || description.isEmpty()) && thumbnail == null) {
+                PsLog.e("No thumbnail and no description given");
+                return null;
+            }
+            return new Post(this);
+        }
     }
 }

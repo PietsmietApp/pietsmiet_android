@@ -58,17 +58,16 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMap(Observable::from)
                 .subscribe(tweet -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
-                    post = new Post();
-                    post.setThumbnail(thumb);
-                    post.setTitle(getDisplayName(tweet.getUser()));
-                    post.setDescription(tweet.getText());
-                    post.setDatetime(tweet.getCreatedAt());
+                    post = new Post.PostBuilder(TWITTER);
+                    post.thumbnail(thumb);
+                    post.title(getDisplayName(tweet.getUser()));
+                    post.description(tweet.getText());
+                    post.date(tweet.getCreatedAt());
                     if (tweet.getUser() != null && tweet.getId() != 0) {
-                        post.setUrl("https://twitter.com/" + tweet.getUser().getScreenName()
+                        post.url("https://twitter.com/" + tweet.getUser().getScreenName()
                                 + "/status/" + tweet.getId());
                     }
-                    post.setPostType(TWITTER);
-                    posts.add(post);
+                    posts.add(post.build());
                     if (posts.size() == 1) lastTweetId = tweet.getId();
                 }, (throwable) -> {
                     throwable.printStackTrace();

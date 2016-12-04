@@ -142,24 +142,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Only for testing
         new Thread(() -> {
             ArrayList<Post> cardItems = new ArrayList<>();
-            cardItems.add(new Post("TESTCast #79 - Krötenwehr",
-                    "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
-                    new Date(),
-                    DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    PIETCAST));
-            cardItems.add(new Post("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    new Date(),
-                    DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    VIDEO));
-            cardItems.add(new Post("Uploadplan am 11.09.2016",
-                    "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
-                    new Date(),
-                    UPLOAD_PLAN));
-            cardItems.add(new Post("Dr.Jay auf Twitter",
-                    "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
-                    new Date(),
-                    TWITTER));
+            cardItems.add(new Post.PostBuilder(PIETCAST)
+                    .title("TESTCast #79 - Krötenwehr")
+                    .description("Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(VIDEO)
+                    .title("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
+                    .description("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(UPLOAD_PLAN)
+                    .title("Uploadplan am 11.09.2016")
+                    .description("14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(TWITTER)
+                    .title("Dr.Jay")
+                    .description("Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
 
             runOnUiThread(() -> {
                 addNewPosts(cardItems);

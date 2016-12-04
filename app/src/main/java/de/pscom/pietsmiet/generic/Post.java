@@ -17,7 +17,6 @@ import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
 import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.STREAM;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
@@ -95,9 +94,6 @@ public class Post implements Comparable<Post> {
             case VIDEO:
                 hexColor = Youtube;
                 break;
-            case STREAM:
-                hexColor = Youtube;
-                break;
             case UPLOAD_PLAN:
             case PIETCAST:
                 hexColor = PietSmiet;
@@ -117,7 +113,6 @@ public class Post implements Comparable<Post> {
 
     public boolean isThumbnailView() {
         return postType == VIDEO
-                || postType == STREAM
                 || postType == PIETCAST;
     }
 
@@ -170,7 +165,7 @@ public class Post implements Comparable<Post> {
         private int duration;
         private String url;
 
-        public PostBuilder(@PostType.TypeAllPosts int postType) {
+        public PostBuilder(@PostType.AllTypes int postType) {
             this.postType = postType;
         }
 

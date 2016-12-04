@@ -3,33 +3,30 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/nav_upload_plan"
-        app:actionLayout="@layout/widget_slider"
-        android:icon="@drawable/ic_assignment_black_24dp"
-        android:title="@string/drawer_uploadplan"/>
+        android:id="@+id/nav_video"
+        android:icon="@drawable/ic_watch_later_black_24dp"
+        android:title="@string/drawer_youtube"
+        app:actionLayout="@layout/widget_slider"/>
     <item
         android:id="@+id/nav_facebook"
-        app:actionLayout="@layout/widget_slider"
         android:icon="@drawable/ic_share_black_24dp"
-        android:title="@string/drawer_facebook"/>
-
+        android:title="@string/drawer_facebook"
+        app:actionLayout="@layout/widget_slider"/>
     <item
         android:id="@+id/nav_twitter"
-        app:actionLayout="@layout/widget_slider"
         android:icon="@drawable/ic_share_black_24dp"
-        android:title="@string/drawer_twitter"/>
-
+        android:title="@string/drawer_twitter"
+        app:actionLayout="@layout/widget_slider"/>
+    <item
+        android:id="@+id/nav_upload_plan"
+        android:icon="@drawable/ic_assignment_black_24dp"
+        android:title="@string/drawer_uploadplan"
+        app:actionLayout="@layout/widget_slider"/>
     <item
         android:id="@+id/nav_pietcast"
-        app:actionLayout="@layout/widget_slider"
         android:icon="@drawable/ic_music_note_black_24dp"
-        android:title="@string/drawer_pietcast"/>
-
-    <item
-        android:id="@+id/nav_youtube"
-        app:actionLayout="@layout/widget_slider"
-        android:icon="@drawable/ic_watch_later_black_24dp"
-        android:title="@string/drawer_youtube"/>
+        android:title="@string/drawer_pietcast"
+        app:actionLayout="@layout/widget_slider"/>
 
 
     <item android:title="@string/drawer_sonstiges">

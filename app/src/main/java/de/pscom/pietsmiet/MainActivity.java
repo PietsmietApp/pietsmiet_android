@@ -11,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -40,6 +42,7 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
+    private NavigationView mNavigationView;
 
     private SwipeRefreshLayout refreshLayout;
 
@@ -61,10 +65,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setupRecyclerView();
 
-        //Navigation Drawer
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                for (Integer item : PostType.getPossibleTypes()) {
+                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                    postManager.allowedTypes.put(item, checker.isChecked());
+                }
+
+                postManager.updateCurrentPosts();
+            }
+        };
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -72,17 +86,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
 
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
 
-        if (category != -1) {
-            if (category == PostType.UPLOAD_PLAN) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_upload_plan));
-            } else if (category == PostType.PIETCAST) {
-                onNavigationItemSelected(navigationView.getMenu().findItem(R.id.nav_pietcast));
-            }
+        if (PostType.getDrawerIdForType(category) != -1) {
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(PostType.getDrawerIdForType(category)));
         }
 
         FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
@@ -106,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void updateAdapter() {
-        Observable.defer(() -> Observable.just(""))
+        Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
@@ -122,9 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showError(String msg) {
         Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        }
+                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 );
     }
 

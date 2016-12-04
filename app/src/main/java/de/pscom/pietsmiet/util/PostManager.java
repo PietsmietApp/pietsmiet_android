@@ -1,7 +1,6 @@
 package de.pscom.pietsmiet.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Map;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 
@@ -19,7 +17,7 @@ public class PostManager {
     private List<Post> currentPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    private Map<Integer, Boolean> allowedTypes = new HashMap<>();
+    public Map<Integer, Boolean> allowedTypes = new HashMap<>();
 
     public PostManager(MainActivity view) {
         mView = view;
@@ -59,21 +57,22 @@ public class PostManager {
      * <p>
      * This should be called as few times as possible because it kills performance if it's called too often
      */
-    private void updateCurrentPosts() {
+    public void updateCurrentPosts() {
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
+        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size() - 1]);
 
         Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter(post -> !currentPosts.contains(post) && isAllowedType(post))
-                .subscribe(list -> currentPosts.add(list),
-                        Throwable::printStackTrace,
-                        () -> {
-                            Collections.sort(currentPosts);
-                            if (mView != null) mView.updateAdapter();
-                        });
+                .filter(this::isAllowedType)
+                .toSortedList()
+                .subscribe(list -> {
+                    currentPosts.clear();
+                    currentPosts.addAll(list);
+                }, Throwable::printStackTrace, () -> {
+                    if (mView != null) mView.updateAdapter();
+                });
     }
 
     /**
@@ -91,35 +90,15 @@ public class PostManager {
     }
 
     /**
-     * Show only posts that belong to a certain category / type
-     *
-     * @param postType Type that the posts should belong to
-     */
-    public void displayOnlyPostsFromType(@PostType.AllTypes int postType, boolean isVisible) {
-        allowedTypes.put(postType, isVisible);
-        Observable.just(getAllPosts())
-                .flatMap(Observable::from)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .filter(this::isAllowedType)
-                .toList()
-                .subscribe(posts -> {
-                    currentPosts.clear();
-                    currentPosts.addAll(posts);
-                    if (mView != null) {
-                        mView.updateAdapter();
-                    }
-                }, Throwable::printStackTrace);
-    }
-
-    /**
      * @param post Post item
      * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
      */
     private boolean isAllowedType(Post post) {
-        @PostType.AllTypes int postType = post.getPostType();
-
-        return false;
+        Boolean allowed = allowedTypes.get(post.getPostType());
+        if (allowed == null) {
+            allowed = true;
+        }
+        return allowed;
     }
 
 

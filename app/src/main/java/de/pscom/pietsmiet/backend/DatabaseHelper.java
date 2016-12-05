@@ -25,7 +25,7 @@ import rx.schedulers.Schedulers;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION_NUMBER = 1;
+    private static final int VERSION_NUMBER = 2;
 
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
@@ -87,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
+                        //todo don't use hashcode for storing
                         DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
                     }
                     ContentValues contentValues = new ContentValues();
@@ -137,20 +138,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                         while (!res.isAfterLast()) {
                             try {
-                                Post post = new Post();
-                                post.setTitle(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)));
-                                post.setDescription(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)));
-                                post.setUrl(res.getString(res.getColumnIndex(POSTS_COLUMN_URL)));
-                                post.setPostType(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)));
-                                post.setDuration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)));
-                                post.setDatetime(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
+                                Post.PostBuilder postBuilder = new Post.PostBuilder(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)))
+                                        .title(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)))
+                                        .description(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)))
+                                        .url(res.getString(res.getColumnIndex(POSTS_COLUMN_URL)))
+                                        .duration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)))
+                                        .date(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
                                 if (res.getInt(res.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(post.hashCode()));
+                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(postBuilder.build().hashCode()));
                                     if (thumb != null) {
-                                        post.setThumbnail(thumb);
+                                        postBuilder.thumbnail(thumb);
                                     }
                                 }
-                                toReturn.add(post);
+                                toReturn.add(postBuilder.build());
                             } catch (ParseException e) {
                                 PsLog.w("Couldn't parse date: " + e.getMessage());
                             }

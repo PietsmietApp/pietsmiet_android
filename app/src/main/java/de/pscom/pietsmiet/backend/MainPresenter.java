@@ -8,17 +8,17 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
-import static de.pscom.pietsmiet.util.PostType.TypeAllPosts;
+import static de.pscom.pietsmiet.util.PostType.AllTypes;
 
 abstract class MainPresenter {
     final MainActivity view;
-    @TypeAllPosts
+    @AllTypes
     private final int postType;
-    Post post;
+    Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 
-    MainPresenter(MainActivity view, @TypeAllPosts int postType) {
+    MainPresenter(MainActivity view, @AllTypes int postType) {
         this.view = view;
         this.postType = postType;
     }

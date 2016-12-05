@@ -208,10 +208,10 @@ public class Post implements Comparable<Post> {
                 PsLog.e("Date is not given");
                 return null;
             }
-            /*if ((description == null || description.isEmpty()) && thumbnail == null) {
+            if ((description == null || description.isEmpty()) && thumbnail == null) {
                 PsLog.e("No thumbnail and no description given");
                 return null;
-            }*/ //fixme use another way for retrieving the thumbnails from cache in dbhelper, then uncomment
+            }
             return new Post(this);
         }
     }

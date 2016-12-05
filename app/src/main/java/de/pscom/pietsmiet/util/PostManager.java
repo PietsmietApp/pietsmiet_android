@@ -56,7 +56,7 @@ public class PostManager {
 
     /**
      * 1) Iterates through all posts
-     * 2) Check if posts has to get shown or not
+     * 2) Check if posts have be shown or not
      * 3) Adds all posts to the currentPosts list
      * 4) Notifies the adapter about the change
      * <p>

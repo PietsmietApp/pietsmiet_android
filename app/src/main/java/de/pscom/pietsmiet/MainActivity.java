@@ -28,6 +28,7 @@ import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
+import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.DrawableFetcher;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawer;
     private PostManager postManager;
     private NavigationView mNavigationView;
-
+    private EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
 
     @Override
@@ -91,6 +92,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        
+        // Retain an instance so that you can call `resetState()` for fresh searches
+        scrollListener = new EndlessScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                //todo
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
     private void setupDrawer() {

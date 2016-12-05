@@ -87,7 +87,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
-                        //todo don't use hashcode for storing
                         DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
                     }
                     ContentValues contentValues = new ContentValues();
@@ -129,37 +128,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_POSTS, null);
 
-        Observable.just("")
+        Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(ignored -> {
+                .onBackpressureBuffer()
+                .filter(Cursor::moveToFirst)
+                .subscribe(cursor -> {
                     try {
-                        res.moveToFirst();
-
-                        while (!res.isAfterLast()) {
+                        do {
                             try {
-                                Post.PostBuilder postBuilder = new Post.PostBuilder(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)))
-                                        .title(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)))
-                                        .description(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)))
-                                        .url(res.getString(res.getColumnIndex(POSTS_COLUMN_URL)))
-                                        .duration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)))
-                                        .date(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
-                                if (res.getInt(res.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(postBuilder.build().hashCode()));
+                                int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
+
+                                Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
+                                        .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
+                                        .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
+                                        .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
+                                        .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
+                                        .date(dateFormat.parse(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
+                                if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
+                                    String filename = Integer.toString(old_hashcode);
+                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, filename);
                                     if (thumb != null) {
                                         postBuilder.thumbnail(thumb);
                                     }
                                 }
-                                toReturn.add(postBuilder.build());
+                                Post post = postBuilder.build();
+                                if (post.hashCode() == old_hashcode) {
+                                    toReturn.add(postBuilder.build());
+                                } else {
+                                    PsLog.w("Post in db has a different hashcode than before, not using it");
+                                }
+
                             } catch (ParseException e) {
                                 PsLog.w("Couldn't parse date: " + e.getMessage());
                             }
-                            res.moveToNext();
-                        }
+                        } while (cursor.moveToNext());
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        res.close();
+                        cursor.close();
                         db.close();
                     }
                     int postsInDb = getPostsInDbCount();

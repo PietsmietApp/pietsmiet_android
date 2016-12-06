@@ -41,16 +41,8 @@ def format_text(feed):
     scope = feed.scope
 
     if scope == SCOPE_NEWS:
-        text = smart_truncate(text)
-        text += '\n\n*[Weiterlesen auf pietsmiet.de](' + link + ')*\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
+        text += '\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
     else:
         text = '*[Link zum Post auf pietsmiet.de](' + link + ')*\n\n' + text + '\n\n--- \n[Code des Bots](https://github.com/l3d00m/pietsmiet_android/blob/develop/backend) | by /u/l3d00m'
 
     return text
-
-
-def smart_truncate(content, length=200):
-    if len(content) <= length:
-        return content
-    else:
-        return content[:length].rsplit('.', 1)[0] + '.'

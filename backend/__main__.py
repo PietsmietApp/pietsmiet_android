@@ -3,7 +3,8 @@ import time
 import datetime
 import sys
 
-sys.path.append("/home/pi");
+sys.path.append("/home/pi")
+
 
 from backend.firebase_util import send_fcm, put_feed_into_db
 from backend.reddit_util import submit_to_reddit
@@ -31,6 +32,13 @@ def read(filename):
             return text_file.read().rstrip()
     except Exception:
         print("No file created yet? ENOENT")
+		
+		
+def smart_truncate(content, link, length=220):
+    if not len(content) <= length:
+        content = content[:length].rsplit(' ', 1)[0] + '...  '
+		
+    return content + "<a href=\"" + link + "\">Auf pietsmiet.de weiterlesen <span>→</span></a>"
 
 
 def check_for_update(scope):
@@ -38,14 +46,14 @@ def check_for_update(scope):
     new_title = new_feed.title
     old_title = read(filename=scope)
     if new_title != old_title:
-        print("New: \"" + new_title + "\"")
         write(new_title, scope)
-        put_feed_into_db(new_feed)
-        send_fcm(new_feed)
         if scope == SCOPE_UPLOADPLAN:
             submit_to_reddit(new_feed.title, format_text(new_feed))
         elif scope == SCOPE_NEWS:
+            new_feed.desc = smart_truncate(new_feed.desc, new_feed.link)
             submit_to_reddit("Neuer Post auf pietsmiet.de: " + new_feed.title, format_text(new_feed))
+        put_feed_into_db(new_feed)
+        send_fcm(new_feed)
         return True
     return False
 
@@ -64,9 +72,14 @@ while 1:
             fetched_today = check_for_update(SCOPE_UPLOADPLAN)
     else:
         fetched_today = False
-    if (i == 4) or (i == 9) or (i == 14) or (i == 19):
+    if (i == 0):
         check_for_update(SCOPE_PIETCAST)
-    if i == 19:
+        check_for_update(SCOPE_NEWS)
+        check_for_update(SCOPE_UPLOADPLAN)
+
+    if (i == 4) or (i == 9) or (i == 14):
+        check_for_update(SCOPE_PIETCAST)
+    if i == 14:
         check_for_update(SCOPE_NEWS)
         i = 0
 

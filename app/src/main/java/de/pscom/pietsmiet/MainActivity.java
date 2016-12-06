@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                //todo
+                //todo guk ob das funzt hier soll nur die posts nachgeladen werden übernehmen macht das der postmanager
+                postManager.addPosts( postManager.getNextPosts(postManager.getLastPostDate(), 5) );
             }
         };
         // Adds the scroll listener to RecyclerView
@@ -131,9 +132,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
-    public void addNewPosts(List<Post> items) {
-        if (postManager != null) postManager.addPosts(items);
-    }
+//    public void addNewPosts(List<Post> items) {
+//        if (postManager != null) postManager.addPosts(items);
+//    }
 
     public void updateAdapter() {
         Observable.just("")
@@ -159,8 +160,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateData() {
+        //todo neu schreiben nicht über Konstruktor evtl über selbe Methode wie beim nachladen nur mit aktuellem datum!
         new TwitterPresenter(this);
-        new UploadplanPresenter(this);
+        new UploadplanPresenter();
         new PietcastPresenter(this);
         new FacebookPresenter(this);
         new YoutubePresenter(this);

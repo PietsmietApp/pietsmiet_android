@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -121,6 +122,14 @@ public class PostManager {
         }
         return allPosts.get(allPosts.size() - 1).getDate();
     }
+
+    public List<Post> getNextPosts( Date dAfter, int numPosts ){
+
+        new YoutubePresenter(this.mView).getPostsAfter();
+
+        return null;
+    }
+
 
 
 }

@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet.backend;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import de.pscom.pietsmiet.MainActivity;
@@ -25,12 +26,12 @@ public class YoutubePresenter extends MainPresenter {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
     public YoutubePresenter(MainActivity view) {
-        super(view, VIDEO);
+        super();
         if (SecretConstants.youtubeAPIkey == null || SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");
             return;
         }
-        parsePlaylist();
+        //parsePlaylist();
     }
 
     /**
@@ -87,7 +88,7 @@ public class YoutubePresenter extends MainPresenter {
     }
 
     @Override
-    public void getPostsAfter() {
+    public void getPostsAfter(Date dAfter, int numPosts) {
 
     }
 }

@@ -23,8 +23,8 @@ public class UploadplanPresenter extends MainPresenter {
     public static final int MAX_COUNT = 1;
     private static String uploadplanUrl;
 
-    public UploadplanPresenter(MainActivity view) {
-        super(view, UPLOAD_PLAN);
+    public UploadplanPresenter() {
+        super();
         if (SecretConstants.rssUrl == null) {
             PsLog.w("No rssUrl specified");
             return;
@@ -72,7 +72,7 @@ public class UploadplanPresenter extends MainPresenter {
                                 parseUploadplan();
                             } else {
                                 posts.add(post);
-                                finished();
+                                // todo finished();
                                 PsLog.v("added uploadplan from firebase db");
                             }
                         }, (throwable) -> {

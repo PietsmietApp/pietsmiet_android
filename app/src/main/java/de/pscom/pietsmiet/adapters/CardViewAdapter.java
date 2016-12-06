@@ -30,7 +30,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
@@ -87,7 +87,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             }
         }
 
-        if (currentItem.getPostType() == UPLOAD_PLAN) {
+        if (currentItem.getPostType() == UPLOADPLAN) {
             holder.timedate.setVisibility(GONE);
         } else {
             holder.timedate.setVisibility(VISIBLE);

@@ -59,7 +59,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (data.get("topic")) {
                 case "uploadplan":
-                    intent.putExtra(EXTRA_TYPE, PostType.UPLOAD_PLAN);
+                    intent.putExtra(EXTRA_TYPE, PostType.UPLOADPLAN);
                     break;
                 case "pietcast":
                     intent.putExtra(EXTRA_TYPE, PostType.PIETCAST);

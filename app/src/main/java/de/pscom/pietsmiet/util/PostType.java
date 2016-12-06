@@ -17,11 +17,11 @@ public class PostType {
     public static final int PIETCAST = VIDEO + 1;
     public static final int TWITTER = PIETCAST + 1;
     public static final int FACEBOOK = TWITTER + 1;
-    public static final int UPLOAD_PLAN = FACEBOOK + 1;
+    public static final int UPLOADPLAN = FACEBOOK + 1;
 
     public static List<Integer> getPossibleTypes() {
         List<Integer> navigationItems = new ArrayList<>();
-        navigationItems.add(UPLOAD_PLAN);
+        navigationItems.add(UPLOADPLAN);
         navigationItems.add(VIDEO);
         navigationItems.add(FACEBOOK);
         navigationItems.add(TWITTER);
@@ -46,8 +46,8 @@ public class PostType {
                 return "TWITTER";
             case FACEBOOK:
                 return "FACEBOOK";
-            case UPLOAD_PLAN:
-                return "UPLOAD_PLAN";
+            case UPLOADPLAN:
+                return "UPLOADPLAN";
             default:
                 return "NO INT LISTED";
         }
@@ -63,7 +63,7 @@ public class PostType {
                 return R.id.nav_twitter;
             case FACEBOOK:
                 return R.id.nav_facebook;
-            case UPLOAD_PLAN:
+            case UPLOADPLAN:
                 return R.id.nav_upload_plan;
             default:
                 return -1;
@@ -71,7 +71,7 @@ public class PostType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FACEBOOK, TWITTER, UPLOAD_PLAN})
+    @IntDef({FACEBOOK, TWITTER, UPLOADPLAN})
     public @interface TypeNoThumbnail {
     }
 
@@ -81,7 +81,7 @@ public class PostType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PIETCAST, UPLOAD_PLAN, FACEBOOK, TWITTER, VIDEO})
+    @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, VIDEO})
     public @interface AllTypes {
     }
 }

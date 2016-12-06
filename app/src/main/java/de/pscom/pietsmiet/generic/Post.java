@@ -18,7 +18,7 @@ import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class Post implements Comparable<Post> {
@@ -94,7 +94,7 @@ public class Post implements Comparable<Post> {
             case VIDEO:
                 hexColor = Youtube;
                 break;
-            case UPLOAD_PLAN:
+            case UPLOADPLAN:
             case PIETCAST:
                 hexColor = PietSmiet;
                 break;
@@ -210,6 +210,10 @@ public class Post implements Comparable<Post> {
             }
             if ((description == null || description.isEmpty()) && thumbnail == null) {
                 PsLog.e("No thumbnail and no description given");
+                return null;
+            }
+            if (postType == UPLOADPLAN && (description == null || description.isEmpty())){
+                PsLog.e("Uploadplan with no description");
                 return null;
             }
             return new Post(this);

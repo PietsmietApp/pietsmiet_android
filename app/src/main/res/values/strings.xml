@@ -14,4 +14,9 @@
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="title_activity_settings">Settings</string>
     <string name="drawer_youtube">YouTube</string>
+
+    <string name="time_just_now">Gerade eben</string>
+    <string name="time_days_short">%dd</string>
+    <string name="time_hours_short">%dh</string>
+    <string name="time_minutes_short">%dm</string>
 </resources>

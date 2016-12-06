@@ -40,14 +40,30 @@
                 android:text="Pietcast #69 - Krötenwehr"
                 android:textAppearance="?android:attr/textAppearanceLarge"/>
 
-            <TextView
-                android:id="@+id/tvDateTime"
+            <RelativeLayout
+                android:id="@+id/rlTimeContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/tvTitle"
-                android:text="Montag, 25. Dezember"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                android:layout_below="@id/tvTitle">
+
+                <ImageView
+                    android:id="@+id/ivTimeIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    />
+
+                <TextView
+                    android:id="@+id/tvDateTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/ivTimeIcon"
+                    android:paddingStart="4dp"
+                    android:text="1h"
+                    android:textColor="#000000"/>
+            </RelativeLayout>
 
 
             <Button

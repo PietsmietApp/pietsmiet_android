@@ -1,10 +1,7 @@
 package de.pscom.pietsmiet;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -15,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -22,7 +21,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.backend.DatabaseHelper;
@@ -30,9 +28,12 @@ import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.backend.UploadplanPresenter;
+import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
+import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -40,13 +41,13 @@ import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostManager.DISPLAY_SOCIAL;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -54,30 +55,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
     private PostManager postManager;
+    private NavigationView mNavigationView;
+
     private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         postManager = new PostManager(this);
 
         setupRecyclerView();
+        setupDrawer();
 
 
-        //Navigation Drawer
-        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
+        if (PostType.getDrawerIdForType(category) != -1) {
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
+            postManager.displayOnlyType(category);
+        }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+
 
         SettingsHelper.loadAllSettings(this);
 
@@ -85,20 +87,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        boolean newsSwitch = SharedPreferenceHelper.getSharedPreferenceBoolean(this,KEY_NEWS_SETTING,true);
-
-        if(newsSwitch){
+        if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
-            Toast.makeText(this, "Subscribe", Toast.LENGTH_SHORT).show();
-        }else{
+        } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
-            Toast.makeText(this, "Unsubscribe", Toast.LENGTH_SHORT).show();
         }
 
 
         new SecretConstants(this);
 
         new DatabaseHelper(this).displayPostsFromCache(this);
+
         updateData();
     }
 
@@ -110,12 +109,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerView.setAdapter(adapter);
     }
 
+    private void setupDrawer() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                for (Integer item : PostType.getPossibleTypes()) {
+                    // Iterate through every menu item and save it's state in a map
+                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                    postManager.allowedTypes.put(item, checker.isChecked());
+                }
+                postManager.updateCurrentPosts();
+            }
+        };
+        mDrawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
     public void addNewPosts(List<Post> items) {
         if (postManager != null) postManager.addPosts(items);
     }
 
     public void updateAdapter() {
-        Observable.defer(() -> Observable.just(""))
+        Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
@@ -131,9 +155,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void showError(String msg) {
         Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-                        }
+                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 );
     }
 
@@ -142,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         new UploadplanPresenter(this);
         new PietcastPresenter(this);
         new FacebookPresenter(this);
+        new YoutubePresenter(this);
         //if (BuildConfig.DEBUG) addTestingCards();
     }
 
@@ -149,24 +172,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Only for testing
         new Thread(() -> {
             ArrayList<Post> cardItems = new ArrayList<>();
-            cardItems.add(new Post("TESTCast #79 - Krötenwehr",
-                    "Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!",
-                    new Date(),
-                    DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    PIETCAST));
-            cardItems.add(new Post("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    "HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3",
-                    new Date(),
-                    DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"),
-                    VIDEO));
-            cardItems.add(new Post("Uploadplan am 11.09.2016",
-                    "14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8",
-                    new Date(),
-                    UPLOAD_PLAN));
-            cardItems.add(new Post("Dr.Jay auf Twitter",
-                    "Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de",
-                    new Date(),
-                    TWITTER));
+            cardItems.add(new Post.PostBuilder(PIETCAST)
+                    .title("TESTCast #79 - Krötenwehr")
+                    .description("Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(VIDEO)
+                    .title("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
+                    .description("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(UPLOADPLAN)
+                    .title("Uploadplan am 11.09.2016")
+                    .description("14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
+            cardItems.add(new Post.PostBuilder(TWITTER)
+                    .title("Dr.Jay")
+                    .description("Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de")
+                    .date(new Date())
+                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
+                    .build());
 
             runOnUiThread(() -> {
                 addNewPosts(cardItems);
@@ -179,28 +208,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_upload_plan:
-                postManager.displayOnlyPostsFromType(UPLOAD_PLAN);
-                break;
-            case R.id.nav_social_media:
-                postManager.displayOnlyPostsFromType(DISPLAY_SOCIAL);
-                break;
+            case R.id.nav_facebook:
+            case R.id.nav_twitter:
             case R.id.nav_pietcast:
-                postManager.displayOnlyPostsFromType(PIETCAST);
+            case R.id.nav_video:
+                for (int i : getPossibleTypes()) {
+                    int id = getDrawerIdForType(i);
+                    Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
+                    if (id == item.getItemId()) {
+                        aSwitch.setChecked(true);
+                        postManager.displayOnlyType(i);
+                    } else aSwitch.setChecked(false);
+                }
+
                 break;
-            case R.id.nav_home:
-                postManager.displayAllPosts();
+            case R.id.nav_help:
+                //todo
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(MainActivity.this, Settings.class));
-
                 break;
             default:
                 return false;
         }
-        // Highlight the selected item has been done by NavigationView
-        item.setChecked(true);
-        // Set action bar title
-        setTitle(item.getTitle());
         // Close the navigation drawer
         mDrawer.closeDrawers();
 

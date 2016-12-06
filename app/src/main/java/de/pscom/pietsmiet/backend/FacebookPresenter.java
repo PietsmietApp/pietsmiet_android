@@ -1,10 +1,13 @@
 package de.pscom.pietsmiet.backend;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
@@ -26,7 +29,6 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 public class FacebookPresenter extends MainPresenter {
     public static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
-
     private String lastFetchedTime;
 
     public FacebookPresenter(MainActivity view) {
@@ -63,23 +65,26 @@ public class FacebookPresenter extends MainPresenter {
                         return DataObjectFactory.createPost(rawPost.toString());
                     } catch (FacebookException e) {
                         PsLog.w(e.getMessage());
+                        view.showError("Facebook parsing error");
                         return null;
                     }
                 })
                 .filter(response -> response != null)
                 .subscribe(post -> {
-                    //Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
-                    this.post = new Post();
-                    //this.post.setThumbnail(thumb);
-                    this.post.setTitle(post.getFrom().getName());
-                    this.post.setDescription(post.getMessage());
-                    this.post.setDatetime(post.getCreatedTime());
-                    this.post.setPostType(FACEBOOK);
+                    Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
+                    postBuilder = new Post.PostBuilder(FACEBOOK);
+                    postBuilder.thumbnail(thumb);
+                    postBuilder.title(post.getFrom().getName());
+                    postBuilder.description(post.getMessage());
+                    postBuilder.date(post.getCreatedTime());
                     if (post.getId() != null && !post.getId().isEmpty()) {
-                        this.post.setUrl("http://www.facebook.com/" + post.getId());
+                        postBuilder.url("http://www.facebook.com/" + post.getId());
                     }
-                    posts.add(this.post);
-                }, e -> PsLog.e(e.toString()), () -> {
+                    posts.add(this.postBuilder.build());
+                }, e -> {
+                    PsLog.e(e.toString());
+                    view.showError("Facebook parsing error");
+                }, () -> {
                     finished();
                     lastFetchedTime = String.valueOf(new Date().getTime() / 1000);
                     if (view != null) {
@@ -100,19 +105,20 @@ public class FacebookPresenter extends MainPresenter {
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {
-            e.printStackTrace();
+            view.showError("Facebook API unreachable");
+            PsLog.e(e.getMessage());
         }
         return null;
     }

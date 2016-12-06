@@ -1,21 +1,12 @@
 package de.pscom.pietsmiet;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.Set;
 
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
@@ -30,31 +21,24 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         Switch newsSwitch = (Switch) findViewById(R.id.newsSwitch);
-        LinearLayout bgElement = (LinearLayout) findViewById(R.id.container);
 
 
-        toolbar.setTitle("Einstellungen");
+        toolbar.setTitle(getString(R.string.title_activity_settings));
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
-        if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
-            newsSwitch.setChecked(true);
-        } else {
-            newsSwitch.setChecked(false);
-        }
+        
+        boolean current = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true);
+        newsSwitch.setChecked(current);
 
         newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NEWS_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
-                Toast.makeText(Settings.this, "Subscribe", Toast.LENGTH_SHORT).show();
-                SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NEWS_SETTING, true);
             } else {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
-                Toast.makeText(Settings.this, "Unsubscribe", Toast.LENGTH_SHORT).show();
-                SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NEWS_SETTING, false);
             }
 
         });

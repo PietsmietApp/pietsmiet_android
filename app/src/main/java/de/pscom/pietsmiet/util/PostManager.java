@@ -1,41 +1,39 @@
 package de.pscom.pietsmiet.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
 public class PostManager {
-    static final int DISPLAY_ALL = 10;
-    public static final int DISPLAY_SOCIAL = DISPLAY_ALL + 1;
     private final MainActivity mView;
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    @PostType.TypeDrawer
-    private int currentlyDisplayedType = DISPLAY_ALL;
+    public Map<Integer, Boolean> allowedTypes = new HashMap<>();
 
     public PostManager(MainActivity view) {
         mView = view;
     }
 
     /**
-     * Adds posts to the "global" post list, removes duplicates and sorts it. This is done asynchronous!
+     * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
+     * This happens on a background thread
      *
-     * @param posts Post Items
+     * @param posts posts to add
      */
     public void addPosts(List<Post> posts) {
-        if (posts.size() == 0){
+        if (posts.size() == 0) {
             PsLog.w("addPosts called with zero posts");
             return;
         }
@@ -46,17 +44,8 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
+                .filter(post -> post != null)
                 .distinct()
-                .filter(post -> {
-                    if (post.getDate() == null) {
-                        PsLog.e("Date is null!");
-                        return false;
-                    } else if(post.getTitle() == null){
-                        PsLog.e("Title is null");
-                        return null;
-                    }
-                    return true;
-                })
                 .toSortedList()
                 .subscribe(items -> {
                     allPosts.clear();
@@ -66,13 +55,13 @@ public class PostManager {
 
     /**
      * 1) Iterates through all posts
-     * 2) Add post to displayed post list if they belong to the current displayed category
-     * 3) Sorts the displayed post list
+     * 2) Check if posts has to get shown or not
+     * 3) Adds all posts to the currentPosts list
      * 4) Notifies the adapter about the change
      * <p>
      * This should be called as few times as possible because it kills performance if it's called too often
      */
-    private void updateCurrentPosts() {
+    public void updateCurrentPosts() {
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
         Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
 
@@ -80,78 +69,48 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter(post -> !currentPosts.contains(post) && isAllowedType(post))
-                .subscribe(list -> currentPosts.add(list),
-                        Throwable::printStackTrace,
-                        () -> {
-                            Collections.sort(currentPosts);
-                            if (mView != null) mView.updateAdapter();
-                        });
+                .filter(this::isAllowedType)
+                .toSortedList()
+                .subscribe(list -> {
+                    currentPosts.clear();
+                    currentPosts.addAll(list);
+                }, Throwable::printStackTrace, () -> {
+                    if (mView != null) mView.updateAdapter();
+                });
+    }
+
+    public void displayOnlyType(@AllTypes int postType) {
+        for (int type : getPossibleTypes()) {
+            if (type == postType) allowedTypes.put(type, true);
+            else allowedTypes.put(type, false);
+        }
+        updateCurrentPosts();
     }
 
     /**
-     * @return All fetched posts, whether they're currently shown or not
+     * @return All fetched posts, whether they are currently shown or not
      */
     public List<Post> getAllPosts() {
         return allPosts;
     }
 
     /**
-     * @return All posts that should be displayed (the adapter is "linked" to this arrayList)
+     * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
         return currentPosts;
     }
 
     /**
-     * Switches back to the "all" category. Shows all posts, independent of their category
-     */
-    public void displayAllPosts() {
-        currentlyDisplayedType = DISPLAY_ALL;
-        currentPosts.clear();
-        currentPosts.addAll(getAllPosts());
-        if (mView != null) mView.updateAdapter();
-    }
-
-    /**
-     * Show only posts that belong to a certain category / type
-     *
-     * @param postType Type that the posts should belong to
-     */
-    public void displayOnlyPostsFromType(@PostType.TypeDrawer int postType) {
-        currentlyDisplayedType = postType;
-        Observable.just(getAllPosts())
-                .flatMap(Observable::from)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .filter(this::isAllowedType)
-                .toList()
-                .subscribe(posts -> {
-                    currentPosts.clear();
-                    currentPosts.addAll(posts);
-                    if (mView != null) {
-                        mView.updateAdapter();
-                        mView.scrollToTop();
-                    }
-                }, Throwable::printStackTrace);
-    }
-
-    /**
-     * @param post Post item
-     * @return returns true if the specified post is allowed (belongs to the currently shown category / type)
+     * @param post Post object
+     * @return returns true if the specified post is allowed (belongs to the currently shown categories / types)
      */
     private boolean isAllowedType(Post post) {
-        int postType = post.getPostType();
-        if (currentlyDisplayedType == DISPLAY_ALL) return true;
-        else if (currentlyDisplayedType == DISPLAY_SOCIAL) {
-            if (postType == TWITTER
-                    || postType == FACEBOOK) {
-                return true;
-            }
-        } else {
-            if (postType == currentlyDisplayedType) return true;
+        Boolean allowed = allowedTypes.get(post.getPostType());
+        if (allowed == null) {
+            allowed = true;
         }
-        return false;
+        return allowed;
     }
 
 

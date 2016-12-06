@@ -24,16 +24,22 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.util.PostType;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    public static final String EXTRA_TYPE = "EXTRA_TYPE";
 
     /**
      * Called when message is received.
@@ -42,18 +48,30 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
-        // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-
         // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-        }
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        Map<String, String> data = remoteMessage.getData();
+        if (data.size() > 0) {
+            Log.d(TAG, "Message data payload: " + data);
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            switch (data.get("topic")) {
+                case "uploadplan":
+                    intent.putExtra(EXTRA_TYPE, PostType.UPLOADPLAN);
+                    break;
+                case "pietcast":
+                    intent.putExtra(EXTRA_TYPE, PostType.PIETCAST);
+                    break;
+                case "news":
+                    //todo link to pietsmiet.de ?
+                default:
+                    break;
+            }
+
+
+            sendNotification(data.get("title"), data.get("message"), intent);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -65,17 +83,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+    private void sendNotification(String title, String messageBody, Intent intent) {
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 65, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                //.setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(title)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)))
+                .setContentText(Html.fromHtml(messageBody))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -83,6 +101,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(65, notificationBuilder.build());
     }
 }

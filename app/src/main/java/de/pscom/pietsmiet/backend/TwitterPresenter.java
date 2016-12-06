@@ -58,19 +58,21 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMap(Observable::from)
                 .subscribe(tweet -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
-                    post = new Post();
-                    post.setThumbnail(thumb);
-                    post.setTitle(getDisplayName(tweet.getUser()));
-                    post.setDescription(tweet.getText());
-                    post.setDatetime(tweet.getCreatedAt());
+                    postBuilder = new Post.PostBuilder(TWITTER);
+                    postBuilder.thumbnail(thumb);
+                    postBuilder.title(getDisplayName(tweet.getUser()));
+                    postBuilder.description(tweet.getText());
+                    postBuilder.date(tweet.getCreatedAt());
                     if (tweet.getUser() != null && tweet.getId() != 0) {
-                        post.setUrl("https://twitter.com/" + tweet.getUser().getScreenName()
+                        postBuilder.url("https://twitter.com/" + tweet.getUser().getScreenName()
                                 + "/status/" + tweet.getId());
                     }
-                    post.setPostType(TWITTER);
-                    posts.add(post);
+                    posts.add(postBuilder.build());
                     if (posts.size() == 1) lastTweetId = tweet.getId();
-                }, Throwable::printStackTrace, () -> {
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                    view.showError("Twitter parsing error");
+                }, () -> {
                     finished();
                     if (view != null) {
                         SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
@@ -90,6 +92,7 @@ public class TwitterPresenter extends MainPresenter {
             result = twitterInstance.search(pietsmietTweets());
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
+            view.showError("Twitter unreachable");
             return null;
         }
 
@@ -159,6 +162,7 @@ public class TwitterPresenter extends MainPresenter {
 
         } catch (TwitterException e) {
             PsLog.w("Couldn't get rate limit: " + e.getErrorMessage());
+            view.showError("Twitter error");
         }
     }
 }

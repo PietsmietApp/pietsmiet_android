@@ -6,10 +6,12 @@
     <string name="btn_ansehen">Ansehen</string>
     <string name="drawer_home">Home</string>
     <string name="drawer_uploadplan">Uploadplan</string>
-    <string name="drawer_social">Social Media</string>
+    <string name="drawer_facebook">Facebook</string>
+    <string name="drawer_twitter">Twitter</string>
     <string name="drawer_pietcast">Pietcast</string>
     <string name="drawer_sonstiges">Sonstiges</string>
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="drawer_youtube">YouTube</string>
 </resources>

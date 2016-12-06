@@ -25,7 +25,7 @@ import rx.schedulers.Schedulers;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION_NUMBER = 1;
+    private static final int VERSION_NUMBER = 2;
 
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
@@ -128,38 +128,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("select * from " + TABLE_POSTS, null);
 
-        Observable.just("")
+        Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(ignored -> {
+                .onBackpressureBuffer()
+                .filter(Cursor::moveToFirst)
+                .subscribe(cursor -> {
                     try {
-                        res.moveToFirst();
-
-                        while (!res.isAfterLast()) {
+                        do {
                             try {
-                                Post post = new Post();
-                                post.setTitle(res.getString(res.getColumnIndex(POSTS_COLUMN_TITLE)));
-                                post.setDescription(res.getString(res.getColumnIndex(POSTS_COLUMN_DESC)));
-                                post.setUrl(res.getString(res.getColumnIndex(POSTS_COLUMN_URL)));
-                                post.setPostType(res.getInt(res.getColumnIndex(POSTS_COLUMN_TYPE)));
-                                post.setDuration(res.getInt(res.getColumnIndex(POSTS_COLUMN_DURATION)));
-                                post.setDatetime(dateFormat.parse(res.getString(res.getColumnIndex(POSTS_COLUMN_TIME))));
-                                if (res.getInt(res.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, Integer.toString(post.hashCode()));
+                                int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
+
+                                Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
+                                        .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
+                                        .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
+                                        .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
+                                        .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
+                                        .date(dateFormat.parse(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
+                                if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
+                                    String filename = Integer.toString(old_hashcode);
+                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, filename);
                                     if (thumb != null) {
-                                        post.setThumbnail(thumb);
+                                        postBuilder.thumbnail(thumb);
                                     }
                                 }
-                                toReturn.add(post);
+                                Post post = postBuilder.build();
+                                if (post.hashCode() == old_hashcode) {
+                                    toReturn.add(postBuilder.build());
+                                } else {
+                                    PsLog.w("Post in db has a different hashcode than before, not using it");
+                                }
+
                             } catch (ParseException e) {
                                 PsLog.w("Couldn't parse date: " + e.getMessage());
                             }
-                            res.moveToNext();
-                        }
+                        } while (cursor.moveToNext());
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        res.close();
+                        cursor.close();
                         db.close();
                     }
                     int postsInDb = getPostsInDbCount();
@@ -201,6 +208,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private int getPostsLoadedCount() {
-        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5;
+        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5 + YoutubePresenter.MAX_COUNT + UploadplanPresenter.MAX_COUNT;
     }
 }

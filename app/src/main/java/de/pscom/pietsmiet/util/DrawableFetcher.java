@@ -33,7 +33,7 @@ public class DrawableFetcher {
     @Nullable
     public static Drawable getDrawableFromPost(@Nullable Post post) {
         if (post != null) {
-            URL imageUrl = post.getPicture();
+            URL imageUrl = post.getFullPicture();
             if (imageUrl != null) {
                 return getDrawableFromUrl(imageUrl.toString());
             }

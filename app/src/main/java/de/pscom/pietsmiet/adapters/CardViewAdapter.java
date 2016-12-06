@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -29,7 +30,8 @@ import de.pscom.pietsmiet.util.PsLog;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
 
@@ -65,22 +67,27 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
 
         if (holder.getItemViewType() == LAYOUT_THUMBNAIL) {
             ThumbnailCardViewHolder videoHolder = (ThumbnailCardViewHolder) holder;
+            if (currentItem.getPostType() != VIDEO) {
+                videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
+                videoHolder.btnExpand.setVisibility(VISIBLE);
+                videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                videoHolder.btnExpand.setOnClickListener(view -> {
+                    if (videoHolder.descriptionContainer.getVisibility() == GONE) {
+                        videoHolder.descriptionContainer.setVisibility(VISIBLE);
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                    } else {
+                        videoHolder.descriptionContainer.setVisibility(GONE);
+                        view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                    }
+                });
+            } else {
+                videoHolder.btnExpand.setVisibility(GONE);
+                videoHolder.descriptionContainer.setVisibility(GONE);
 
-            videoHolder.durationIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_watch_later_black_24dp));
-
-            videoHolder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-            videoHolder.btnExpand.setOnClickListener(view -> {
-                if (videoHolder.descriptionContainer.getVisibility() == GONE) {
-                    videoHolder.descriptionContainer.setVisibility(VISIBLE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
-                } else {
-                    videoHolder.descriptionContainer.setVisibility(GONE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-                }
-            });
+            }
         }
-        // todo if holder.timedate.setVisibility(GONE); it also sets it for next posts maybe its the same object? i guess!
-        if (currentItem.getPostType() == UPLOAD_PLAN) {
+
+        if (currentItem.getPostType() == UPLOADPLAN) {
             holder.timedate.setVisibility(GONE);
         } else {
             holder.timedate.setVisibility(VISIBLE);
@@ -91,8 +98,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         Drawable thumbnail = currentItem.getThumbnail();
         if (thumbnail != null) {
             holder.thumbnail.setImageDrawable(thumbnail);
-        } else if (currentItem.getPostType() == PIETCAST){
+            holder.thumbnail.setVisibility(VISIBLE);
+        } else if (currentItem.getPostType() == PIETCAST) {
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
+            holder.thumbnail.setVisibility(VISIBLE);
         } else {
             holder.thumbnail.setVisibility(GONE);
         }
@@ -109,7 +118,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
                 context.startActivity(browserIntent);
             } catch (ActivityNotFoundException | NullPointerException e) {
                 PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
-                //todo display some kind of error
+                //Error Toast Notification todo evtl eigene Funktion in seperater Klasse ?
+                CharSequence errMsg = "Cannot open browser. Retry";
+                Toast errToast = Toast.makeText(context, errMsg, Toast.LENGTH_SHORT);
+                errToast.show();
             }
         });
 

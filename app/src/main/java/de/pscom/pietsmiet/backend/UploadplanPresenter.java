@@ -11,37 +11,32 @@ import java.util.Date;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
-import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.RssUtil.loadRss;
-import static de.pscom.pietsmiet.util.RssUtil.parseHtml;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class UploadplanPresenter extends MainPresenter {
-    public static final int MAX_COUNT = 1;
-    private static String uploadplanUrl;
+    private static final String KEY_DATE = "date";
+    private static final String KEY_TITLE = "title";
+    private static final String KEY_LINK = "link";
+    private static final String KEY_DESCRIPTION = "desc";
+
+    static final int MAX_COUNT = 2;
 
     public UploadplanPresenter(MainActivity view) {
-        super(view, UPLOAD_PLAN);
-        if (SecretConstants.rssUrl == null) {
-            PsLog.w("No rssUrl specified");
-            return;
-        }
-        uploadplanUrl = SecretConstants.rssUrl;
-
-        parseUploadplanFromDb();
+        super(view, UPLOADPLAN);
+        parseUploadplanFromDb("uploadplan");
+        parseUploadplanFromDb("news");
     }
 
-    private void parseUploadplanFromDb() {
-        DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child("uploadplan");
+    private void parseUploadplanFromDb(String scope) {
+        DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child(scope);
 
         mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Post post = new Post();
-                post.setPostType(UPLOAD_PLAN);
+                postBuilder = new Post.PostBuilder(UPLOADPLAN);
                 Observable.just(dataSnapshot.getChildren())
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
@@ -51,69 +46,38 @@ public class UploadplanPresenter extends MainPresenter {
                                     snapshots) {
                                 String value = (String) snapshot.getValue();
                                 switch (snapshot.getRef().getKey()) {
-                                    case "date":
-                                        post.setDatetime(new Date(value));
+                                    case KEY_DATE:
+                                        postBuilder.date(new Date(value));
                                         break;
-                                    case "title":
-                                        post.setTitle(value);
+                                    case KEY_TITLE:
+                                        postBuilder.title(value);
                                         break;
-                                    case "link":
-                                        post.setUrl(value);
+                                    case KEY_LINK:
+                                        postBuilder.url(value);
                                         break;
-                                    case "desc":
-                                        post.setDescription(value);
+                                    case KEY_DESCRIPTION:
+                                        postBuilder.description(value);
                                     default:
                                         break;
                                 }
                             }
-                            if (post.getTitle() == null || post.getDate() == null || post.getDescription() == null || post.getDescription().isEmpty()) {
-                                PsLog.i("Falling back to fetching uploadplan directly; " +
-                                        "Database loading failed because a value was empty");
-                                parseUploadplan();
-                            } else {
-                                posts.add(post);
-                                finished();
-                                PsLog.v("added uploadplan from firebase db");
-                            }
-                        }, Throwable::printStackTrace);
+                            posts.add(postBuilder.build());
+                            finished();
+                            PsLog.v("added " + scope + " from firebase db");
+
+                        }, (throwable) -> {
+                            throwable.printStackTrace();
+                            view.showError("Typ" + scope + " konnte nicht geladen werden");
+                        });
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 if (databaseError != null)
-                    PsLog.i("Falling back to fetching uploadplan directly;" +
-                            " Database loading failed because: " + databaseError.toString());
-                parseUploadplan();
+                    PsLog.e("Database loading failed because: " + databaseError.toString());
+                view.showError("Typ" + scope + " konnte nicht geladen werden");
             }
         });
-    }
-
-    /**
-     * Loads the latest uploadplan URLS and parses them
-     */
-    private void parseUploadplan() {
-        Observable.defer(() -> Observable.just(loadRss(uploadplanUrl)))
-                .subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .take(MAX_COUNT)
-                .doOnNext(element -> {
-                    post = new Post();
-                    post.setDatetime(element.getPubDate());
-                    post.setTitle(element.getTitle());
-                })
-                .map(element -> element.getLink().toString())
-                .doOnNext(link -> post.setUrl(link))
-                .flatMap(link -> Observable.defer(() -> Observable.just(parseHtml(link)))
-                        .subscribeOn(Schedulers.io())
-                        .onBackpressureBuffer())
-                .filter(content -> content != null)
-                .subscribe(uploadplan -> {
-                    post.setDescription(uploadplan);
-                    post.setPostType(UPLOAD_PLAN);
-                    posts.add(post);
-                }, Throwable::printStackTrace, this::finished);
     }
 
 

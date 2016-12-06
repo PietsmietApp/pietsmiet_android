@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 public class SharedPreferenceHelper {
     public static final String KEY_TWITTER_ID = "KEY_TWITTER_ID";
     public static final String KEY_FACEBOOK_DATE = "KEY_FACEBOOK_DATE";
+    public static final String KEY_NEWS_SETTING = "KEY_NEWS_SETTING";
     private final static String PREF_FILE = "PREF";
     public static boolean shouldUseCache = true;
 

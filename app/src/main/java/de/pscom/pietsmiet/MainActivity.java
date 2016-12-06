@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -35,6 +36,8 @@ import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -44,6 +47,7 @@ import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -65,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupRecyclerView();
         setupDrawer();
 
-        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
 
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
             postManager.displayOnlyType(category);
@@ -76,7 +80,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+
+        SettingsHelper.loadAllSettings(this);
+        if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
+            FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+        }
 
         new SecretConstants(this);
 
@@ -210,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //todo
                 break;
             case R.id.nav_settings:
-                //todo
+                startActivity(new Intent(MainActivity.this, Settings.class));
                 break;
             default:
                 return false;

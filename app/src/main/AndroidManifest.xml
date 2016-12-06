@@ -19,6 +19,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Settings"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
         <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false">
@@ -27,7 +32,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".Settings"></activity>
 
     </application>
 

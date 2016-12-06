@@ -82,17 +82,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         SettingsHelper.loadAllSettings(this);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
         if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
         }
-
 
         new SecretConstants(this);
 

@@ -47,4 +47,5 @@ captures/
 /app/src/main/assets/secrets.properties
 /app/google-services.json
 /backend/api_keys.py
+/backend/__pycache__
 

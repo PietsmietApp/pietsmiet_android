@@ -36,10 +36,16 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
 
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    @PostType.AllTypes
+    private int postType;
+    private int notificationId;
 
     /**
      * Called when message is received.
@@ -54,21 +60,27 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> data = remoteMessage.getData();
         if (data.size() > 0) {
             Log.d(TAG, "Message data payload: " + data);
+            int type;
 
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (data.get("topic")) {
+                case "news":
+                    type = UPLOADPLAN;
+                    notificationId = 10;
+                    break;
                 case "uploadplan":
-                    intent.putExtra(EXTRA_TYPE, PostType.UPLOADPLAN);
+                    type = UPLOADPLAN;
+                    notificationId = 11;
                     break;
                 case "pietcast":
-                    intent.putExtra(EXTRA_TYPE, PostType.PIETCAST);
+                    type = PIETCAST;
+                    notificationId = 13;
                     break;
-                case "news":
-                    //todo link to pietsmiet.de ?
                 default:
-                    break;
+                    return;
             }
+            intent.putExtra(EXTRA_TYPE, type);
 
 
             sendNotification(data.get("title"), data.get("message"), intent);
@@ -85,7 +97,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void sendNotification(String title, String messageBody, Intent intent) {
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 65, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, notificationId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -101,6 +113,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(65, notificationBuilder.build());
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }

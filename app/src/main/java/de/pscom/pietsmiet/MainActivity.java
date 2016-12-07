@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case R.id.nav_help:
-                //todo
+                startActivity(new Intent(MainActivity.this, About.class));
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(MainActivity.this, Settings.class));

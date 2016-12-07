@@ -209,6 +209,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (id == item.getItemId()) {
                         aSwitch.setChecked(true);
                         postManager.displayOnlyType(i);
+                        scrollToTop();
                     } else aSwitch.setChecked(false);
                 }
 

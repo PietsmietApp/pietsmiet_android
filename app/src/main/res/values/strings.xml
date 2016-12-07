@@ -12,7 +12,6 @@
     <string name="drawer_sonstiges">Sonstiges</string>
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
-    <string name="title_activity_settings">Settings</string>
     <string name="drawer_youtube">YouTube</string>
 
     <string name="time_just_now">Gerade eben</string>

@@ -1,8 +1,6 @@
 package de.pscom.pietsmiet;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Switch;
 
@@ -12,24 +10,18 @@ import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         Switch newsSwitch = (Switch) findViewById(R.id.newsSwitch);
 
+        setupToolbar(getString(R.string.drawer_einstellungen));
 
-        toolbar.setTitle(getString(R.string.title_activity_settings));
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-        
+
         boolean current = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true);
         newsSwitch.setChecked(current);
 

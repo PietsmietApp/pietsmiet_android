@@ -198,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     // Apply posts otherwise
                     if (context != null) {
                         PsLog.v("Applying " + toReturn.size() + " posts from db");
-                        context.addNewPosts(toReturn);
+                        context.getPostManager().addPosts(toReturn);
                     } else {
                         PsLog.e("Context is null!");
                     }

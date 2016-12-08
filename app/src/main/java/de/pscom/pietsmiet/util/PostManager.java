@@ -115,19 +115,54 @@ public class PostManager {
         return allowed;
     }
 
-    public Date getLastPostDate() {
+    public Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
-            return new Date();
+            Date d = new Date();
+            return d;
             // todo sinnvoll?
+        } else {
+            return allPosts.get(0).getDate();
         }
-        return allPosts.get(allPosts.size() - 1).getDate();
     }
 
-    public List<Post> getNextPosts( Date dAfter, int numPosts ){
+    public Date getLastPostDate() {
+        if (allPosts.isEmpty()) {
+            Date d = new Date();
+            return d;
+            // todo sinnvoll? BEI ALLEN FEHLERN LOADING ENDE
+        } else {
+            return allPosts.get(allPosts.size() - 1).getDate();
+        }
+    }
 
-        new YoutubePresenter(this.mView).getPostsAfter();
+    public void fetchNextPosts( int numPosts ){
 
-        return null;
+        new YoutubePresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
+
+
+    }
+
+    public void fetchNewPosts( ){
+
+        new YoutubePresenter(mView).fetchNewPosts(getFirstPostDate());
+
+
+    }
+
+    //todo add documentation
+    public int getAllPostsCount() {
+        return allPosts.size();
+    }
+
+    public void onReadyFetch(List<Post> listPosts) {
+        if(listPosts != null) {
+            addPosts(listPosts);
+        } else {
+            PsLog.e("No Posts loaded in 1 Category");
+            mView.showError("ERROR IN FETCHING POSTS");
+            //todo bessere Fehlermeldungen
+        }
+
     }
 
 

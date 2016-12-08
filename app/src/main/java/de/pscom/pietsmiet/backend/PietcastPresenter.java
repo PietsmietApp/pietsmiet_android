@@ -2,6 +2,9 @@ package de.pscom.pietsmiet.backend;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.Date;
+import java.util.List;
+
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
@@ -16,7 +19,7 @@ public class PietcastPresenter extends MainPresenter {
     private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
 
     public PietcastPresenter(MainActivity view) {
-        super(view, PIETCAST);
+        super(view);
         parsePietcast();
     }
 
@@ -42,16 +45,17 @@ public class PietcastPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
-                }, this::finished);
+                }, ()-> {});
     }
 
     @Override
-    public void getNewPosts() {
+    public void fetchNewPosts(Date dBefore) {
 
     }
 
     @Override
-    public void getPostsAfter() {
+    public void fetchPostsBefore(Date dAfter, int numPosts) {
 
     }
+
 }

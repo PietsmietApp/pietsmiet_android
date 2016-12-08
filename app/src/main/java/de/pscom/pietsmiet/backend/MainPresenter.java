@@ -6,44 +6,26 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
-
-import static de.pscom.pietsmiet.util.PostType.AllTypes;
 
 abstract class MainPresenter {
-
+    MainActivity view;
     Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 
-    MainPresenter() {
-
+    MainPresenter(MainActivity view) {
+        this.view = view;
     }
 
     /**
-     * Publishes the current posts to the specified activity
+     * FETCHES ALLLLL NEW POSTS!!!! MAYBE CHANGE!
      */
-//    void finished() {
-//        if (view != null) {
-//            if (posts != null) {
-//                PsLog.v("Type " + PostType.getName(postType) + " posts: " + posts.size());
-//                view.addNewPosts(posts);
-//            } else {
-//                view.showError("Typ " + PostType.getName(postType) + " konnte nicht geladen werden :(");
-//            }
-//        }
-//    }
+    public abstract void fetchNewPosts(Date dAfter);
 
     /**
      *
      */
-    public abstract List<Post> getNewPosts();
-
-    /**
-     *
-     */
-    public abstract List<Post> getPostsAfter(Date dAfter, int numPosts);
+    public abstract void fetchPostsBefore(Date dBefore, int numPosts);
 
 
 }

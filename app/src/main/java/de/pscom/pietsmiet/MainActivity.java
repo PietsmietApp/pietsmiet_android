@@ -83,7 +83,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         new DatabaseHelper(this).displayPostsFromCache(this);
 
-        updateData();
+        if(postManager.getAllPostsCount() < 10) postManager.fetchNextPosts(10);
+    }
+
+    public PostManager getPostManager() {
+        return postManager;
     }
 
     private void setupRecyclerView() {
@@ -99,8 +103,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                //todo guk ob das funzt hier soll nur die posts nachgeladen werden übernehmen macht das der postmanager
-                postManager.addPosts( postManager.getNextPosts(postManager.getLastPostDate(), 5) );
+                //todo die 5 als final Variable oder als Setting!
+                //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nihct weiter versucht zu laden!
+                postManager.fetchNextPosts( 5 );
+
             }
         };
         // Adds the scroll listener to RecyclerView
@@ -132,9 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
-//    public void addNewPosts(List<Post> items) {
-//        if (postManager != null) postManager.addPosts(items);
-//    }
 
     public void updateAdapter() {
         Observable.just("")
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
                             if (refreshLayout != null) refreshLayout.setRefreshing(false);
+                    //todo geht weg sobald 1 geladen wurde = falsch
                         }
                 );
     }
@@ -161,11 +165,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateData() {
         //todo neu schreiben nicht über Konstruktor evtl über selbe Methode wie beim nachladen nur mit aktuellem datum!
-        new TwitterPresenter(this);
-        new UploadplanPresenter();
-        new PietcastPresenter(this);
-        new FacebookPresenter(this);
-        new YoutubePresenter(this);
+        //new TwitterPresenter(this);
+        //new UploadplanPresenter();
+        //new PietcastPresenter(this);
+        //new FacebookPresenter(this);
+         postManager.fetchNewPosts();
         //if (BuildConfig.DEBUG) addTestingCards();
     }
 
@@ -199,7 +203,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .build());
 
             runOnUiThread(() -> {
-                addNewPosts(cardItems);
+//todo provisorisch
+                if(postManager != null) postManager.addPosts(cardItems);
                 PsLog.v("Test cards geladen");
             });
         }).start();

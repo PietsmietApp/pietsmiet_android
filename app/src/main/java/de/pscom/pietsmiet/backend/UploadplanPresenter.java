@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
+import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
@@ -23,8 +24,8 @@ public class UploadplanPresenter extends MainPresenter {
     public static final int MAX_COUNT = 1;
     private static String uploadplanUrl;
 
-    public UploadplanPresenter() {
-        super();
+    public UploadplanPresenter(MainActivity view) {
+        super(view);
         if (SecretConstants.rssUrl == null) {
             PsLog.w("No rssUrl specified");
             return;
@@ -119,17 +120,18 @@ public class UploadplanPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Uploadplan parsing Error");
-                }, this::finished);
+                }, ()-> {});
     }
 
 
     @Override
-    public void getNewPosts() {
+    public void fetchNewPosts(Date dBefore) {
+
 
     }
 
     @Override
-    public void getPostsAfter() {
+    public void fetchPostsBefore(Date dAfter, int numPosts) {
 
     }
 }

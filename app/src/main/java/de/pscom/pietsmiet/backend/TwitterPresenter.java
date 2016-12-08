@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.backend;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
@@ -32,7 +33,7 @@ public class TwitterPresenter extends MainPresenter {
     private Twitter twitterInstance;
 
     public TwitterPresenter(MainActivity view) {
-        super(view, TWITTER);
+        super(view);
         if (view != null && SharedPreferenceHelper.shouldUseCache) {
             lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
         }
@@ -73,7 +74,6 @@ public class TwitterPresenter extends MainPresenter {
                     throwable.printStackTrace();
                     view.showError("Twitter parsing error");
                 }, () -> {
-                    finished();
                     if (view != null) {
                         SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
                     }
@@ -167,12 +167,13 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void getNewPosts() {
+    public void fetchNewPosts(Date dBefore) {
 
     }
 
     @Override
-    public void getPostsAfter() {
+    public void fetchPostsBefore(Date dAfter, int numPosts) {
 
     }
+
 }

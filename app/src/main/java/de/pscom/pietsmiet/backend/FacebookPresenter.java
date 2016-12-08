@@ -32,7 +32,7 @@ public class FacebookPresenter extends MainPresenter {
     private String lastFetchedTime;
 
     public FacebookPresenter(MainActivity view) {
-        super(view, FACEBOOK);
+        super(view);
         if (view != null && SharedPreferenceHelper.shouldUseCache) {
             lastFetchedTime = SharedPreferenceHelper.getSharedPreferenceString(view, KEY_FACEBOOK_DATE, "");
         }
@@ -85,7 +85,7 @@ public class FacebookPresenter extends MainPresenter {
                     PsLog.e(e.toString());
                     view.showError("Facebook parsing error");
                 }, () -> {
-                    finished();
+
                     lastFetchedTime = String.valueOf(new Date().getTime() / 1000);
                     if (view != null) {
                         SharedPreferenceHelper.setSharedPreferenceString(view, KEY_FACEBOOK_DATE, lastFetchedTime);
@@ -124,12 +124,13 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     @Override
-    public void getNewPosts() {
+    public void fetchNewPosts(Date dBefore) {
 
     }
 
     @Override
-    public void getPostsAfter() {
+    public void fetchPostsBefore(Date dAfter, int numPosts) {
 
     }
+
 }

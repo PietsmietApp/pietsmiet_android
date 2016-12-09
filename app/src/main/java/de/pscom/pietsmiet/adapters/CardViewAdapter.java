@@ -57,16 +57,20 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         Post currentItem = items.get(position);
         @PostType.AllTypes int currentType = currentItem.getPostType();
 
+        // Set basic information
         holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         holder.title.setText(currentItem.getTitle());
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
 
+        // Setup default visibilities
         holder.btnExpand.setVisibility(GONE);
         holder.descriptionContainer.setVisibility(GONE);
         holder.thumbnail.setVisibility(VISIBLE);
         holder.wideImage.setVisibility(GONE);
         holder.text.setVisibility(GONE);
 
+        // Pietcast: Setup placeholder thumbnail, text in expandable description,
+        // setup expandable container
         if (currentType == PIETCAST) {
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
 
@@ -85,6 +89,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
+            // Youtube: Setup video thumbnails
         } else if (currentType == VIDEO) {
             Drawable thumbnail = currentItem.getThumbnail();
             if (thumbnail != null) {
@@ -92,6 +97,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             } else {
                 holder.thumbnail.setVisibility(GONE);
             }
+            // Social media: Setup wide image
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             holder.thumbnail.setVisibility(GONE);
 
@@ -101,8 +107,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.wideImage.setImageDrawable(thumbnail);
                 holder.wideImage.setVisibility(VISIBLE);
             }
-
         }
+        // Setup text for Uploadplan & social media
         if (currentType == TWITTER || currentType == FACEBOOK || currentType == UPLOADPLAN) {
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.text.setVisibility(VISIBLE);
@@ -110,6 +116,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             }
         }
 
+        // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
                     try {
                         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));

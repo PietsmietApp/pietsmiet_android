@@ -19,7 +19,14 @@ jdk:
 script:
 - "./gradlew build -PdisablePreDex"
 before_install:
-- openssl aes-256-cbc -K $encrypted_e70b979cd64c_key -iv $encrypted_e70b979cd64c_iv -in secrets.tar.enc -out secrets.tar -d
+- openssl aes-256-cbc -K $encrypted_0e2be077a50f_key -iv $encrypted_0e2be077a50f_iv -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
-
-
+deploy:
+  provider: releases
+  api_key:
+    secure: idCbgKz7UkrQgIP9mva6gDZbe0uorrB3vkklEFKNUNEckFxLpXPh9LgC+JUibZ3A6UHL9Rh+Wxapc6SOV5T9V0fIFpZyKA7nk5PZZDLETdZtI9x30gFnJ1RMcaOuXZPha0uiIrm84V6QGSQIEd/stDH0+ppUtfaSKseQ8OF8ixAqTkTYfUq3bljgg8a1iYvurR523jxU9o8OfM4+HUZgOFEOP3d8YOcnzA7oDnYsr0pnx1A5ZckEkkdfed2cmKHBK8HT/0HErvxyc1qkjoCMSXd0Zu1avTmqyI5FiMkwVatfj8DcaqeiD6PfMnYDMV9bNC05Xp+VK/xNvjDbdXo7rS3Ykv+9s8Q9dleNr0JNb1SkyfLn9cNnh6qfgFnk6T6wzEirI1TQqbiQzjnfYOvVKWYwTxV8E5JZMqlOthYbh2W1oRbdTMlLLgvyQKErcSwfXKUBoTs+lbj2Huq5RMS3fneLnIk+BGJbmD2tnNl/M4n6RaAHgKvPEEkY1f5+sxa79P8jtY6jI4439mtayIkuoaz1/MXzvRJfkPg8oRm8QWkWhXMiBb4a8iF4/JTdkQp+81x+YTa1n6sqjJr4x9FSI3F5LpQeWY8qjQp56t4jIG6J9KR2bAT4f677ZjzGlBmBKpRRAVlJ5csn63iB4e2HLrLH3jnJ/zRyrJGTDm+LB5c=
+  file: app/build/outputs/apk/app-release.apk
+  skip_cleanup: true
+  on:
+    repo: l3d00m/pietsmiet_android
+    tags: true

@@ -112,8 +112,7 @@ public class Post implements Comparable<Post> {
     }
 
     public boolean isThumbnailView() {
-        return postType == VIDEO
-                || postType == PIETCAST;
+        return postType == VIDEO || postType == PIETCAST;
     }
 
     @Override

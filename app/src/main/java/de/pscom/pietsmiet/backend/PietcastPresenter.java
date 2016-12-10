@@ -57,7 +57,8 @@ public class PietcastPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsBefore(Date dBefore, int numPosts) {
-        parsePietcast(5);
+        parsePietcast(numPosts);
+        // todo mit datum arbeiten!
     }
 
 }

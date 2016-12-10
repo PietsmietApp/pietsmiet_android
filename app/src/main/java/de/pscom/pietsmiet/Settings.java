@@ -2,10 +2,12 @@ package de.pscom.pietsmiet;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Switch;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
@@ -18,12 +20,16 @@ public class Settings extends BaseActivity {
 
         setContentView(R.layout.activity_settings);
         Switch newsSwitch = (Switch) findViewById(R.id.newsSwitch);
-
+        Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
         setupToolbar(getString(R.string.drawer_einstellungen));
 
 
         boolean current = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true);
         newsSwitch.setChecked(current);
+        btnClearCache.setOnClickListener((btn)->{
+            new DatabaseHelper(getBaseContext()).clearDB();
+            //todo rewrite next day ;) load posts and clear posts in adapter
+        });
 
         newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NEWS_SETTING, isChecked);

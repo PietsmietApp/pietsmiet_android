@@ -121,6 +121,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
     }
 
+    public void clearDB() {
+        deleteTable();
+        this.close();
+    }
+
     /**
      * Loads all post objects from the database and displays it
      * Clears the database if it's too big

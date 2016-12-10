@@ -253,6 +253,11 @@ public class PostManager {
 
     }
 
+    public void clearPosts() {
+        allPosts.clear();
+        currentPosts.clear();
+    }
+
 
 
 }

@@ -79,7 +79,7 @@ public class UploadplanPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchNewPosts(Date dBefore) {
+    public void fetchPostsSince(Date dBefore) {
 
 
     }
@@ -89,7 +89,7 @@ public class UploadplanPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsBefore(Date dAfter, int numPosts) {
+    public void fetchPostsUntil(Date dAfter, int numPosts) {
 
     }
 }

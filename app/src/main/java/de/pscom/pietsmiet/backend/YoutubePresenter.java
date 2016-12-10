@@ -23,16 +23,15 @@ import static de.pscom.pietsmiet.util.PostType.VIDEO;
 public class YoutubePresenter extends MainPresenter {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
+    private final YoutubeApiInterface apiInterface;
+
     public YoutubePresenter(MainActivity view) {
         super(view);
         //todo sinnvoll?
         if (SecretConstants.youtubeAPIkey == null || SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");
         }
-    }
 
-    @Override
-    public void fetchNewPosts(Date dAfter) {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -41,14 +40,28 @@ public class YoutubePresenter extends MainPresenter {
                 .addCallAdapterFactory(rxAdapter)
                 .build();
 
-        YoutubeApiInterface apiService = retrofit.create(YoutubeApiInterface.class);
-        String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dAfter);
-        Observable<YoutubeRoot> callObs = apiService.getPlaylistSinceDate(50, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
+        apiInterface = retrofit.create(YoutubeApiInterface.class);
+    }
+
+    @Override
+    public void fetchPostsSince(Date dSince) {
+
+        String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dSince);
+        Observable<YoutubeRoot> callObs = apiInterface.getPlaylistSinceDate(50, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
         fetchData(callObs);
     }
 
-    protected void fetchData(Observable<YoutubeRoot> call) {
+    @Override
+    public void fetchPostsUntil(Date dUntil, int numPosts) {
+        String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dUntil);
+        Observable<YoutubeRoot> callObs = apiInterface.getPlaylistUntilDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
+
+        fetchData(callObs);
+    }
+
+
+    private void fetchData(Observable<YoutubeRoot> call) {
         call.subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
@@ -78,26 +91,9 @@ public class YoutubePresenter extends MainPresenter {
                     PsLog.e(e.toString());
                     view.showError("YouTube parsing error");
                     view.getPostManager().onReadyFetch(posts, VIDEO);
-                }, ()-> {
+                }, () -> {
                     view.getPostManager().onReadyFetch(posts, VIDEO);
                 });
-    }
-
-    @Override
-    public void fetchPostsBefore(Date dBefore, int numPosts) {
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlYTAPI)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(rxAdapter)
-                .build();
-
-        String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dBefore);
-        YoutubeApiInterface apiService = retrofit.create(YoutubeApiInterface.class);
-        Observable<YoutubeRoot> callObs = apiService.getPlaylistUntilDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
-
-        fetchData(callObs);
     }
 
 }

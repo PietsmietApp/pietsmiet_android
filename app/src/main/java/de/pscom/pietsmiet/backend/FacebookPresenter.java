@@ -10,7 +10,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -24,7 +23,6 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 
 public class FacebookPresenter extends MainPresenter {
     private Facebook mFacebook;
@@ -87,7 +85,7 @@ public class FacebookPresenter extends MainPresenter {
     /**
      * @return List of unparsed posts from Team Pietsmiet
      */
-    private List<BatchResponse> loadPosts( String strTime,  int numPosts) {
+    private List<BatchResponse> loadPosts(String strTime, int numPosts) {
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
@@ -110,14 +108,14 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchNewPosts(Date dBefore) {
-        parsePosts("&since=" + String.valueOf(dBefore.getTime() / 1000), 50);
+    public void fetchPostsSince(Date dSince) {
+        parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), 50);
     }
 
 
     @Override
-    public void fetchPostsBefore(Date dAfter, int numPosts) {
-        parsePosts("&until=" + String.valueOf(dAfter.getTime() / 1000), numPosts);
+    public void fetchPostsUntil(Date dUntil, int numPosts) {
+        parsePosts("&until=" + String.valueOf(dUntil.getTime() / 1000), numPosts);
     }
 
 }

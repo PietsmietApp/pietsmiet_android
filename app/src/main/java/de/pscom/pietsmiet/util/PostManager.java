@@ -3,17 +3,14 @@ package de.pscom.pietsmiet.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -37,18 +34,14 @@ public class PostManager {
 
     public PostManager(MainActivity view) {
         mView = view;
-        List<Integer> lPostTypes = PostType.getPossibleTypes();
-        for (int k: lPostTypes) {
-            fetchingEnded.put(k,false);
-        }
+        resetFetchingEnded();
     }
 
     public void resetFetchingEnded() {
         fetchingEnded.clear();
         //queuedPosts.clear();
-        List<Integer> lPostTypes = PostType.getPossibleTypes();
-        for (int k: lPostTypes) {
-            fetchingEnded.put(k,false);
+        for (int k : getPossibleTypes()) {
+            fetchingEnded.put(k, false);
         }
     }
 
@@ -64,6 +57,7 @@ public class PostManager {
         listPosts.addAll(lPosts);
         // ACHTUNG !!! DA HIER NUR DER POINTER ÜBERGEBEN WIRD BRAUCHT MAN EIN NEUES OBJEKT! todo MERKEN! SPART ZEIT ;)
         if (listPosts.size() == 0) {
+            //todo warum?
             PsLog.w("addPosts called with zero posts");
             resetFetchingEnded();
             mView.setRefreshAnim(false);
@@ -148,17 +142,16 @@ public class PostManager {
         return allowed;
     }
 
-    public Date getFirstPostDate() {
+    private Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
-            Date d = new Date();
-            return d;
+            return new Date();
             // todo sinnvoll? Nein setzte tag auf vorherigen
         } else {
             return allPosts.get(0).getDate();
         }
     }
 
-    public Date getLastPostDate() {
+    private Date getLastPostDate() {
         if (allPosts.isEmpty()) {
             Date d = new Date();
             return d;
@@ -167,35 +160,34 @@ public class PostManager {
         }
     }
 
-    public void fetchNextPosts( int numPosts ){
+    public void fetchNextPosts(int numPosts) {
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
 
-        new YoutubePresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
-        //new PietcastPresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
-        new FacebookPresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
+        new YoutubePresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
+        //new PietcastPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
+        new FacebookPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
 
     }
 
-    public void fetchNewPosts(){
+    public void fetchNewPosts() {
         mView.setRefreshAnim(true);
-        new YoutubePresenter(mView).fetchNewPosts(getFirstPostDate());
-        //new PietcastPresenter(mView).fetchNewPosts(getFirstPostDate());
-        new FacebookPresenter(mView).fetchNewPosts(getFirstPostDate());
+        new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
+        //new PietcastPresenter(mView).fetchPostsSince(getFirstPostDate());
+        new FacebookPresenter(mView).fetchPostsSince(getFirstPostDate());
     }
 
     public boolean getAllPostsFetched() {
         int isEnded = 0;
         Map<Integer, Boolean> fetchedMap = new HashMap<>();
-        fetchedMap.putAll(fetchingEnded);
-         for( Iterator<Boolean> boolIt = fetchedMap.values().iterator(); boolIt.hasNext(); ) {
-             if(boolIt.next()) {
-                 isEnded++;
-             }
-         }
-        if(fetchedMap.size() == isEnded) return true;
-        return false;
+        fetchedMap.putAll(fetchingEnded); //todo warum konvertieren?
+        for (Boolean aBoolean : fetchedMap.values()) {
+            if (aBoolean) {
+                isEnded++;
+            }
+        }
+        return fetchedMap.size() == isEnded;
     }
 
     //todo add documentation
@@ -204,13 +196,15 @@ public class PostManager {
     }
 
     public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
-        if(listPosts != null && listPosts.size() > 0) {
+        if (listPosts != null && listPosts.size() > 0) {
             addPostsToQueue(listPosts, type);
         } else {
             fetchingEnded.put(type, true);
+            //fixme error meldung nicht zeigen, wenn keine posts geladen werden konnten weil keine mehr da sind
+            //bei pull to refresh zB
             PsLog.e("No Posts loaded in " + PostType.getName(type) + " Category");
             mView.showError("ERROR fetching " + PostType.getName(type));
-            if(getAllPostsFetched()){
+            if (getAllPostsFetched()) {
                 mView.setRefreshAnim(false);
                 //testweise
                 //queuedPosts.clear();
@@ -222,7 +216,7 @@ public class PostManager {
 
     }
 
-    private void addPostsToQueue(List<Post> listPosts, @AllTypes int type)  {
+    private void addPostsToQueue(List<Post> listPosts, @AllTypes int type) {
         // ACHTUNG NEUES OBJEKT DA NUR POINTER ÜBERGEBEN!
         List<Post> lPosts = new ArrayList<>();
         lPosts.addAll(listPosts);
@@ -240,7 +234,11 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(post -> post != null)
-                .filter(post -> post.getDate().before(getLastPostDate())) //provisorisch da getlastpostdate nicht async ist -.- kann aber so funktionieren
+                .filter(post -> {
+                    boolean b = post.getDate().before(getLastPostDate());
+                    if (!b) PsLog.v("posts is after last date");
+                    return b;
+                }) //provisorisch da getlastpostdate nicht async ist -.- kann aber so funktionieren
                 .distinct()
                 .toSortedList()
                 .flatMap(Observable::from)
@@ -249,9 +247,9 @@ public class PostManager {
                 .subscribe(items -> {
                     queuedPosts.clear();
                     queuedPosts.addAll(items);
-                }, Throwable::printStackTrace, ()->{
+                }, Throwable::printStackTrace, () -> {
                     fetchingEnded.put(type, true);
-                    if(getAllPostsFetched()) {
+                    if (getAllPostsFetched()) {
                         // reset fetching is in UpdateAdapter in MainActivity k
                         addPosts(queuedPosts);
                     }

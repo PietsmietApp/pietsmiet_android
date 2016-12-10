@@ -21,7 +21,7 @@ public class PietcastPresenter extends MainPresenter {
     }
 
     /**
-     * Loads the latests Piecasts
+     * Loads the latests Pietcasts
      */
     private void parsePietcast(int num) {
         Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
@@ -43,11 +43,13 @@ public class PietcastPresenter extends MainPresenter {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
                     view.getPostManager().onReadyFetch(posts, PIETCAST);
-                }, ()-> {view.getPostManager().onReadyFetch(posts, PIETCAST);});
+                }, () -> {
+                    view.getPostManager().onReadyFetch(posts, PIETCAST);
+                });
     }
 
     @Override
-    public void fetchNewPosts(Date dBefore) {
+    public void fetchPostsSince(Date dSince) {
         parsePietcast(2);
         //todo efficiency / logic
     }
@@ -57,7 +59,7 @@ public class PietcastPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsBefore(Date dBefore, int numPosts) {
+    public void fetchPostsUntil(Date dUntil, int numPosts) {
         parsePietcast(50);
         // todo mit datum arbeiten!
     }

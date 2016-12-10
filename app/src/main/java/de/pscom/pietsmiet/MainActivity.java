@@ -74,8 +74,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         new SecretConstants(this);
+
         //todo fixme
-        new DatabaseHelper(this).displayPostsFromCache(this);
+        //new DatabaseHelper(this).displayPostsFromCache(this);
 
         if(postManager.getAllPostsCount() < 10) postManager.fetchNextPosts(10);
     }
@@ -168,7 +169,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void updateData() {
         if(postManager != null) postManager.fetchNewPosts();
-        //todo evtl unnötige Funktion
+        //evtl unnötige Funktion
     }
 
     @Override

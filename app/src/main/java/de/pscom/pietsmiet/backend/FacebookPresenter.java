@@ -27,15 +27,10 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FACEBOOK_DATE;
 
 public class FacebookPresenter extends MainPresenter {
-    public static final int LIMIT_PER_USER = 4;
     private Facebook mFacebook;
-    private String lastFetchedTime;
 
     public FacebookPresenter(MainActivity view) {
         super(view);
-        if (view != null && SharedPreferenceHelper.shouldUseCache) {
-            lastFetchedTime = SharedPreferenceHelper.getSharedPreferenceString(view, KEY_FACEBOOK_DATE, "");
-        }
         if (SecretConstants.facebookToken == null || SecretConstants.facebookSecret == null) {
             PsLog.w("No facebook secret or token specified");
             return;
@@ -43,11 +38,10 @@ public class FacebookPresenter extends MainPresenter {
         mFacebook = new FacebookFactory().getInstance();
         mFacebook.setOAuthAppId("664158170415954", SecretConstants.facebookSecret);
         mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
-        parsePosts();
     }
 
-    private void parsePosts() {
-        Observable.defer(() -> Observable.just(loadPosts()))
+    private void parsePosts(String strTime, int numPosts) {
+        Observable.defer(() -> Observable.just(loadPosts(strTime, numPosts)))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
@@ -84,36 +78,28 @@ public class FacebookPresenter extends MainPresenter {
                 }, e -> {
                     PsLog.e(e.toString());
                     view.showError("Facebook parsing error");
+                    view.getPostManager().onReadyFetch(posts, FACEBOOK);
                 }, () -> {
-
-                    lastFetchedTime = String.valueOf(new Date().getTime() / 1000);
-                    if (view != null) {
-                        SharedPreferenceHelper.setSharedPreferenceString(view, KEY_FACEBOOK_DATE, lastFetchedTime);
-                    }
+                    view.getPostManager().onReadyFetch(posts, FACEBOOK);
                 });
     }
 
     /**
      * @return List of unparsed posts from Team Pietsmiet
      */
-    private List<BatchResponse> loadPosts() {
-        String sinceTime = "";
-        if (lastFetchedTime != null && !lastFetchedTime.isEmpty()) {
-            sinceTime = "&since=" + lastFetchedTime;
-        }
-
+    private List<BatchResponse> loadPosts( String strTime,  int numPosts) {
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + LIMIT_PER_USER + "&fields=from,created_time,message,full_picture" + sinceTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {
@@ -125,17 +111,13 @@ public class FacebookPresenter extends MainPresenter {
 
     @Override
     public void fetchNewPosts(Date dBefore) {
-
+        parsePosts("&since=" + String.valueOf(dBefore.getTime() / 1000), 50);
     }
 
-
-    protected void fetchData(Observable call) {
-
-    }
 
     @Override
     public void fetchPostsBefore(Date dAfter, int numPosts) {
-
+        parsePosts("&until=" + String.valueOf(dAfter.getTime() / 1000), numPosts);
     }
 
 }

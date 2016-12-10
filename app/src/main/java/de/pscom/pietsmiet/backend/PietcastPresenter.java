@@ -3,7 +3,6 @@ package de.pscom.pietsmiet.backend;
 import android.graphics.drawable.Drawable;
 
 import java.util.Date;
-import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
@@ -43,12 +42,14 @@ public class PietcastPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
+                    view.getPostManager().onReadyFetch(posts, PIETCAST);
                 }, ()-> {view.getPostManager().onReadyFetch(posts, PIETCAST);});
     }
 
     @Override
     public void fetchNewPosts(Date dBefore) {
         parsePietcast(2);
+        //todo efficiency / logic
     }
 
     protected void fetchData(Observable call) {
@@ -57,7 +58,7 @@ public class PietcastPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsBefore(Date dBefore, int numPosts) {
-        parsePietcast(numPosts);
+        parsePietcast(50);
         // todo mit datum arbeiten!
     }
 

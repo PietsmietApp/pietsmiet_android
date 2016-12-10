@@ -77,6 +77,7 @@ public class YoutubePresenter extends MainPresenter {
                 }, e -> {
                     PsLog.e(e.toString());
                     view.showError("YouTube parsing error");
+                    view.getPostManager().onReadyFetch(posts, VIDEO);
                 }, ()-> {
                     view.getPostManager().onReadyFetch(posts, VIDEO);
                 });

@@ -7,7 +7,9 @@ import android.widget.Switch;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DatabaseHelper;
+import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
@@ -28,7 +30,6 @@ public class Settings extends BaseActivity {
         newsSwitch.setChecked(current);
         btnClearCache.setOnClickListener((btn)->{
             new DatabaseHelper(getBaseContext()).clearDB();
-            //todo rewrite next day ;) load posts and clear posts in adapter
         });
 
         newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

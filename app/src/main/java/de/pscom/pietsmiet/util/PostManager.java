@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
@@ -168,18 +169,20 @@ public class PostManager {
 
     public void fetchNextPosts( int numPosts ){
         numPostLoadCount = numPosts;
+        mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
 
         new YoutubePresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
-        new PietcastPresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
+        //new PietcastPresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
+        new FacebookPresenter(mView).fetchPostsBefore(getLastPostDate(), numPosts);
 
     }
 
     public void fetchNewPosts(){
-
+        mView.setRefreshAnim(true);
         new YoutubePresenter(mView).fetchNewPosts(getFirstPostDate());
-        new PietcastPresenter(mView).fetchNewPosts(getFirstPostDate());
-
+        //new PietcastPresenter(mView).fetchNewPosts(getFirstPostDate());
+        new FacebookPresenter(mView).fetchNewPosts(getFirstPostDate());
     }
 
     public boolean getAllPostsFetched() {
@@ -203,13 +206,15 @@ public class PostManager {
     public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
         if(listPosts != null && listPosts.size() > 0) {
             addPostsToQueue(listPosts, type);
-    } else {
+        } else {
             fetchingEnded.put(type, true);
             PsLog.e("No Posts loaded in " + PostType.getName(type) + " Category");
             mView.showError("ERROR fetching " + PostType.getName(type));
             if(getAllPostsFetched()){
                 mView.setRefreshAnim(false);
-                queuedPosts.clear();
+                //testweise
+                //queuedPosts.clear();
+                addPosts(queuedPosts);
             }
             //todo bessere Fehlermeldungen überall! und to top button
 
@@ -235,6 +240,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(post -> post != null)
+                .filter(post -> post.getDate().before(getLastPostDate())) //provisorisch da getlastpostdate nicht async ist -.- kann aber so funktionieren
                 .distinct()
                 .toSortedList()
                 .flatMap(Observable::from)
@@ -250,14 +256,10 @@ public class PostManager {
                         addPosts(queuedPosts);
                     }
                 });
-
     }
 
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();
     }
-
-
-
 }

@@ -171,6 +171,11 @@ public class TwitterPresenter extends MainPresenter {
 
     }
 
+
+    protected void fetchData(Observable call) {
+
+    }
+
     @Override
     public void fetchPostsBefore(Date dAfter, int numPosts) {
 

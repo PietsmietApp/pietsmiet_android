@@ -15,23 +15,21 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
-    static final int MAX_COUNT = 15;
     private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
 
     public PietcastPresenter(MainActivity view) {
         super(view);
-        parsePietcast();
     }
 
     /**
      * Loads the latests Piecasts
      */
-    private void parsePietcast() {
+    private void parsePietcast(int num) {
         Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .take(MAX_COUNT)
+                .take(num)
                 .onBackpressureBuffer()
                 .subscribe(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);
@@ -45,17 +43,21 @@ public class PietcastPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
-                }, ()-> {});
+                }, ()-> {view.getPostManager().onReadyFetch(posts, PIETCAST);});
     }
 
     @Override
     public void fetchNewPosts(Date dBefore) {
+        parsePietcast(2);
+    }
 
+    protected void fetchData(Observable call) {
+        //todo evtl mal überarbeiten für effektiveres Laden
     }
 
     @Override
-    public void fetchPostsBefore(Date dAfter, int numPosts) {
-
+    public void fetchPostsBefore(Date dBefore, int numPosts) {
+        parsePietcast(5);
     }
 
 }

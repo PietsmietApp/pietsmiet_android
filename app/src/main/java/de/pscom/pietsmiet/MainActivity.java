@@ -17,32 +17,16 @@ import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
-import de.pscom.pietsmiet.backend.DatabaseHelper;
-import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.PietcastPresenter;
-import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
-import de.pscom.pietsmiet.backend.YoutubePresenter;
+import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
-import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
@@ -103,9 +87,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                //todo die 5 als final Variable oder als Setting!
-                //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nihct weiter versucht zu laden!
-                postManager.fetchNextPosts( 5 );
+                //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nicht weiter versucht zu laden!
+                postManager.fetchNextPosts( loadMoreItemsCount );
 
             }
         };
@@ -138,14 +121,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
+    //todo sinnvolle Konzeption? überall erreichbar ? Sicherheit?
+    public void setRefreshAnim(boolean val) {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                    if(refreshLayout != null) refreshLayout.setRefreshing(val);
+                });
+    }
 
     public void updateAdapter() {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
-                            if (refreshLayout != null) refreshLayout.setRefreshing(false);
-                    //todo geht weg sobald 1 geladen wurde = falsch
+                            if (refreshLayout != null && postManager != null) {
+                                if(postManager.getAllPostsFetched()) {
+                                    setRefreshAnim(false);
+                                    postManager.resetFetchingEnded();
+                                }
+                            }
                         }
                 );
     }
@@ -164,50 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateData() {
-        //todo neu schreiben nicht über Konstruktor evtl über selbe Methode wie beim nachladen nur mit aktuellem datum!
-        //new TwitterPresenter(this);
-        //new UploadplanPresenter();
-        //new PietcastPresenter(this);
-        //new FacebookPresenter(this);
-         postManager.fetchNewPosts();
-        //if (BuildConfig.DEBUG) addTestingCards();
-    }
-
-    private void addTestingCards() {
-        //Only for testing
-        new Thread(() -> {
-            ArrayList<Post> cardItems = new ArrayList<>();
-            cardItems.add(new Post.PostBuilder(PIETCAST)
-                    .title("TESTCast #79 - Krötenwehr")
-                    .description("Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(VIDEO)
-                    .title("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
-                    .description("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(UPLOAD_PLAN)
-                    .title("Uploadplan am 11.09.2016")
-                    .description("14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(TWITTER)
-                    .title("Dr.Jay")
-                    .description("Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-
-            runOnUiThread(() -> {
-//todo provisorisch
-                if(postManager != null) postManager.addPosts(cardItems);
-                PsLog.v("Test cards geladen");
-            });
-        }).start();
+        if(postManager != null) postManager.fetchNewPosts();
+        //todo evtl unnötige Funktion
     }
 
     @Override

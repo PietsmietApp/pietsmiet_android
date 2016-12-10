@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.backend;
+package de.pscom.pietsmiet.util;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
@@ -15,6 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.backend.FacebookPresenter;
+import de.pscom.pietsmiet.backend.PietcastPresenter;
+import de.pscom.pietsmiet.backend.TwitterPresenter;
+import de.pscom.pietsmiet.backend.UploadplanPresenter;
+import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
@@ -85,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .flatMap(Observable::from)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
+                .take(50)
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
                         DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
@@ -103,7 +109,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     throwable.printStackTrace();
                     db.close();
                 }, () -> {
-                    PsLog.v("Stored " + posts.size() + " posts in db");
+                    PsLog.v("Stored " + getPostsInDbCount() + " posts in db");
                     db.close();
                 });
     }
@@ -178,16 +184,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
                         this.close();
-                    } else if (toReturn.size() < getPostsLoadedCount()) {
+                    } else if (toReturn.size() < context.getPostManager().getAllPostsCount()) {
                         // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
                         // The loaded posts from db are applied nevertheless.
                         PsLog.w("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
-                                ", Should have loaded at least: " + getPostsLoadedCount());
+                                ", Should have loaded at least: " + context.getPostManager().getAllPostsCount());
                         SharedPreferenceHelper.shouldUseCache = false;
                     }
                     // Clear db when it's too big / old
-                    if (postsInDb > (getPostsLoadedCount() + MAX_ADDITIONAL_POSTS_STORED)) {
+                    if (postsInDb > (context.getPostManager().getAllPostsCount() + MAX_ADDITIONAL_POSTS_STORED)) {
                         PsLog.i("Db cleared because it was too big (" + postsInDb + " entries)\n" +
                                 "Loading all posts this time.");
                         SharedPreferenceHelper.shouldUseCache = false;
@@ -203,11 +209,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         PsLog.e("Context is null!");
                     }
 
-
+                    this.close();
                 });
     }
 
-    private int getPostsLoadedCount() {
-        return TwitterPresenter.MAX_COUNT + PietcastPresenter.MAX_COUNT + FacebookPresenter.LIMIT_PER_USER * 5 + YoutubePresenter.MAX_COUNT + UploadplanPresenter.MAX_COUNT;
-    }
 }

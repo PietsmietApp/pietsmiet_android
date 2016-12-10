@@ -130,6 +130,10 @@ public class UploadplanPresenter extends MainPresenter {
 
     }
 
+    protected void fetchData(Observable call) {
+
+    }
+
     @Override
     public void fetchPostsBefore(Date dAfter, int numPosts) {
 

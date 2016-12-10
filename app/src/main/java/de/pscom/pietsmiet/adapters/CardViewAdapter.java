@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -33,9 +32,6 @@ import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
-    private static final int LAYOUT_THUMBNAIL = 0;
-    private static final int LAYOUT_WIDE_IMAGE = 1;
-
     private final List<Post> items;
     private final Context context;
 
@@ -51,7 +47,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         return new CardViewHolder(v);
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Post currentItem = items.get(position);
@@ -89,6 +84,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
+            //Disable thumbnail for uploadplan
+        } else if (currentType == UPLOADPLAN) {
+            holder.thumbnail.setVisibility(GONE);
             // Youtube: Setup video thumbnails
         } else if (currentType == VIDEO) {
             Drawable thumbnail = currentItem.getThumbnail();
@@ -132,12 +130,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         );
 
 
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (items.get(position).isThumbnailView()) return LAYOUT_THUMBNAIL;
-        else return LAYOUT_WIDE_IMAGE;
     }
 
     @Override

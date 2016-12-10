@@ -1,15 +1,14 @@
 package de.pscom.pietsmiet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
@@ -24,13 +23,16 @@ import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -45,13 +47,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setupToolbar(null);
+
         postManager = new PostManager(this);
 
         setupRecyclerView();
         setupDrawer();
 
-        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
 
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
             postManager.displayOnlyType(category);
@@ -61,7 +65,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         refreshLayout.setOnRefreshListener(this::updateData);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+
+        SettingsHelper.loadAllSettings(this);
+        if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
+            FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+        }
 
         new SecretConstants(this);
 
@@ -97,15 +107,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupDrawer() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
 
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -177,15 +184,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (id == item.getItemId()) {
                         aSwitch.setChecked(true);
                         postManager.displayOnlyType(i);
+                        scrollToTop();
                     } else aSwitch.setChecked(false);
                 }
 
                 break;
             case R.id.nav_help:
-                //todo
+                startActivity(new Intent(MainActivity.this, About.class));
                 break;
             case R.id.nav_settings:
-                //todo
+                startActivity(new Intent(MainActivity.this, Settings.class));
                 break;
             default:
                 return false;

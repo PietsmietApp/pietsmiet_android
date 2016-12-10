@@ -19,18 +19,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.TimeUtils;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.UPLOAD_PLAN;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardViewHolder> {
@@ -87,12 +86,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             }
         }
 
-        if (currentItem.getPostType() == UPLOAD_PLAN) {
-            holder.timedate.setVisibility(GONE);
+        if (currentItem.getPostType() == UPLOADPLAN) {
+            holder.time_container.setVisibility(GONE);
         } else {
+            holder.time_container.setVisibility(VISIBLE);
             holder.timedate.setVisibility(VISIBLE);
-            SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd. MMMM - hh:mm", Locale.GERMAN); //hardcode Language?
-            holder.timedate.setText(formatter.format(currentItem.getDate()) + " Uhr");
+            holder.timedate.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         }
 
         Drawable thumbnail = currentItem.getThumbnail();
@@ -150,6 +149,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
         final TextView description;
         final TextView timedate;
         final ImageView thumbnail;
+        final RelativeLayout time_container;
 
         CardViewHolder(View itemView) {
             super(itemView);
@@ -158,6 +158,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.CardVi
             description = (TextView) itemView.findViewById(R.id.tvDescription);
             timedate = (TextView) itemView.findViewById(R.id.tvDateTime);
             thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
+            time_container = (RelativeLayout) itemView.findViewById(R.id.rlTimeContainer);
         }
     }
 

@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.view;
+package de.pscom.pietsmiet.adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;

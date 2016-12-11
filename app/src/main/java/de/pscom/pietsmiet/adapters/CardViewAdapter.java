@@ -20,7 +20,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.TimeUtils;
-import de.pscom.pietsmiet.view.CardViewHolder;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;

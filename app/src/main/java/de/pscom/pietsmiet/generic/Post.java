@@ -111,10 +111,6 @@ public class Post implements Comparable<Post> {
         return Color.parseColor(hexColor);
     }
 
-    public boolean isThumbnailView() {
-        return postType == VIDEO || postType == PIETCAST;
-    }
-
     @Override
     public int compareTo(@NonNull Post item) {
         return item.getDate().compareTo(this.getDate());
@@ -211,7 +207,7 @@ public class Post implements Comparable<Post> {
                 PsLog.e("No thumbnail and no description given");
                 return null;
             }
-            if (postType == UPLOADPLAN && (description == null || description.isEmpty())){
+            if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
                 PsLog.e("Uploadplan with no description");
                 return null;
             }

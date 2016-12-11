@@ -17,7 +17,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.TimeUtils;
 
@@ -49,9 +49,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Post currentItem = items.get(position);
-        @PostType.AllTypes int currentType = currentItem.getPostType();
+        @AllTypes int currentType = currentItem.getPostType();
 
-        // Set basic information
+        // Set basic information (title, time, color)
         holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         holder.title.setText(currentItem.getTitle());
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
@@ -63,9 +63,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         holder.wideImage.setVisibility(GONE);
         holder.text.setVisibility(GONE);
 
-        // Pietcast: Setup placeholder thumbnail, text in expandable description,
-        // setup expandable container
         if (currentType == PIETCAST) {
+            // Pietcast: Setup placeholder thumbnail, text in expandable description,
+            // setup expandable container
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
 
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
@@ -83,19 +83,16 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
-            //Disable thumbnail for uploadplan
         } else if (currentType == UPLOADPLAN) {
+            //Disable thumbnail for uploadplan
             holder.thumbnail.setVisibility(GONE);
-            // Youtube: Setup video thumbnails
         } else if (currentType == VIDEO) {
+            // Youtube: Setup video thumbnails
             Drawable thumbnail = currentItem.getThumbnail();
-            if (thumbnail != null) {
-                holder.thumbnail.setImageDrawable(thumbnail);
-            } else {
-                holder.thumbnail.setVisibility(GONE);
-            }
-            // Social media: Setup wide image
+            if (thumbnail != null) holder.thumbnail.setImageDrawable(thumbnail);
+            else holder.thumbnail.setVisibility(GONE);
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
+            // Social media: Setup wide image
             holder.thumbnail.setVisibility(GONE);
 
             Drawable thumbnail = currentItem.getThumbnail();
@@ -121,9 +118,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     } catch (ActivityNotFoundException | NullPointerException e) {
                         PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
                         //Error Toast Notification todo evtl eigene Funktion in seperater Klasse ?
-                        CharSequence errMsg = "Cannot open browser. Retry";
-                        Toast errToast = Toast.makeText(context, errMsg, Toast.LENGTH_SHORT);
-                        errToast.show();
+                        CharSequence errMsg = "URL konnte nicht geöffnet werden";
+                        Toast.makeText(context, errMsg, Toast.LENGTH_SHORT).show();
                     }
                 }
         );

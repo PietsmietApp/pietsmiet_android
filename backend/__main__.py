@@ -51,7 +51,8 @@ def check_for_update(scope):
             submit_to_reddit(new_feed.title, format_text(new_feed))
         elif scope == SCOPE_NEWS:
             new_feed.desc = smart_truncate(new_feed.desc, new_feed.link)
-            submit_to_reddit("Neuer Post auf pietsmiet.de: " + new_feed.title, format_text(new_feed))
+			if "Adventskalender" not in new_feed.title
+                 submit_to_reddit("Neuer Post auf pietsmiet.de: " + new_feed.title, format_text(new_feed))
         put_feed_into_db(new_feed)
         send_fcm(new_feed)
         return True
@@ -59,6 +60,9 @@ def check_for_update(scope):
 
 
 fetched_today = False
+check_for_update(SCOPE_PIETCAST)
+check_for_update(SCOPE_NEWS)
+fetched_today = check_for_update(SCOPE_UPLOADPLAN)
 
 while 1:
     # Check for updates:
@@ -67,16 +71,11 @@ while 1:
     # 3) Every 10 hours for news on pietsmiet.de
     # (I'm two lazy to do it asynchronous)
     i = 0
-    if in_between_time(9, 13):
+    if in_between_time(10, 14):
         if not fetched_today:
             fetched_today = check_for_update(SCOPE_UPLOADPLAN)
     else:
         fetched_today = False
-    if (i == 0):
-        check_for_update(SCOPE_PIETCAST)
-        check_for_update(SCOPE_NEWS)
-        check_for_update(SCOPE_UPLOADPLAN)
-
     if (i == 4) or (i == 9) or (i == 14):
         check_for_update(SCOPE_PIETCAST)
     if i == 14:

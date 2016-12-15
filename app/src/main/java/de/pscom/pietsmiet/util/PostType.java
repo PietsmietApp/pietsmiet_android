@@ -21,11 +21,11 @@ public class PostType {
 
     public static List<Integer> getPossibleTypes() {
         List<Integer> navigationItems = new ArrayList<>();
-        //navigationItems.add(UPLOADPLAN);
+        navigationItems.add(UPLOADPLAN);
         navigationItems.add(VIDEO);
         navigationItems.add(FACEBOOK);
         //navigationItems.add(TWITTER);
-        //navigationItems.add(PIETCAST);
+        navigationItems.add(PIETCAST);
 
         return navigationItems;
     }

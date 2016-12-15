@@ -9,6 +9,7 @@ import java.util.Map;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
 import de.pscom.pietsmiet.backend.PietcastPresenter;
+import de.pscom.pietsmiet.backend.TwitterPresenter;
 import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
@@ -166,7 +167,7 @@ public class PostManager {
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
-
+        new TwitterPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
         new YoutubePresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
         new PietcastPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
         new FacebookPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
@@ -175,6 +176,7 @@ public class PostManager {
 
     public void fetchNewPosts() {
         mView.setRefreshAnim(true);
+        new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
         new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
         new UploadplanPresenter(mView).fetchPostsSince(getFirstPostDate());
         new PietcastPresenter(mView).fetchPostsSince(getFirstPostDate());

@@ -24,7 +24,7 @@ public class PostType {
         navigationItems.add(UPLOADPLAN);
         navigationItems.add(VIDEO);
         navigationItems.add(FACEBOOK);
-        //navigationItems.add(TWITTER);
+        navigationItems.add(TWITTER);
         navigationItems.add(PIETCAST);
 
         return navigationItems;

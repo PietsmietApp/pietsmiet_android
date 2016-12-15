@@ -22,8 +22,6 @@ public class UploadplanPresenter extends MainPresenter {
     private static final String KEY_LINK = "link";
     private static final String KEY_DESCRIPTION = "desc";
 
-    static final int MAX_COUNT = 2;
-
     public UploadplanPresenter(MainActivity view) {
         super(view);
     }
@@ -66,6 +64,9 @@ public class UploadplanPresenter extends MainPresenter {
                         }, (throwable) -> {
                             throwable.printStackTrace();
                             view.showError("Typ" + scope + " konnte nicht geladen werden");
+                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
+                        }, ()->{
+                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
                         });
             }
 
@@ -74,6 +75,7 @@ public class UploadplanPresenter extends MainPresenter {
                 if (databaseError != null)
                     PsLog.e("Database loading failed because: " + databaseError.toString());
                 view.showError("Typ" + scope + " konnte nicht geladen werden");
+                view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
             }
         });
     }

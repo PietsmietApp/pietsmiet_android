@@ -48,7 +48,7 @@ public class TwitterPresenter extends MainPresenter {
         twitterInstance = tf.getInstance();
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
 
-        parseTweets();
+
     }
 
     private void parseTweets() {
@@ -73,9 +73,11 @@ public class TwitterPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Twitter parsing error");
+                    view.getPostManager().onReadyFetch(posts, TWITTER);
                 }, () -> {
                     if (view != null) {
                         SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
+                        view.getPostManager().onReadyFetch(posts, TWITTER);
                     }
                 });
     }
@@ -168,7 +170,8 @@ public class TwitterPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsSince(Date dBefore) {
-
+        //fixme hate twitter
+        parseTweets();
     }
 
 
@@ -178,7 +181,7 @@ public class TwitterPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsUntil(Date dAfter, int numPosts) {
-
+        parseTweets();
     }
 
 }

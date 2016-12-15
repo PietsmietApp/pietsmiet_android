@@ -183,14 +183,12 @@ public class PostManager {
 
     public boolean getAllPostsFetched() {
         int isEnded = 0;
-        Map<Integer, Boolean> fetchedMap = new HashMap<>();
-        fetchedMap.putAll(fetchingEnded); //todo warum konvertieren?
-        for (Boolean aBoolean : fetchedMap.values()) {
+        for (Boolean aBoolean : fetchingEnded.values()) {
             if (aBoolean) {
                 isEnded++;
             }
         }
-        return fetchedMap.size() == isEnded;
+        return fetchingEnded.size() == isEnded;
     }
 
     //todo add documentation

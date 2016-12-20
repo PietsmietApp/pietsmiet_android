@@ -28,7 +28,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 public class TwitterPresenter extends MainPresenter {
-    public static final int MAX_COUNT = 10;
+    public static final int MAX_COUNT = 5; // todo crappy müsste umgestellt werden
     private long lastTweetId;
     private Twitter twitterInstance;
 

@@ -206,7 +206,7 @@ public class PostManager {
             //fixme error meldung nicht zeigen, wenn keine posts geladen werden konnten weil keine mehr da sind
             //bei pull to refresh zB
             PsLog.e("No Posts loaded in " + PostType.getName(type) + " Category");
-            mView.showError("ERROR fetching " + PostType.getName(type));
+            //mView.showError("ERROR fetching " + PostType.getName(type));
             if (getAllPostsFetched()) {
                 mView.setRefreshAnim(false);
                 //testweise

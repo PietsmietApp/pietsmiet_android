@@ -82,7 +82,7 @@ public class UploadplanPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsSince(Date dBefore) {
-        parseUploadplanFromDb("Uploadplan");
+        parseUploadplanFromDb("uploadplan");
 
     }
 
@@ -92,7 +92,7 @@ public class UploadplanPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsUntil(Date dAfter, int numPosts) {
-        parseUploadplanFromDb("Uploadplan");
+        parseUploadplanFromDb("uploadplan");
         //fixme richtig?
     }
 }

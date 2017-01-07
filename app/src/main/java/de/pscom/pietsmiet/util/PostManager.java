@@ -54,13 +54,12 @@ public class PostManager {
      *
      * @param lPosts posts to add
      */
-    // todo efficienty
+    // todo efficiency
     public void addPosts(List<Post> lPosts) {
         List<Post> listPosts = new ArrayList<>();
         listPosts.addAll(lPosts);
         // ACHTUNG !!! DA HIER NUR DER POINTER ÜBERGEBEN WIRD BRAUCHT MAN EIN NEUES OBJEKT! todo MERKEN! SPART ZEIT ;)
         if (listPosts.size() == 0) {
-            //todo warum?
             PsLog.w("addPosts called with zero posts");
             resetFetchingEnded();
             mView.setRefreshAnim(false);
@@ -147,22 +146,26 @@ public class PostManager {
 
     private Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
-            return new Date();
-            // todo sinnvoll? Nein setzte tag auf vorherigen
+            return new Date(new Date().getTime() - 86400000);
+            // setzte tag auf vorherigen
         } else {
             return allPosts.get(0).getDate();
         }
     }
 
+
     private Date getLastPostDate() {
         if (allPosts.isEmpty()) {
-            Date d = new Date();
-            return d;
+            return new Date();
         } else {
             return allPosts.get(allPosts.size() - 1).getDate();
         }
     }
 
+    /**
+     *      Root fetching Method to call all specific fetching methods for older Posts.
+     *      @param numPosts int
+     **/
     public void fetchNextPosts(int numPosts) {
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
@@ -174,6 +177,10 @@ public class PostManager {
         new UploadplanPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
     }
 
+    /**
+     *      Root fetching Method to call all specific fetching methods for new Posts.
+     *
+     **/
     public void fetchNewPosts() {
         mView.setRefreshAnim(true);
         new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
@@ -183,6 +190,10 @@ public class PostManager {
         new FacebookPresenter(mView).fetchPostsSince(getFirstPostDate());
     }
 
+    /**
+     *      Returns true if all Posts are fetched or all fetchung tasks have been executed.
+     *      @return Boolean ended
+     **/
     public boolean getAllPostsFetched() {
         int isEnded = 0;
         for (Boolean aBoolean : fetchingEnded.values()) {
@@ -193,31 +204,37 @@ public class PostManager {
         return fetchingEnded.size() == isEnded;
     }
 
-    //todo add documentation
+    /**
+     *      Gets the Post size of allPosts
+     *      @return Integer size
+     **/
     public int getAllPostsCount() {
         return allPosts.size();
     }
 
+    /**
+     *      Callback for all Fetching methods of each Presenter.
+     *      Central point for using the input.
+     *      @param listPosts List<Post>
+     *      @param type int Presenter type
+     **/
     public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
         if (listPosts != null && listPosts.size() > 0) {
             addPostsToQueue(listPosts, type);
         } else {
             fetchingEnded.put(type, true);
-            //fixme error meldung nicht zeigen, wenn keine posts geladen werden konnten weil keine mehr da sind
-            //bei pull to refresh zB
             PsLog.e("No Posts loaded in " + PostType.getName(type) + " Category");
             //mView.showError("ERROR fetching " + PostType.getName(type));
             if (getAllPostsFetched()) {
                 mView.setRefreshAnim(false);
-                //testweise
-                //queuedPosts.clear();
                 addPosts(queuedPosts);
             }
-            //todo bessere Fehlermeldungen überall! und to top button
+            //todo to top button
 
         }
 
     }
+
 
     private void addPostsToQueue(List<Post> listPosts, @AllTypes int type) {
         // ACHTUNG NEUES OBJEKT DA NUR POINTER ÜBERGEBEN!
@@ -229,7 +246,7 @@ public class PostManager {
             return;
         }
 
-        lPosts.addAll(queuedPosts);
+        lPosts.addAll(queuedPosts); //todo inefficient because of iteration in each step sorting
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
         Post[] posts = lPosts.toArray(new Post[lPosts.size()]);
         Observable.just(posts)
@@ -241,7 +258,7 @@ public class PostManager {
                     boolean b = post.getDate().before(getLastPostDate());
                     if (!b) PsLog.v("posts is after last date");
                     return b;
-                }) //provisorisch da getlastpostdate nicht async ist -.- kann aber so funktionieren
+                })
                 .distinct()
                 .toSortedList()
                 .flatMap(Observable::from)
@@ -259,6 +276,10 @@ public class PostManager {
                 });
     }
 
+    /**
+     *      Clears all Posts from the View.
+     *
+     **/
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();

@@ -17,15 +17,13 @@ abstract class MainPresenter {
         this.view = view;
     }
 
-    /**
-     * FETCHES ALLLLL NEW POSTS!!!! MAYBE CHANGE!
+    /** Fetches all posts after a specific date. Since the given date.
+     *  @param dAfter Date
      */
     public abstract void fetchPostsSince(Date dAfter);
 
-    //todo nachschauen ob das geht mit eigtl. unlogischem generic als Wildcard und override -> potentiell gegen Regeln
-    //protected abstract void fetchData(Observable call);
-    /**
-     *
+    /** Fetches all posts before a specific date. Until the given date.
+     *  @param dBefore Date
      */
     public abstract void fetchPostsUntil(Date dBefore, int numPosts);
 

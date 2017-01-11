@@ -62,7 +62,7 @@ def check_for_update(scope):
 fetched_today = False
 check_for_update(SCOPE_PIETCAST)
 check_for_update(SCOPE_NEWS)
-fetched_today = check_for_update(SCOPE_UPLOADPLAN)
+check_for_update(SCOPE_UPLOADPLAN)
 
 while 1:
     # Check for updates:

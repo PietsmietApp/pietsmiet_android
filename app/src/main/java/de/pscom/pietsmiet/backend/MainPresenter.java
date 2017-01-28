@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import rx.Observable;
 
 abstract class MainPresenter {
     MainActivity view;
@@ -26,6 +27,5 @@ abstract class MainPresenter {
      *  @param dBefore Date
      */
     public abstract void fetchPostsUntil(Date dBefore, int numPosts);
-
 
 }

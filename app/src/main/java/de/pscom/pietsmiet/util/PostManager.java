@@ -17,7 +17,9 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 
 public class PostManager {
@@ -270,6 +272,7 @@ public class PostManager {
                 }, Throwable::printStackTrace, () -> {
                     fetchingEnded.put(type, true);
                     if (getAllPostsFetched()) {
+                        //todo set first Tweet id and last tweet id
                         // reset fetching is in UpdateAdapter in MainActivity k
                         addPosts(queuedPosts);
                     }

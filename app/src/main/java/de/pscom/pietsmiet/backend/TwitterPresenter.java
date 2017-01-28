@@ -26,16 +26,17 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID_NEWEST;
 
 public class TwitterPresenter extends MainPresenter {
-    public static final int MAX_COUNT = 5; // todo crappy müsste umgestellt werden
-    private long lastTweetId;
     private Twitter twitterInstance;
+    private long lastTweetId, firstTweetId;
 
     public TwitterPresenter(MainActivity view) {
         super(view);
         if (view != null && SharedPreferenceHelper.shouldUseCache) {
             lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
+            firstTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID_NEWEST, 0);
         }
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
@@ -51,8 +52,8 @@ public class TwitterPresenter extends MainPresenter {
 
     }
 
-    private void parseTweets() {
-        Observable.defer(() -> Observable.just(fetchTweets()))
+    private void parseTweets(List<Status> tweetList) {
+        Observable.defer(() -> Observable.just(tweetList))
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .observeOn(Schedulers.io())
@@ -69,14 +70,13 @@ public class TwitterPresenter extends MainPresenter {
                                 + "/status/" + tweet.getId());
                     }
                     posts.add(postBuilder.build());
-                    if (posts.size() == 1) lastTweetId = tweet.getId();
+
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Twitter parsing error");
                     view.getPostManager().onReadyFetch(posts, TWITTER);
                 }, () -> {
                     if (view != null) {
-                        SharedPreferenceHelper.setSharedPreferenceLong(view, KEY_TWITTER_ID, lastTweetId);
                         view.getPostManager().onReadyFetch(posts, TWITTER);
                     }
                 });
@@ -87,11 +87,11 @@ public class TwitterPresenter extends MainPresenter {
      *
      * @return List of Tweets
      */
-    private List<Status> fetchTweets() {
+    private List<Status> fetchTweets(Query psTwitt) {
         getToken();
         QueryResult result;
         try {
-            result = twitterInstance.search(pietsmietTweets());
+            result = twitterInstance.search(psTwitt);
         } catch (TwitterException e) {
             PsLog.e("Couldn't fetch tweets: " + e.getMessage());
             view.showError("Twitter unreachable");
@@ -104,14 +104,14 @@ public class TwitterPresenter extends MainPresenter {
     /**
      * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
      */
-    private Query pietsmietTweets() {
+    private Query pietsmietTweets( int numPosts, long lastTweetId ) {
         return new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .count(MAX_COUNT)
+                .count(numPosts)
                 .sinceId(lastTweetId)
                 .resultType(Query.ResultType.recent);
     }
@@ -169,9 +169,21 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince(Date dBefore) {
-        //fixme hate twitter
-        parseTweets();
+    public void fetchPostsSince( Date dBefore ) {
+
+
+
+        Query q = new Query("from:pietsmiet, " +
+                "OR from:kessemak2, " +
+                "OR from:jaypietsmiet, " +
+                "OR from:brosator, " +
+                "OR from:br4mm3n " +
+                "exclude:replies")
+                .sinceId(firstTweetId)
+                .count(5)
+                .resultType(Query.ResultType.recent);
+
+        parseTweets(fetchTweets(q));
     }
 
 
@@ -180,8 +192,20 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsUntil(Date dAfter, int numPosts) {
-        parseTweets();
+    public void fetchPostsUntil( Date dAfter, int numPosts ) {
+        Query q = new Query("from:pietsmiet, " +
+                "OR from:kessemak2, " +
+                "OR from:jaypietsmiet, " +
+                "OR from:brosator, " +
+                "OR from:br4mm3n " +
+                "exclude:replies");
+        if(lastTweetId != 0) {
+                q.maxId(lastTweetId);
+        }
+        q.count(numPosts)
+         .resultType(Query.ResultType.recent);
+
+        parseTweets(fetchTweets(q));
     }
 
 }

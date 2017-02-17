@@ -19,6 +19,8 @@ def parse_feed(scope):
     :return: a Feed object with all needed data
     """
     d = feedparser.parse(get_url_for_scope(scope))
+    if (d.entries[0] is None):
+        return None
     title = d.entries[0].title
     link = d.entries[0].link
     date = d.entries[0].published

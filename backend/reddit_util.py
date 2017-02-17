@@ -1,11 +1,15 @@
 import praw
-from backend.api_keys import reddit_client_secret, reddit_client_refresh
+from praw.models import Submission
+from backend.api_keys import reddit_username, reddit_password, reddit_user_agent, reddit_client_id, reddit_client_secret
 
 subreddit = "pietsmiet"
+submission_url = ""
 
-reddit_auth = praw.Reddit(user_agent="X-Poster by l3d00m")
-reddit_auth.set_oauth_app_info(client_id="eoAG6V7plEDeAA", client_secret=reddit_client_secret,
-                               redirect_uri="http://127.0.0.1")
+reddit_auth = praw.Reddit(client_id=reddit_client_id,
+                     client_secret=reddit_client_secret,
+                     password=reddit_password,
+                     user_agent=reddit_user_agent,
+                     username=reddit_username)
 
 
 def submit_to_reddit(title, text):
@@ -19,7 +23,15 @@ def submit_to_reddit(title, text):
         print("Not submitting to reddit, null text or title")
         return
 
-    # use the refresh token to get new access information regularly (at least every hour):
-    reddit_auth.refresh_access_information(reddit_client_refresh)
     # Submit the post
-    reddit_auth.submit(subreddit, title, text=text)
+    submission_url = reddit_auth.subreddit(subreddit).submit(title, selftext=text, resubmit=False, send_replies=False).shortlink
+    print(submission_url)
+
+
+def edit_submission(text):
+    if (submission_url == ""):
+        return
+    submission = Submission(reddit_auth, url=submission_url)
+    submission.edit(text)
+    print("Submission edited")
+    

@@ -167,7 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 if (post.hashCode() == old_hashcode) {
                                     toReturn.add(postBuilder.build());
                                 } else {
-                                    PsLog.w("Post in db has a different hashcode than before, not using it");
+                                    PsLog.v("Post in db has a different hashcode than before, not using it");
                                 }
 
                             } catch (ParseException e) {
@@ -183,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     int postsInDb = getPostsInDbCount();
                     if (postsInDb != toReturn.size()) {
                         // Reload all posts when not all posts from db not all posts are stored in db (/ db defect).
-                        PsLog.w("Loading all posts this time because database was incomplete.\n" +
+                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
                                 ", Posts loaded from DB: " + toReturn.size());
                         SharedPreferenceHelper.shouldUseCache = false;
@@ -192,14 +192,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     } else if (toReturn.size() < context.getPostManager().getAllPostsCount()) {
                         // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
                         // The loaded posts from db are applied nevertheless.
-                        PsLog.w("Loading all posts this time because database was incomplete.\n" +
+                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
                                 ", Should have loaded at least: " + context.getPostManager().getAllPostsCount());
                         SharedPreferenceHelper.shouldUseCache = false;
                     }
                     // Clear db when it's too big / old
                     if (postsInDb > (context.getPostManager().getAllPostsCount() + MAX_ADDITIONAL_POSTS_STORED)) {
-                        PsLog.i("Db cleared because it was too big (" + postsInDb + " entries)\n" +
+                        PsLog.v("Db cleared because it was too big (" + postsInDb + " entries)\n" +
                                 "Loading all posts this time.");
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
@@ -211,10 +211,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         PsLog.v("Applying " + toReturn.size() + " posts from db");
                         context.getPostManager().addPosts(toReturn);
                     } else {
-                        PsLog.e("Context is null!");
+                        PsLog.v("Context is null!");
                     }
 
                     this.close();
+                },Throwable::printStackTrace,() -> {
+                    if(context.getPostManager().getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START) {
+                        context.getPostManager().fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
+                        //todo not ready WIP
+                    }
                 });
     }
 

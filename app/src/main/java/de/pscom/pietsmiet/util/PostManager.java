@@ -14,12 +14,12 @@ import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 
 public class PostManager {
@@ -61,6 +61,7 @@ public class PostManager {
     public void addPosts(List<Post> lPosts) {
         List<Post> listPosts = new ArrayList<>();
         listPosts.addAll(lPosts);
+
         // ACHTUNG !!! DA HIER NUR DER POINTER ÜBERGEBEN WIRD BRAUCHT MAN EIN NEUES OBJEKT! todo MERKEN! SPART ZEIT ;)
         if (listPosts.size() == 0) {
             PsLog.w("addPosts called with zero posts");
@@ -70,20 +71,31 @@ public class PostManager {
             return;
         }
         queuedPosts.clear();
+
         listPosts.addAll(getAllPosts());
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
         Post[] posts = listPosts.toArray(new Post[listPosts.size()]);
 
-        Observable.just(posts)
+        Subscription subscribe = Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(post -> post != null)
                 .distinct()
                 .toSortedList()
+                .flatMap(Observable::from)
+                .map(post -> {
+                    //todo performance
+                    if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
+                    if(post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.lastTweetId = post.getId();
+                    return post;
+                })
+                .toSortedList()
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
+                    new DatabaseHelper(mView).insertPosts(items, mView);
+                    // todo preformance
                 }, Throwable::printStackTrace, this::updateCurrentPosts);
     }
 
@@ -293,6 +305,9 @@ public class PostManager {
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();
+        TwitterPresenter.lastTweetId = 0;
+        TwitterPresenter.firstTweetId = 0;
         updateCurrentPosts();
+
     }
 }

@@ -11,7 +11,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
@@ -24,21 +23,15 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
-
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID_NEWEST;
 
 public class TwitterPresenter extends MainPresenter {
     private Twitter twitterInstance;
-    private long lastTweetId, firstTweetId;
+    public static long lastTweetId, firstTweetId;
 
     public TwitterPresenter(MainActivity view) {
         super(view);
-        if (view != null && SharedPreferenceHelper.shouldUseCache) {
-            lastTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID, 0);
-            firstTweetId = SharedPreferenceHelper.getSharedPreferenceLong(view, KEY_TWITTER_ID_NEWEST, 0);
-        }
+
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
             return;
@@ -49,8 +42,6 @@ public class TwitterPresenter extends MainPresenter {
         TwitterFactory tf = new TwitterFactory(builder.build());
         twitterInstance = tf.getInstance();
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
-
-
     }
 
     private void parseTweets(List<Status> tweetList) {
@@ -65,6 +56,7 @@ public class TwitterPresenter extends MainPresenter {
                     postBuilder.thumbnail(thumb);
                     postBuilder.title(getDisplayName(tweet.getUser()));
                     postBuilder.description(tweet.getText());
+                    postBuilder.id(tweet.getId());
                     postBuilder.date(tweet.getCreatedAt());
                     if (tweet.getUser() != null && tweet.getId() != 0) {
                         postBuilder.url("https://twitter.com/" + tweet.getUser().getScreenName()
@@ -99,21 +91,6 @@ public class TwitterPresenter extends MainPresenter {
         }
 
         return result.getTweets();
-    }
-
-    /**
-     * @return A query to fetch only tweets from Team Pietsmiets. It excludes replies,
-     */
-    private Query pietsmietTweets( int numPosts, long lastTweetId ) {
-        return new Query("from:pietsmiet, " +
-                "OR from:kessemak2, " +
-                "OR from:jaypietsmiet, " +
-                "OR from:brosator, " +
-                "OR from:br4mm3n " +
-                "exclude:replies")
-                .count(numPosts)
-                .sinceId(lastTweetId)
-                .resultType(Query.ResultType.recent);
     }
 
     /**
@@ -178,9 +155,6 @@ public class TwitterPresenter extends MainPresenter {
 
     @Override
     public void fetchPostsSince( Date dBefore ) {
-
-
-
         Query q = new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
@@ -192,11 +166,6 @@ public class TwitterPresenter extends MainPresenter {
                 .resultType(Query.ResultType.recent);
 
         getTokenAndFetch(q);
-    }
-
-
-    protected void fetchData(Observable call) {
-
     }
 
     @Override

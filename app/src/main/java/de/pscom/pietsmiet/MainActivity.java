@@ -42,6 +42,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
 
+    public final int NUM_POST_TO_LOAD_ON_START = 15;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,9 +76,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         new SecretConstants(this);
         //todo enable caching
-       // new DatabaseHelper(this).displayPostsFromCache(this);
+        new DatabaseHelper(this).displayPostsFromCache(this);
 
-        if(postManager.getAllPostsCount() < 10) postManager.fetchNextPosts(10);
+        //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
     }
 
     @Override
@@ -85,7 +87,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if(PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
             PostManager.CLEAR_CACHE_FLAG = false;
-            postManager.fetchNextPosts(10);
+            postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (postManager != null) {
+            new DatabaseHelper(this).insertPosts(postManager.getAllPosts(), this);
         }
     }
 

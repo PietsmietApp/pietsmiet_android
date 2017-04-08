@@ -28,6 +28,8 @@ public class Post implements Comparable<Post> {
     private int postType;
     @Nullable
     private Drawable thumbnail;
+    @Nullable
+    private long id;
     private Date datetime;
     private int duration;
     private String url;
@@ -40,6 +42,7 @@ public class Post implements Comparable<Post> {
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
+        id = builder.id;
     }
 
     @Nullable
@@ -63,6 +66,9 @@ public class Post implements Comparable<Post> {
     public String getDescription() {
         return description;
     }
+
+    @Nullable
+    public long getId() { return id; }
 
     public String getTitle() {
         return title;
@@ -156,6 +162,8 @@ public class Post implements Comparable<Post> {
         private String description;
         @Nullable
         private Drawable thumbnail;
+        @Nullable
+        private long id;
         private Date date;
         private int duration;
         private String url;
@@ -176,6 +184,11 @@ public class Post implements Comparable<Post> {
 
         public PostBuilder thumbnail(@Nullable Drawable thumbnail) {
             this.thumbnail = thumbnail;
+            return this;
+        }
+
+        public PostBuilder id(@Nullable long postId) {
+            this.id = postId;
             return this;
         }
 

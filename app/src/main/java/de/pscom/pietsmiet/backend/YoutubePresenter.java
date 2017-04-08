@@ -27,7 +27,7 @@ public class YoutubePresenter extends MainPresenter {
 
     public YoutubePresenter(MainActivity view) {
         super(view);
-        //todo sinnvoll?
+
         if (SecretConstants.youtubeAPIkey == null || SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");
         }

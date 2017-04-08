@@ -117,7 +117,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                         context.startActivity(browserIntent);
                     } catch (ActivityNotFoundException | NullPointerException e) {
                         PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
-                        //Error Toast Notification todo evtl eigene Funktion in seperater Klasse ?
+                        //Error Toast Notification
                         CharSequence errMsg = "URL konnte nicht geöffnet werden";
                         Toast.makeText(context, errMsg, Toast.LENGTH_SHORT).show();
                     }

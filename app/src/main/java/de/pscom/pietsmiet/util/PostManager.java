@@ -261,10 +261,6 @@ public class PostManager {
             return;
         }
 
-        //lPosts.addAll(queuedPosts); //todo inefficient because of iteration in each step sorting
-        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        //Post[] posts = lPosts.toArray(new Post[lPosts.size()]);
-
         queuedPosts.addAll(lPosts);
         fetchingEnded.put(type, true);
         if(getAllPostsFetched()) {
@@ -290,7 +286,6 @@ public class PostManager {
                         queuedPosts.clear();
                         queuedPosts.addAll(items);
                     }, Throwable::printStackTrace, () -> {
-                        //todo set first Tweet id and last tweet id
                         // reset fetching is in UpdateAdapter in MainActivity k
                         addPosts(queuedPosts);
                     });

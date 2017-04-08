@@ -63,11 +63,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        refreshLayout.setOnRefreshListener(this::updateData);
+        refreshLayout.setOnRefreshListener(()-> {postManager.fetchNewPosts();});
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
 
         SettingsHelper.loadAllSettings(this);
+
         if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
@@ -77,7 +78,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         new SecretConstants(this);
         //todo enable caching
         new DatabaseHelper(this).displayPostsFromCache(this);
-
         //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
     }
 
@@ -185,10 +185,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 );
     }
 
-    private void updateData() {
-        if(postManager != null) postManager.fetchNewPosts();
-        //evtl unnötige Funktion todo
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

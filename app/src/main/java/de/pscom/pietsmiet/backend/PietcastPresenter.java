@@ -54,13 +54,10 @@ public class PietcastPresenter extends MainPresenter {
         //todo efficiency / logic
     }
 
-    protected void fetchData(Observable call) {
-        //todo evtl mal überarbeiten für effektiveres Laden
-    }
 
     @Override
     public void fetchPostsUntil(Date dUntil, int numPosts) {
-        parsePietcast(50);
+        parsePietcast(20);
         // todo mit datum arbeiten!
     }
 

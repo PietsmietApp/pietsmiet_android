@@ -30,8 +30,7 @@ public class Settings extends BaseActivity {
         newsSwitch.setChecked(current);
         btnClearCache.setOnClickListener((btn)->{
             new DatabaseHelper(getBaseContext()).clearDB();
-            if(pm != null) pm.clearPosts();
-            //todo get postmanager
+            PostManager.CLEAR_CACHE_FLAG = true;
         });
 
         newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

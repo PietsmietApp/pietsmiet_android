@@ -23,6 +23,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_ID;
 
 
 public class PostManager {
+    public static boolean CLEAR_CACHE_FLAG = false;
     private final MainActivity mView;
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
@@ -292,5 +293,6 @@ public class PostManager {
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();
+        updateCurrentPosts();
     }
 }

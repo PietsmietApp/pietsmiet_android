@@ -54,7 +54,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupRecyclerView();
         setupDrawer();
 
-
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
@@ -74,10 +73,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         new SecretConstants(this);
-
+        //todo enable caching
        // new DatabaseHelper(this).displayPostsFromCache(this);
 
         if(postManager.getAllPostsCount() < 10) postManager.fetchNextPosts(10);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(PostManager.CLEAR_CACHE_FLAG) {
+            postManager.clearPosts();
+            PostManager.CLEAR_CACHE_FLAG = false;
+            postManager.fetchNextPosts(10);
+        }
     }
 
     public PostManager getPostManager() {

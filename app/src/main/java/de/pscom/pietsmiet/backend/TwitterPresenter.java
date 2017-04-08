@@ -13,6 +13,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -88,7 +89,6 @@ public class TwitterPresenter extends MainPresenter {
      * @return List of Tweets
      */
     private List<Status> fetchTweets(Query psTwitt) {
-        getToken();
         QueryResult result;
         try {
             result = twitterInstance.search(psTwitt);
@@ -139,16 +139,24 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     /**
-     * This fetches the token
+     * This fetches the token and calls the query
      */
-    private void getToken() {
-        try {
-            twitterInstance.getOAuth2Token();
-        } catch (TwitterException e) {
-            PsLog.e("error getting token: " + e.getErrorMessage());
-        } catch (IllegalStateException e) {
-            PsLog.d("Token already instantiated");
-        }
+    private void getTokenAndFetch(Query q) {
+        Single.just(null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe((s) -> {
+                    try {
+                        twitterInstance.getOAuth2Token();
+                    } catch (TwitterException e) {
+                        PsLog.e("error getting token: " + e.getErrorMessage());
+                    } catch (IllegalStateException e) {
+                        PsLog.d("Token already instantiated");
+                    } finally {
+                        parseTweets(fetchTweets(q));
+                    }
+
+                });
     }
 
     /**
@@ -183,7 +191,7 @@ public class TwitterPresenter extends MainPresenter {
                 .count(5)
                 .resultType(Query.ResultType.recent);
 
-        parseTweets(fetchTweets(q));
+        getTokenAndFetch(q);
     }
 
 
@@ -205,7 +213,7 @@ public class TwitterPresenter extends MainPresenter {
         q.count(numPosts)
          .resultType(Query.ResultType.recent);
 
-        parseTweets(fetchTweets(q));
+        getTokenAndFetch(q);
     }
 
 }

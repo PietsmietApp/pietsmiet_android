@@ -248,35 +248,41 @@ public class PostManager {
             return;
         }
 
-        lPosts.addAll(queuedPosts); //todo inefficient because of iteration in each step sorting
+        //lPosts.addAll(queuedPosts); //todo inefficient because of iteration in each step sorting
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = lPosts.toArray(new Post[lPosts.size()]);
-        Observable.just(posts)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .filter(post -> post != null)
-                .filter(post -> {
-                    boolean b = post.getDate().before(getLastPostDate());
-                    if (!b) PsLog.v("posts is after last date");
-                    return b;
-                })
-                .distinct()
-                .toSortedList()
-                .flatMap(Observable::from)
-                .take(numPostLoadCount)
-                .toSortedList()
-                .subscribe(items -> {
-                    queuedPosts.clear();
-                    queuedPosts.addAll(items);
-                }, Throwable::printStackTrace, () -> {
-                    fetchingEnded.put(type, true);
-                    if (getAllPostsFetched()) {
+        //Post[] posts = lPosts.toArray(new Post[lPosts.size()]);
+
+        queuedPosts.addAll(lPosts);
+        fetchingEnded.put(type, true);
+        if(getAllPostsFetched()) {
+            Post[] posts = queuedPosts.toArray(new Post[queuedPosts.size()]);
+
+            Observable.just(posts)
+                    .observeOn(Schedulers.io())
+                    .onBackpressureBuffer()
+                    .subscribeOn(Schedulers.io())
+                    .flatMap(Observable::from)
+                    .filter(post -> post != null)
+                    .filter(post -> {
+                        boolean b = post.getDate().before(getLastPostDate());
+                        if (!b) PsLog.v("posts is after last date");
+                        return b;
+                    })
+                    .distinct()
+                    .toSortedList()
+                    .flatMap(Observable::from)
+                    .take(numPostLoadCount)
+                    .toList()
+                    .subscribe(items -> {
+                        queuedPosts.clear();
+                        queuedPosts.addAll(items);
+                    }, Throwable::printStackTrace, () -> {
                         //todo set first Tweet id and last tweet id
                         // reset fetching is in UpdateAdapter in MainActivity k
                         addPosts(queuedPosts);
-                    }
-                });
+                    });
+        }
+
     }
 
     /**

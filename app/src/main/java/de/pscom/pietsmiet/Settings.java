@@ -15,11 +15,11 @@ import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
 
 public class Settings extends BaseActivity {
+    PostManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_settings);
         Switch newsSwitch = (Switch) findViewById(R.id.newsSwitch);
         Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
@@ -30,6 +30,8 @@ public class Settings extends BaseActivity {
         newsSwitch.setChecked(current);
         btnClearCache.setOnClickListener((btn)->{
             new DatabaseHelper(getBaseContext()).clearDB();
+            if(pm != null) pm.clearPosts();
+            //todo get postmanager
         });
 
         newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

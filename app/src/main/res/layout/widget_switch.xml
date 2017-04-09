@@ -1,6 +1,8 @@
-<Switch
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<Switch xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:checked="true"
+    android:buttonTint="@color/colorPrimary"
+    android:theme="@style/Theme.SwitchTheme"
     />

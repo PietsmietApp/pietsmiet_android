@@ -13,6 +13,7 @@
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="drawer_youtube">YouTube</string>
+    <string name="about_text">Developed by l3d00m and saibotk (tkindanight) \n\nGithub: \n https://github.com/l3d00m/pietsmiet_android \n \nCreated with &lt;3</string>
 
     <string name="time_just_now">Gerade eben</string>
     <string name="time_days_short">%dd</string>

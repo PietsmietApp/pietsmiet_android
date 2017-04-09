@@ -29,6 +29,10 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            resValue "string", "app_name", "PietSmiet Community App"
+        }
+        debug {
+            resValue "string", "app_name", "Pietsmiet " + gitBranch()
         }
     }
     lintOptions {
@@ -67,6 +71,15 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.9.3@aar') {
         transitive = true
     }
+}
+// http://stackoverflow.com/a/42095944/4026792
+def gitBranch() {
+    def branch = ""
+    def proc = "git rev-parse --abbrev-ref HEAD".execute()
+    proc.in.eachLine { line -> branch = line }
+    proc.err.eachLine { line -> println line }
+    proc.waitFor()
+    branch
 }
 
 apply plugin: 'com.google.gms.google-services'

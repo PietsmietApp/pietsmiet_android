@@ -14,7 +14,7 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
-    private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
+    private static final String pietcastUrl = "http://www.pietsmiet.de/pietcast/feed/podcast/";
 
     public PietcastPresenter(MainActivity view) {
         super(view);

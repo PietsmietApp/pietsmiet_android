@@ -18,21 +18,18 @@ import android.widget.Toast;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
-import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
+import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
-import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -68,7 +65,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        refreshLayout.setOnRefreshListener(()-> {postManager.fetchNewPosts();});
+        refreshLayout.setOnRefreshListener(() -> {
+            postManager.fetchNewPosts();
+        });
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
         // to Top Button init
@@ -80,9 +79,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 recyclerView.smoothScrollToPosition(0);
                 fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
-                    public  void onShown(FloatingActionButton fab) {
+                    public void onShown(FloatingActionButton fab) {
                         super.onShown(fab);
                     }
+
                     @Override
                     public void onHidden(FloatingActionButton fab) {
                         super.onHidden(fab);
@@ -105,6 +105,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
         }
+        if (SettingsHelper.boolNewsNotification) {
+            FirebaseMessaging.getInstance().subscribeToTopic("news");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
+        }
+        if (SettingsHelper.boolPietcastNotification) {
+            FirebaseMessaging.getInstance().subscribeToTopic("pietcast");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("pietcast");
+        }
 
 
         new SecretConstants(this);
@@ -116,7 +126,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onResume() {
         super.onResume();
-        if(PostManager.CLEAR_CACHE_FLAG) {
+        if (PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
             PostManager.CLEAR_CACHE_FLAG = false;
             postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
@@ -134,7 +144,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        
+
         // Retain an instance so that you can call `resetState()` for fresh searches
         scrollListener = new EndlessScrollListener(layoutManager) {
             @Override
@@ -142,7 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
                 //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nicht weiter versucht zu laden!
-                postManager.fetchNextPosts( loadMoreItemsCount );
+                postManager.fetchNextPosts(loadMoreItemsCount);
 
             }
         };
@@ -177,7 +187,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
-                    if(refreshLayout != null) refreshLayout.setRefreshing(val);
+                    if (refreshLayout != null) refreshLayout.setRefreshing(val);
                 });
     }
 
@@ -187,7 +197,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
                             if (refreshLayout != null && postManager != null) {
-                                if(postManager.getAllPostsFetched()) {
+                                if (postManager.getAllPostsFetched()) {
                                     setRefreshAnim(false);
                                     postManager.resetFetchingEnded();
                                     //todo evtl woanders hin auslagern

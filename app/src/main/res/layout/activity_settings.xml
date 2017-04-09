@@ -10,14 +10,28 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?android:attr/actionBarSize">
 
+        <TextView
+            android:id="@+id/sectionBenachrichtigungen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:text="Benachrichtigungen für Pietsmiet.de"
+            android:textColor="?attr/colorAccent"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
         <Switch
             android:id="@+id/notifyUploadplanSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/sectionBenachrichtigungen"
             android:gravity="center_vertical"
-            android:padding="15dp"
-            android:theme="@style/Theme.SwitchTheme"
-            android:text="Uploadplan - Benachrichtigung" />
+            android:padding="16dp"
+            android:text="Uploadplan"
+            android:theme="@style/Theme.SwitchTheme"/>
 
         <Switch
             android:id="@+id/notifyVideoSwitch"
@@ -26,19 +40,64 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/notifyUploadplanSwitch"
             android:gravity="center_vertical"
-            android:padding="15dp"
-            android:theme="@style/Theme.SwitchTheme"
-            android:text="Video - Benachrichtigung" />
+            android:padding="16dp"
+            android:text="Video"
+            android:theme="@style/Theme.SwitchTheme"/>
+
+        <Switch
+            android:id="@+id/notifyNewsSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/notifyVideoSwitch"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="News"
+            android:theme="@style/Theme.SwitchTheme"/>
+
+        <Switch
+            android:id="@+id/notifyPietcastSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/notifyNewsSwitch"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Pietcast"
+            android:theme="@style/Theme.SwitchTheme"/>
+
+        <TextView
+            android:id="@+id/sectionOthers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/notifyPietcastSwitch"
+            android:paddingBottom="8dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:text="Sonstige Einstellungen"
+            android:textColor="?attr/colorAccent"
+            android:textSize="14sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/placeholderSoon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/sectionOthers"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:text="Coming soon"/>
 
         <Button
             android:id="@+id/btnClearCache"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Clear Cache"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="35dp" />
+            android:layout_marginBottom="35dp"
+            android:gravity="center"
+            android:text="Clear Cache"/>
 
     </RelativeLayout>
 

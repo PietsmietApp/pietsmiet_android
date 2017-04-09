@@ -29,6 +29,10 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            resValue "string", "app_name", "PietSmiet Community App"
+        }
+        debug {
+            resValue "string", "app_name", "Pietsmiet " + gitBranch()
         }
     }
     lintOptions {
@@ -46,11 +50,11 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.1'
-    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.github.ahorn:android-rss:599fdab'
-    compile 'com.android.support:cardview-v7:25.1.1'
-    compile 'com.android.support:recyclerview-v7:25.1.1'
+    compile 'com.android.support:cardview-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'io.reactivex:rxjava:1.2.6'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.google.firebase:firebase-core:10.2.0'
@@ -66,6 +70,19 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile('com.mikepenz:aboutlibraries:5.9.3@aar') {
         transitive = true
+    }
+}
+// http://stackoverflow.com/a/42095944/4026792
+def gitBranch() {
+    try {
+        def branch = ""
+        def proc = "git rev-parse --abbrev-ref HEAD".execute()
+        proc.in.eachLine { line -> branch = line }
+        proc.err.eachLine { line -> println line }
+        proc.waitFor()
+        branch
+    } catch(all) {
+        return ""
     }
 }
 

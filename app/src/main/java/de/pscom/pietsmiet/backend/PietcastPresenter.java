@@ -2,6 +2,8 @@ package de.pscom.pietsmiet.backend;
 
 import android.graphics.drawable.Drawable;
 
+import java.util.Date;
+
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
@@ -12,23 +14,21 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
 
 public class PietcastPresenter extends MainPresenter {
-    static final int MAX_COUNT = 15;
-    private static final String pietcastUrl = "http://www.pietcast.de/pietcast/feed/podcast/";
+    private static final String pietcastUrl = "http://www.pietsmiet.de/pietcast/feed/podcast/";
 
     public PietcastPresenter(MainActivity view) {
-        super(view, PIETCAST);
-        parsePietcast();
+        super(view);
     }
 
     /**
-     * Loads the latests Piecasts
+     * Loads the latests Pietcasts
      */
-    private void parsePietcast() {
+    private void parsePietcast(int num) {
         Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .take(MAX_COUNT)
+                .take(num)
                 .onBackpressureBuffer()
                 .subscribe(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);
@@ -42,7 +42,23 @@ public class PietcastPresenter extends MainPresenter {
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
-                }, this::finished);
+                    view.getPostManager().onReadyFetch(posts, PIETCAST);
+                }, () -> {
+                    view.getPostManager().onReadyFetch(posts, PIETCAST);
+                });
+    }
+
+    @Override
+    public void fetchPostsSince(Date dSince) {
+        parsePietcast(2);
+        //todo efficiency / logic
+    }
+
+
+    @Override
+    public void fetchPostsUntil(Date dUntil, int numPosts) {
+        parsePietcast(20);
+        // todo mit datum arbeiten!
     }
 
 }

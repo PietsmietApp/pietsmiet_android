@@ -3,6 +3,7 @@ package de.pscom.pietsmiet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,33 +17,18 @@ import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
-import de.pscom.pietsmiet.backend.DatabaseHelper;
-import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.PietcastPresenter;
-import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
-import de.pscom.pietsmiet.backend.YoutubePresenter;
-import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.DatabaseHelper;
+import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
@@ -54,8 +40,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DrawerLayout mDrawer;
     private PostManager postManager;
     private NavigationView mNavigationView;
-
+    private EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
+    private FloatingActionButton fabToTop;
+    private RecyclerView recyclerView;
+
+    public final int NUM_POST_TO_LOAD_ON_START = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +67,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        refreshLayout.setOnRefreshListener(this::updateData);
+        refreshLayout.setOnRefreshListener(()-> {postManager.fetchNewPosts();});
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+
+        // to Top Button init
+        fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
+        fabToTop.setVisibility(View.INVISIBLE);
+        fabToTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+                fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                    @Override
+                    public  void onShown(FloatingActionButton fab) {
+                        super.onShown(fab);
+                    }
+                    @Override
+                    public void onHidden(FloatingActionButton fab) {
+                        super.onHidden(fab);
+                        fab.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        });
 
 
         SettingsHelper.loadAllSettings(this);
+
         if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
@@ -89,18 +101,46 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         new SecretConstants(this);
-
         new DatabaseHelper(this).displayPostsFromCache(this);
 
-        updateData();
+        //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(PostManager.CLEAR_CACHE_FLAG) {
+            postManager.clearPosts();
+            PostManager.CLEAR_CACHE_FLAG = false;
+            postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+        }
+    }
+
+
+    public PostManager getPostManager() {
+        return postManager;
     }
 
     private void setupRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
+        recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+        
+        // Retain an instance so that you can call `resetState()` for fresh searches
+        scrollListener = new EndlessScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int totalItemsCount, RecyclerView view) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nicht weiter versucht zu laden!
+                postManager.fetchNextPosts( loadMoreItemsCount );
+
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        recyclerView.addOnScrollListener(scrollListener);
     }
 
     private void setupDrawer() {
@@ -125,8 +165,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         toggle.syncState();
     }
 
-    public void addNewPosts(List<Post> items) {
-        if (postManager != null) postManager.addPosts(items);
+    //todo sinnvolle Konzeption? überall erreichbar ? Sicherheit?
+    public void setRefreshAnim(boolean val) {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                    if(refreshLayout != null) refreshLayout.setRefreshing(val);
+                });
     }
 
     public void updateAdapter() {
@@ -134,7 +179,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
-                            if (refreshLayout != null) refreshLayout.setRefreshing(false);
+                            if (refreshLayout != null && postManager != null) {
+                                if(postManager.getAllPostsFetched()) {
+                                    setRefreshAnim(false);
+                                    postManager.resetFetchingEnded();
+                                    //todo evtl woanders hin auslagern
+                                }
+                            }
                         }
                 );
     }
@@ -146,54 +197,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void showError(String msg) {
         Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+                .subscribe(ignored -> {
+                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                        }
                 );
     }
 
-    private void updateData() {
-        new TwitterPresenter(this);
-        new UploadplanPresenter(this);
-        new PietcastPresenter(this);
-        new FacebookPresenter(this);
-        new YoutubePresenter(this);
-        //if (BuildConfig.DEBUG) addTestingCards();
-    }
-
-    private void addTestingCards() {
-        //Only for testing
-        new Thread(() -> {
-            ArrayList<Post> cardItems = new ArrayList<>();
-            cardItems.add(new Post.PostBuilder(PIETCAST)
-                    .title("TESTCast #79 - Krötenwehr")
-                    .description("Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist!")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(VIDEO)
-                    .title("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
-                    .description("HOCKENHEIMRING-TRAINING 2/2 \uD83C\uDFAE F1 2016 #3")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(UPLOADPLAN)
-                    .title("Uploadplan am 11.09.2016")
-                    .description("14:00 Uhr: Osiris<br>15:00 Uhr: Titan 3<br>16:00 Uhr: Gears of War 4<br>18:00 Uhr: Mario Kart 8")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-            cardItems.add(new Post.PostBuilder(TWITTER)
-                    .title("Dr.Jay")
-                    .description("Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP http://pietsmiet.de")
-                    .date(new Date())
-                    .thumbnail(DrawableFetcher.getDrawableFromUrl("http://img.youtube.com/vi/0g2knLku2MM/hqdefault.jpg"))
-                    .build());
-
-            runOnUiThread(() -> {
-                addNewPosts(cardItems);
-                PsLog.v("Test cards geladen");
-            });
-        }).start();
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -227,13 +236,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawer.closeDrawers();
 
         return true;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (postManager != null) {
-            new DatabaseHelper(this).insertPosts(postManager.getAllPosts(), this);
-        }
     }
 }

@@ -1,39 +1,31 @@
 package de.pscom.pietsmiet.backend;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
+import rx.Observable;
 
-import static de.pscom.pietsmiet.util.PostType.AllTypes;
-
-class MainPresenter {
-    final MainActivity view;
-    @AllTypes
-    private final int postType;
+abstract class MainPresenter {
+    MainActivity view;
     Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
 
-    MainPresenter(MainActivity view, @AllTypes int postType) {
+    MainPresenter(MainActivity view) {
         this.view = view;
-        this.postType = postType;
     }
 
-    /**
-     * Publishes the current posts to the specified activity
+    /** Fetches all posts after a specific date. Since the given date.
+     *  @param dAfter Date
      */
-    void finished() {
-        if (view != null) {
-            if (posts != null) {
-                PsLog.v("Type " + PostType.getName(postType) + " posts: " + posts.size());
-                view.addNewPosts(posts);
-            } else {
-                view.showError("Typ " + PostType.getName(postType) + " konnte nicht geladen werden :(");
-            }
-        }
-    }
+    public abstract void fetchPostsSince(Date dAfter);
+
+    /** Fetches all posts before a specific date. Until the given date.
+     *  @param dBefore Date
+     */
+    public abstract void fetchPostsUntil(Date dBefore, int numPosts);
+
 }

@@ -6,6 +6,10 @@ import rx.Observable;
 
 @SuppressWarnings("SameParameterValue")
 public interface YoutubeApiInterface {
-    @GET("playlistItems?part=snippet%2CcontentDetails%2Cstatus+")
-    Observable<YoutubeRoot> getPlaylist(@Query("maxResults") int maxResults, @Query("key") String key, @Query("playlistId") String playlistId);
+    //todo order=date funktioniert bei sincedate nur solange nicht mehr als 50 neue Videos geladen werden müssen osnst werden welche übersprungen, da die order abwärts ist und nihct aufsteigend!
+    @GET("search?part=snippet%2Cid&order=date")
+    Observable<YoutubeRoot> getPlaylistUntilDate(@Query("maxResults") int maxResults, @Query("key") String key, @Query("channelId") String channelId, @Query("publishedBefore") String dBefore);
+
+    @GET("search?part=snippet%2Cid&order=date")
+    Observable<YoutubeRoot> getPlaylistSinceDate(@Query("maxResults") int maxResults, @Query("key") String key, @Query("channelId") String channelId, @Query("publishedAfter") String dAfter);
 }

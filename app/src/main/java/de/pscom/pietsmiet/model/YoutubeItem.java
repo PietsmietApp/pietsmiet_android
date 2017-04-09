@@ -4,9 +4,9 @@ package de.pscom.pietsmiet.model;
 public class YoutubeItem {
 
     private String kind;
-    private String id;
+    private YoutubeId id;
     private YoutubeSnippet snippet;
-    private YoutubeContent contentDetails;
+    private String etag;
 
     /**
      * @return The kind
@@ -25,14 +25,14 @@ public class YoutubeItem {
     /**
      * @return The id
      */
-    public String getId() {
+    public YoutubeId getId() {
         return id;
     }
 
     /**
      * @param id The id
      */
-    public void setId(String id) {
+    public void setId(YoutubeId id) {
         this.id = id;
     }
 
@@ -47,11 +47,21 @@ public class YoutubeItem {
         this.snippet = snippet;
     }
 
-    public YoutubeContent getContentDetails() {
-        return contentDetails;
+    /**
+     *
+     * @return
+     * The etag
+     */
+    public String getEtag() {
+        return etag;
     }
 
-    public void setContentDetails(YoutubeContent contentDetails) {
-        this.contentDetails = contentDetails;
+    /**
+     *
+     * @param etag
+     * The etag
+     */
+    public void setEtag(String etag) {
+        this.etag = etag;
     }
 }

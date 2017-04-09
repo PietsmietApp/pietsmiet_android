@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context="de.pscom.pietsmiet.MainActivity">
 
     <include layout="@layout/app_toolbar"/>
@@ -21,5 +23,18 @@
             android:layout_height="match_parent"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnToTop"
+        app:layout_behavior="de.pscom.pietsmiet.generic.ScrollAwareFABBehavior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginRight="20dp"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_anchor="@id/cardList"
+        app:layout_anchorGravity="bottom|right|end"
+        app:srcCompat="@drawable/ic_expand_less_black_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -22,12 +22,8 @@ public class UploadplanPresenter extends MainPresenter {
     private static final String KEY_LINK = "link";
     private static final String KEY_DESCRIPTION = "desc";
 
-    static final int MAX_COUNT = 2;
-
     public UploadplanPresenter(MainActivity view) {
-        super(view, UPLOADPLAN);
-        parseUploadplanFromDb("uploadplan");
-        parseUploadplanFromDb("news");
+        super(view);
     }
 
     private void parseUploadplanFromDb(String scope) {
@@ -62,12 +58,15 @@ public class UploadplanPresenter extends MainPresenter {
                                 }
                             }
                             posts.add(postBuilder.build());
-                            finished();
+
                             PsLog.v("added " + scope + " from firebase db");
 
                         }, (throwable) -> {
                             throwable.printStackTrace();
                             view.showError("Typ" + scope + " konnte nicht geladen werden");
+                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
+                        }, ()->{
+                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
                         });
             }
 
@@ -76,9 +75,21 @@ public class UploadplanPresenter extends MainPresenter {
                 if (databaseError != null)
                     PsLog.e("Database loading failed because: " + databaseError.toString());
                 view.showError("Typ" + scope + " konnte nicht geladen werden");
+                view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
             }
         });
     }
 
+    @Override
+    public void fetchPostsSince(Date dBefore) {
+        parseUploadplanFromDb("uploadplan");
 
+    }
+
+
+    @Override
+    public void fetchPostsUntil(Date dAfter, int numPosts) {
+        parseUploadplanFromDb("uploadplan");
+        //fixme richtig?
+    }
 }

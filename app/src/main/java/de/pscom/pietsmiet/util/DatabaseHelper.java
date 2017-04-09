@@ -22,6 +22,7 @@ import rx.schedulers.Schedulers;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int VERSION_NUMBER = 2;
+    public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
 
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
@@ -191,18 +192,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 ", Should have loaded at least: " + context.getPostManager().getAllPostsCount());
                         SharedPreferenceHelper.shouldUseCache = false;
                     }
-                    // Clear db when it's too big / old
-                    /*if (postsInDb > (context.getPostManager().getAllPostsCount() + MAX_ADDITIONAL_POSTS_STORED)) {
-                        PsLog.v("Db cleared because it was too big (" + postsInDb + " entries)\n" +
-                                "Loading all posts this time.");
-                        SharedPreferenceHelper.shouldUseCache = false;
-                        deleteTable();
-                        this.close();
-                        return;
-                    }*/
+
                     // Apply posts otherwise
                     if (context != null) {
                         PsLog.v("Applying " + toReturn.size() + " posts from db");
+
+                        FLAG_POSTS_LOADED_FROM_DB = true;
                         context.getPostManager().addPosts(toReturn);
                     } else {
                         PsLog.v("Context is null!");
@@ -210,10 +205,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                     this.close();
                 }, Throwable::printStackTrace, () -> {
-                    if (context.getPostManager().getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START) {
-                        context.getPostManager().fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
-                        //todo not ready WIP
-                    }
+                    // useless? onSuccess
                 });
     }
 

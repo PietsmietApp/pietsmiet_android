@@ -57,8 +57,11 @@ public class PostManager {
      *
      * @param lPosts posts to add
      */
-    // todo efficiency
+
     public void addPosts(List<Post> lPosts) {
+
+
+
         List<Post> listPosts = new ArrayList<>();
         listPosts.addAll(lPosts);
 
@@ -71,6 +74,13 @@ public class PostManager {
             return;
         }
         queuedPosts.clear();
+
+        if(listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
+            DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
+            fetchNextPosts(mView.NUM_POST_TO_LOAD_ON_START);
+            
+            return;
+        }
 
         listPosts.addAll(getAllPosts());
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
@@ -94,8 +104,11 @@ public class PostManager {
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
-                    new DatabaseHelper(mView).insertPosts(items, mView);
-                    // todo preformance?
+                    if(DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
+                        DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
+                    } else {
+                        new DatabaseHelper(mView).insertPosts(items, mView);
+                    }
                 }, Throwable::printStackTrace, this::updateCurrentPosts);
     }
 

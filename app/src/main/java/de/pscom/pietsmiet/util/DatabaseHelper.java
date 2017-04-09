@@ -50,7 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "create table " + TABLE_POSTS + " (" +
                         POSTS_COLUMN_ID + " INTEGER PRIMARY KEY," +
-                        POSTS_COLUMN_API_ID + " INT," +
+                        POSTS_COLUMN_API_ID + " INTEGER," +
                         POSTS_COLUMN_TITLE + " TINY_TEXT, " +
                         POSTS_COLUMN_DESC + " TEXT," +
                         POSTS_COLUMN_URL + " TEXT," +
@@ -150,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                             Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
                                     .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
-                                    .id(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
+                                    .id(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
                                     .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
                                     .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
                                     .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))

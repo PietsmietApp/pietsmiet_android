@@ -116,6 +116,7 @@ public class FacebookPresenter extends MainPresenter {
     @Override
     public void fetchPostsUntil(Date dUntil, int numPosts) {
         parsePosts("&until=" + String.valueOf(dUntil.getTime() / 1000), numPosts);
+        //todo watch this if working correctly -> because many Posts are rejected
     }
 
 }

@@ -96,7 +96,7 @@ public class PostManager {
                 .flatMap(Observable::from)
                 .map(post -> {
                     //todo performance?
-                    if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
+                    if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
                     if(post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.lastTweetId = post.getId();
                     return post;
                 })
@@ -247,17 +247,18 @@ public class PostManager {
      *      @param type int Presenter type
      **/
     public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
+        PsLog.v("Finished fetching " + PostType.getName(type) + "...");
         if (listPosts != null && listPosts.size() > 0) {
             addPostsToQueue(listPosts, type);
         } else {
             fetchingEnded.put(type, true);
-            PsLog.e("No Posts loaded in " + PostType.getName(type) + " Category");
+            PsLog.e("No Posts loaded in " + PostType.getName(type) + "...");
             //mView.showError("ERROR fetching " + PostType.getName(type));
             if (getAllPostsFetched()) {
                 mView.setRefreshAnim(false);
                 addPosts(queuedPosts);
             }
-            //todo to top button
+
 
         }
 
@@ -287,10 +288,10 @@ public class PostManager {
                     .filter(post -> post != null)
                     .filter(post -> {
                         boolean b = post.getDate().before(getLastPostDate());
-                        if (!b) PsLog.v("posts is after last date");
+                        if (!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
                         return b;
                     })
-                    .distinct()
+                    .distinct() // fixme -> does this delete Facebook reposts of Tweets etc?
                     .toSortedList()
                     .flatMap(Observable::from)
                     .take(numPostLoadCount)

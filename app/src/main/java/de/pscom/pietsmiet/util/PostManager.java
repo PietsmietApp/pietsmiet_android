@@ -62,9 +62,6 @@ public class PostManager {
      */
 
     public void addPosts(List<Post> lPosts) {
-
-
-
         List<Post> listPosts = new ArrayList<>();
         listPosts.addAll(lPosts);
 
@@ -109,8 +106,7 @@ public class PostManager {
                     if(DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
                         DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
                     } else {
-                        //new DatabaseHelper(mView).insertPosts(items, mView);
-                        //todo removed instant caching for performance + less bugs
+                        new DatabaseHelper(mView).insertPosts(items, mView);
                     }
                 }, Throwable::printStackTrace, this::updateCurrentPosts);
     }

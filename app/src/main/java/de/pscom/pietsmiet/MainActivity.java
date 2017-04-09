@@ -3,6 +3,7 @@ package de.pscom.pietsmiet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -41,6 +42,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private NavigationView mNavigationView;
     private EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
+    private FloatingActionButton fabToTop;
+    private RecyclerView recyclerView;
 
     public final int NUM_POST_TO_LOAD_ON_START = 15;
 
@@ -56,6 +59,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupRecyclerView();
         setupDrawer();
 
+
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
@@ -65,6 +69,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(()-> {postManager.fetchNewPosts();});
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+
+        // to Top Button init
+        fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
+        fabToTop.setVisibility(View.INVISIBLE);
+        fabToTop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                recyclerView.smoothScrollToPosition(0);
+                fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
+                    @Override
+                    public  void onShown(FloatingActionButton fab) {
+                        super.onShown(fab);
+                    }
+                    @Override
+                    public void onHidden(FloatingActionButton fab) {
+                        super.onHidden(fab);
+                        fab.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
+        });
 
 
         SettingsHelper.loadAllSettings(this);
@@ -78,6 +103,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         new SecretConstants(this);
         //todo enable caching
         new DatabaseHelper(this).displayPostsFromCache(this);
+
         //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
     }
 
@@ -104,7 +130,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void setupRecyclerView() {
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.cardList);
+        recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);

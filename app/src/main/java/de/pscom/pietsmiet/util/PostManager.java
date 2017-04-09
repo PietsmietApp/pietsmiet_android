@@ -85,7 +85,7 @@ public class PostManager {
                 .toSortedList()
                 .flatMap(Observable::from)
                 .map(post -> {
-                    //todo performance
+                    //todo performance?
                     if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
                     if(post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.lastTweetId = post.getId();
                     return post;
@@ -95,7 +95,7 @@ public class PostManager {
                     allPosts.clear();
                     allPosts.addAll(items);
                     new DatabaseHelper(mView).insertPosts(items, mView);
-                    // todo preformance
+                    // todo preformance?
                 }, Throwable::printStackTrace, this::updateCurrentPosts);
     }
 

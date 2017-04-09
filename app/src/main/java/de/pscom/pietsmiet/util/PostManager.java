@@ -86,7 +86,7 @@ public class PostManager {
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
         Post[] posts = listPosts.toArray(new Post[listPosts.size()]);
 
-        Subscription subscribe = Observable.just(posts)
+        Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
@@ -95,7 +95,6 @@ public class PostManager {
                 .toSortedList()
                 .flatMap(Observable::from)
                 .map(post -> {
-                    //todo performance?
                     if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
                     if(post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.lastTweetId = post.getId();
                     return post;
@@ -107,7 +106,8 @@ public class PostManager {
                     if(DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
                         DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
                     } else {
-                        new DatabaseHelper(mView).insertPosts(items, mView);
+                        //new DatabaseHelper(mView).insertPosts(items, mView);
+                        //todo removed instant caching for performance + less bugs
                     }
                 }, Throwable::printStackTrace, this::updateCurrentPosts);
     }

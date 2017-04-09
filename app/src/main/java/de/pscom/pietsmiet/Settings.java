@@ -7,12 +7,12 @@ import android.widget.Switch;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 
 public class Settings extends BaseActivity {
     PostManager pm;
@@ -21,24 +21,38 @@ public class Settings extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Switch newsSwitch = (Switch) findViewById(R.id.newsSwitch);
+        Switch notifyUploadplanSwitch = (Switch) findViewById(R.id.notifyUploadplanSwitch);
+        Switch notifyVideoSwitch = (Switch) findViewById(R.id.notifyVideoSwitch);
         Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
         setupToolbar(getString(R.string.drawer_einstellungen));
 
+        boolean currentUploadplan = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NOTIFY_UPLOADPLAN_SETTING, true);
+        notifyUploadplanSwitch.setChecked(currentUploadplan);
 
-        boolean current = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true);
-        newsSwitch.setChecked(current);
+        boolean currentVideo = SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
+        notifyVideoSwitch.setChecked(currentVideo);
+
         btnClearCache.setOnClickListener((btn)->{
             new DatabaseHelper(getBaseContext()).clearDB();
             PostManager.CLEAR_CACHE_FLAG = true;
         });
 
-        newsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NEWS_SETTING, isChecked);
+        notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_UPLOADPLAN_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
             } else {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+            }
+
+        });
+
+        notifyVideoSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
+            if (isChecked) {
+                FirebaseMessaging.getInstance().subscribeToTopic("video");
+            } else {
+                FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
             }
 
         });

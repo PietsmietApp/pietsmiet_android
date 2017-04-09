@@ -11,21 +11,34 @@
         android:layout_marginTop="?android:attr/actionBarSize">
 
         <Switch
-            android:id="@+id/newsSwitch"
+            android:id="@+id/notifyUploadplanSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:padding="15dp"
-            android:text="Benachrichtigung"/>
+            android:theme="@style/Theme.SwitchTheme"
+            android:text="Uploadplan - Benachrichtigung" />
+
+        <Switch
+            android:id="@+id/notifyVideoSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/notifyUploadplanSwitch"
+            android:gravity="center_vertical"
+            android:padding="15dp"
+            android:theme="@style/Theme.SwitchTheme"
+            android:text="Video - Benachrichtigung" />
 
         <Button
-            android:text="Clear Cache"
+            android:id="@+id/btnClearCache"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/btnClearCache"
-            android:layout_below="@+id/newsSwitch"
+            android:gravity="center"
+            android:text="Clear Cache"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="19dp" />
+            android:layout_marginBottom="35dp" />
 
     </RelativeLayout>
 

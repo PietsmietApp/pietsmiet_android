@@ -31,7 +31,8 @@ import rx.android.schedulers.AndroidSchedulers;
 
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NEWS_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -94,13 +95,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         SettingsHelper.loadAllSettings(this);
 
-        if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
+        if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
-            FirebaseMessaging.getInstance().subscribeToTopic("video");
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+        }
+        if (SettingsHelper.boolVideoNotification) {
+            FirebaseMessaging.getInstance().subscribeToTopic("video");
+        } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
         }
+
 
         new SecretConstants(this);
         new DatabaseHelper(this).displayPostsFromCache(this);

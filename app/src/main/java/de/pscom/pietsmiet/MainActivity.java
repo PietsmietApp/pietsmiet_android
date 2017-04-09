@@ -96,8 +96,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (SharedPreferenceHelper.getSharedPreferenceBoolean(this, KEY_NEWS_SETTING, true)) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
+            FirebaseMessaging.getInstance().subscribeToTopic("video");
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
         }
 
         new SecretConstants(this);

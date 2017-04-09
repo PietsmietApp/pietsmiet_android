@@ -25,7 +25,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -35,9 +34,11 @@ import java.util.Map;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -55,11 +56,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        PsLog.d("From: " + remoteMessage.getFrom());
         // Check if message contains a data payload.
         Map<String, String> data = remoteMessage.getData();
         if (data.size() > 0) {
-            Log.d(TAG, "Message data payload: " + data);
+            PsLog.d("Message data payload: " + data);
             int type;
 
             Intent intent = new Intent(this, MainActivity.class);
@@ -77,7 +78,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     type = PIETCAST;
                     notificationId = 13;
                     break;
+                case "video":
+                    type = VIDEO;
+                    notificationId = 14;
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.get("link")));
+                    break;
                 default:
+                    PsLog.w("Falsche Kategorie "  + data.get("topic"));
                     return;
             }
             intent.putExtra(EXTRA_TYPE, type);
@@ -104,11 +111,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)))
-                .setContentText(Html.fromHtml(messageBody))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
+        if (messageBody != null){
+            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
+            notificationBuilder.setContentText(Html.fromHtml(messageBody));
+        }
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

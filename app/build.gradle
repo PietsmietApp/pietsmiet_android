@@ -74,12 +74,16 @@ dependencies {
 }
 // http://stackoverflow.com/a/42095944/4026792
 def gitBranch() {
-    def branch = ""
-    def proc = "git rev-parse --abbrev-ref HEAD".execute()
-    proc.in.eachLine { line -> branch = line }
-    proc.err.eachLine { line -> println line }
-    proc.waitFor()
-    branch
+    try {
+        def branch = ""
+        def proc = "git rev-parse --abbrev-ref HEAD".execute()
+        proc.in.eachLine { line -> branch = line }
+        proc.err.eachLine { line -> println line }
+        proc.waitFor()
+        branch
+    } catch(all) {
+        return ""
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

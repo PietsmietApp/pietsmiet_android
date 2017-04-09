@@ -26,6 +26,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
+    private static final String POSTS_COLUMN_API_ID = "api_id";
     private static final String POSTS_COLUMN_TITLE = "title";
     private static final String POSTS_COLUMN_DESC = "desc";
     private static final String POSTS_COLUMN_URL = "url";
@@ -48,6 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "create table " + TABLE_POSTS + " (" +
                         POSTS_COLUMN_ID + " INTEGER PRIMARY KEY," +
+                        POSTS_COLUMN_API_ID + " INT," +
                         POSTS_COLUMN_TITLE + " TINY_TEXT, " +
                         POSTS_COLUMN_DESC + " TEXT," +
                         POSTS_COLUMN_URL + " TEXT," +
@@ -88,6 +90,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     }
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
+                    contentValues.put(POSTS_COLUMN_API_ID, post.getId());
                     contentValues.put(POSTS_COLUMN_TITLE, post.getTitle());
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
                     contentValues.put(POSTS_COLUMN_URL, post.getUrl());
@@ -146,6 +149,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                             Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
                                     .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
+                                    .id(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
                                     .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
                                     .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
                                     .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))

@@ -29,7 +29,7 @@ public class Post implements Comparable<Post> {
     @Nullable
     private Drawable thumbnail;
     @Nullable
-    private long id;
+    private long api_ID;
     private Date datetime;
     private int duration;
     private String url;
@@ -42,7 +42,7 @@ public class Post implements Comparable<Post> {
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
-        id = builder.id;
+        api_ID = builder.api_ID;
     }
 
     @Nullable
@@ -68,7 +68,7 @@ public class Post implements Comparable<Post> {
     }
 
     @Nullable
-    public long getId() { return id; }
+    public long getId() { return api_ID; }
 
     public String getTitle() {
         return title;
@@ -163,7 +163,7 @@ public class Post implements Comparable<Post> {
         @Nullable
         private Drawable thumbnail;
         @Nullable
-        private long id;
+        private long api_ID;
         private Date date;
         private int duration;
         private String url;
@@ -187,8 +187,8 @@ public class Post implements Comparable<Post> {
             return this;
         }
 
-        public PostBuilder id(@Nullable long postId) {
-            this.id = postId;
+        public PostBuilder id(@Nullable long api_ID) {
+            this.api_ID = api_ID;
             return this;
         }
 

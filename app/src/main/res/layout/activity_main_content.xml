@@ -32,6 +32,7 @@
         android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
         android:clickable="true"
+        android:theme="@style/Theme.SwitchTheme"
         app:fabSize="mini"
         app:layout_anchor="@id/cardList"
         app:layout_anchorGravity="bottom|right|end"

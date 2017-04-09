@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import de.pscom.pietsmiet.R;
 
 
@@ -21,6 +23,8 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
     public final ImageView thumbnail;
     public final RelativeLayout descriptionContainer;
     public final Button btnExpand;
+    public final ImageView ivDuration;
+    public final TextView tvDuration;
 
     public CardViewHolder(View itemView) {
         super(itemView);
@@ -33,5 +37,7 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
         thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
         btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
         descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlExpandableContainer);
+        ivDuration = (ImageView) itemView.findViewById(R.id.ivDuration);
+        tvDuration = (TextView) itemView.findViewById(R.id.tvDuration);
     }
 }

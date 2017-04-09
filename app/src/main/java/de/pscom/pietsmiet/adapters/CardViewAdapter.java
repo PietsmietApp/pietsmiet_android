@@ -86,6 +86,24 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         } else if (currentType == UPLOADPLAN) {
             //Disable thumbnail for uploadplan
             holder.thumbnail.setVisibility(GONE);
+
+            if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+                holder.description.setText(Html.fromHtml(currentItem.getDescription()));
+            }
+
+            holder.ivDuration.setVisibility(GONE);
+            holder.tvDuration.setVisibility(GONE);
+            holder.btnExpand.setVisibility(VISIBLE);
+            holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+            holder.btnExpand.setOnClickListener(view -> {
+                if (holder.descriptionContainer.getVisibility() == GONE) {
+                    holder.descriptionContainer.setVisibility(VISIBLE);
+                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                } else {
+                    holder.descriptionContainer.setVisibility(GONE);
+                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                }
+            });
         } else if (currentType == VIDEO) {
             // Youtube: Setup video thumbnails
             Drawable thumbnail = currentItem.getThumbnail();
@@ -102,8 +120,8 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.wideImage.setVisibility(VISIBLE);
             }
         }
-        // Setup text for Uploadplan & social media
-        if (currentType == TWITTER || currentType == FACEBOOK || currentType == UPLOADPLAN) {
+        // Setup text for (Uploadplan) & social media
+        if (currentType == TWITTER || currentType == FACEBOOK) {
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.text.setVisibility(VISIBLE);
                 holder.text.setText(Html.fromHtml(currentItem.getDescription()));

@@ -162,7 +162,7 @@ public class TwitterPresenter extends MainPresenter {
                 "OR from:br4mm3n " +
                 "exclude:replies")
                 .sinceId(firstTweetId)
-                .count(5)
+                .count(50)
                 .resultType(Query.ResultType.recent);
 
         getTokenAndFetch(q);

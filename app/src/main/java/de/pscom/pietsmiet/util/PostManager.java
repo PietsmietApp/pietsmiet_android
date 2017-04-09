@@ -24,6 +24,8 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class PostManager {
     public static boolean CLEAR_CACHE_FLAG = false;
+    public static boolean FETCH_DIRECTION_DOWN = false;
+
     private final MainActivity mView;
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
@@ -195,6 +197,8 @@ public class PostManager {
      *      @param numPosts int
      **/
     public void fetchNextPosts(int numPosts) {
+        FETCH_DIRECTION_DOWN = true;
+        //todo if this is called and fetchNewPosts too cancle all RxSubs
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
@@ -210,6 +214,7 @@ public class PostManager {
      *
      **/
     public void fetchNewPosts() {
+        FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
         new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
         new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
@@ -288,8 +293,12 @@ public class PostManager {
                     .filter(post -> post != null)
                     .filter(post -> {
                         boolean b = post.getDate().before(getLastPostDate());
-                        if (!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
-                        return b;
+                        if (!b ) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
+                        if(b && FETCH_DIRECTION_DOWN) {
+                            return b;
+                        } else {
+                            return true;
+                        }
                     })
                     .distinct() // fixme -> does this delete Facebook reposts of Tweets etc?
                     .toSortedList()

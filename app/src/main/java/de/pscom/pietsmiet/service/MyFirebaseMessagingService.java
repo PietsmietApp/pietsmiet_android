@@ -17,14 +17,13 @@ package de.pscom.pietsmiet.service;
  */
 
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.text.Html;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -47,6 +46,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @PostType.AllTypes
     private int postType;
     private int notificationId;
+    public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
 
     /**
      * Called when message is received.
@@ -88,9 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     return;
             }
             intent.putExtra(EXTRA_TYPE, type);
-
-
-            sendNotification(data.get("title"), data.get("message"), intent);
+            sendNotification(data.get("title"), data.get("message"), intent, data.get("topic"));
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -102,22 +100,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, Intent intent) {
+    private void sendNotification(String title, String messageBody, Intent intent, String topic) {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, notificationId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Intent unsubscribeIntent = new Intent();
+        unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
+        unsubscribeIntent.putExtra(EXTRA_TYPE, topic);
+        PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent, 0);
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_remove_black_24dp, "Abbstellen", unsubscribePIntent).build();
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
+                .addAction(action)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
+                .setWhen(0)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(pendingIntent);
-        if (messageBody != null){
-            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
-            notificationBuilder.setContentText(Html.fromHtml(messageBody));
-        }
+
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

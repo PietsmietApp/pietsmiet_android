@@ -125,14 +125,14 @@ public class TwitterPresenter extends MainPresenter {
                 .subscribe((s) -> {
                     try {
                         twitterInstance.getOAuth2Token();
+                        parseTweets(fetchTweets(q));
                     } catch (TwitterException e) {
                         PsLog.e("error getting token: " + e.getErrorMessage());
+                        view.getPostManager().onReadyFetch(null, TWITTER);
                     } catch (IllegalStateException e) {
                         PsLog.d("Token already instantiated");
-                    } finally {
-                        parseTweets(fetchTweets(q));
+                        view.getPostManager().onReadyFetch(null, TWITTER);
                     }
-
                 });
     }
 

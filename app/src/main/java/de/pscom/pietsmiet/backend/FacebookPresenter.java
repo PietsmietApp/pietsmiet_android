@@ -89,15 +89,15 @@ public class FacebookPresenter extends MainPresenter {
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {

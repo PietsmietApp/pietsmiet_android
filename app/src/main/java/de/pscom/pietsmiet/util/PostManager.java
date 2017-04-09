@@ -23,6 +23,7 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
 public class PostManager {
+
     public static boolean CLEAR_CACHE_FLAG = false;
     public static boolean FETCH_DIRECTION_DOWN = false;
 
@@ -216,6 +217,7 @@ public class PostManager {
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
+
         new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
         new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
         new UploadplanPresenter(mView).fetchPostsSince(getFirstPostDate());
@@ -258,13 +260,10 @@ public class PostManager {
         } else {
             fetchingEnded.put(type, true);
             PsLog.e("No Posts loaded in " + PostType.getName(type) + "...");
-            //mView.showError("ERROR fetching " + PostType.getName(type));
             if (getAllPostsFetched()) {
                 mView.setRefreshAnim(false);
                 addPosts(queuedPosts);
             }
-
-
         }
 
     }
@@ -282,6 +281,7 @@ public class PostManager {
 
         queuedPosts.addAll(lPosts);
         fetchingEnded.put(type, true);
+
         if(getAllPostsFetched()) {
             Post[] posts = queuedPosts.toArray(new Post[queuedPosts.size()]);
 
@@ -293,14 +293,14 @@ public class PostManager {
                     .filter(post -> post != null)
                     .filter(post -> {
                         boolean b = post.getDate().before(getLastPostDate());
-                        if (!b ) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
+                        if (!b && FETCH_DIRECTION_DOWN) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
                         if(b && FETCH_DIRECTION_DOWN) {
                             return b;
                         } else {
                             return true;
                         }
                     })
-                    .distinct() // fixme -> does this delete Facebook reposts of Tweets etc?
+                    .distinct()
                     .toSortedList()
                     .flatMap(Observable::from)
                     .take(numPostLoadCount)

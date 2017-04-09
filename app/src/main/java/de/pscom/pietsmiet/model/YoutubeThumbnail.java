@@ -24,34 +24,6 @@ public class YoutubeThumbnail {
         this.url = url;
     }
 
-    /**
-     * @return The width
-     */
-    public Integer getWidth() {
-        return width;
-    }
-
-    /**
-     * @param width The width
-     */
-    public void setWidth(Integer width) {
-        this.width = width;
-    }
-
-    /**
-     * @return The height
-     */
-    public Integer getHeight() {
-        return height;
-    }
-
-    /**
-     * @param height The height
-     */
-    public void setHeight(Integer height) {
-        this.height = height;
-    }
-
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }

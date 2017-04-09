@@ -79,7 +79,7 @@ public class YoutubePresenter extends MainPresenter {
                     try {
                         postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
                         postBuilder.title(snippet.getTitle());
-                        postBuilder.description(snippet.getDescription());
+                        postBuilder.description("");
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
                         posts.add(postBuilder.build());

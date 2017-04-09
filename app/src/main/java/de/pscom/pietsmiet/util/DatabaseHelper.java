@@ -9,21 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.drawable.Drawable;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.PietcastPresenter;
-import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
-import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.DrawableFetcher;
-import de.pscom.pietsmiet.util.PsLog;
-import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -46,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int MAX_ADDITIONAL_POSTS_STORED = 50;
 
     @SuppressLint("SimpleDateFormat")
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
@@ -101,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
                     contentValues.put(POSTS_COLUMN_URL, post.getUrl());
                     contentValues.put(POSTS_COLUMN_TYPE, post.getPostType());
-                    contentValues.put(POSTS_COLUMN_TIME, dateFormat.format(post.getDate()));
+                    contentValues.put(POSTS_COLUMN_TIME, post.getDate().getTime());
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
                     db.insert(TABLE_POSTS, null, contentValues);
@@ -137,7 +128,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Post> toReturn = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from " + TABLE_POSTS, null);
+        long DAY_IN_MS = 1000 * 60 * 60 * 24;
+        // Don't retrieve posts older than two days
+        long time = new Date(System.currentTimeMillis() - (2 * DAY_IN_MS)).getTime();
+        PsLog.v("OLDEST TIME: " + time);
+        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " WHERE " + POSTS_COLUMN_TIME + " > " + time, null);
 
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
@@ -147,31 +142,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribe(cursor -> {
                     try {
                         do {
-                            try {
-                                int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
+                            int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
 
-                                Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
-                                        .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
-                                        .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
-                                        .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
-                                        .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
-                                        .date(dateFormat.parse(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
-                                if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                    String filename = Integer.toString(old_hashcode);
-                                    Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, filename);
-                                    if (thumb != null) {
-                                        postBuilder.thumbnail(thumb);
-                                    }
+                            Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
+                                    .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
+                                    .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
+                                    .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
+                                    .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
+                                    .date(new Date(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
+                            if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
+                                String filename = Integer.toString(old_hashcode);
+                                Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, filename);
+                                if (thumb != null) {
+                                    postBuilder.thumbnail(thumb);
                                 }
-                                Post post = postBuilder.build();
-                                if (post.hashCode() == old_hashcode) {
-                                    toReturn.add(postBuilder.build());
-                                } else {
-                                    PsLog.v("Post in db has a different hashcode than before, not using it");
-                                }
-
-                            } catch (ParseException e) {
-                                PsLog.w("Couldn't parse date: " + e.getMessage());
+                            }
+                            Post post = postBuilder.build();
+                            if (post.hashCode() == old_hashcode) {
+                                toReturn.add(postBuilder.build());
+                            } else {
+                                PsLog.v("Post in db has a different hashcode than before, not using it");
                             }
                         } while (cursor.moveToNext());
                     } catch (Exception e) {
@@ -181,7 +171,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.close();
                     }
                     int postsInDb = getPostsInDbCount();
-                    if (postsInDb != toReturn.size()) {
+                    /*if (postsInDb != toReturn.size()) {
                         // Reload all posts when not all posts from db not all posts are stored in db (/ db defect).
                         PsLog.v("Loading all posts this time because database was incomplete.\n" +
                                 " Posts in DB: " + postsInDb +
@@ -189,7 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
                         this.close();
-                    } else if (toReturn.size() < context.getPostManager().getAllPostsCount()) {
+                    } else */if (toReturn.size() < context.getPostManager().getAllPostsCount()) {
                         // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
                         // The loaded posts from db are applied nevertheless.
                         PsLog.v("Loading all posts this time because database was incomplete.\n" +
@@ -198,14 +188,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         SharedPreferenceHelper.shouldUseCache = false;
                     }
                     // Clear db when it's too big / old
-                    if (postsInDb > (context.getPostManager().getAllPostsCount() + MAX_ADDITIONAL_POSTS_STORED)) {
+                    /*if (postsInDb > (context.getPostManager().getAllPostsCount() + MAX_ADDITIONAL_POSTS_STORED)) {
                         PsLog.v("Db cleared because it was too big (" + postsInDb + " entries)\n" +
                                 "Loading all posts this time.");
                         SharedPreferenceHelper.shouldUseCache = false;
                         deleteTable();
                         this.close();
                         return;
-                    }
+                    }*/
                     // Apply posts otherwise
                     if (context != null) {
                         PsLog.v("Applying " + toReturn.size() + " posts from db");
@@ -215,8 +205,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     }
 
                     this.close();
-                },Throwable::printStackTrace,() -> {
-                    if(context.getPostManager().getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START) {
+                }, Throwable::printStackTrace, () -> {
+                    if (context.getPostManager().getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START) {
                         context.getPostManager().fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                         //todo not ready WIP
                     }

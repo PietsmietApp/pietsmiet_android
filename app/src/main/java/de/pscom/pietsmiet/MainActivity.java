@@ -101,7 +101,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         new SecretConstants(this);
-        //todo enable caching
         new DatabaseHelper(this).displayPostsFromCache(this);
 
         //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
@@ -117,13 +116,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (postManager != null) {
-            new DatabaseHelper(this).insertPosts(postManager.getAllPosts(), this);
-        }
-    }
 
     public PostManager getPostManager() {
         return postManager;
@@ -244,13 +236,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawer.closeDrawers();
 
         return true;
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (postManager != null) {
-            new DatabaseHelper(this).insertPosts(postManager.getAllPosts(), this);
-        }
     }
 }

@@ -129,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @SuppressWarnings("WeakerAccess")
     public void displayPostsFromCache(MainActivity context) {
-        if(context == null) {
+        if (context == null) {
             return;
         }
 
@@ -179,26 +179,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
-                    int postsInDb = getPostsInDbCount();
-                    /*if (postsInDb != toReturn.size()) {
-                        // Reload all posts when not all posts from db not all posts are stored in db (/ db defect).
-                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
-                                " Posts in DB: " + postsInDb +
-                                ", Posts loaded from DB: " + toReturn.size());
-                        SharedPreferenceHelper.shouldUseCache = false;
-                        deleteTable();
-                        this.close();
-                    } else */
-                    //fixme why???????
-                    if (toReturn.size() < pm.getAllPostsCount()) {
-                        // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
-                        // The loaded posts from db are applied nevertheless.
-                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
-                                " Posts in DB: " + postsInDb +
-                                ", Should have loaded at least: " + pm.getAllPostsCount());
-                    }
 
-                    // Apply posts otherwise
+                    // Apply posts
                     PsLog.v("Applying " + toReturn.size() + " posts from DB");
 
                     FLAG_POSTS_LOADED_FROM_DB = true;
@@ -212,7 +194,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     this.close();
 
                 }, () -> {
-                    if(pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && FLAG_POSTS_LOADED_FROM_DB == false) {
+                    if (pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && !FLAG_POSTS_LOADED_FROM_DB) {
                         PsLog.v("DB: LOCAL CACHE EMPTY. FETCHING POSTS FROM ONLINE...");
                         pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                     }

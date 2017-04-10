@@ -129,15 +129,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @SuppressWarnings("WeakerAccess")
     public void displayPostsFromCache(MainActivity context) {
+        if (context == null) {
+            return;
+        }
+
         List<Post> toReturn = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
         long time = new Date(System.currentTimeMillis() - (2 * DAY_IN_MS)).getTime();
-        PsLog.v("OLDEST TIME: " + time);
+        PsLog.v("LOADING CACHE STARTED...");
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " WHERE " + POSTS_COLUMN_TIME + " > " + time, null);
-
+        PostManager pm = context.getPostManager();
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -175,37 +179,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
-                    int postsInDb = getPostsInDbCount();
-                    /*if (postsInDb != toReturn.size()) {
-                        // Reload all posts when not all posts from db not all posts are stored in db (/ db defect).
-                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
-                                " Posts in DB: " + postsInDb +
-                                ", Posts loaded from DB: " + toReturn.size());
-                        SharedPreferenceHelper.shouldUseCache = false;
-                        deleteTable();
-                        this.close();
-                    } else */if (toReturn.size() < context.getPostManager().getAllPostsCount()) {
-                        // Reload all posts when not all posts from db are loaded / not all posts are stored in db.
-                        // The loaded posts from db are applied nevertheless.
-                        PsLog.v("Loading all posts this time because database was incomplete.\n" +
-                                " Posts in DB: " + postsInDb +
-                                ", Should have loaded at least: " + context.getPostManager().getAllPostsCount());
-                        SharedPreferenceHelper.shouldUseCache = false;
-                    }
 
-                    // Apply posts otherwise
-                    if (context != null) {
-                        PsLog.v("Applying " + toReturn.size() + " posts from db");
+                    // Apply posts
+                    PsLog.v("Applying " + toReturn.size() + " posts from DB");
 
-                        FLAG_POSTS_LOADED_FROM_DB = true;
-                        context.getPostManager().addPosts(toReturn);
-                    } else {
-                        PsLog.v("Context is null!");
-                    }
+                    FLAG_POSTS_LOADED_FROM_DB = true;
+                    context.getPostManager().addPosts(toReturn);
 
                     this.close();
-                }, Throwable::printStackTrace, () -> {
-                    // useless? onSuccess
+                }, (err) -> {
+                    err.printStackTrace();
+                    PsLog.e("DB: ERROR WHILE LOADING CACHE. FETCHING POSTS FROM ONLINE...");
+                    pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
+                    this.close();
+
+                }, () -> {
+                    if (pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && !FLAG_POSTS_LOADED_FROM_DB) {
+                        PsLog.v("DB: LOCAL CACHE EMPTY. FETCHING POSTS FROM ONLINE...");
+                        pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
+                    }
                 });
     }
 

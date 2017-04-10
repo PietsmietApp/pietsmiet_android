@@ -124,6 +124,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         if (PostManager.CLEAR_CACHE_FLAG) {

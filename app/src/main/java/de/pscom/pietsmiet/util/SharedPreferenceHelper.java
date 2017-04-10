@@ -13,7 +13,6 @@ public class SharedPreferenceHelper {
     public static final String KEY_NOTIFY_NEWS_SETTING = "KEY_NOTIFY_NEWS_SETTING";
     public static final String KEY_NOTIFY_PIETCAST_SETTING = "KEY_NOTIFY_PIETCAST_SETTING";
     private final static String PREF_FILE = "PREF";
-    public static boolean shouldUseCache = true;
 
     /**
      * Set a string shared preference

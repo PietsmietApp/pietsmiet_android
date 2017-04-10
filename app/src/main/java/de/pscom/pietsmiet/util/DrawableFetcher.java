@@ -33,7 +33,7 @@ public class DrawableFetcher {
     @Nullable
     public static Drawable getDrawableFromPost(@Nullable Post post) {
         if (post != null) {
-            URL imageUrl = post.getFullPicture();
+            URL imageUrl = post.getPicture();
             if (imageUrl != null) {
                 return getDrawableFromUrl(imageUrl.toString());
             }
@@ -68,7 +68,7 @@ public class DrawableFetcher {
         if (status != null) {
             MediaEntity[] mediaEntities = status.getMediaEntities();
             if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL());
+                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
             }
         }
         return null;

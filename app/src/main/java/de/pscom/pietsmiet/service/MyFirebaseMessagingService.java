@@ -17,11 +17,11 @@ package de.pscom.pietsmiet.service;
  */
 
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
@@ -36,17 +36,19 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    public static final String EXTRA_NOTIFICATION_ID = "de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID";
     @PostType.AllTypes
     private int postType;
     private int notificationId;
+    public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
 
     /**
      * Called when message is received.
@@ -67,30 +69,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (data.get("topic")) {
                 case "news":
-                    type = UPLOADPLAN;
-                    notificationId = 10;
+                    type = NEWS;
+                    notificationId = NEWS;
                     break;
                 case "uploadplan":
                     type = UPLOADPLAN;
-                    notificationId = 11;
+                    notificationId = UPLOADPLAN;
                     break;
                 case "pietcast":
                     type = PIETCAST;
-                    notificationId = 13;
+                    notificationId = PIETCAST;
                     break;
                 case "video":
                     type = VIDEO;
-                    notificationId = 14;
+                    notificationId = VIDEO;
                     intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.get("link")));
                     break;
                 default:
-                    PsLog.w("Falsche Kategorie "  + data.get("topic"));
+                    PsLog.w("Falsche Kategorie " + data.get("topic"));
                     return;
             }
             intent.putExtra(EXTRA_TYPE, type);
-
-
-            sendNotification(data.get("title"), data.get("message"), intent);
+            sendNotification(data.get("title"), data.get("message"), intent, data.get("topic"));
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -102,23 +102,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, Intent intent) {
+    private void sendNotification(String title, String messageBody, Intent intent, String topic) {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, notificationId, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+        Intent unsubscribeIntent = new Intent();
+        unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
+        unsubscribeIntent.putExtra(EXTRA_TYPE, topic);
+        unsubscribeIntent.putExtra("de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID", notificationId);
 
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent, 0);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
+                .addAction(R.drawable.ic_remove_black_24dp, "Abbstellen", unsubscribePIntent)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
+                .setWhen(0)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(pendingIntent);
-        if (messageBody != null){
+
+        if (messageBody != null) {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
             notificationBuilder.setContentText(Html.fromHtml(messageBody));
         }
-
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 

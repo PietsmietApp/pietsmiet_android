@@ -18,6 +18,7 @@ public class PostType {
     public static final int TWITTER = PIETCAST + 1;
     public static final int FACEBOOK = TWITTER + 1;
     public static final int UPLOADPLAN = FACEBOOK + 1;
+    public static final int NEWS = UPLOADPLAN + 1;
 
     public static List<Integer> getPossibleTypes() {
         List<Integer> navigationItems = new ArrayList<>();
@@ -64,6 +65,7 @@ public class PostType {
             case FACEBOOK:
                 return R.id.nav_facebook;
             case UPLOADPLAN:
+            case NEWS:
                 return R.id.nav_upload_plan;
             default:
                 return -1;

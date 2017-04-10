@@ -24,25 +24,25 @@ public class UnsubscribeReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction() == KEY_UNSUBSCRIBE) {
-            String topic = intent.getExtras().getString(EXTRA_TYPE, "");
+            int type = intent.getIntExtra(EXTRA_TYPE, -1);
             NotificationManager notifManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             //Unsubscribe from category & cancel the notification
-            switch (topic) {
-                case "pietcast":
+            switch (type) {
+                case PIETCAST:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
                     notifManager.cancel(PIETCAST);
                     break;
-                case "uploadplan":
+                case UPLOADPLAN:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, false);
                     notifManager.cancel(UPLOADPLAN);
                     break;
-                case "news":
+                case NEWS:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
                     notifManager.cancel(NEWS);
                     break;
-                case "video":
+                case VIDEO:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
                     notifManager.cancel(VIDEO);
                     break;

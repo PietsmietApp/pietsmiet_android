@@ -64,9 +64,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (data.size() > 0) {
             PsLog.d("Message data payload: " + data);
             int type;
-
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (data.get("topic")) {
                 case "news":
                     type = NEWS;
@@ -83,14 +80,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 case "video":
                     type = VIDEO;
                     notificationId = VIDEO;
-                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.get("link")));
                     break;
                 default:
                     PsLog.w("Falsche Kategorie " + data.get("topic"));
                     return;
             }
-            intent.putExtra(EXTRA_TYPE, type);
-            sendNotification(data.get("title"), data.get("message"), intent, data.get("topic"));
+            // On notification click intent
+            Intent clickIntent = new Intent(this, MainActivity.class);
+            clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            clickIntent.putExtra(EXTRA_TYPE, type);
+            PendingIntent clickPIntent = PendingIntent.getActivity(this, notificationId, clickIntent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
+            // On action button click intent
+            Intent urlIntent = new Intent(Intent.ACTION_VIEW);
+            urlIntent.setData(Uri.parse(data.get("link")));
+            PendingIntent urlPIntent = PendingIntent.getActivity(this, notificationId, urlIntent,
+                    PendingIntent.FLAG_ONE_SHOT);
+
+            sendNotification(data.get("title"), data.get("message"), clickPIntent, urlPIntent, type);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -102,32 +110,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, Intent intent, String topic) {
-
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, notificationId, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+    private void sendNotification(String title, String messageBody, PendingIntent clickIntent, PendingIntent urlIntent, int type) {
         Intent unsubscribeIntent = new Intent();
         unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
-        unsubscribeIntent.putExtra(EXTRA_TYPE, topic);
-        unsubscribeIntent.putExtra("de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID", notificationId);
-
+        unsubscribeIntent.putExtra(EXTRA_TYPE, type);
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent, 0);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .addAction(R.drawable.ic_remove_black_24dp, "Abbstellen", unsubscribePIntent)
+                .addAction(R.drawable.ic_remove_black_24dp, "Abbestellen", unsubscribePIntent)
                 .setAutoCancel(true)
                 .setWhen(0)
-                .setPriority(Notification.PRIORITY_MAX)
-                .setContentIntent(pendingIntent);
-
+                .setPriority(Notification.PRIORITY_MAX);
+        if (type == VIDEO) {
+            notificationBuilder.setContentIntent(urlIntent);
+        } else {
+            notificationBuilder.setContentIntent(clickIntent);
+            notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp, "Link öffnen", urlIntent);
+        }
         if (messageBody != null) {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
             notificationBuilder.setContentText(Html.fromHtml(messageBody));
         }
+
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
         notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }

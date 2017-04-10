@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -35,14 +36,15 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
+    public static final String EXTRA_NOTIFICATION_ID = "de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID";
     @PostType.AllTypes
     private int postType;
     private int notificationId;
@@ -67,24 +69,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             switch (data.get("topic")) {
                 case "news":
-                    type = UPLOADPLAN;
-                    notificationId = 10;
+                    type = NEWS;
+                    notificationId = NEWS;
                     break;
                 case "uploadplan":
                     type = UPLOADPLAN;
-                    notificationId = 11;
+                    notificationId = UPLOADPLAN;
                     break;
                 case "pietcast":
                     type = PIETCAST;
-                    notificationId = 13;
+                    notificationId = PIETCAST;
                     break;
                 case "video":
                     type = VIDEO;
-                    notificationId = 14;
+                    notificationId = VIDEO;
                     intent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.get("link")));
                     break;
                 default:
-                    PsLog.w("Falsche Kategorie "  + data.get("topic"));
+                    PsLog.w("Falsche Kategorie " + data.get("topic"));
                     return;
             }
             intent.putExtra(EXTRA_TYPE, type);
@@ -107,18 +109,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Intent unsubscribeIntent = new Intent();
         unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
         unsubscribeIntent.putExtra(EXTRA_TYPE, topic);
+        unsubscribeIntent.putExtra("de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID", notificationId);
+
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent, 0);
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_remove_black_24dp, "Abbstellen", unsubscribePIntent).build();
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
-                .addAction(action)
+                .addAction(R.drawable.ic_remove_black_24dp, "Abbstellen", unsubscribePIntent)
                 .setAutoCancel(true)
                 .setWhen(0)
                 .setPriority(Notification.PRIORITY_MAX)
                 .setContentIntent(pendingIntent);
 
-
+        if (messageBody != null) {
+            notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
+            notificationBuilder.setContentText(Html.fromHtml(messageBody));
+        }
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 

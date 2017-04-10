@@ -68,7 +68,7 @@ public class DrawableFetcher {
         if (status != null) {
             MediaEntity[] mediaEntities = status.getMediaEntities();
             if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL());
+                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
             }
         }
         return null;

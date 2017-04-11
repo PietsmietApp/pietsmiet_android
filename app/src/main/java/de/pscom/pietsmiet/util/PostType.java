@@ -40,17 +40,19 @@ public class PostType {
     public static String getName(@AllTypes int i) {
         switch (i) {
             case VIDEO:
-                return "VIDEO";
+                return "Videos";
             case PIETCAST:
-                return "PIETCAST";
+                return "Pietcast";
             case TWITTER:
-                return "TWITTER";
+                return "Twitter";
             case FACEBOOK:
-                return "FACEBOOK";
+                return "Facebook";
             case UPLOADPLAN:
-                return "UPLOADPLAN";
+                return "Uploadplan";
+            case NEWS:
+                return "News";
             default:
-                return "NO INT LISTED";
+                return "Unbekannte Kategorie";
         }
     }
 

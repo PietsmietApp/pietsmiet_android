@@ -169,7 +169,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
+                this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);

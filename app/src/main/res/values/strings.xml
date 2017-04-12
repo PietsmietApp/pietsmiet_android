@@ -1,16 +1,12 @@
 <resources>
-    <string name="navigation_drawer_open">Themenmenü öffnen</string>
-    <string name="navigation_drawer_close">Themenmenü schließen</string>
-    <string name="drawer_uploadplan">Uploadplan</string>
-    <string name="drawer_facebook">Facebook</string>
-    <string name="drawer_twitter">Twitter</string>
-    <string name="drawer_pietcast">Pietcast</string>
+    <string name="drawer_open">Menü öffnen</string>
+    <string name="drawer_close">Menü schließen</string>
     <string name="drawer_sonstiges">Sonstiges</string>
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="drawer_youtube">YouTube</string>
+
     <string name="about_text">Developed by l3d00m and saibotk (tkindanight)
-        \n\nGithub: \n https://github.com/l3d00m/pietsmiet_android
         \n\nFehler melden: \n https://github.com/l3d00m/pietsmiet_android/issues
         \n \nCreated with &lt;3</string>
 
@@ -18,12 +14,17 @@
     <string name="time_days_short">%dd</string>
     <string name="time_hours_short">%dh</string>
     <string name="time_minutes_short">%dm</string>
-    <string name="benachrichtigungen_f_r_pietsmiet_de">settings_header_notif</string>
-    <string name="uploadplan">setting_notif_uploadplan</string>
-    <string name="video">setting_notif_video</string>
-    <string name="news">setting_notif_news</string>
-    <string name="pietcast">setting_notif_pietcast</string>
-    <string name="sonstige_einstellungen">settings_header_others</string>
-    <string name="coming_soon">other_coming_soon</string>
-    <string name="clear_cache">settings_clear_cache</string>
+
+    <string name="type_uploadplan">Uploadplan</string>
+    <string name="type_facebook">Facebook</string>
+    <string name="type_twitter">Twitter</string>
+    <string name="type_pietcast">Pietcast</string>
+    <string name="type_news">News</string>
+    <string name="type_video">Videos</string>
+
+    <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
+    <string name="settings_header_others">Sonstige Einstellungen</string>
+    <string name="settings_clear_cache">Clear Cache</string>
+
+    <string name="other_coming_soon">Coming soon</string>
 </resources>

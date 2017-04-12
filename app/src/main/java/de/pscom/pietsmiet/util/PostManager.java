@@ -14,7 +14,6 @@ import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
-import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -28,15 +27,12 @@ public class PostManager {
     public static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;
+    public Map<Integer, Boolean> allowedTypes = new HashMap<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-
     private List<Post> queuedPosts = new ArrayList<>();
-
-    public Map<Integer, Boolean> allowedTypes = new HashMap<>();
-
     private Map<Integer, Boolean> fetchingEnded = new HashMap<>();
 
     private int numPostLoadCount = 5;
@@ -75,10 +71,10 @@ public class PostManager {
         }
         queuedPosts.clear();
 
-        if(listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
+        if (listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
             DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
             fetchNextPosts(mView.NUM_POST_TO_LOAD_ON_START);
-            
+
             return;
         }
 
@@ -95,15 +91,17 @@ public class PostManager {
                 .toSortedList()
                 .flatMap(Observable::from)
                 .map(post -> {
-                    if(post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0) ) TwitterPresenter.firstTweetId = post.getId();
-                    if(post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0) ) TwitterPresenter.lastTweetId = post.getId();
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0))
+                        TwitterPresenter.firstTweetId = post.getId();
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0))
+                        TwitterPresenter.lastTweetId = post.getId();
                     return post;
                 })
                 .toSortedList()
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
-                    if(DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
+                    if (DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
                         DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
                     } else {
                         new DatabaseHelper(mView).insertPosts(items, mView);
@@ -190,8 +188,9 @@ public class PostManager {
     }
 
     /**
-     *      Root fetching Method to call all specific fetching methods for older Posts.
-     *      @param numPosts int
+     * Root fetching Method to call all specific fetching methods for older Posts.
+     *
+     * @param numPosts int
      **/
     public void fetchNextPosts(int numPosts) {
         FETCH_DIRECTION_DOWN = true;
@@ -207,8 +206,7 @@ public class PostManager {
     }
 
     /**
-     *      Root fetching Method to call all specific fetching methods for new Posts.
-     *
+     * Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
@@ -222,8 +220,9 @@ public class PostManager {
     }
 
     /**
-     *      Returns true if all Posts are fetched or all fetchung tasks have been executed.
-     *      @return Boolean ended
+     * Returns true if all Posts are fetched or all fetchung tasks have been executed.
+     *
+     * @return Boolean ended
      **/
     public boolean getAllPostsFetched() {
         int isEnded = 0;
@@ -236,18 +235,20 @@ public class PostManager {
     }
 
     /**
-     *      Gets the Post size of allPosts
-     *      @return Integer size
+     * Gets the Post size of allPosts
+     *
+     * @return Integer size
      **/
     public int getAllPostsCount() {
         return allPosts.size();
     }
 
     /**
-     *      Callback for all Fetching methods of each Presenter.
-     *      Central point for using the input.
-     *      @param listPosts List<Post>
-     *      @param type int Presenter type
+     * Callback for all Fetching methods of each Presenter.
+     * Central point for using the input.
+     *
+     * @param listPosts List<Post>
+     * @param type      int Presenter type
      **/
     public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
         PsLog.v("Finished fetching " + PostType.getName(type) + "...");
@@ -278,7 +279,7 @@ public class PostManager {
         queuedPosts.addAll(lPosts);
         fetchingEnded.put(type, true);
 
-        if(getAllPostsFetched()) {
+        if (getAllPostsFetched()) {
             Post[] posts = queuedPosts.toArray(new Post[queuedPosts.size()]);
 
             Observable.just(posts)
@@ -289,12 +290,9 @@ public class PostManager {
                     .filter(post -> post != null)
                     .filter(post -> {
                         boolean b = post.getDate().before(getLastPostDate());
-                        if (!b && FETCH_DIRECTION_DOWN) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
-                        if(b && FETCH_DIRECTION_DOWN) {
-                            return b;
-                        } else {
-                            return true;
-                        }
+                        if (!b && FETCH_DIRECTION_DOWN)
+                            PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
+                        return !(b && FETCH_DIRECTION_DOWN) || b;
                     })
                     .distinct()
                     .toSortedList()
@@ -313,8 +311,7 @@ public class PostManager {
     }
 
     /**
-     *      Clears all Posts from the View.
-     *
+     * Clears all Posts from the View.
      **/
     public void clearPosts() {
         allPosts.clear();

@@ -48,18 +48,14 @@ public class YoutubeItem {
     }
 
     /**
-     *
-     * @return
-     * The etag
+     * @return The etag
      */
     public String getEtag() {
         return etag;
     }
 
     /**
-     *
-     * @param etag
-     * The etag
+     * @param etag The etag
      */
     public void setEtag(String etag) {
         this.etag = etag;

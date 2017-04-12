@@ -81,7 +81,7 @@ def gitBranch() {
         proc.err.eachLine { line -> println line }
         proc.waitFor()
         branch
-    } catch(all) {
+    } catch (ignored) {
         return ""
     }
 }

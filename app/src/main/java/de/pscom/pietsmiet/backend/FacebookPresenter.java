@@ -77,9 +77,7 @@ public class FacebookPresenter extends MainPresenter {
                     PsLog.e(e.toString());
                     view.showError("Facebook parsing error");
                     view.getPostManager().onReadyFetch(posts, FACEBOOK);
-                }, () -> {
-                    view.getPostManager().onReadyFetch(posts, FACEBOOK);
-                });
+                }, () -> view.getPostManager().onReadyFetch(posts, FACEBOOK));
     }
 
     /**

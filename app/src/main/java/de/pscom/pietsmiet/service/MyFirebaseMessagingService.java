@@ -47,10 +47,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
     public static final String EXTRA_NOTIFICATION_ID = "de.pscom.pietsmiet.EXTRA_NOTIFICATION_ID";
+    public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
     @PostType.AllTypes
     private int postType;
     private int notificationId;
-    public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
 
     /**
      * Called when message is received.
@@ -93,13 +93,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             clickIntent.putExtra(EXTRA_TYPE, type);
             PendingIntent clickPIntent = PendingIntent.getActivity(this, notificationId, clickIntent,
-                    FLAG_ONE_SHOT|FLAG_UPDATE_CURRENT);
+                    FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
             // On action button click intent
             Intent urlIntent = new Intent(Intent.ACTION_VIEW);
             urlIntent.setData(Uri.parse(data.get("link")));
             PendingIntent urlPIntent = PendingIntent.getActivity(this, notificationId, urlIntent,
-                    FLAG_ONE_SHOT|FLAG_UPDATE_CURRENT);
+                    FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
             sendNotification(data.get("title"), data.get("message"), clickPIntent, urlPIntent, type);
         }
@@ -118,7 +118,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
         unsubscribeIntent.putExtra(EXTRA_TYPE, type);
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent,
-                FLAG_ONE_SHOT|FLAG_UPDATE_CURRENT);
+                FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)

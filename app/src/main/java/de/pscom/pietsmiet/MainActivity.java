@@ -33,6 +33,7 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public final int NUM_POST_TO_LOAD_ON_START = 15;
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
@@ -42,8 +43,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fabToTop;
     private RecyclerView recyclerView;
-
-    public final int NUM_POST_TO_LOAD_ON_START = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +64,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        refreshLayout.setOnRefreshListener(() -> {
-            postManager.fetchNewPosts();
-        });
+        refreshLayout.setOnRefreshListener(() -> postManager.fetchNewPosts());
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
 
         // to Top Button init
@@ -220,9 +217,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void showError(String msg) {
         Observable.defer(() -> Observable.just(""))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-                        }
+                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 );
     }
 

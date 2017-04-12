@@ -43,9 +43,7 @@ public class PietcastPresenter extends MainPresenter {
                     throwable.printStackTrace();
                     view.showError("Pietcast parsing error");
                     view.getPostManager().onReadyFetch(posts, PIETCAST);
-                }, () -> {
-                    view.getPostManager().onReadyFetch(posts, PIETCAST);
-                });
+                }, () -> view.getPostManager().onReadyFetch(posts, PIETCAST));
     }
 
     @Override

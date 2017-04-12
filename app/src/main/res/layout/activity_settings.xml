@@ -18,7 +18,7 @@
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
-            android:text="Benachrichtigungen für Pietsmiet.de"
+            android:text="@string/benachrichtigungen_f_r_pietsmiet_de"
             android:textColor="?attr/colorAccent"
             android:textSize="14sp"
             android:textStyle="bold"/>
@@ -30,7 +30,7 @@
             android:layout_below="@+id/sectionBenachrichtigungen"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:text="Uploadplan"
+            android:text="@string/uploadplan"
             android:theme="@style/Theme.SwitchTheme"/>
 
         <Switch
@@ -41,7 +41,7 @@
             android:layout_below="@+id/notifyUploadplanSwitch"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:text="Video"
+            android:text="@string/video"
             android:theme="@style/Theme.SwitchTheme"/>
 
         <Switch
@@ -52,7 +52,7 @@
             android:layout_below="@+id/notifyVideoSwitch"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:text="News"
+            android:text="@string/news"
             android:theme="@style/Theme.SwitchTheme"/>
 
         <Switch
@@ -63,7 +63,7 @@
             android:layout_below="@+id/notifyNewsSwitch"
             android:gravity="center_vertical"
             android:padding="16dp"
-            android:text="Pietcast"
+            android:text="@string/pietcast"
             android:theme="@style/Theme.SwitchTheme"/>
 
         <TextView
@@ -75,7 +75,7 @@
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
-            android:text="Sonstige Einstellungen"
+            android:text="@string/sonstige_einstellungen"
             android:textColor="?attr/colorAccent"
             android:textSize="14sp"
             android:textStyle="bold"/>
@@ -87,7 +87,7 @@
             android:layout_below="@+id/sectionOthers"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
-            android:text="Coming soon"/>
+            android:text="@string/coming_soon"/>
 
         <Button
             android:id="@+id/btnClearCache"
@@ -97,7 +97,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="35dp"
             android:gravity="center"
-            android:text="Clear Cache"/>
+            android:text="@string/clear_cache"/>
 
     </RelativeLayout>
 

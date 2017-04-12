@@ -23,11 +23,12 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
+
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 public class TwitterPresenter extends MainPresenter {
-    private Twitter twitterInstance;
     public static long lastTweetId, firstTweetId;
+    private Twitter twitterInstance;
 
     public TwitterPresenter(MainActivity view) {
         super(view);
@@ -154,7 +155,7 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince( Date dBefore ) {
+    public void fetchPostsSince(Date dBefore) {
         Query q = new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
@@ -169,18 +170,18 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsUntil( Date dAfter, int numPosts ) {
+    public void fetchPostsUntil(Date dAfter, int numPosts) {
         Query q = new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies");
-        if(lastTweetId != 0) {
-                q.maxId(lastTweetId);
+        if (lastTweetId != 0) {
+            q.maxId(lastTweetId);
         }
         q.count(numPosts)
-         .resultType(Query.ResultType.recent);
+                .resultType(Query.ResultType.recent);
 
         getTokenAndFetch(q);
     }

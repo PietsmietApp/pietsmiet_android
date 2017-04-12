@@ -22,8 +22,6 @@ import rx.schedulers.Schedulers;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final int VERSION_NUMBER = 2;
-    public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
-
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
@@ -35,8 +33,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
-
     private static final int MAX_ADDITIONAL_POSTS_STORED = 50;
+    public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
 
     @SuppressLint("SimpleDateFormat")
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

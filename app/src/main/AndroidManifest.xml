@@ -37,7 +37,9 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".receiver.UnsubscribeReceiver">
+        <receiver
+            android:name=".receiver.UnsubscribeReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="de.pscom.pietsmiet.KEY_UNSUBSCRIBE"/>
             </intent-filter>

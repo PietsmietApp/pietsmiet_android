@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="4dp"
+    android:layout_marginStart="4dp"
+    card_view:cardCornerRadius="3dp"
+    card_view:cardElevation="4dp"
+    card_view:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivWideImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:contentDescription="Thumbnail of the post"
+            android:scaleType="centerCrop"/>
+
+        <RelativeLayout
+            android:id="@+id/rlDescriptionContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ivWideImage"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp">
+
+            <ImageView
+                android:id="@+id/ivThumbnail"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_alignParentEnd="true"
+                android:contentDescription="Thumbnail of the post"
+                android:paddingStart="8dp"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_toStartOf="@id/ivThumbnail"
+                android:text="Jay auf Twitter"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+
+            <TextView
+                android:id="@+id/tvText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/tvTitle"
+                android:layout_toStartOf="@id/ivThumbnail"
+                android:autoLink="web"
+                android:linksClickable="true"
+                android:text="Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlTimeContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/rlDescriptionContainer"
+            android:layout_marginEnd="8dp"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp">
+
+            <ImageView
+                android:id="@+id/ivTimeIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_access_time_black_24dp"/>
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_toEndOf="@id/ivTimeIcon"
+                android:paddingStart="4dp"
+                android:text="1h"
+                android:textColor="#000000"/>
+
+            <Button
+                android:id="@+id/btnExpand"
+                android:layout_width="@dimen/iconSize"
+                android:layout_height="@dimen/iconSize"
+                android:layout_margin="16dp"
+                android:layout_toEndOf="@id/tvDateTime"
+                android:background="?android:attr/selectableItemBackground"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rlExpandableContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlTimeContainer"
+            android:paddingBottom="16dp"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="8dp"
+                android:text="Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist! Dauer: 2:50 Stunden"/>
+
+            <ImageView
+                android:id="@+id/ivDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/iconSize"
+                android:layout_below="@id/tvDescription"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/ic_watch_later_black_24dp"/>
+
+            <TextView
+                android:id="@+id/tvDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/iconSize"
+                android:layout_below="@id/tvDescription"
+                android:layout_toEndOf="@id/ivDuration"
+                android:gravity="center"
+                android:text="2:30 Stunden"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

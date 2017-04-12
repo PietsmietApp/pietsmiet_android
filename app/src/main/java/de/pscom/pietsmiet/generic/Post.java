@@ -28,7 +28,6 @@ public class Post implements Comparable<Post> {
     private int postType;
     @Nullable
     private Drawable thumbnail;
-    @Nullable
     private long api_ID;
     private Date datetime;
     private int duration;
@@ -67,8 +66,9 @@ public class Post implements Comparable<Post> {
         return description;
     }
 
-    @Nullable
-    public long getId() { return api_ID; }
+    public long getId() {
+        return api_ID;
+    }
 
     public String getTitle() {
         return title;
@@ -155,6 +155,7 @@ public class Post implements Comparable<Post> {
         return true;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class PostBuilder {
         private String title;
         private int postType;
@@ -162,7 +163,6 @@ public class Post implements Comparable<Post> {
         private String description;
         @Nullable
         private Drawable thumbnail;
-        @Nullable
         private long api_ID;
         private Date date;
         private int duration;
@@ -187,7 +187,7 @@ public class Post implements Comparable<Post> {
             return this;
         }
 
-        public PostBuilder id(@Nullable long api_ID) {
+        public PostBuilder id(long api_ID) {
             this.api_ID = api_ID;
             return this;
         }

@@ -40,17 +40,19 @@ public class PostType {
     public static String getName(@AllTypes int i) {
         switch (i) {
             case VIDEO:
-                return "VIDEO";
+                return "Videos";
             case PIETCAST:
-                return "PIETCAST";
+                return "Pietcast";
             case TWITTER:
-                return "TWITTER";
+                return "Twitter";
             case FACEBOOK:
-                return "FACEBOOK";
+                return "Facebook";
             case UPLOADPLAN:
-                return "UPLOADPLAN";
+                return "Uploadplan";
+            case NEWS:
+                return "News";
             default:
-                return "NO INT LISTED";
+                return "Unbekannte Kategorie";
         }
     }
 
@@ -73,17 +75,7 @@ public class PostType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FACEBOOK, TWITTER, UPLOADPLAN})
-    public @interface TypeNoThumbnail {
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({VIDEO, FACEBOOK, TWITTER, PIETCAST})
-    public @interface TypeThumbnail {
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, VIDEO})
+    @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, VIDEO, NEWS})
     public @interface AllTypes {
     }
 }

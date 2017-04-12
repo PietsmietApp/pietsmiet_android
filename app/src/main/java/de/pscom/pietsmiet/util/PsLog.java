@@ -10,10 +10,10 @@ import android.util.Log;
 public class PsLog {
     private static final int CALLING_METHOD_INDEX;
 
-    /**
-     * Get the stacktrace index of the method that called this class
-     *
-     * Variation of http://stackoverflow.com/a/8592871/4026792
+    /*
+      Get the stacktrace index of the method that called this class
+
+      Variation of http://stackoverflow.com/a/8592871/4026792
      */
     static {
         int i = 1;

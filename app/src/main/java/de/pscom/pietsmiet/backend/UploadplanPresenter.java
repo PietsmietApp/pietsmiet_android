@@ -65,9 +65,7 @@ public class UploadplanPresenter extends MainPresenter {
                             throwable.printStackTrace();
                             view.showError("Typ" + scope + " konnte nicht geladen werden");
                             view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
-                        }, ()->{
-                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
-                        });
+                        }, () -> view.getPostManager().onReadyFetch(posts, UPLOADPLAN));
             }
 
             @Override

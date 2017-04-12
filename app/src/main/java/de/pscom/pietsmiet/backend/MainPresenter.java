@@ -6,10 +6,9 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
-import rx.Observable;
 
 abstract class MainPresenter {
-    MainActivity view;
+    final MainActivity view;
     Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
@@ -18,13 +17,17 @@ abstract class MainPresenter {
         this.view = view;
     }
 
-    /** Fetches all posts after a specific date. Since the given date.
-     *  @param dAfter Date
+    /**
+     * Fetches all posts after a specific date. Since the given date.
+     *
+     * @param dAfter Date
      */
     public abstract void fetchPostsSince(Date dAfter);
 
-    /** Fetches all posts before a specific date. Until the given date.
-     *  @param dBefore Date
+    /**
+     * Fetches all posts before a specific date. Until the given date.
+     *
+     * @param dBefore Date
      */
     public abstract void fetchPostsUntil(Date dBefore, int numPosts);
 

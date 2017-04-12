@@ -9,10 +9,10 @@ import android.view.View;
 
 /**
  * Created by tobias on 09.04.2017.
- *
+ * <p>
  * Source:
  * https://guides.codepath.com/android/floating-action-buttons#design-support-library
- *
+ * <p>
  * fix
  * http://stackoverflow.com/questions/41807601/onnestedscroll-called-only-once
  */
@@ -44,6 +44,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                 public void onShown(FloatingActionButton fab) {
                     super.onShown(fab);
                 }
+
                 @Override
                 public void onHidden(FloatingActionButton fab) {
                     super.onHidden(fab);

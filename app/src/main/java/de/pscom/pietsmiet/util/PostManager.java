@@ -289,10 +289,16 @@ public class PostManager {
                     .flatMap(Observable::from)
                     .filter(post -> post != null)
                     .filter(post -> {
-                        boolean b = post.getDate().before(getLastPostDate());
-                        if (!b && FETCH_DIRECTION_DOWN)
-                            PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter Post Datum: " + getLastPostDate());
-                        return !(b && FETCH_DIRECTION_DOWN) || b;
+                        boolean b = false;
+                        if(FETCH_DIRECTION_DOWN) {
+                            b = post.getDate().before(getLastPostDate());
+                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (ältester) Post Datum: " + getLastPostDate());
+                            return b;
+                        } else {
+                            b = post.getDate().after(getFirstPostDate());
+                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is before last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (neuster) Post Datum: " + getFirstPostDate());
+                            return b;
+                        }
                     })
                     .distinct()
                     .toSortedList()

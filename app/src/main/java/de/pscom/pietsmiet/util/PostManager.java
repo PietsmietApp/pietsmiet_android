@@ -325,6 +325,5 @@ public class PostManager {
         TwitterPresenter.lastTweetId = 0;
         TwitterPresenter.firstTweetId = 0;
         updateCurrentPosts();
-
     }
 }

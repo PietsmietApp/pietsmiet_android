@@ -16,6 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="?attr/actionBarSize"
             android:autoLink="web"
+            android:theme="@style/Theme.SwitchTheme"
             android:paddingStart="10dp"
             android:paddingTop="20dp"
             android:paddingBottom="10dp"

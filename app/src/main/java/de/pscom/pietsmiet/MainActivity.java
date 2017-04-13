@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +35,8 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public final int NUM_POST_TO_LOAD_ON_START = 15;
+    final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
@@ -240,6 +243,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     } else aSwitch.setChecked(false);
                 }
 
+                break;
+            case R.id.nav_feedback:
+                Intent i_Browser = new Intent(Intent.ACTION_VIEW);
+                i_Browser.setData(Uri.parse(url_feedback));
+                startActivity(i_Browser);
                 break;
             case R.id.nav_help:
                 startActivity(new Intent(MainActivity.this, About.class));

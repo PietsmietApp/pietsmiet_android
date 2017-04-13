@@ -50,6 +50,7 @@ public class PietcastPresenter extends MainPresenter {
     public void fetchPostsSince(Date dSince) {
         parsePietcast(2);
         //todo efficiency / logic
+        //fixme wrong check for date
     }
 
 

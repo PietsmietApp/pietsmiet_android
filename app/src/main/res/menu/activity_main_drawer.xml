@@ -32,6 +32,10 @@
     <item android:title="@string/drawer_sonstiges">
         <menu>
             <item
+                android:id="@+id/nav_feedback"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="@string/drawer_Feedback"/>
+            <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/ic_help_black_24dp"
                 android:title="@string/drawer_support"/>
@@ -40,6 +44,7 @@
                 android:checkable="false"
                 android:icon="@drawable/ic_settings_black_24dp"
                 android:title="@string/drawer_einstellungen"/>
+
         </menu>
     </item>
 </menu>

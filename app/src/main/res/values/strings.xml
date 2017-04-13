@@ -7,7 +7,7 @@
     <string name="drawer_youtube">YouTube</string>
 
     <string name="about_text">Developed by l3d00m and saibotk (tkindanight)
-        \n\nFehler melden: \n https://github.com/l3d00m/pietsmiet_android/issues
+        \n\nSource Code: \n https://github.com/l3d00m/pietsmiet_android/
         \n \nCreated with &lt;3</string>
 
     <string name="time_just_now">Gerade eben</string>
@@ -27,4 +27,5 @@
     <string name="settings_clear_cache">Clear Cache</string>
 
     <string name="other_coming_soon">Coming soon</string>
+    <string name="drawer_Feedback">Feedback</string>
 </resources>

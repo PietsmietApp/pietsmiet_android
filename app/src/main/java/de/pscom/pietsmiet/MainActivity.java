@@ -69,6 +69,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(() -> postManager.fetchNewPosts());
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+        refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet);
 
         // to Top Button init
         fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
@@ -94,7 +95,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         SettingsHelper.loadAllSettings(this);
-
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
@@ -132,6 +133,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onResume() {
         super.onResume();
+        SettingsHelper.loadAllSettings(this);
         if (PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
             PostManager.CLEAR_CACHE_FLAG = false;
@@ -157,7 +159,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                //todo wenn laden fehlschlägt Button Retry hinzufügen, da der scrolllistener sonst nicht weiter versucht zu laden!
                 postManager.fetchNextPosts(loadMoreItemsCount);
 
             }

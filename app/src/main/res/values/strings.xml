@@ -28,6 +28,7 @@
 
     <string name="other_coming_soon">Coming soon</string>
     <string name="drawer_Feedback">Feedback</string>
+
     <string name="settings_header_quality">Qualität</string>
     <string name="quality_hd_images">HD Bilder laden</string>
 </resources>

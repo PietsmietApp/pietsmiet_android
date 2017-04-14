@@ -21,7 +21,6 @@ android {
         targetSdkVersion 25
         versionCode 3
         versionName "0.2"
-
     }
     buildTypes {
         release {
@@ -36,6 +35,7 @@ android {
             resValue "string", "app_name", "Pietsmiet " + gitBranch()
             resValue "string", "app_version", "Version: $defaultConfig.versionName - DEV"
             setProperty("archivesBaseName", "Pietsmiet-Community-App-$defaultConfig.versionName")
+
         }
     }
     lintOptions {

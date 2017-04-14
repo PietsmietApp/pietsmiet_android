@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#74b62a</color>
-    <color name="colorPrimaryDark">#183B0C</color>
-    <color name="colorAccent">#b5f0a0</color>
+    <color name="colorSecondary">#558B2F</color>
+    <color name="colorPrimaryDark">#33691E</color>
+    <color name="colorAccent">#64DD17</color>
     <color name="pietsmiet">#74b62a</color>
 </resources>

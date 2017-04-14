@@ -11,6 +11,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
 import rx.Single;
 import rx.schedulers.Schedulers;
@@ -52,7 +53,12 @@ public class TwitterPresenter extends MainPresenter {
                 .observeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .subscribe(tweet -> {
-                    Drawable thumb = DrawableFetcher.getDrawableFromTweet(tweet);
+                    Drawable thumb = null;
+                    if(SettingsHelper.boolHDImages) {
+                        thumb = DrawableFetcher.getDrawableFromTweet(tweet);
+                    } else {
+                        thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);
+                    }
                     postBuilder = new Post.PostBuilder(TWITTER);
                     postBuilder.thumbnail(thumb);
                     postBuilder.title(getDisplayName(tweet.getUser()));
@@ -134,6 +140,9 @@ public class TwitterPresenter extends MainPresenter {
                         PsLog.d("Token already instantiated");
                         view.getPostManager().onReadyFetch(null, TWITTER);
                     }
+                },(err) ->{
+                    PsLog.e("Token already instantiated : " + err.getStackTrace().toString());
+                    view.getPostManager().onReadyFetch(null, TWITTER);
                 });
     }
 

@@ -94,7 +94,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         SettingsHelper.loadAllSettings(this);
-
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {

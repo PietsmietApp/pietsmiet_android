@@ -30,11 +30,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
             resValue "string", "app_name", "PietSmiet Community App"
-            resValue "string", "app_version", "Version: $defaultConfig.versionName"
         }
         debug {
             resValue "string", "app_name", "Pietsmiet " + gitBranch()
-            resValue "string", "app_version", "Version: $defaultConfig.versionName - DEV"
+            setProperty("archivesBaseName", "Pietsmiet-Community-App-$defaultConfig.versionName")
         }
     }
     lintOptions {

@@ -36,8 +36,7 @@
             android:layout_above="@+id/fragment"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="12dp"
-            android:layout_marginEnd="12dp"
-            android:text="@string/app_version" />
+            android:layout_marginEnd="12dp" />
 
     </RelativeLayout>
 

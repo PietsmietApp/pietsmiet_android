@@ -15,7 +15,6 @@ import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
 import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
 import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
 import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
-import static de.pscom.pietsmiet.util.ColorUtils.colorUploadplan;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
@@ -103,7 +102,7 @@ public class Post implements Comparable<Post> {
                 break;
             case UPLOADPLAN:
             case PIETCAST:
-                hexColor = colorUploadplan;
+                hexColor = PietSmiet;
                 break;
             case FACEBOOK:
                 hexColor = Facebook;

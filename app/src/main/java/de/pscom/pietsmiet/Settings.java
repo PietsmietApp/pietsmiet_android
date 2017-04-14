@@ -16,7 +16,6 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SET
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_HD_SETTING;
 
 public class Settings extends BaseActivity {
     PostManager pm;
@@ -29,7 +28,6 @@ public class Settings extends BaseActivity {
         Switch notifyVideoSwitch = (Switch) findViewById(R.id.notifyVideoSwitch);
         Switch notifyNewsSwitch = (Switch) findViewById(R.id.notifyNewsSwitch);
         Switch notifyPietcastSwitch = (Switch) findViewById(R.id.notifyPietcastSwitch);
-        Switch qualityHDImagesSwitch = (Switch) findViewById(R.id.qualityHDImagesSwitch);
         Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
         setupToolbar(getString(R.string.drawer_einstellungen));
 
@@ -39,15 +37,10 @@ public class Settings extends BaseActivity {
         notifyVideoSwitch.setChecked(SettingsHelper.boolVideoNotification);
         notifyNewsSwitch.setChecked(SettingsHelper.boolNewsNotification);
         notifyPietcastSwitch.setChecked(SettingsHelper.boolPietcastNotification);
-        qualityHDImagesSwitch.setChecked(SettingsHelper.boolHDImages);
 
         btnClearCache.setOnClickListener((btn) -> {
             new DatabaseHelper(getBaseContext()).clearDB();
             PostManager.CLEAR_CACHE_FLAG = true;
-        });
-
-        qualityHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_HD_SETTING, isChecked);
         });
 
         notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

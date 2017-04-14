@@ -67,7 +67,7 @@
             android:theme="@style/Theme.SwitchTheme"/>
 
         <TextView
-            android:id="@+id/sectionQuality"
+            android:id="@+id/sectionOthers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/notifyPietcastSwitch"
@@ -75,45 +75,19 @@
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
-            android:text="@string/settings_header_quality"
-            android:textColor="?attr/colorAccent"
-            android:textSize="14sp"
-            android:textStyle="bold"/>
-        <Switch
-            android:id="@+id/qualityHDImagesSwitch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/sectionQuality"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:text="@string/quality_hd_images"
-            android:theme="@style/Theme.SwitchTheme"/>
-
-        <TextView
-            android:id="@+id/sectionOthers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="16dp"
             android:text="@string/settings_header_others"
             android:textColor="?attr/colorAccent"
             android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_below="@+id/qualityHDImagesSwitch"
-            android:layout_alignParentStart="true" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/placeholderSoon"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/sectionOthers"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
-            android:text="@string/other_coming_soon"
-            android:layout_below="@+id/sectionOthers"
-            android:layout_alignParentStart="true" />
+            android:text="@string/other_coming_soon"/>
 
         <Button
             android:id="@+id/btnClearCache"

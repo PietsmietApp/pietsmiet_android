@@ -64,26 +64,11 @@ public class DrawableFetcher {
      * @return The drawable from the tweet, if available
      */
     @Nullable
-    public static Drawable getDrawableThumbFromTweet(@Nullable Status status) {
-        if (status != null) {
-            MediaEntity[] mediaEntities = status.getMediaEntities();
-            if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param status A tweet
-     * @return The drawable from the tweet, if available
-     */
-    @Nullable
     public static Drawable getDrawableFromTweet(@Nullable Status status) {
         if (status != null) {
             MediaEntity[] mediaEntities = status.getMediaEntities();
             if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL());
+                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
             }
         }
         return null;

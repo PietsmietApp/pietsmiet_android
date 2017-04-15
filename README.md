@@ -7,6 +7,7 @@
     <img alt="Jetzt bei Google Play"
         height="80"
         src="https://play.google.com/intl/de_de/badges/images/generic/de_badge_web_generic.png" />
+</a>
 
 ## Features
 

@@ -32,6 +32,7 @@ public class PostManager {
     private List<Post> currentPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
+    @SuppressWarnings("CanBeFinal")
     private List<Post> queuedPosts = new ArrayList<>();
     private Map<Integer, Boolean> fetchingEnded = new HashMap<>();
 
@@ -58,10 +59,10 @@ public class PostManager {
      */
 
     public void addPosts(List<Post> lPosts) {
+        // Neues Objekt erstellen, da ansonsten nur Pointer übergeben wird
         List<Post> listPosts = new ArrayList<>();
         listPosts.addAll(lPosts);
 
-        // ACHTUNG !!! DA HIER NUR DER POINTER ÜBERGEBEN WIRD BRAUCHT MAN EIN NEUES OBJEKT! todo MERKEN! SPART ZEIT ;)
         if (listPosts.size() == 0) {
             PsLog.w("addPosts called with zero posts");
             resetFetchingEnded();
@@ -114,8 +115,6 @@ public class PostManager {
      * 2) Check if posts have be shown or not
      * 3) Adds all posts to the currentPosts list
      * 4) Notifies the adapter about the change
-     * <p>
-     * This should be called as few times as possible because it kills performance if it's called too often
      */
     public void updateCurrentPosts() {
         // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
@@ -194,7 +193,7 @@ public class PostManager {
      **/
     public void fetchNextPosts(int numPosts) {
         FETCH_DIRECTION_DOWN = true;
-        //todo if this is called and fetchNewPosts too cancle all RxSubs
+        //todo if this is called and fetchNewPosts too cancel all RxSubs
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
@@ -220,7 +219,7 @@ public class PostManager {
     }
 
     /**
-     * Returns true if all Posts are fetched or all fetchung tasks have been executed.
+     * Returns true if all Posts are fetched or all fetching tasks have been executed.
      *
      * @return Boolean ended
      **/
@@ -267,7 +266,6 @@ public class PostManager {
 
 
     private void addPostsToQueue(List<Post> listPosts, @AllTypes int type) {
-        // ACHTUNG NEUES OBJEKT DA NUR POINTER ÜBERGEBEN!
         List<Post> lPosts = new ArrayList<>();
         lPosts.addAll(listPosts);
 

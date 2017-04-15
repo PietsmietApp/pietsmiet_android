@@ -33,7 +33,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
-    private static final int MAX_ADDITIONAL_POSTS_STORED = 50;
     public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
 
     @SuppressLint("SimpleDateFormat")
@@ -82,7 +81,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .flatMap(Observable::from)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .take(50)
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
                         DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
@@ -168,7 +166,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             if (post.hashCode() == old_hashcode) {
                                 toReturn.add(postBuilder.build());
                             } else {
-                                PsLog.v("Post in db has a different hashcode than before, not using it");
+                                PsLog.w("Post in db has a different hashcode than before, not using it");
                             }
                         } while (cursor.moveToNext());
                     } catch (Exception e) {
@@ -178,13 +176,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         db.close();
                     }
 
-                    // Apply posts
-                    PsLog.v("Applying " + toReturn.size() + " posts from DB");
-
-                    FLAG_POSTS_LOADED_FROM_DB = true;
-                    context.getPostManager().addPosts(toReturn);
-
-                    this.close();
                 }, (err) -> {
                     err.printStackTrace();
                     PsLog.e("DB: ERROR WHILE LOADING CACHE. FETCHING POSTS FROM ONLINE...");
@@ -192,10 +183,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     this.close();
 
                 }, () -> {
+                    // Apply posts
+                    PsLog.v("Applying " + toReturn.size() + " posts from DB");
+
+                    FLAG_POSTS_LOADED_FROM_DB = true;
+                    context.getPostManager().addPosts(toReturn);
+
                     if (pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && !FLAG_POSTS_LOADED_FROM_DB) {
                         PsLog.v("DB: LOCAL CACHE EMPTY. FETCHING POSTS FROM ONLINE...");
                         pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                     }
+
+                    this.close();
                 });
     }
 

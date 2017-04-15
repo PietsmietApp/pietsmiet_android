@@ -72,6 +72,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.description.setText(Html.fromHtml(currentItem.getDescription()));
             }
 
+            //todo TEMP because of unavailable data to duration
+            holder.ivDuration.setVisibility(GONE);
+            holder.tvDuration.setVisibility(GONE);
+
             holder.btnExpand.setVisibility(VISIBLE);
             holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
             holder.btnExpand.setOnClickListener(view -> {

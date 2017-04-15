@@ -18,6 +18,8 @@ import android.view.View;
  */
 
 public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
+    final int NEEDED_SCROLL_LENGTH_DOWN = 20;
+    final int NEEDED_SCROLL_LENGTH_UP = 20;
 
     public ScrollAwareFABBehavior(Context context, AttributeSet attrs) {
         super();
@@ -38,7 +40,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
         super.onNestedScroll(coordinatorLayout, child, target, dxConsumed, dyConsumed, dxUnconsumed,
                 dyUnconsumed);
 
-        if (dyConsumed < -180 && child.getVisibility() == View.VISIBLE) {
+        if (dyConsumed < -NEEDED_SCROLL_LENGTH_UP && child.getVisibility() == View.VISIBLE) {
             child.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                 @Override
                 public void onShown(FloatingActionButton fab) {
@@ -51,7 +53,7 @@ public class ScrollAwareFABBehavior extends FloatingActionButton.Behavior {
                     child.setVisibility(View.INVISIBLE);
                 }
             });
-        } else if (dyConsumed > 20 && child.getVisibility() != View.VISIBLE) {
+        } else if (dyConsumed > NEEDED_SCROLL_LENGTH_DOWN && child.getVisibility() != View.VISIBLE) {
             child.show();
         }
     }

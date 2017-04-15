@@ -10,7 +10,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.SettingsHelper;
 import facebook4j.BatchRequest;
 import facebook4j.BatchRequests;
 import facebook4j.BatchResponse;
@@ -85,20 +84,18 @@ public class FacebookPresenter extends MainPresenter {
      * @return List of unparsed posts from Team Pietsmiet
      */
     private List<BatchResponse> loadPosts(String strTime, int numPosts) {
-        String strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime;
-        if(SettingsHelper.boolHDImages) strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime;
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet
-            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie" + strFetch));
+            batch.add(new BatchRequest(RequestMethod.GET, "pietsmittie/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Chris
-            batch.add(new BatchRequest(RequestMethod.GET, "brosator" + strFetch));
+            batch.add(new BatchRequest(RequestMethod.GET, "brosator/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Jay
-            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105" + strFetch));
+            batch.add(new BatchRequest(RequestMethod.GET, "icetea3105/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Sep
-            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88" + strFetch));
+            batch.add(new BatchRequest(RequestMethod.GET, "kessemak88/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
             //Brammen
-            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n" + strFetch));
+            batch.add(new BatchRequest(RequestMethod.GET, "br4mm3n/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime));
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {

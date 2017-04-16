@@ -20,7 +20,7 @@ public class TwitchStream {
     private int videoHeight;
     @SerializedName("average_fps")
     @Expose
-    private int averageFps;
+    private float averageFps;
     @SerializedName("delay")
     @Expose
     private int delay;
@@ -66,11 +66,11 @@ public class TwitchStream {
         this.videoHeight = videoHeight;
     }
 
-    public int getAverageFps() {
+    public float getAverageFps() {
         return averageFps;
     }
 
-    public void setAverageFps(int averageFps) {
+    public void setAverageFps(float averageFps) {
         this.averageFps = averageFps;
     }
 

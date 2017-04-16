@@ -30,4 +30,5 @@
     <string name="drawer_Feedback">Feedback</string>
     <string name="settings_header_quality">Qualität</string>
     <string name="quality_hd_images">HD Bilder laden</string>
+    <string name="drawer_pietstream_banner">Pietstream</string>
 </resources>

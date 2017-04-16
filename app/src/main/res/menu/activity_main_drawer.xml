@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_pietstream_banner"
         android:visible="false"
-        app:actionLayout="@layout/pietstream_banner_layout"/>
+        app:actionLayout="@layout/pietstream_banner_layout" />
     <item
         android:id="@+id/nav_video"
         android:icon="@drawable/ic_watch_later_black_24dp"

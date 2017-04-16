@@ -179,11 +179,11 @@ public class PostManager {
         mView.setRefreshAnim(true);
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        //Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
 
-        Observable.mergeDelayError(twitterObs, youtubeObs, /*uploadplanObs, */pietcastObs, facebookObs)
+        Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
@@ -205,11 +205,11 @@ public class PostManager {
         mView.setRefreshAnim(true);
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        //Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
 
-        Observable.mergeDelayError(twitterObs, youtubeObs, /*uploadplanObs, */pietcastObs, facebookObs)
+        Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()

@@ -21,7 +21,6 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
@@ -39,11 +38,8 @@ public class FacebookPresenter extends MainPresenter {
         mFacebook.setOAuthAccessToken(new AccessToken(SecretConstants.facebookToken, null));
     }
 
-    private void parsePosts(String strTime, int numPosts) {
-        Observable.defer(() -> Observable.just(loadPosts(strTime, numPosts)))
-                .subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
+    private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
+        return Observable.just(loadPosts(strTime, numPosts))
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -63,7 +59,7 @@ public class FacebookPresenter extends MainPresenter {
                     }
                 })
                 .filter(response -> response != null)
-                .subscribe(post -> {
+                .map(post -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
                     postBuilder = new Post.PostBuilder(FACEBOOK);
                     postBuilder.thumbnail(thumb);
@@ -73,12 +69,8 @@ public class FacebookPresenter extends MainPresenter {
                     if (post.getId() != null && !post.getId().isEmpty()) {
                         postBuilder.url("http://www.facebook.com/" + post.getId());
                     }
-                    posts.add(this.postBuilder.build());
-                }, e -> {
-                    PsLog.e(e.toString());
-                    view.showError("Facebook parsing error");
-                    view.getPostManager().onReadyFetch(posts, FACEBOOK);
-                }, () -> view.getPostManager().onReadyFetch(posts, FACEBOOK));
+                    return postBuilder;
+                });
     }
 
     /**
@@ -109,14 +101,14 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince(Date dSince) {
-        parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), 50);
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
+        return parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), 50);
     }
 
 
     @Override
-    public void fetchPostsUntil(Date dUntil, int numPosts) {
-        parsePosts("&until=" + String.valueOf(dUntil.getTime() / 1000), numPosts);
+    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dUntil, int numPosts) {
+        return parsePosts("&until=" + String.valueOf(dUntil.getTime() / 1000), numPosts);
         //todo watch this if working correctly -> because many Posts are rejected
     }
 

@@ -12,7 +12,6 @@ import de.pscom.pietsmiet.util.PsLog;
 
 import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
-import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
 import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
 import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.ColorUtils.colorUploadplan;

@@ -33,22 +33,11 @@ public class PostManager {
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
     @SuppressWarnings("CanBeFinal")
-    private List<Post> queuedPosts = new ArrayList<>();
-    private Map<Integer, Boolean> fetchingEnded = new HashMap<>();
 
     private int numPostLoadCount = 5;
 
     public PostManager(MainActivity view) {
         mView = view;
-        resetFetchingEnded();
-    }
-
-    public void resetFetchingEnded() {
-        fetchingEnded.clear();
-        //queuedPosts.clear();
-        for (int k : getPossibleTypes()) {
-            fetchingEnded.put(k, false);
-        }
     }
 
     /**
@@ -197,11 +186,22 @@ public class PostManager {
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
-        new TwitterPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new YoutubePresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new PietcastPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new FacebookPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new UploadplanPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> twitterObs =  new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+
+        Observable.merge(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .map(Post.PostBuilder::build)
+                .toSortedList()
+                .subscribe(posts -> {
+                    mView.setRefreshAnim(false);
+                    addPostsToQueue(posts);
+                }, e -> PsLog.e(e.toString()));
     }
 
     /**
@@ -210,28 +210,24 @@ public class PostManager {
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
+        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
 
-        new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
-        new UploadplanPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new PietcastPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new FacebookPresenter(mView).fetchPostsSince(getFirstPostDate());
+        Observable.merge(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .map(Post.PostBuilder::build)
+                .toSortedList()
+                .subscribe(posts -> {
+                    mView.setRefreshAnim(false);
+                    addPostsToQueue(posts);
+                }, e -> PsLog.e(e.toString()));
     }
 
-    /**
-     * Returns true if all Posts are fetched or all fetching tasks have been executed.
-     *
-     * @return Boolean ended
-     **/
-    public boolean getAllPostsFetched() {
-        int isEnded = 0;
-        for (Boolean aBoolean : fetchingEnded.values()) {
-            if (aBoolean) {
-                isEnded++;
-            }
-        }
-        return fetchingEnded.size() == isEnded;
-    }
 
     /**
      * Gets the Post size of allPosts
@@ -242,76 +238,47 @@ public class PostManager {
         return allPosts.size();
     }
 
-    /**
-     * Callback for all Fetching methods of each Presenter.
-     * Central point for using the input.
-     *
-     * @param listPosts List<Post>
-     * @param type      int Presenter type
-     **/
-    public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
-        PsLog.v("Finished fetching " + PostType.getName(type) + "...");
-        if (listPosts != null && listPosts.size() > 0) {
-            addPostsToQueue(listPosts, type);
-        } else {
-            fetchingEnded.put(type, true);
-            PsLog.e("No Posts loaded in " + PostType.getName(type) + "...");
-            if (getAllPostsFetched()) {
-                mView.setRefreshAnim(false);
-                addPosts(queuedPosts);
-            }
-        }
 
-    }
+    private void addPostsToQueue(List<Post> listPosts) {
 
-
-    private void addPostsToQueue(List<Post> listPosts, @AllTypes int type) {
-        List<Post> lPosts = new ArrayList<>();
-        lPosts.addAll(listPosts);
-
-        if (lPosts.size() == 0) {
+        if (listPosts.size() == 0) {
             PsLog.w("addPostsToQueue called with zero posts");
             return;
         }
-
-        queuedPosts.addAll(lPosts);
-        fetchingEnded.put(type, true);
-
-        if (getAllPostsFetched()) {
-            Post[] posts = queuedPosts.toArray(new Post[queuedPosts.size()]);
-
-            Observable.just(posts)
-                    .observeOn(Schedulers.io())
-                    .onBackpressureBuffer()
-                    .subscribeOn(Schedulers.io())
-                    .flatMap(Observable::from)
-                    .filter(post -> post != null)
-                    .filter(post -> {
-                        boolean b = false;
-                        if(FETCH_DIRECTION_DOWN) {
-                            b = post.getDate().before(getLastPostDate());
-                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (ältester) Post Datum: " + getLastPostDate());
-                            return b;
-                        } else {
-                            b = post.getDate().after(getFirstPostDate());
-                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is before last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (neuster) Post Datum: " + getFirstPostDate());
-                            return b;
-                        }
-                    })
-                    .distinct()
-                    .toSortedList()
-                    .flatMap(Observable::from)
-                    .take(numPostLoadCount)
-                    .toList()
-                    .subscribe(items -> {
-                        queuedPosts.clear();
-                        queuedPosts.addAll(items);
-                    }, Throwable::printStackTrace, () -> {
-                        // reset fetching is in UpdateAdapter in MainActivity k
-                        addPosts(queuedPosts);
-                    });
-        }
-
+        Observable.just(listPosts)
+                .observeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .subscribeOn(Schedulers.io())
+                .flatMap(Observable::from)
+                .filter(post -> post != null)
+                .filter(post -> {
+                    boolean b = false;
+                    if (FETCH_DIRECTION_DOWN) {
+                        b = post.getDate().before(getLastPostDate());
+                        if (!b)
+                            PsLog.v("!!! - >  A post in " + PostType.getName(post.getPostType()) +
+                                    " is after last date...  " +
+                                    "-> TITLE: " + post.getTitle() +
+                                    " Datum: " + post.getDate() +
+                                    " letzter (ältester) Post Datum: " + getLastPostDate());
+                        return b;
+                    } else {
+                        b = post.getDate().after(getFirstPostDate());
+                        if (!b)
+                            PsLog.v("!!! - >  A post in " + PostType.getName(post.getPostType()) +
+                                    " is before last date...  " +
+                                    "-> TITLE: " + post.getTitle() +
+                                    " Datum: " + post.getDate() +
+                                    " letzter (neuster) Post Datum: " + getFirstPostDate());
+                        return b;
+                    }
+                })
+                .distinct()
+                .toSortedList()
+                .flatMap(Observable::from)
+                .take(numPostLoadCount)
+                .toList()
+                .subscribe(this::addPosts, Throwable::printStackTrace);
     }
 
     /**

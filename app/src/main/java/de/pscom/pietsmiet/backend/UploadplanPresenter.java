@@ -26,18 +26,17 @@ public class UploadplanPresenter extends MainPresenter {
         super(view);
     }
 
-    private void parseUploadplanFromDb(String scope) {
+    private Observable<Post.PostBuilder> parseUploadplanFromDb(String scope) {
         DatabaseReference mPostReference = FirebaseDatabase.getInstance().getReference().child(scope);
-
         mPostReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                postBuilder = new Post.PostBuilder(UPLOADPLAN);
                 Observable.just(dataSnapshot.getChildren())
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.io())
                         .onBackpressureBuffer()
                         .subscribe(snapshots -> {
+                            postBuilder = new Post.PostBuilder(UPLOADPLAN);
                             for (DataSnapshot snapshot :
                                     snapshots) {
                                 String value = (String) snapshot.getValue();
@@ -79,15 +78,15 @@ public class UploadplanPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince(Date dBefore) {
-        parseUploadplanFromDb("uploadplan");
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
+        return parseUploadplanFromDb("uploadplan");
 
     }
 
 
     @Override
-    public void fetchPostsUntil(Date dAfter, int numPosts) {
-        parseUploadplanFromDb("uploadplan");
+    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
+        return parseUploadplanFromDb("uploadplan");
         //fixme richtig?
     }
 }

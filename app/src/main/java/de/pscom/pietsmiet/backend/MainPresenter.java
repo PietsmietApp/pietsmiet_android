@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import rx.Observable;
 
 abstract class MainPresenter {
     final MainActivity view;
@@ -22,13 +23,13 @@ abstract class MainPresenter {
      *
      * @param dAfter Date
      */
-    public abstract void fetchPostsSince(Date dAfter);
+    public abstract Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dAfter);
 
     /**
      * Fetches all posts before a specific date. Until the given date.
      *
      * @param dBefore Date
      */
-    public abstract void fetchPostsUntil(Date dBefore, int numPosts);
+    public abstract Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dBefore, int numPosts);
 
 }

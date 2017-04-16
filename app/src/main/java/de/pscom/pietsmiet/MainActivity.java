@@ -203,13 +203,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
-                            if (refreshLayout != null && postManager != null) {
-                                if (postManager.getAllPostsFetched()) {
-                                    setRefreshAnim(false);
-                                    postManager.resetFetchingEnded();
-                                    //todo evtl woanders hin auslagern
-                                }
-                            }
                         }
                 );
     }
@@ -219,7 +212,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void showError(String msg) {
-        Observable.defer(() -> Observable.just(""))
+        Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 );

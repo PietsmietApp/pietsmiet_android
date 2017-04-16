@@ -24,7 +24,7 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 public class PostManager {
 
     public static boolean CLEAR_CACHE_FLAG = false;
-    public static boolean FETCH_DIRECTION_DOWN = false;
+    private static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;
     public Map<Integer, Boolean> allowedTypes = new HashMap<>();
@@ -54,12 +54,8 @@ public class PostManager {
 
         if (listPosts.size() == 0) {
             PsLog.w("addPosts called with zero posts");
-            resetFetchingEnded();
-            mView.setRefreshAnim(false);
-            queuedPosts.clear();
             return;
         }
-        queuedPosts.clear();
 
         if (listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
             DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
@@ -186,7 +182,7 @@ public class PostManager {
         numPostLoadCount = numPosts;
         mView.setRefreshAnim(true);
         //todo übergangslösung? da hier und in scrolllistener festgelegt
-        Observable<Post.PostBuilder> twitterObs =  new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
@@ -197,7 +193,9 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
+                .filter(post -> post != null)
                 .toSortedList()
+                .distinct()
                 .subscribe(posts -> {
                     mView.setRefreshAnim(false);
                     addPostsToQueue(posts);
@@ -243,41 +241,37 @@ public class PostManager {
 
         if (listPosts.size() == 0) {
             PsLog.w("addPostsToQueue called with zero posts");
+            mView.setRefreshAnim(false);
             return;
         }
         Observable.just(listPosts)
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .filter(post -> post != null)
+                .flatMapIterable(l -> l)
                 .filter(post -> {
                     boolean b = false;
                     if (FETCH_DIRECTION_DOWN) {
                         b = post.getDate().before(getLastPostDate());
                         if (!b)
-                            PsLog.v("!!! - >  A post in " + PostType.getName(post.getPostType()) +
-                                    " is after last date...  " +
-                                    "-> TITLE: " + post.getTitle() +
+                            PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                                    " Titel: " + post.getTitle() +
                                     " Datum: " + post.getDate() +
                                     " letzter (ältester) Post Datum: " + getLastPostDate());
                         return b;
                     } else {
                         b = post.getDate().after(getFirstPostDate());
                         if (!b)
-                            PsLog.v("!!! - >  A post in " + PostType.getName(post.getPostType()) +
-                                    " is before last date...  " +
-                                    "-> TITLE: " + post.getTitle() +
+                            PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                                    " Titel: " + post.getTitle() +
                                     " Datum: " + post.getDate() +
                                     " letzter (neuster) Post Datum: " + getFirstPostDate());
                         return b;
                     }
                 })
-                .distinct()
-                .toSortedList()
-                .flatMap(Observable::from)
                 .take(numPostLoadCount)
                 .toList()
+                .doOnNext(ignored -> mView.setRefreshAnim(false))
                 .subscribe(this::addPosts, Throwable::printStackTrace);
     }
 

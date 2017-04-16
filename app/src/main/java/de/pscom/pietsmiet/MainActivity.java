@@ -20,12 +20,15 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.model.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -46,6 +49,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fabToTop;
     private RecyclerView recyclerView;
+    private MenuItem pietstream_banner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +128,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
@@ -134,11 +139,25 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
+
+        // todo handle unsubscribe
+        Observable<TwitchStream>  obsTTV = new TwitchHelper().getStreamStatus();
+            obsTTV.subscribe((stream) -> {
+                if(stream != null) {
+                    pietstream_banner.setVisible(true);
+                } else {
+                    pietstream_banner.setVisible(false);
+                }
+            }, (err) -> {
+                PsLog.e(err.getMessage());
+            });
+
         if (PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
             PostManager.CLEAR_CACHE_FLAG = false;
             postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
         }
+
     }
 
 
@@ -170,6 +189,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void setupDrawer() {
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+        pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -187,6 +207,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        // todo handle unsubscribe & better check if pietstream_banner is != null
+        Observable<TwitchStream>  obsTTV = new TwitchHelper().getStreamStatus();
+        obsTTV.subscribe((stream) -> {
+            if(stream != null) {
+                pietstream_banner.setVisible(true);
+            } else {
+                pietstream_banner.setVisible(false);
+            }
+        }, (err) -> {
+            PsLog.e(err.getMessage());
+        });
     }
 
     //todo sinnvolle Konzeption? überall erreichbar ? Sicherheit?

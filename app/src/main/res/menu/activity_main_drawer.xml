@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <item
+        android:id="@+id/nav_pietstream_banner"
+        android:icon="@android:drawable/presence_video_online"
+        android:title="Pietstream online!"
+        android:visible="false" />
     <item
         android:id="@+id/nav_video"
         android:icon="@drawable/ic_watch_later_black_24dp"

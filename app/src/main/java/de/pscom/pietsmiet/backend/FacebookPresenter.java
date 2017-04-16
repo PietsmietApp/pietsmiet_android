@@ -39,7 +39,7 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
-        return Observable.just(loadPosts(strTime, numPosts))
+        return Observable.defer(() -> Observable.just(loadPosts(strTime, numPosts)))
                 .flatMapIterable(l -> l)
                 .flatMapIterable(result -> {
                     try {
@@ -78,7 +78,8 @@ public class FacebookPresenter extends MainPresenter {
      */
     private List<BatchResponse> loadPosts(String strTime, int numPosts) {
         String strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime;
-        if(SettingsHelper.boolHDImages) strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime;
+        if (SettingsHelper.boolHDImages)
+            strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime;
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet

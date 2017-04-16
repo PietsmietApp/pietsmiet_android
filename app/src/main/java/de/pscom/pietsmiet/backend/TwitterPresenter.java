@@ -14,6 +14,7 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
 import rx.exceptions.Exceptions;
+import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.RateLimitStatus;
@@ -46,7 +47,7 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     private Observable<Post.PostBuilder> parseTweets(Query q) {
-        return Observable.just(q)
+        return Observable.defer(() -> Observable.just(q))
                 .compose(getToken())
                 .flatMapIterable(this::fetchTweets)
                 .map(tweet -> {

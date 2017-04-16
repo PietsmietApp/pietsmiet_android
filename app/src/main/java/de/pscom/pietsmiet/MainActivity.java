@@ -21,7 +21,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
-import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -119,7 +118,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         new SecretConstants(this);
-        new DatabaseHelper(this).displayPostsFromCache(this);
+        //new DatabaseHelper(this).displayPostsFromCache(this);
 
         //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
     }
@@ -159,7 +158,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
                 // Add whatever code is needed to append new items to the bottom of the list
-                postManager.fetchNextPosts(loadMoreItemsCount);
+                postManager.fetchNextPosts(LOAD_MORE_ITEMS_COUNT);
 
             }
         };

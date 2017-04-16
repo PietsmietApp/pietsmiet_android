@@ -22,19 +22,20 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
 public class PostManager {
-
     public static boolean CLEAR_CACHE_FLAG = false;
     private static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;
     public Map<Integer, Boolean> allowedTypes = new HashMap<>();
+    // Posts that are currently displayed in adapter
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
+    // All posts loaded
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    @SuppressWarnings("CanBeFinal")
 
-    private int numPostLoadCount = 5;
+    private int postLoadCount = 15;
+
 
     public PostManager(MainActivity view) {
         mView = view;
@@ -65,25 +66,20 @@ public class PostManager {
         }
 
         listPosts.addAll(getAllPosts());
-        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = listPosts.toArray(new Post[listPosts.size()]);
 
-        Observable.just(posts)
+        Observable.just(listPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter(post -> post != null)
                 .distinct()
-                .toSortedList()
-                .flatMap(Observable::from)
-                .map(post -> {
+                .sorted()
+                .doOnNext(post -> {
                     if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0))
                         TwitterPresenter.firstTweetId = post.getId();
                     if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0))
                         TwitterPresenter.lastTweetId = post.getId();
-                    return post;
                 })
-                .toSortedList()
+                .toList()
                 .subscribe(items -> {
                     allPosts.clear();
                     allPosts.addAll(items);
@@ -130,7 +126,7 @@ public class PostManager {
     /**
      * @return All fetched posts, whether they are currently shown or not
      */
-    public List<Post> getAllPosts() {
+    private List<Post> getAllPosts() {
         return allPosts;
     }
 
@@ -179,27 +175,26 @@ public class PostManager {
     public void fetchNextPosts(int numPosts) {
         FETCH_DIRECTION_DOWN = true;
         //todo if this is called and fetchNewPosts too cancel all RxSubs
-        numPostLoadCount = numPosts;
+        postLoadCount = numPosts;
         mView.setRefreshAnim(true);
-        //todo übergangslösung? da hier und in scrolllistener festgelegt
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        //Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
 
-        Observable.merge(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
+        Observable.mergeDelayError(twitterObs, youtubeObs, /*uploadplanObs, */pietcastObs, facebookObs)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
-                .toSortedList()
                 .distinct()
-                .subscribe(posts -> {
-                    mView.setRefreshAnim(false);
-                    addPostsToQueue(posts);
-                }, e -> PsLog.e(e.toString()));
+                .toSortedList()
+                .subscribe(this::addPostsToQueue, e -> {
+                    PsLog.e(e.toString());
+                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                });
     }
 
     /**
@@ -210,20 +205,21 @@ public class PostManager {
         mView.setRefreshAnim(true);
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        //Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
 
-        Observable.merge(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
+        Observable.mergeDelayError(twitterObs, youtubeObs, /*uploadplanObs, */pietcastObs, facebookObs)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
+                .distinct()
                 .toSortedList()
-                .subscribe(posts -> {
-                    mView.setRefreshAnim(false);
-                    addPostsToQueue(posts);
-                }, e -> PsLog.e(e.toString()));
+                .subscribe(this::addPostsToQueue, e -> {
+                    PsLog.e(e.toString());
+                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                });
     }
 
 
@@ -269,7 +265,7 @@ public class PostManager {
                         return b;
                     }
                 })
-                .take(numPostLoadCount)
+                .take(postLoadCount)
                 .toList()
                 .doOnNext(ignored -> mView.setRefreshAnim(false))
                 .subscribe(this::addPosts, Throwable::printStackTrace);

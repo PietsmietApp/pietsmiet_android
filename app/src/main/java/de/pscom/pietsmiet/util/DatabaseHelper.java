@@ -163,10 +163,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 }
                             }
                             Post post = postBuilder.build();
-                            if (post.hashCode() == old_hashcode) {
+
+                            if (post != null && post.hashCode() == old_hashcode) {
                                 toReturn.add(postBuilder.build());
                             } else {
-                                PsLog.w("Post in db has a different hashcode than before, not using it");
+                                PsLog.w("Post in db has a different hashcode than before or Post is null, not using it");
                             }
                         } while (cursor.moveToNext());
                     } catch (Exception e) {

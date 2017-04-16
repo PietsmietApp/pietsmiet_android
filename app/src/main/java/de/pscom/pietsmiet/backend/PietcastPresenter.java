@@ -8,7 +8,6 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
@@ -24,9 +23,7 @@ public class PietcastPresenter extends MainPresenter {
      * Loads the latests Pietcasts
      */
     private Observable<Post.PostBuilder> parsePietcast(int num) {
-        return Observable.just(loadRss(pietcastUrl))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+        return Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
                 .flatMap(Observable::from)
                 .take(num)
                 .onBackpressureBuffer()

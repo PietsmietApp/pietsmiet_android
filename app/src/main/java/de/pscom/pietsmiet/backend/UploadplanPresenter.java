@@ -12,7 +12,6 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
@@ -32,10 +31,7 @@ public class UploadplanPresenter extends MainPresenter {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Observable.just(dataSnapshot.getChildren())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
-                        .onBackpressureBuffer()
-                        .subscribe(snapshots -> {
+                        .map(snapshots -> {
                             postBuilder = new Post.PostBuilder(UPLOADPLAN);
                             for (DataSnapshot snapshot :
                                     snapshots) {
@@ -56,15 +52,8 @@ public class UploadplanPresenter extends MainPresenter {
                                         break;
                                 }
                             }
-                            posts.add(postBuilder.build());
-
-                            PsLog.v("added " + scope + " from firebase db");
-
-                        }, (throwable) -> {
-                            throwable.printStackTrace();
-                            view.showError("Typ" + scope + " konnte nicht geladen werden");
-                            view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
-                        }, () -> view.getPostManager().onReadyFetch(posts, UPLOADPLAN));
+                            return postBuilder;
+                        });
             }
 
             @Override
@@ -72,9 +61,9 @@ public class UploadplanPresenter extends MainPresenter {
                 if (databaseError != null)
                     PsLog.e("Database loading failed because: " + databaseError.toString());
                 view.showError("Typ" + scope + " konnte nicht geladen werden");
-                view.getPostManager().onReadyFetch(posts, UPLOADPLAN);
             }
         });
+        return null; //fixme
     }
 
     @Override

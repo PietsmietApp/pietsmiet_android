@@ -63,7 +63,7 @@ public class YoutubePresenter extends MainPresenter {
 
 
     private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
-        return call.flatMapIterable(YoutubeRoot::getItems)
+        return Observable.defer(() -> call.flatMapIterable(YoutubeRoot::getItems))
                 .filter(result -> result != null)
                 .doOnNext(item -> {
                     this.postBuilder = new Post.PostBuilder(VIDEO);

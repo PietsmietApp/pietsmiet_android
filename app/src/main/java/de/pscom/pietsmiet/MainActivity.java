@@ -38,7 +38,8 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public final int NUM_POST_TO_LOAD_ON_START = 15;
-    final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private final String url_pietstream = "https://www.twitch.tv/pietsmiet";
 
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -287,6 +288,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(MainActivity.this, Settings.class));
+                break;
+            case R.id.nav_pietstream_banner:
+                Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
+                i_TwitchBrowser.setData(Uri.parse(url_pietstream));
+                startActivity(i_TwitchBrowser);
                 break;
             default:
                 return false;

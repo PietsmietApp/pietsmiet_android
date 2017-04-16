@@ -8,11 +8,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 public class TwitchHelper {
-    private Subscription sub;
     private final String urlTTVAPI = "https://api.twitch.tv/kraken/";
     private final TwitchApiInterface apiInterface;
     public TwitchHelper() {

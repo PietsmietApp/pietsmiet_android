@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -97,7 +98,10 @@ public class DrawableFetcher {
     public static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
-            Drawable toReturn = BitmapDrawable.createFromStream(is, "src name");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
+            Drawable toReturn = new BitmapDrawable(Resources.getSystem(), bitmap);
             if (toReturn.getMinimumHeight() > 0 && toReturn.getMinimumWidth() > 0) {
                 return toReturn;
             }

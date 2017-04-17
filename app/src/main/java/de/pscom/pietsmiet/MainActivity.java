@@ -152,12 +152,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onPause() {
         super.onPause();
-        SettingsHelper.saveAllSettings(this);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        SettingsHelper.loadAllSettings(this);
         reloadTwitchBanner();
         if (PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
@@ -167,11 +168,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        SettingsHelper.saveAllSettings(this);
-    }
 
     public PostManager getPostManager() {
         return postManager;

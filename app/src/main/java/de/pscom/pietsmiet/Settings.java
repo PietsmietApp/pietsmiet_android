@@ -35,9 +35,7 @@ public class Settings extends BaseActivity {
 
         setupToolbar(getString(R.string.drawer_einstellungen));
 
-
-        if(!SettingsHelper.FLAG_INIT_SETTINGS_LOADED) SettingsHelper.loadAllSettings(this);
-
+        SettingsHelper.loadAllSettings(this);
         //todo implement auto reset of corresponding image quality switch
         notifyUploadplanSwitch.setChecked(SettingsHelper.boolUploadplanNotification);
         notifyVideoSwitch.setChecked(SettingsHelper.boolVideoNotification);
@@ -52,15 +50,15 @@ public class Settings extends BaseActivity {
         });
 
         qualityForceHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolForceHDImages = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_FORCE_HD_SETTING, isChecked);
         });
 
         qualityWifiOnlyHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolWifiOnlyHDImages = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING, isChecked);
         });
 
         notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolUploadplanNotification = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_UPLOADPLAN_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
             } else {
@@ -69,7 +67,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyVideoSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolVideoNotification = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("video");
             } else {
@@ -78,7 +76,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyNewsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolNewsNotification = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_NEWS_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("news");
             } else {
@@ -87,25 +85,13 @@ public class Settings extends BaseActivity {
         });
 
         notifyPietcastSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SettingsHelper.boolPietcastNotification = isChecked;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_PIETCAST_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("pietcast");
             } else {
                 FirebaseMessaging.getInstance().unsubscribeFromTopic("pietcast");
             }
         });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        SettingsHelper.saveAllSettings(getBaseContext());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        SettingsHelper.saveAllSettings(getBaseContext());
     }
 
     @Override

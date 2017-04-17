@@ -34,6 +34,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
 
+    private static final int MAX_AGE_DAYS = 5;
+
     private final Context mContext;
 
     @SuppressLint("SimpleDateFormat")
@@ -73,8 +75,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Adds posts to the database (and stores their thumbnails). This is done asynchronous
      *
-     * @param posts   Posts to store
+     * @param posts Posts to store
      */
+    @SuppressWarnings("WeakerAccess")
     public void insertPosts(List<Post> posts) {
         deleteTable();
         SQLiteDatabase db = getWritableDatabase();
@@ -96,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_TIME, post.getDate().getTime());
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
-                    db.insert(TABLE_POSTS, null, contentValues);
+                    db.replace(TABLE_POSTS, null, contentValues);
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     db.close();
@@ -133,9 +136,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
-        long time = new Date(System.currentTimeMillis() - (2 * DAY_IN_MS)).getTime();
+        long time = new Date(System.currentTimeMillis() - (MAX_AGE_DAYS * DAY_IN_MS)).getTime();
         PsLog.v("LOADING CACHE STARTED...");
-        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " WHERE " + POSTS_COLUMN_TIME + " > " + time, null);
+        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
+                "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
+                "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
         PostManager pm = context.getPostManager();
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
@@ -179,13 +184,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     return toReturn;
 
                 })
-                .doOnNext(items -> {
-                    PsLog.v("Loaded " + items.size() + " posts from DB");
+                .subscribe(items -> {
                     this.close();
-                })
-                .compose(context.getPostManager().addPosts())
-                .subscribe(ignored -> pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START), (err) -> {
-                    PsLog.e("Could not load posts from DB: " + err.toString());
+                    PsLog.v("Loaded " + items.size() + " posts from DB");
+                    pm.addPosts(items);
+                    pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
+                }, e -> {
+                    this.close();
+                    PsLog.e("Could not load posts from DB: " + e.toString());
                     pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                 });
     }

@@ -52,7 +52,7 @@ public class TwitterPresenter extends MainPresenter {
                 .map(tweet -> {
                     Drawable thumb = null;
 
-                    if(SettingsHelper.shouldLoadHDImages(view)) {
+                    if (SettingsHelper.shouldLoadHDImages(view)) {
                         thumb = DrawableFetcher.getDrawableFromTweet(tweet);
                     } else {
                         thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);

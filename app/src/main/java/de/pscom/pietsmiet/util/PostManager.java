@@ -17,7 +17,9 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
@@ -43,18 +45,19 @@ public class PostManager {
 
     /**
      * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
-     * This happens on a background thread
+     * It also stores the last and first twitter Id
      */
 
     @SuppressWarnings("WeakerAccess")
-    public Observable.Transformer<List<Post>, List<Post>> addPosts() {
-        return postObservable -> postObservable
+    public void addPosts(List<Post> posts) {
+        Observable.just(posts)
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .flatMapIterable(list -> {
                     list.addAll(allPosts);
                     return list;
                 })
                 .distinct()
-                .sorted()
                 .doOnNext(post -> {
                     if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0))
                         TwitterPresenter.firstTweetId = post.getId();
@@ -62,12 +65,11 @@ public class PostManager {
                         TwitterPresenter.lastTweetId = post.getId();
                 })
                 .toList()
-                .map(posts -> {
+                .subscribe(list -> {
                     allPosts.clear();
-                    allPosts.addAll(posts);
-                    return posts;
-                })
-                .doOnNext(ignored -> updateCurrentPosts());
+                    allPosts.addAll(list);
+                    updateCurrentPosts();
+                }, Throwable::printStackTrace);
     }
 
     /**
@@ -85,7 +87,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
-                .toList()
+                .toSortedList()
                 .subscribe(list -> {
                     currentPosts.clear();
                     currentPosts.addAll(list);
@@ -161,17 +163,7 @@ public class PostManager {
         Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-
-        Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .map(Post.PostBuilder::build)
-                .toSortedList()
-                .subscribe(this::addPostsToQueue, e -> {
-                    PsLog.e(e.toString());
-                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
-                });
+        addPostsToQueue(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
     /**
@@ -185,17 +177,7 @@ public class PostManager {
         Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-
-        Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .map(Post.PostBuilder::build)
-                .toSortedList()
-                .subscribe(this::addPostsToQueue, e -> {
-                    PsLog.e(e.toString());
-                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
-                });
+        addPostsToQueue(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
 
@@ -209,25 +191,24 @@ public class PostManager {
     }
 
 
-    private void addPostsToQueue(List<Post> listPosts) {
-
-        if (listPosts.size() == 0) {
-            PsLog.w("addPostsToQueue called with zero posts");
-            mView.setRefreshAnim(false);
-            return;
-        }
-        Observable.just(listPosts)
-                .observeOn(Schedulers.io())
-                .onBackpressureBuffer()
+    private void addPostsToQueue(Observable<Post.PostBuilder> postObs) {
+        postObs.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .flatMapIterable(l -> l)
-                .filter(this::filterPosts)
+                .onBackpressureBuffer()
+                .map(Post.PostBuilder::build)
+                .filter(post -> post != null)
+                .sorted()
+                .filter(this::filterWrongPosts)
                 .take(postLoadCount)
                 .toList()
-                .doOnNext(items -> new DatabaseHelper(mView).insertPosts(items))
-                .compose(addPosts())
-                .doOnNext(ignored -> mView.setRefreshAnim(false))
-                .subscribe(ignored -> {}, Throwable::printStackTrace);
+                .subscribe(items -> {
+                    addPosts(items);
+                    mView.setRefreshAnim(false);
+                    new DatabaseHelper(mView).insertPosts(items);
+                }, e -> {
+                    PsLog.e(e.toString());
+                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                });
     }
 
     /**
@@ -241,22 +222,24 @@ public class PostManager {
         updateCurrentPosts();
     }
 
-    private boolean filterPosts(Post post){
+    private boolean filterWrongPosts(Post post) {
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
-            if (!shouldFilter)
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (ältester) Post Datum: " + getLastPostDate());
+            }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter)
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (neuster) Post Datum: " + getFirstPostDate());
+            }
         }
         return shouldFilter;
     }

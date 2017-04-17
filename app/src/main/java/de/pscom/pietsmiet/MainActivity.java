@@ -137,9 +137,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      */
     private void reloadTwitchBanner() {
         // todo handle unsubscribe
-        Observable<TwitchStream>  obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
+        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
         obsTTV.subscribe((stream) -> {
-            if(stream != null) {
+            if (stream != null) {
                 pietstream_banner.setVisible(true);
             } else {
                 pietstream_banner.setVisible(false);

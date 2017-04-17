@@ -54,7 +54,7 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMap(Observable::from)
                 .subscribe(tweet -> {
                     Drawable thumb = null;
-                    if(SettingsHelper.boolHDImages) {
+                    if(SettingsHelper.shouldLoadHDImages(view)) {
                         thumb = DrawableFetcher.getDrawableFromTweet(tweet);
                     } else {
                         thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);

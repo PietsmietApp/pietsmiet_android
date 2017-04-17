@@ -44,33 +44,15 @@ public class PostManager {
     /**
      * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
      * This happens on a background thread
-     *
-     * @param lPosts posts to add
      */
 
-    public void addPosts(List<Post> lPosts) {
-        // Neues Objekt erstellen, da ansonsten nur Pointer übergeben wird
-        List<Post> listPosts = new ArrayList<>();
-        listPosts.addAll(lPosts);
-
-        if (listPosts.size() == 0) {
-            PsLog.w("addPosts called with zero posts");
-            return;
-        }
-
-        if (listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
-            DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
-            fetchNextPosts(mView.NUM_POST_TO_LOAD_ON_START);
-
-            return;
-        }
-
-        listPosts.addAll(getAllPosts());
-
-        Observable.just(listPosts)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
+    @SuppressWarnings("WeakerAccess")
+    public Observable.Transformer<List<Post>, List<Post>> addPosts() {
+        return postObservable -> postObservable
+                .flatMapIterable(list -> {
+                    list.addAll(allPosts);
+                    return list;
+                })
                 .distinct()
                 .sorted()
                 .doOnNext(post -> {
@@ -80,15 +62,12 @@ public class PostManager {
                         TwitterPresenter.lastTweetId = post.getId();
                 })
                 .toList()
-                .subscribe(items -> {
+                .map(posts -> {
                     allPosts.clear();
-                    allPosts.addAll(items);
-                    if (DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
-                        DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
-                    } else {
-                        new DatabaseHelper(mView).insertPosts(items, mView);
-                    }
-                }, Throwable::printStackTrace, this::updateCurrentPosts);
+                    allPosts.addAll(posts);
+                    return posts;
+                })
+                .doOnNext(ignored -> updateCurrentPosts());
     }
 
     /**
@@ -106,7 +85,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
-                .toSortedList()
+                .toList()
                 .subscribe(list -> {
                     currentPosts.clear();
                     currentPosts.addAll(list);
@@ -188,8 +167,6 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
-                .filter(post -> post != null)
-                .distinct()
                 .toSortedList()
                 .subscribe(this::addPostsToQueue, e -> {
                     PsLog.e(e.toString());
@@ -214,7 +191,6 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
-                .distinct()
                 .toSortedList()
                 .subscribe(this::addPostsToQueue, e -> {
                     PsLog.e(e.toString());
@@ -245,30 +221,13 @@ public class PostManager {
                 .onBackpressureBuffer()
                 .subscribeOn(Schedulers.io())
                 .flatMapIterable(l -> l)
-                .filter(post -> {
-                    boolean b = false;
-                    if (FETCH_DIRECTION_DOWN) {
-                        b = post.getDate().before(getLastPostDate());
-                        if (!b)
-                            PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                                    " Titel: " + post.getTitle() +
-                                    " Datum: " + post.getDate() +
-                                    " letzter (ältester) Post Datum: " + getLastPostDate());
-                        return b;
-                    } else {
-                        b = post.getDate().after(getFirstPostDate());
-                        if (!b)
-                            PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                                    " Titel: " + post.getTitle() +
-                                    " Datum: " + post.getDate() +
-                                    " letzter (neuster) Post Datum: " + getFirstPostDate());
-                        return b;
-                    }
-                })
+                .filter(this::filterPosts)
                 .take(postLoadCount)
                 .toList()
+                .doOnNext(items -> new DatabaseHelper(mView).insertPosts(items))
+                .compose(addPosts())
                 .doOnNext(ignored -> mView.setRefreshAnim(false))
-                .subscribe(this::addPosts, Throwable::printStackTrace);
+                .subscribe(ignored -> {}, Throwable::printStackTrace);
     }
 
     /**
@@ -280,5 +239,25 @@ public class PostManager {
         TwitterPresenter.lastTweetId = 0;
         TwitterPresenter.firstTweetId = 0;
         updateCurrentPosts();
+    }
+
+    private boolean filterPosts(Post post){
+        boolean shouldFilter;
+        if (FETCH_DIRECTION_DOWN) {
+            shouldFilter = post.getDate().before(getLastPostDate());
+            if (!shouldFilter)
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (ältester) Post Datum: " + getLastPostDate());
+        } else {
+            shouldFilter = post.getDate().after(getFirstPostDate());
+            if (!shouldFilter)
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (neuster) Post Datum: " + getFirstPostDate());
+        }
+        return shouldFilter;
     }
 }

@@ -33,13 +33,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
-    public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
+
+    private final Context mContext;
 
     @SuppressLint("SimpleDateFormat")
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
+        mContext = context;
     }
 
     @Override
@@ -72,9 +74,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Adds posts to the database (and stores their thumbnails). This is done asynchronous
      *
      * @param posts   Posts to store
-     * @param context Context for storing thumbnails
      */
-    public void insertPosts(List<Post> posts, Context context) {
+    public void insertPosts(List<Post> posts) {
         deleteTable();
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
@@ -83,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
-                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
+                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), mContext, Integer.toString(post.hashCode()));
                     }
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
@@ -129,8 +130,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return;
         }
 
-        List<Post> toReturn = new ArrayList<>();
-
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
@@ -143,7 +142,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .filter(Cursor::moveToFirst)
-                .subscribe(cursor -> {
+                .map(cursor -> {
+                    List<Post> toReturn = new ArrayList<>();
                     try {
                         do {
                             int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
@@ -176,26 +176,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
+                    return toReturn;
 
-                }, (err) -> {
-                    err.printStackTrace();
-                    PsLog.e("DB: ERROR WHILE LOADING CACHE. FETCHING POSTS FROM ONLINE...");
+                })
+                .doOnNext(items -> {
+                    PsLog.v("Loaded " + items.size() + " posts from DB");
+                    this.close();
+                })
+                .compose(context.getPostManager().addPosts())
+                .subscribe(ignored -> pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START), (err) -> {
+                    PsLog.e("Could not load posts from DB: " + err.toString());
                     pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
-                    this.close();
-
-                }, () -> {
-                    // Apply posts
-                    PsLog.v("Applying " + toReturn.size() + " posts from DB");
-
-                    FLAG_POSTS_LOADED_FROM_DB = true;
-                    context.getPostManager().addPosts(toReturn);
-
-                    if (pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && !FLAG_POSTS_LOADED_FROM_DB) {
-                        PsLog.v("DB: LOCAL CACHE EMPTY. FETCHING POSTS FROM ONLINE...");
-                        pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
-                    }
-
-                    this.close();
                 });
     }
 

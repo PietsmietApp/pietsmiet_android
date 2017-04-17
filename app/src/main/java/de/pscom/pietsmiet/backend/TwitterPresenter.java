@@ -14,7 +14,6 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
 import rx.exceptions.Exceptions;
-import rx.schedulers.Schedulers;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.RateLimitStatus;

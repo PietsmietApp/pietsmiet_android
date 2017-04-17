@@ -36,11 +36,12 @@ import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    public final int NUM_POST_TO_LOAD_ON_START = 15;
-    private final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
-    private final String url_pietstream = "https://www.twitch.tv/pietsmiet";
-    private final String twitch_channel_id_pietstream = "pietsmiet";
+    public static final int RESULT_CLEAR_CACHE = 17;
+    public static final int REQUEST_SETTINGS = 16;
+    public static final int NUM_POST_TO_LOAD_ON_START = 15;
+    private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
+    private static final String twitch_channel_id_pietstream = "pietsmiet";
 
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -160,12 +161,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         reloadTwitchBanner();
-        if (PostManager.CLEAR_CACHE_FLAG) {
-            postManager.clearPosts();
-            PostManager.CLEAR_CACHE_FLAG = false;
-            postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
-        }
-
     }
 
 
@@ -281,7 +276,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startActivity(new Intent(MainActivity.this, About.class));
                 break;
             case R.id.nav_settings:
-                startActivity(new Intent(MainActivity.this, Settings.class));
+                startActivityForResult(new Intent(MainActivity.this, Settings.class), REQUEST_SETTINGS);
                 break;
             case R.id.nav_pietstream_banner:
                 Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
@@ -296,4 +291,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SETTINGS){
+            if (resultCode == RESULT_CLEAR_CACHE){
+                postManager.clearPosts();
+                postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+            }
+        }
+    }
+
+
 }

@@ -8,7 +8,6 @@ import android.widget.Switch;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.util.DatabaseHelper;
-import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
@@ -45,8 +44,8 @@ public class Settings extends BaseActivity {
         qualityWifiOnlyHDImagesSwitch.setChecked(SettingsHelper.boolWifiOnlyHDImages);
 
         btnClearCache.setOnClickListener((btn) -> {
-            new DatabaseHelper(getBaseContext()).clearDB();
-            PostManager.CLEAR_CACHE_FLAG = true;
+            new DatabaseHelper(this).clearDB();
+            setResult(MainActivity.RESULT_CLEAR_CACHE);
         });
 
         qualityForceHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

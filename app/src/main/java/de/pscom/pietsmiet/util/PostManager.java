@@ -24,7 +24,6 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
 public class PostManager {
-    public static boolean CLEAR_CACHE_FLAG = false;
     private static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;

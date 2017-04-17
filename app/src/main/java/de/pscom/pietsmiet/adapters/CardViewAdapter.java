@@ -72,7 +72,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.description.setText(Html.fromHtml(currentItem.getDescription()));
             }
 
-            //todo TEMP because of unavailable data to duration
+            // TEMP because of unavailable data about durations
             holder.ivDuration.setVisibility(GONE);
             holder.tvDuration.setVisibility(GONE);
 

@@ -78,10 +78,7 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
-
-        Observable.just(posts)
+        Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
@@ -95,6 +92,10 @@ public class PostManager {
                 });
     }
 
+    /**
+     * Sets the allowedTypes only to the received postType, to display just one category.
+     * @param postType
+     */
     public void displayOnlyType(@AllTypes int postType) {
         for (int type : getPossibleTypes()) {
             if (type == postType) allowedTypes.put(type, true);
@@ -103,14 +104,7 @@ public class PostManager {
         updateCurrentPosts();
     }
 
-    /**
-     * @return All fetched posts, whether they are currently shown or not
-     */
-    private List<Post> getAllPosts() {
-        return allPosts;
-    }
-
-    /**
+    /** Returns currentPosts.
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
@@ -123,22 +117,29 @@ public class PostManager {
      */
     private boolean isAllowedType(Post post) {
         Boolean allowed = allowedTypes.get(post.getPostType());
-        if (allowed == null) {
-            allowed = true;
-        }
+        if (allowed == null) allowed = true;
         return allowed;
     }
 
+    /**
+     * Returns the date of the first post element in allPosts.
+     * If no post is present, the returned date will be:
+     * Current date - 1 Day
+     * @return Date
+     */
     private Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
             return new Date(new Date().getTime() - 86400000);
-            // setzte tag auf vorherigen
         } else {
             return allPosts.get(0).getDate();
         }
     }
 
-
+    /**
+     * Returns the date of the last post element in allPosts.
+     * If no post is present, the returned date will be the current date.
+     * @return Date
+     */
     private Date getLastPostDate() {
         if (allPosts.isEmpty()) {
             return new Date();
@@ -162,11 +163,11 @@ public class PostManager {
         Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        addPostsToQueue(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
     /**
-     * Root fetching Method to call all specific fetching methods for new Posts.
+     *  Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
@@ -176,7 +177,7 @@ public class PostManager {
         Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        addPostsToQueue(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
 
@@ -189,8 +190,12 @@ public class PostManager {
         return allPosts.size();
     }
 
-
-    private void addPostsToQueue(Observable<Post.PostBuilder> postObs) {
+    /**
+     * Subscribes to the merged Observables emitting the loaded posts.
+     * Filters the result and finally adds the selected posts to the allPost List with addPosts().
+     * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
+     */
+    private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
         postObs.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
@@ -207,11 +212,12 @@ public class PostManager {
                 }, e -> {
                     PsLog.e(e.toString());
                     mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                    mView.setRefreshAnim(false);
                 });
     }
 
     /**
-     * Clears all Posts from the View.
+     * Clears all posts from the view and resets variables.
      **/
     public void clearPosts() {
         allPosts.clear();
@@ -221,6 +227,11 @@ public class PostManager {
         updateCurrentPosts();
     }
 
+    /**
+     * Checks if a post is after / before the fetching direction.
+     * @param post Post object to check
+     * @return boolean shouldFilter
+     */
     private boolean filterWrongPosts(Post post) {
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {

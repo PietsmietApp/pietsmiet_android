@@ -12,9 +12,21 @@ public class SharedPreferenceHelper {
     public static final String KEY_NOTIFY_VIDEO_SETTING = "KEY_NOTIFY_VIDEO_SETTING";
     public static final String KEY_NOTIFY_NEWS_SETTING = "KEY_NOTIFY_NEWS_SETTING";
     public static final String KEY_NOTIFY_PIETCAST_SETTING = "KEY_NOTIFY_PIETCAST_SETTING";
-    public static final String KEY_QUALITY_IMAGE_FORCE_HD_SETTING = "KEY_QUALITY_IMAGE_FORCE_HD_SETTING";
-    public static final String KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING = "KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING";
+    public static final String KEY_QUALITY_IMAGE_LOAD_HD_SETTING = "KEY_QUALITY_IMAGE_LOAD_HD_SETTING";
+
     private final static String PREF_FILE = "PREF";
+
+    /**
+     * Set a integer shared preference
+     * @param key - Key to set shared preference
+     * @param value - Value for the key
+     */
+    public static void setSharedPreferenceInt(Context context, String key, int value){
+        SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
 
     /**
      * Set a string shared preference
@@ -53,6 +65,17 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(key, value);
         editor.apply();
+    }
+
+    /**
+     * Get a integer shared preference
+     * @param key - Key to look up in shared preferences.
+     * @param defValue - Default value to be returned if shared preference isn't found.
+     * @return value - String containing value of the shared preference if found.
+     */
+    public static int getSharedPreferenceInt(Context context, String key, int defValue){
+        SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
+        return settings.getInt(key, defValue);
     }
 
     /**

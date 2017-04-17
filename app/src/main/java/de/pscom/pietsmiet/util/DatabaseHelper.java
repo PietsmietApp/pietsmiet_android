@@ -34,6 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
 
+    // MAX_AGE_DAYS defines the maxium age of the stored posts, before it gets cleared
     private static final int MAX_AGE_DAYS = 5;
 
     private final Context mContext;
@@ -41,11 +42,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressLint("SimpleDateFormat")
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+
+    /** Initializes a new DatabaseHelper object
+     *  @param context Context reference to access PostManager etc
+     */
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
         mContext = context;
     }
 
+    /**
+     * Creates the default table
+     * @param db SQLiteDatabase link
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
@@ -62,12 +71,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
+    /**
+     *  Called if the database was updated eg from an older version / after an update.
+     *  Resets the database.
+     * @param db SQLiteDatabase current database link
+     * @param i int
+     * @param i1 int
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
         onCreate(db);
     }
 
+    /**
+     *  Deletes the table TABLE_POSTS.
+     */
     private void deleteTable() {
         getWritableDatabase().delete(TABLE_POSTS, null, null);
     }
@@ -109,6 +128,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 });
     }
 
+    /**
+     *  Returns the amount of posts currently stored in the database.
+     * @return int Count posts stored in the database.
+     */
     private int getPostsInDbCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         long cnt = DatabaseUtils.queryNumEntries(db, TABLE_POSTS);
@@ -116,6 +139,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
     }
 
+
+    /**
+     *  Clears the entire Database.
+     */
     public void clearDB() {
         deleteTable();
         this.close();
@@ -123,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Loads all post objects from the database and displays it
-     * Clears the database if it's too big
+     * Clears the database if it's too old
      *
      * @param context For loading the drawable & displaying the post after finished loading
      */

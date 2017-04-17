@@ -43,14 +43,12 @@ public class PietcastPresenter extends MainPresenter {
     public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
         return parsePietcast(2);
         //todo efficiency / logic
-        //fixme wrong check for date
     }
 
 
     @Override
     public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dUntil, int numPosts) {
         return parsePietcast(20);
-        // todo mit datum arbeiten!
     }
 
 }

@@ -19,6 +19,10 @@ public class TwitchHelper {
      * Initiates the TwitchHelper Object with the Retrofit instance
      */
     public TwitchHelper() {
+        if(SecretConstants.twitchClientId == null) {
+            PsLog.w("No Twitch ClientID defined... Cannot load TwitchHelper");
+        }
+
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()

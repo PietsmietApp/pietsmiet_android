@@ -1,4 +1,5 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:nestedScrollingEnabled="true">
@@ -86,34 +87,33 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <Switch
-                android:id="@+id/qualityForceHDImagesSwitch"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvQualityHDImages"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_above="@+id/sectionOthers"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/sectionQuality"
+                android:layout_toStartOf="@+id/qualityLoadHDImagesSpinner"
                 android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="@string/quality_force_hd_images"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:paddingLeft="16dp"
+                android:text="@string/quality_hd_images_spinner_label"
+                android:textColor="@android:color/black" />
 
-            <Switch
-                android:id="@+id/qualityWifiOnlyHDImagesSwitch"
-                android:layout_width="match_parent"
+            <Spinner
+                android:id="@+id/qualityLoadHDImagesSpinner"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/qualityForceHDImagesSwitch"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="@string/quality_wifi_only_hd_images"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/sectionQuality"
+                android:entries="@array/qualityHDImagesSpinnerItems_array" />
 
             <TextView
                 android:id="@+id/sectionOthers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/qualityWifiOnlyHDImagesSwitch"
+                android:layout_below="@+id/qualityLoadHDImagesSpinner"
                 android:paddingBottom="8dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"

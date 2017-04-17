@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
-        // to Top Button init
+        // Top Button init
         fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
         fabToTop.setVisibility(View.INVISIBLE);
         fabToTop.setOnClickListener(new View.OnClickListener() {
@@ -99,7 +99,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         });
-
+        // End Top Button init
 
         SettingsHelper.loadAllSettings(this);
         FirebaseMessaging.getInstance().subscribeToTopic("test");
@@ -133,7 +133,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         new DatabaseHelper(this).displayPostsFromCache(this);
     }
 
-    /*
+    /**
      *   Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
@@ -151,19 +151,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         reloadTwitchBanner();
     }
 
-
+    /**
+     *  Returns the current instance of the PostManager.
+     * @return PostManager reference
+     */
     public PostManager getPostManager() {
         return postManager;
     }
@@ -180,9 +177,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
                 postManager.fetchNextPosts(LOAD_MORE_ITEMS_COUNT);
-
             }
         };
         // Adds the scroll listener to RecyclerView
@@ -212,14 +207,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 reloadTwitchBanner();
-                //todo too much load?
             }
         };
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
     }
 
-    //todo sinnvolle Konzeption? überall erreichbar ? Sicherheit?
     public void setRefreshAnim(boolean val) {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
@@ -235,10 +228,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                             if (adapter != null) adapter.notifyDataSetChanged();
                         }
                 );
-    }
-
-    public void scrollToTop() {
-        if (layoutManager != null) layoutManager.scrollToPosition(0);
     }
 
     public void showError(String msg) {
@@ -263,7 +252,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (id == item.getItemId()) {
                         aSwitch.setChecked(true);
                         postManager.displayOnlyType(i);
-                        scrollToTop();
+                        recyclerView.scrollToPosition(0);
                     } else aSwitch.setChecked(false);
                 }
                 break;
@@ -296,7 +285,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS){
             if (resultCode == RESULT_CLEAR_CACHE){
+                new DatabaseHelper(this).clearDB();
                 postManager.clearPosts();
+                scrollListener.resetState();
                 postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
             }
         }

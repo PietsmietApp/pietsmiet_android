@@ -65,7 +65,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupRecyclerView();
         setupDrawer();
 
-
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
@@ -74,6 +73,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(() -> postManager.fetchNewPosts());
+        refreshLayout.setProgressViewOffset(false, -130, 80); //fixme can't be the right solution
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 

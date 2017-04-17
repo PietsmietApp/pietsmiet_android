@@ -20,11 +20,15 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.model.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
+import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
+import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -34,7 +38,9 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public final int NUM_POST_TO_LOAD_ON_START = 15;
-    final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private final String url_pietstream = "https://www.twitch.tv/pietsmiet";
+    private final String twitch_channel_id_pietstream = "pietsmiet";
 
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -45,6 +51,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fabToTop;
     private RecyclerView recyclerView;
+    private MenuItem pietstream_banner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +65,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         setupRecyclerView();
         setupDrawer();
 
-
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
@@ -67,8 +73,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(() -> postManager.fetchNewPosts());
+        refreshLayout.setProgressViewOffset(false, -130, 80); //fixme can't be the right solution
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
-        refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet);
+        refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
         // to Top Button init
         fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
@@ -95,6 +102,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         SettingsHelper.loadAllSettings(this);
         FirebaseMessaging.getInstance().subscribeToTopic("test");
+
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
@@ -118,9 +126,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         new SecretConstants(this);
-        //new DatabaseHelper(this).displayPostsFromCache(this);
 
-        //  moved to DatabaseHelper as final Code -> if(postManager.getAllPostsCount() < NUM_POST_TO_LOAD_ON_START) postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+        reloadTwitchBanner();
+
+        new DatabaseHelper(this).displayPostsFromCache(this);
+    }
+
+    /*
+     *   Reloads the stream status and updates the banner in the SideMenu
+     */
+    private void reloadTwitchBanner() {
+        // todo handle unsubscribe
+        Observable<TwitchStream>  obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
+        obsTTV.subscribe((stream) -> {
+            if(stream != null) {
+                pietstream_banner.setVisible(true);
+            } else {
+                pietstream_banner.setVisible(false);
+            }
+        }, (err) -> {
+            PsLog.e(err.getMessage());
+        });
     }
 
     @Override
@@ -133,11 +159,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
+        reloadTwitchBanner();
         if (PostManager.CLEAR_CACHE_FLAG) {
             postManager.clearPosts();
             PostManager.CLEAR_CACHE_FLAG = false;
             postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
         }
+
     }
 
 
@@ -169,6 +197,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void setupDrawer() {
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
+        pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -182,6 +211,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     postManager.allowedTypes.put(item, checker.isChecked());
                 }
                 postManager.updateCurrentPosts();
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                reloadTwitchBanner();
+                //todo too much load?
             }
         };
         mDrawer.addDrawerListener(toggle);
@@ -235,7 +271,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         scrollToTop();
                     } else aSwitch.setChecked(false);
                 }
-
                 break;
             case R.id.nav_feedback:
                 Intent i_Browser = new Intent(Intent.ACTION_VIEW);
@@ -247,6 +282,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
             case R.id.nav_settings:
                 startActivity(new Intent(MainActivity.this, Settings.class));
+                break;
+            case R.id.nav_pietstream_banner:
+                Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
+                i_TwitchBrowser.setData(Uri.parse(url_pietstream));
+                startActivity(i_TwitchBrowser);
                 break;
             default:
                 return false;

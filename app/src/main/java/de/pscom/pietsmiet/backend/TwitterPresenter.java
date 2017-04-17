@@ -52,7 +52,8 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMapIterable(this::fetchTweets)
                 .map(tweet -> {
                     Drawable thumb = null;
-                    if (SettingsHelper.boolHDImages) {
+
+                    if(SettingsHelper.shouldLoadHDImages(view)) {
                         thumb = DrawableFetcher.getDrawableFromTweet(tweet);
                     } else {
                         thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);

@@ -16,10 +16,10 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SET
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_HD_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_FORCE_HD_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING;
 
 public class Settings extends BaseActivity {
-    PostManager pm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,25 +29,32 @@ public class Settings extends BaseActivity {
         Switch notifyVideoSwitch = (Switch) findViewById(R.id.notifyVideoSwitch);
         Switch notifyNewsSwitch = (Switch) findViewById(R.id.notifyNewsSwitch);
         Switch notifyPietcastSwitch = (Switch) findViewById(R.id.notifyPietcastSwitch);
-        Switch qualityHDImagesSwitch = (Switch) findViewById(R.id.qualityHDImagesSwitch);
+        Switch qualityForceHDImagesSwitch = (Switch) findViewById(R.id.qualityForceHDImagesSwitch);
+        Switch qualityWifiOnlyHDImagesSwitch = (Switch) findViewById(R.id.qualityWifiOnlyHDImagesSwitch);
         Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
+
         setupToolbar(getString(R.string.drawer_einstellungen));
 
         SettingsHelper.loadAllSettings(this);
-
+        //todo implement auto reset of corresponding image quality switch
         notifyUploadplanSwitch.setChecked(SettingsHelper.boolUploadplanNotification);
         notifyVideoSwitch.setChecked(SettingsHelper.boolVideoNotification);
         notifyNewsSwitch.setChecked(SettingsHelper.boolNewsNotification);
         notifyPietcastSwitch.setChecked(SettingsHelper.boolPietcastNotification);
-        qualityHDImagesSwitch.setChecked(SettingsHelper.boolHDImages);
+        qualityForceHDImagesSwitch.setChecked(SettingsHelper.boolForceHDImages);
+        qualityWifiOnlyHDImagesSwitch.setChecked(SettingsHelper.boolWifiOnlyHDImages);
 
         btnClearCache.setOnClickListener((btn) -> {
             new DatabaseHelper(getBaseContext()).clearDB();
             PostManager.CLEAR_CACHE_FLAG = true;
         });
 
-        qualityHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_HD_SETTING, isChecked);
+        qualityForceHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_FORCE_HD_SETTING, isChecked);
+        });
+
+        qualityWifiOnlyHDImagesSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING, isChecked);
         });
 
         notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {

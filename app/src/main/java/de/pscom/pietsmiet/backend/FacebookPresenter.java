@@ -77,9 +77,7 @@ public class FacebookPresenter extends MainPresenter {
      * @return List of unparsed posts from Team Pietsmiet
      */
     private List<BatchResponse> loadPosts(String strTime, int numPosts) {
-        String strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,picture" + strTime;
-        if (SettingsHelper.boolHDImages)
-            strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message,full_picture" + strTime;
+        String strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message," + (SettingsHelper.shouldLoadHDImages(view) ? "full_" : "") + "picture" + strTime;
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet

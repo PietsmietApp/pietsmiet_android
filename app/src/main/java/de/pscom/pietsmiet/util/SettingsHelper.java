@@ -6,7 +6,8 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SET
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_HD_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_FORCE_HD_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceBoolean;
 
 public class SettingsHelper {
@@ -14,14 +15,22 @@ public class SettingsHelper {
     public static boolean boolVideoNotification;
     public static boolean boolNewsNotification;
     public static boolean boolPietcastNotification;
-    public static boolean boolHDImages;
+    public static boolean boolForceHDImages;
+    public static boolean boolWifiOnlyHDImages;
 
     public static void loadAllSettings(Context context) {
         boolUploadplanNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, true);
         boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, true);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
-        boolHDImages = getSharedPreferenceBoolean(context, KEY_QUALITY_IMAGE_HD_SETTING, false);
+        boolForceHDImages = getSharedPreferenceBoolean(context, KEY_QUALITY_IMAGE_FORCE_HD_SETTING, false);
+        boolWifiOnlyHDImages = getSharedPreferenceBoolean(context, KEY_QUALITY_IMAGE_WIFI_ONLY_HD_SETTING, false);
+    }
+
+    public static boolean shouldLoadHDImages(Context c) {
+        if(boolForceHDImages) return true;
+        if(boolWifiOnlyHDImages && NetworkUtil.isConnectedWifi(c)) return true;
+        return false;
     }
 
 }

@@ -198,14 +198,6 @@ public class PostManager {
         postObs.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
-                .filter(postBuilder -> {
-                    if (postBuilder == null) {
-                        PsLog.e("Post Builder is null", new Throwable("Post Builder is null"));
-                        mView.showError("Not all posts were loaded correctly");
-                        return false;
-                    }
-                    return true;
-                })
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()

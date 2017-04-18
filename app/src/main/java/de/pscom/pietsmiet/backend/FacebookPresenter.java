@@ -41,7 +41,7 @@ public class FacebookPresenter extends MainPresenter {
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> Observable.just(loadPosts(strTime, numPosts)))
                 .flatMapIterable(l -> l)
-                .flatMapIterable(result -> {
+                .map(result -> {
                     try {
                         return result.asResponseList();
                     } catch (FacebookException e) {
@@ -49,6 +49,8 @@ public class FacebookPresenter extends MainPresenter {
                         return null;
                     }
                 })
+                .filter(result -> result != null)
+                .flatMapIterable(l -> l)
                 .map(rawPost -> {
                     try {
                         return DataObjectFactory.createPost(rawPost.toString());
@@ -77,7 +79,7 @@ public class FacebookPresenter extends MainPresenter {
      * @return List of unparsed posts from Team Pietsmiet
      */
     private List<BatchResponse> loadPosts(String strTime, int numPosts) {
-        String strFetch = "/posts?limit=" + numPosts + "&fields=from,created_time,message," + (SettingsHelper.shouldLoadHDImages(view) ? "full_" : "") + "picture" + strTime;
+        String strFetch = "/postss?limit=" + numPosts + "&fields=from,created_time,message," + (SettingsHelper.shouldLoadHDImages(view) ? "full_" : "") + "picture" + strTime;
         try {
             BatchRequests<BatchRequest> batch = new BatchRequests<>();
             //Piet

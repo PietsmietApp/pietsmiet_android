@@ -74,16 +74,15 @@ public class YoutubePresenter extends MainPresenter {
                 })
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
-                    try {
                         postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
                         postBuilder.title(snippet.getTitle());
                         postBuilder.description("");
+                    try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
                     } catch (ParseException e) {
                         PsLog.w("YouTube date parsing error", e);
                         view.showError("YouTube date parsing error");
-                        return null;
                     }
                     return postBuilder;
                 });

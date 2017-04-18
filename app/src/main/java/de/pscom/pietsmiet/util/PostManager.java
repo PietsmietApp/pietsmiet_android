@@ -17,123 +17,90 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
 public class PostManager {
-
-    public static boolean CLEAR_CACHE_FLAG = false;
-    public static boolean FETCH_DIRECTION_DOWN = false;
+    private static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;
     public Map<Integer, Boolean> allowedTypes = new HashMap<>();
+    // Posts that are currently displayed in adapter
     @SuppressWarnings("CanBeFinal")
     private List<Post> currentPosts = new ArrayList<>();
+    // All posts loaded
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
-    @SuppressWarnings("CanBeFinal")
-    private List<Post> queuedPosts = new ArrayList<>();
-    private Map<Integer, Boolean> fetchingEnded = new HashMap<>();
 
-    private int numPostLoadCount = 5;
+    private int postLoadCount = 15;
+
 
     public PostManager(MainActivity view) {
         mView = view;
-        resetFetchingEnded();
-    }
-
-    public void resetFetchingEnded() {
-        fetchingEnded.clear();
-        //queuedPosts.clear();
-        for (int k : getPossibleTypes()) {
-            fetchingEnded.put(k, false);
-        }
     }
 
     /**
      * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
-     * This happens on a background thread
-     *
-     * @param lPosts posts to add
+     * It also stores the last and first twitter Id
      */
 
-    public void addPosts(List<Post> lPosts) {
-        // Neues Objekt erstellen, da ansonsten nur Pointer übergeben wird
-        List<Post> listPosts = new ArrayList<>();
-        listPosts.addAll(lPosts);
-
-        if (listPosts.size() == 0) {
-            PsLog.w("addPosts called with zero posts");
-            resetFetchingEnded();
-            mView.setRefreshAnim(false);
-            queuedPosts.clear();
-            return;
-        }
-        queuedPosts.clear();
-
-        if (listPosts.size() < mView.NUM_POST_TO_LOAD_ON_START && DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
-            DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
-            fetchNextPosts(mView.NUM_POST_TO_LOAD_ON_START);
-
-            return;
-        }
-
-        listPosts.addAll(getAllPosts());
-        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = listPosts.toArray(new Post[listPosts.size()]);
-
+    @SuppressWarnings("WeakerAccess")
+    public void addPosts(List<Post> posts) {
         Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .filter(post -> post != null)
+                .flatMapIterable(list -> {
+                    list.addAll(allPosts);
+                    return list;
+                })
                 .distinct()
-                .toSortedList()
-                .flatMap(Observable::from)
-                .map(post -> {
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0))
-                        TwitterPresenter.firstTweetId = post.getId();
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0))
-                        TwitterPresenter.lastTweetId = post.getId();
-                    return post;
+                .doOnNext(post -> {
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getDate().getTime() < post.getDate().getTime()))
+                        TwitterPresenter.firstTweet = post;
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getDate().getTime() > post.getDate().getTime()))
+                        TwitterPresenter.lastTweet = post;
                 })
                 .toSortedList()
-                .subscribe(items -> {
+                .subscribe(list -> {
                     allPosts.clear();
-                    allPosts.addAll(items);
-                    if (DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB) {
-                        DatabaseHelper.FLAG_POSTS_LOADED_FROM_DB = false;
-                    } else {
-                        new DatabaseHelper(mView).insertPosts(items, mView);
-                    }
-                }, Throwable::printStackTrace, this::updateCurrentPosts);
+                    allPosts.addAll(list);
+                    updateCurrentPosts();
+                }, (throwable) -> {
+                    PsLog.e("Couldn't update all posts!", throwable);
+                });
     }
 
     /**
      * 1) Iterates through all posts
-     * 2) Check if posts have be shown or not
-     * 3) Adds all posts to the currentPosts list
+     * 2) Check if posts have to be shown
+     * 3) Adds these posts to the currentPosts list
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        // Use an array to avoid concurrent modification exceptions todo this could be more beautiful
-        Post[] posts = getAllPosts().toArray(new Post[getAllPosts().size()]);
-
-        Observable.just(posts)
+        Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
-                .toSortedList()
+                .toList()
                 .subscribe(list -> {
                     currentPosts.clear();
                     currentPosts.addAll(list);
-                }, Throwable::printStackTrace, () -> {
+                }, throwable -> {
+                    PsLog.e("Couldn't update current posts: ", throwable);
+                }, () -> {
                     if (mView != null) mView.updateAdapter();
                 });
     }
 
+    /**
+     * Sets the allowedTypes only to the received postType, to display just one category.
+     *
+     * @param postType Type to display
+     */
     public void displayOnlyType(@AllTypes int postType) {
         for (int type : getPossibleTypes()) {
             if (type == postType) allowedTypes.put(type, true);
@@ -143,13 +110,8 @@ public class PostManager {
     }
 
     /**
-     * @return All fetched posts, whether they are currently shown or not
-     */
-    public List<Post> getAllPosts() {
-        return allPosts;
-    }
-
-    /**
+     * Returns currentPosts.
+     *
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
@@ -162,22 +124,31 @@ public class PostManager {
      */
     private boolean isAllowedType(Post post) {
         Boolean allowed = allowedTypes.get(post.getPostType());
-        if (allowed == null) {
-            allowed = true;
-        }
+        if (allowed == null) allowed = true;
         return allowed;
     }
 
+    /**
+     * Returns the date of the first post element in allPosts.
+     * If no post is present, the returned date will be:
+     * Current date - 1 Day
+     *
+     * @return Date
+     */
     private Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
             return new Date(new Date().getTime() - 86400000);
-            // setzte tag auf vorherigen
         } else {
             return allPosts.get(0).getDate();
         }
     }
 
-
+    /**
+     * Returns the date of the last post element in allPosts.
+     * If no post is present, the returned date will be the current date.
+     *
+     * @return Date
+     */
     private Date getLastPostDate() {
         if (allPosts.isEmpty()) {
             return new Date();
@@ -193,15 +164,15 @@ public class PostManager {
      **/
     public void fetchNextPosts(int numPosts) {
         FETCH_DIRECTION_DOWN = true;
-        //todo if this is called and fetchNewPosts too cancel all RxSubs
-        numPostLoadCount = numPosts;
+        postLoadCount = numPosts;
         mView.setRefreshAnim(true);
-        //todo übergangslösung? da hier und in scrolllistener festgelegt
-        new TwitterPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new YoutubePresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new PietcastPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new FacebookPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
-        new UploadplanPresenter(mView).fetchPostsUntil(getLastPostDate(), numPosts);
+        PsLog.v("Loading the " + postLoadCount + " next posts");
+        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
     /**
@@ -210,118 +181,79 @@ public class PostManager {
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
-
-        new TwitterPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new YoutubePresenter(mView).fetchPostsSince(getFirstPostDate());
-        new UploadplanPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new PietcastPresenter(mView).fetchPostsSince(getFirstPostDate());
-        new FacebookPresenter(mView).fetchPostsSince(getFirstPostDate());
+        PsLog.v("Loading new posts");
+        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
     /**
-     * Returns true if all Posts are fetched or all fetching tasks have been executed.
+     * Subscribes to the merged Observables emitting the loaded posts.
+     * Filters the result and finally adds the selected posts to the allPost List with addPosts().
      *
-     * @return Boolean ended
-     **/
-    public boolean getAllPostsFetched() {
-        int isEnded = 0;
-        for (Boolean aBoolean : fetchingEnded.values()) {
-            if (aBoolean) {
-                isEnded++;
-            }
-        }
-        return fetchingEnded.size() == isEnded;
+     * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
+     */
+    private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
+        postObs.observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .onBackpressureBuffer()
+                .map(Post.PostBuilder::build)
+                .filter(post -> post != null)
+                .sorted()
+                .filter(this::filterWrongPosts)
+                .take(postLoadCount)
+                .toList()
+                .subscribe(items -> {
+                    addPosts(items);
+                    mView.setRefreshAnim(false);
+                    PsLog.v("Finished with " + items.size() + " Posts");
+                    new DatabaseHelper(mView).insertPosts(items);
+                }, e -> {
+                    PsLog.w("Fehler bei Laden der Kategorie ", e);
+                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                    mView.setRefreshAnim(false);
+                });
     }
 
     /**
-     * Gets the Post size of allPosts
-     *
-     * @return Integer size
-     **/
-    public int getAllPostsCount() {
-        return allPosts.size();
-    }
-
-    /**
-     * Callback for all Fetching methods of each Presenter.
-     * Central point for using the input.
-     *
-     * @param listPosts List<Post>
-     * @param type      int Presenter type
-     **/
-    public void onReadyFetch(List<Post> listPosts, @AllTypes int type) {
-        PsLog.v("Finished fetching " + PostType.getName(type) + "...");
-        if (listPosts != null && listPosts.size() > 0) {
-            addPostsToQueue(listPosts, type);
-        } else {
-            fetchingEnded.put(type, true);
-            PsLog.e("No Posts loaded in " + PostType.getName(type) + "...");
-            if (getAllPostsFetched()) {
-                mView.setRefreshAnim(false);
-                addPosts(queuedPosts);
-            }
-        }
-
-    }
-
-
-    private void addPostsToQueue(List<Post> listPosts, @AllTypes int type) {
-        List<Post> lPosts = new ArrayList<>();
-        lPosts.addAll(listPosts);
-
-        if (lPosts.size() == 0) {
-            PsLog.w("addPostsToQueue called with zero posts");
-            return;
-        }
-
-        queuedPosts.addAll(lPosts);
-        fetchingEnded.put(type, true);
-
-        if (getAllPostsFetched()) {
-            Post[] posts = queuedPosts.toArray(new Post[queuedPosts.size()]);
-
-            Observable.just(posts)
-                    .observeOn(Schedulers.io())
-                    .onBackpressureBuffer()
-                    .subscribeOn(Schedulers.io())
-                    .flatMap(Observable::from)
-                    .filter(post -> post != null)
-                    .filter(post -> {
-                        boolean b = false;
-                        if(FETCH_DIRECTION_DOWN) {
-                            b = post.getDate().before(getLastPostDate());
-                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is after last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (ältester) Post Datum: " + getLastPostDate());
-                            return b;
-                        } else {
-                            b = post.getDate().after(getFirstPostDate());
-                            if(!b) PsLog.v("!!! - >  A post in " + PostType.getName(type) + " is before last date...  -> TITLE: " + post.getTitle() + " Datum: " + post.getDate() + " letzter (neuster) Post Datum: " + getFirstPostDate());
-                            return b;
-                        }
-                    })
-                    .distinct()
-                    .toSortedList()
-                    .flatMap(Observable::from)
-                    .take(numPostLoadCount)
-                    .toList()
-                    .subscribe(items -> {
-                        queuedPosts.clear();
-                        queuedPosts.addAll(items);
-                    }, Throwable::printStackTrace, () -> {
-                        // reset fetching is in UpdateAdapter in MainActivity k
-                        addPosts(queuedPosts);
-                    });
-        }
-
-    }
-
-    /**
-     * Clears all Posts from the View.
+     * Clears all posts from the view and resets variables.
      **/
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();
-        TwitterPresenter.lastTweetId = 0;
-        TwitterPresenter.firstTweetId = 0;
+        TwitterPresenter.lastTweet = null;
+        TwitterPresenter.firstTweet = null;
         updateCurrentPosts();
+    }
+
+    /**
+     * Checks if a post is after / before the fetching direction.
+     *
+     * @param post Post object to check
+     * @return boolean shouldFilter
+     */
+    private boolean filterWrongPosts(Post post) {
+        boolean shouldFilter;
+        if (FETCH_DIRECTION_DOWN) {
+            shouldFilter = post.getDate().before(getLastPostDate());
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (ältester) Post Datum: " + getLastPostDate());
+            }
+        } else {
+            shouldFilter = post.getDate().after(getFirstPostDate());
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (neuster) Post Datum: " + getFirstPostDate());
+            }
+        }
+        return shouldFilter;
     }
 }

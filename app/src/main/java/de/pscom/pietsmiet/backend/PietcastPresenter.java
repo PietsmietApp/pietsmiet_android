@@ -8,7 +8,6 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.RssUtil.loadRss;
@@ -23,14 +22,13 @@ public class PietcastPresenter extends MainPresenter {
     /**
      * Loads the latests Pietcasts
      */
-    private void parsePietcast(int num) {
-        Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
+    private Observable<Post.PostBuilder> parsePietcast(int num) {
+        return Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
+                .filter(result -> result != null)
                 .flatMap(Observable::from)
                 .take(num)
                 .onBackpressureBuffer()
-                .subscribe(element -> {
+                .map(element -> {
                     Drawable thumb = DrawableFetcher.getDrawableFromRss(element);
                     postBuilder = new Post.PostBuilder(PIETCAST);
                     postBuilder.description(element.getDescription());
@@ -38,26 +36,20 @@ public class PietcastPresenter extends MainPresenter {
                     postBuilder.url(element.getLink().toString());
                     postBuilder.date(element.getPubDate());
                     postBuilder.thumbnail(thumb);
-                    posts.add(postBuilder.build());
-                }, (throwable) -> {
-                    throwable.printStackTrace();
-                    view.showError("Pietcast parsing error");
-                    view.getPostManager().onReadyFetch(posts, PIETCAST);
-                }, () -> view.getPostManager().onReadyFetch(posts, PIETCAST));
+                    return postBuilder;
+                });
     }
 
     @Override
-    public void fetchPostsSince(Date dSince) {
-        parsePietcast(2);
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
+        return parsePietcast(2);
         //todo efficiency / logic
-        //fixme wrong check for date
     }
 
 
     @Override
-    public void fetchPostsUntil(Date dUntil, int numPosts) {
-        parsePietcast(20);
-        // todo mit datum arbeiten!
+    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dUntil, int numPosts) {
+        return parsePietcast(20);
     }
 
 }

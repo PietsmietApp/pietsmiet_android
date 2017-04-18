@@ -22,6 +22,7 @@ import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.model.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
+import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
@@ -36,11 +37,12 @@ import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
-
-    public final int NUM_POST_TO_LOAD_ON_START = 15;
-    private final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
-    private final String url_pietstream = "https://www.twitch.tv/pietsmiet";
-    private final String twitch_channel_id_pietstream = "pietsmiet";
+    public static final int RESULT_CLEAR_CACHE = 17;
+    public static final int REQUEST_SETTINGS = 16;
+    public static final int NUM_POST_TO_LOAD_ON_START = 15;
+    private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
+    private static final String twitch_channel_id_pietstream = "pietsmiet";
 
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
@@ -77,7 +79,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
-        // to Top Button init
+        // Top Button init
         fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
         fabToTop.setVisibility(View.INVISIBLE);
         fabToTop.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +100,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
             }
         });
-
+        // End Top Button init
 
         SettingsHelper.loadAllSettings(this);
         FirebaseMessaging.getInstance().subscribeToTopic("test");
@@ -130,29 +132,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         reloadTwitchBanner();
 
         new DatabaseHelper(this).displayPostsFromCache(this);
+
+        if (BuildConfig.DEBUG) {
+            Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
+                PsLog.e("Uncaught Exception!", paramThrowable);
+                System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
+            });
+        }
     }
 
-    /*
+    /**
      *   Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
         // todo handle unsubscribe
-        Observable<TwitchStream>  obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
+        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
         obsTTV.subscribe((stream) -> {
-            if(stream != null) {
+            if (stream != null) {
                 pietstream_banner.setVisible(true);
             } else {
                 pietstream_banner.setVisible(false);
             }
-        }, (err) -> {
-            PsLog.e(err.getMessage());
-        });
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
+        }, (err) -> PsLog.e("Could not update Twitch status", err));
     }
 
     @Override
@@ -160,15 +161,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         reloadTwitchBanner();
-        if (PostManager.CLEAR_CACHE_FLAG) {
-            postManager.clearPosts();
-            PostManager.CLEAR_CACHE_FLAG = false;
-            postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
-        }
-
     }
 
-
+    /**
+     *  Returns the current instance of the PostManager.
+     * @return PostManager reference
+     */
     public PostManager getPostManager() {
         return postManager;
     }
@@ -185,9 +183,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to the bottom of the list
-                postManager.fetchNextPosts(loadMoreItemsCount);
-
+                postManager.fetchNextPosts(LOAD_MORE_ITEMS_COUNT);
             }
         };
         // Adds the scroll listener to RecyclerView
@@ -217,14 +213,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 reloadTwitchBanner();
-                //todo too much load?
             }
         };
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
     }
 
-    //todo sinnvolle Konzeption? überall erreichbar ? Sicherheit?
     public void setRefreshAnim(boolean val) {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
@@ -238,23 +232,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (adapter != null) adapter.notifyDataSetChanged();
-                            if (refreshLayout != null && postManager != null) {
-                                if (postManager.getAllPostsFetched()) {
-                                    setRefreshAnim(false);
-                                    postManager.resetFetchingEnded();
-                                    //todo evtl woanders hin auslagern
-                                }
-                            }
                         }
                 );
     }
 
-    public void scrollToTop() {
-        if (layoutManager != null) layoutManager.scrollToPosition(0);
-    }
-
     public void showError(String msg) {
-        Observable.defer(() -> Observable.just(""))
+        Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 );
@@ -275,7 +258,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (id == item.getItemId()) {
                         aSwitch.setChecked(true);
                         postManager.displayOnlyType(i);
-                        scrollToTop();
+                        recyclerView.scrollToPosition(0);
                     } else aSwitch.setChecked(false);
                 }
                 break;
@@ -288,7 +271,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 startActivity(new Intent(MainActivity.this, About.class));
                 break;
             case R.id.nav_settings:
-                startActivity(new Intent(MainActivity.this, Settings.class));
+                startActivityForResult(new Intent(MainActivity.this, Settings.class), REQUEST_SETTINGS);
                 break;
             case R.id.nav_pietstream_banner:
                 Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
@@ -303,4 +286,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         return true;
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SETTINGS){
+            if (resultCode == RESULT_CLEAR_CACHE){
+                new DatabaseHelper(this).clearDB();
+                CacheUtil.trimCache(this);
+                postManager.clearPosts();
+                scrollListener.resetState();
+                postManager.fetchNewPosts();
+            }
+        }
+    }
+
+
 }

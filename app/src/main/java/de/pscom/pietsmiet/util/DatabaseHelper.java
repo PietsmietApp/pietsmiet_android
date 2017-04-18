@@ -33,15 +33,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
     private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
-    public static boolean FLAG_POSTS_LOADED_FROM_DB = false;
+
+    // MAX_AGE_DAYS defines the maxium age of the stored posts, before it gets cleared
+    private static final int MAX_AGE_DAYS = 5;
+
+    private final Context mContext;
 
     @SuppressLint("SimpleDateFormat")
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+
+    /** Initializes a new DatabaseHelper object
+     *  @param context Context reference to access PostManager etc
+     */
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
+        mContext = context;
     }
 
+    /**
+     * Creates the default table
+     * @param db SQLiteDatabase link
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
@@ -58,12 +71,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         );
     }
 
+    /**
+     *  Called if the database was updated eg from an older version / after an update.
+     *  Resets the database.
+     * @param db SQLiteDatabase current database link
+     * @param i int
+     * @param i1 int
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
         onCreate(db);
     }
 
+    /**
+     *  Deletes the table TABLE_POSTS.
+     */
     private void deleteTable() {
         getWritableDatabase().delete(TABLE_POSTS, null, null);
     }
@@ -71,10 +94,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Adds posts to the database (and stores their thumbnails). This is done asynchronous
      *
-     * @param posts   Posts to store
-     * @param context Context for storing thumbnails
+     * @param posts Posts to store
      */
-    public void insertPosts(List<Post> posts, Context context) {
+    @SuppressWarnings("WeakerAccess")
+    public void insertPosts(List<Post> posts) {
         deleteTable();
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
@@ -83,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
-                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), context, Integer.toString(post.hashCode()));
+                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), mContext, Integer.toString(post.hashCode()));
                     }
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
@@ -95,7 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_TIME, post.getDate().getTime());
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
-                    db.insert(TABLE_POSTS, null, contentValues);
+                    db.replace(TABLE_POSTS, null, contentValues);
                 }, (throwable) -> {
                     throwable.printStackTrace();
                     db.close();
@@ -105,6 +128,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 });
     }
 
+    /**
+     *  Returns the amount of posts currently stored in the database.
+     * @return int Count posts stored in the database.
+     */
     private int getPostsInDbCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         long cnt = DatabaseUtils.queryNumEntries(db, TABLE_POSTS);
@@ -112,6 +139,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
     }
 
+
+    /**
+     *  Clears the entire Database.
+     */
     public void clearDB() {
         deleteTable();
         this.close();
@@ -119,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Loads all post objects from the database and displays it
-     * Clears the database if it's too big
+     * Clears the database if it's too old
      *
      * @param context For loading the drawable & displaying the post after finished loading
      */
@@ -129,21 +160,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return;
         }
 
-        List<Post> toReturn = new ArrayList<>();
-
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
-        long time = new Date(System.currentTimeMillis() - (2 * DAY_IN_MS)).getTime();
+        long time = new Date(System.currentTimeMillis() - (MAX_AGE_DAYS * DAY_IN_MS)).getTime();
         PsLog.v("LOADING CACHE STARTED...");
-        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " WHERE " + POSTS_COLUMN_TIME + " > " + time, null);
+        Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
+                "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
+                "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
         PostManager pm = context.getPostManager();
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .filter(Cursor::moveToFirst)
-                .subscribe(cursor -> {
+                .map(cursor -> {
+                    List<Post> toReturn = new ArrayList<>();
                     try {
                         do {
                             int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
@@ -163,10 +195,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                 }
                             }
                             Post post = postBuilder.build();
-                            if (post.hashCode() == old_hashcode) {
+
+                            if (post != null && post.hashCode() == old_hashcode) {
                                 toReturn.add(postBuilder.build());
                             } else {
-                                PsLog.w("Post in db has a different hashcode than before, not using it");
+                                PsLog.w("Post in db has a different hashcode than before or Post is null, not using it");
                             }
                         } while (cursor.moveToNext());
                     } catch (Exception e) {
@@ -175,27 +208,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
+                    return toReturn;
 
-                }, (err) -> {
-                    err.printStackTrace();
-                    PsLog.e("DB: ERROR WHILE LOADING CACHE. FETCHING POSTS FROM ONLINE...");
-                    pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
+                })
+                .subscribe(items -> {
                     this.close();
-
-                }, () -> {
-                    // Apply posts
-                    PsLog.v("Applying " + toReturn.size() + " posts from DB");
-
-                    FLAG_POSTS_LOADED_FROM_DB = true;
-                    context.getPostManager().addPosts(toReturn);
-
-                    if (pm.getAllPostsCount() < context.NUM_POST_TO_LOAD_ON_START && !FLAG_POSTS_LOADED_FROM_DB) {
-                        PsLog.v("DB: LOCAL CACHE EMPTY. FETCHING POSTS FROM ONLINE...");
-                        pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
-                    }
-
+                    PsLog.v("Loaded " + items.size() + " posts from DB");
+                    pm.addPosts(items);
+                }, e -> {
                     this.close();
-                });
+                    PsLog.e("Could not load posts from DB: ", e);
+                    pm.fetchNewPosts();
+                }, pm::fetchNewPosts);
     }
 
 }

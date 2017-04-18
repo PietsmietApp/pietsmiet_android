@@ -20,7 +20,7 @@ public class RssUtil {
             RSSFeed feed = reader.load(url);
             return feed.getItems();
         } catch (RSSReaderException rssException) {
-            PsLog.e(rssException.toString());
+            PsLog.e("Couldn't read rss", rssException);
             return null;
         }
     }

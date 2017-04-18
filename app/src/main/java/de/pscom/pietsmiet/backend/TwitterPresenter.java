@@ -13,8 +13,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
-import rx.Single;
-import rx.schedulers.Schedulers;
+import rx.exceptions.Exceptions;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.RateLimitStatus;
@@ -28,7 +27,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 public class TwitterPresenter extends MainPresenter {
-    public static long lastTweetId, firstTweetId;
+    public static Post lastTweet, firstTweet;
     private Twitter twitterInstance;
 
     public TwitterPresenter(MainActivity view) {
@@ -46,15 +45,16 @@ public class TwitterPresenter extends MainPresenter {
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
     }
 
-    private void parseTweets(List<Status> tweetList) {
-        Observable.defer(() -> Observable.just(tweetList))
-                .subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .flatMap(Observable::from)
-                .subscribe(tweet -> {
+    private Observable<Post.PostBuilder> parseTweets(Query q) {
+        return Observable.defer(() -> Observable.just(q))
+                .compose(getToken())
+                .map(this::fetchTweets)
+                .filter(result -> result != null)
+                .flatMapIterable(l -> l)
+                .map(tweet -> {
                     Drawable thumb = null;
-                    if(SettingsHelper.shouldLoadHDImages(view)) {
+
+                    if (SettingsHelper.shouldLoadHDImages(view)) {
                         thumb = DrawableFetcher.getDrawableFromTweet(tweet);
                     } else {
                         thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);
@@ -69,16 +69,7 @@ public class TwitterPresenter extends MainPresenter {
                         postBuilder.url("https://twitter.com/" + tweet.getUser().getScreenName()
                                 + "/status/" + tweet.getId());
                     }
-                    posts.add(postBuilder.build());
-
-                }, (throwable) -> {
-                    throwable.printStackTrace();
-                    view.showError("Twitter parsing error");
-                    view.getPostManager().onReadyFetch(posts, TWITTER);
-                }, () -> {
-                    if (view != null) {
-                        view.getPostManager().onReadyFetch(posts, TWITTER);
-                    }
+                    return postBuilder;
                 });
     }
 
@@ -92,7 +83,7 @@ public class TwitterPresenter extends MainPresenter {
         try {
             result = twitterInstance.search(psTwitt);
         } catch (TwitterException e) {
-            PsLog.e("Couldn't fetch tweets: " + e.getMessage());
+            PsLog.e("Couldn't fetch tweets: ", e);
             view.showError("Twitter unreachable");
             return null;
         }
@@ -125,25 +116,18 @@ public class TwitterPresenter extends MainPresenter {
     /**
      * This fetches the token and calls the query
      */
-    private void getTokenAndFetch(Query q) {
-        Single.just(null)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe((s) -> {
-                    try {
-                        twitterInstance.getOAuth2Token();
-                        parseTweets(fetchTweets(q));
-                    } catch (TwitterException e) {
-                        PsLog.e("error getting token: " + e.getErrorMessage());
-                        view.getPostManager().onReadyFetch(null, TWITTER);
-                    } catch (IllegalStateException e) {
-                        PsLog.d("Token already instantiated");
-                        view.getPostManager().onReadyFetch(null, TWITTER);
-                    }
-                },(err) ->{
-                    PsLog.e("Token already instantiated : " + err.getStackTrace().toString());
-                    view.getPostManager().onReadyFetch(null, TWITTER);
-                });
+    private Observable.Transformer<Query, Query> getToken() {
+        return queryObservable -> queryObservable.map(query -> {
+            try {
+                twitterInstance.getOAuth2Token();
+            } catch (TwitterException e) {
+                PsLog.e("error getting token", e);
+                throw Exceptions.propagate(e);
+            } catch (IllegalStateException ignored) {
+                PsLog.d("Token already instantiated");
+            }
+            return query;
+        });
     }
 
     /**
@@ -164,35 +148,37 @@ public class TwitterPresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince(Date dBefore) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
         Query q = new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .sinceId(firstTweetId)
                 .count(50)
                 .resultType(Query.ResultType.recent);
+        if (firstTweet != null){
+            q.sinceId(firstTweet.getId());
+        }
 
-        getTokenAndFetch(q);
+        return parseTweets(q);
     }
 
     @Override
-    public void fetchPostsUntil(Date dAfter, int numPosts) {
+    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
         Query q = new Query("from:pietsmiet, " +
                 "OR from:kessemak2, " +
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
-                "exclude:replies");
-        if (lastTweetId != 0) {
-            q.maxId(lastTweetId);
-        }
-        q.count(numPosts)
+                "exclude:replies")
+                .count(numPosts)
                 .resultType(Query.ResultType.recent);
+        if (lastTweet != null) {
+            q.maxId(lastTweet.getId());
+        }
 
-        getTokenAndFetch(q);
+        return parseTweets(q);
     }
 
 }

@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.backend;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -44,28 +45,25 @@ public class YoutubePresenter extends MainPresenter {
     }
 
     @Override
-    public void fetchPostsSince(Date dSince) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
 
         String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dSince);
         Observable<YoutubeRoot> callObs = apiInterface.getPlaylistSinceDate(50, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
-        fetchData(callObs);
+        return fetchData(callObs);
     }
 
     @Override
-    public void fetchPostsUntil(Date dUntil, int numPosts) {
+    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dUntil, int numPosts) {
         String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.GERMANY).format(dUntil);
         Observable<YoutubeRoot> callObs = apiInterface.getPlaylistUntilDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
-        fetchData(callObs);
+        return fetchData(callObs);
     }
 
 
-    private void fetchData(Observable<YoutubeRoot> call) {
-        call.subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .observeOn(Schedulers.io())
-                .flatMapIterable(YoutubeRoot::getItems)
+    private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
+        return Observable.defer(() -> call.flatMapIterable(YoutubeRoot::getItems))
                 .filter(result -> result != null)
                 .doOnNext(item -> {
                     this.postBuilder = new Post.PostBuilder(VIDEO);
@@ -75,23 +73,19 @@ public class YoutubePresenter extends MainPresenter {
                     }
                 })
                 .map(YoutubeItem::getSnippet)
-                .subscribe(snippet -> {
-                    try {
+                .map(snippet -> {
                         postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
                         postBuilder.title(snippet.getTitle());
                         postBuilder.description("");
+                    try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
-                        posts.add(postBuilder.build());
-                    } catch (Exception e) {
-                        PsLog.e(e.getMessage());
-                        view.showError("YouTube parsing error");
+                    } catch (ParseException e) {
+                        PsLog.w("YouTube date parsing error", e);
+                        view.showError("YouTube date parsing error");
                     }
-                }, e -> {
-                    PsLog.e(e.toString());
-                    view.showError("YouTube parsing error");
-                    view.getPostManager().onReadyFetch(posts, VIDEO);
-                }, () -> view.getPostManager().onReadyFetch(posts, VIDEO));
+                    return postBuilder;
+                });
     }
 
 }

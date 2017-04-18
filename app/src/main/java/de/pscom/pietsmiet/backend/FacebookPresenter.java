@@ -60,7 +60,7 @@ public class FacebookPresenter extends MainPresenter {
                 })
                 .filter(response -> response != null)
                 .map(post -> {
-                    Drawable thumb = DrawableFetcher.getDrawableFromPost(post);
+                    Drawable thumb = (SettingsHelper.shouldLoadHDImages(view) ? DrawableFetcher.getFullDrawableFromPost(post) : DrawableFetcher.getDrawableFromPost(post));
                     postBuilder = new Post.PostBuilder(FACEBOOK);
                     postBuilder.thumbnail(thumb);
                     postBuilder.title(post.getFrom().getName());

@@ -43,6 +43,21 @@ public class DrawableFetcher {
     }
 
     /**
+     * @param post A facebook posting
+     * @return The full drawable from the post, if available
+     */
+    @Nullable
+    public static Drawable getFullDrawableFromPost(@Nullable Post post) {
+        if (post != null) {
+            URL imageUrl = post.getFullPicture();
+            if (imageUrl != null) {
+                return getDrawableFromUrl(imageUrl.toString());
+            }
+        }
+        return null;
+    }
+
+    /**
      * @param rssItem A rss item
      * @return The drawable from the item, if available
      */

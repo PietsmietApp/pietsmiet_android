@@ -14,6 +14,7 @@ import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -37,6 +38,9 @@ public class PostManager {
 
     private int postLoadCount = 15;
 
+    private Subscription subLoadingPosts;
+    private Subscription subAddingPosts;
+    private Subscription subUpdatePosts;
 
     public PostManager(MainActivity view) {
         mView = view;
@@ -49,7 +53,7 @@ public class PostManager {
 
     @SuppressWarnings("WeakerAccess")
     public void addPosts(List<Post> posts) {
-        Observable.just(posts)
+        subAddingPosts = Observable.just(posts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMapIterable(list -> {
@@ -80,7 +84,7 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        Observable.just(allPosts)
+        subUpdatePosts = Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
@@ -197,7 +201,7 @@ public class PostManager {
      * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
      */
     private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
-        postObs.observeOn(Schedulers.io())
+        subLoadingPosts = postObs.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
@@ -216,6 +220,17 @@ public class PostManager {
                     mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
                     mView.setRefreshAnim(false);
                 });
+    }
+
+    /**
+     * Clears / unsubscribes all subscriptions
+     * DONT CALL IT TOO OFTEN!
+     * Should be called if the App gets closed.
+     */
+    public void clearSubscriptions() {
+        if(subLoadingPosts != null && !subLoadingPosts.isUnsubscribed()) subLoadingPosts.unsubscribe();
+        if(subAddingPosts != null && !subAddingPosts.isUnsubscribed()) subAddingPosts.unsubscribe();
+        if(subUpdatePosts != null && !subUpdatePosts.isUnsubscribed()) subUpdatePosts.unsubscribe();
     }
 
     /**

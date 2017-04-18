@@ -39,7 +39,6 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
-    public static final int NUM_POST_TO_LOAD_ON_START = 15;
     private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
     private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
     private static final String twitch_channel_id_pietstream = "pietsmiet";
@@ -47,13 +46,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CardViewAdapter adapter;
     private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
-    private PostManager postManager;
+
     private NavigationView mNavigationView;
     private EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fabToTop;
     private RecyclerView recyclerView;
     private MenuItem pietstream_banner;
+
+    public PostManager postManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +158,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(postManager != null) postManager.clearSubscriptions();
+        if(refreshLayout != null) refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(postManager != null) postManager.clearSubscriptions();
+        if(refreshLayout != null) refreshLayout.setRefreshing(false);
+        if(scrollListener !=null) scrollListener.resetState();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
@@ -242,7 +258,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                 );
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

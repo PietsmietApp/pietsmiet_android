@@ -168,7 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
                 "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
                 "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
-        PostManager pm = context.getPostManager();
+        PostManager pm = context.postManager;
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())

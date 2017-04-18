@@ -295,7 +295,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 CacheUtil.trimCache(this);
                 postManager.clearPosts();
                 scrollListener.resetState();
-                postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);
+                postManager.fetchNewPosts();
             }
         }
     }

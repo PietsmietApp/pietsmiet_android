@@ -247,13 +247,13 @@ public class PostManager {
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST*/) {
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (neuster) Post Datum: " + getFirstPostDate());
             }
         }
-        return true;
+        return shouldFilter;
     }
 }

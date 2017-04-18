@@ -155,7 +155,7 @@ public class TwitterPresenter extends MainPresenter {
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .count(20)
+                .count(50)
                 .resultType(Query.ResultType.recent);
         if (firstTweet != null){
             q.sinceId(firstTweet.getId());

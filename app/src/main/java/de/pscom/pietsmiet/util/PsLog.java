@@ -1,6 +1,9 @@
 package de.pscom.pietsmiet.util;
 
+import android.support.compat.BuildConfig;
 import android.util.Log;
+
+import com.google.firebase.crash.FirebaseCrash;
 
 
 /**
@@ -81,6 +84,9 @@ public class PsLog {
     }
 
     public static void e(String message, Throwable tr) {
+        if (!BuildConfig.DEBUG) {
+            FirebaseCrash.log("Catched Exception in " + getTag() + ": " + Log.getStackTraceString(tr));
+        }
         Log.e(getTag(), message, tr);
     }
 }

@@ -218,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                 }, e -> {
                     this.close();
-                    PsLog.e("Could not load posts from DB: " + e.toString());
+                    PsLog.e("Could not load posts from DB: ", e);
                     pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                 });
     }

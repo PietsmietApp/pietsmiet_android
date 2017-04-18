@@ -81,7 +81,7 @@ public class TwitterPresenter extends MainPresenter {
         try {
             result = twitterInstance.search(psTwitt);
         } catch (TwitterException e) {
-            PsLog.e("Couldn't fetch tweets: " + e.getMessage());
+            PsLog.e("Couldn't fetch tweets: ", e);
             view.showError("Twitter unreachable");
             return null;
         }
@@ -119,7 +119,7 @@ public class TwitterPresenter extends MainPresenter {
             try {
                 twitterInstance.getOAuth2Token();
             } catch (TwitterException e) {
-                PsLog.e("error getting token: " + e.getErrorMessage());
+                PsLog.e("error getting token", e);
                 throw Exceptions.propagate(e);
             } catch (IllegalStateException ignored) {
                 PsLog.d("Token already instantiated");

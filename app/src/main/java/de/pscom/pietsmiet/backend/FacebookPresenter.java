@@ -45,7 +45,7 @@ public class FacebookPresenter extends MainPresenter {
                     try {
                         return result.asResponseList();
                     } catch (FacebookException e) {
-                        e.printStackTrace();
+                        PsLog.w("Konnte result nicht parsen", e);
                         return null;
                     }
                 })
@@ -53,7 +53,7 @@ public class FacebookPresenter extends MainPresenter {
                     try {
                         return DataObjectFactory.createPost(rawPost.toString());
                     } catch (FacebookException e) {
-                        PsLog.w(e.getMessage());
+                        PsLog.w("Konnte post nicht parsen", e);
                         view.showError("Facebook parsing error");
                         return null;
                     }
@@ -94,7 +94,7 @@ public class FacebookPresenter extends MainPresenter {
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {
             view.showError("Facebook API unreachable");
-            PsLog.e(e.getMessage());
+            PsLog.e("Facebook Api Error: ", e);
         }
         return null;
     }

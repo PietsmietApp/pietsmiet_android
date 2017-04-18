@@ -68,13 +68,15 @@ public class PostManager {
                     allPosts.clear();
                     allPosts.addAll(list);
                     updateCurrentPosts();
-                }, Throwable::printStackTrace);
+                }, (throwable) -> {
+                    throwable.printStackTrace();
+                });
     }
 
     /**
      * 1) Iterates through all posts
-     * 2) Check if posts have be shown or not
-     * 3) Adds all posts to the currentPosts list
+     * 2) Check if posts have to be shown
+     * 3) Adds these posts to the currentPosts list
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
@@ -87,14 +89,17 @@ public class PostManager {
                 .subscribe(list -> {
                     currentPosts.clear();
                     currentPosts.addAll(list);
-                }, Throwable::printStackTrace, () -> {
+                }, throwable -> {
+                    PsLog.e("Couldn't update current posts: ", throwable);
+                }, () -> {
                     if (mView != null) mView.updateAdapter();
                 });
     }
 
     /**
      * Sets the allowedTypes only to the received postType, to display just one category.
-     * @param postType
+     *
+     * @param postType Type to display
      */
     public void displayOnlyType(@AllTypes int postType) {
         for (int type : getPossibleTypes()) {
@@ -104,7 +109,9 @@ public class PostManager {
         updateCurrentPosts();
     }
 
-    /** Returns currentPosts.
+    /**
+     * Returns currentPosts.
+     *
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
@@ -125,6 +132,7 @@ public class PostManager {
      * Returns the date of the first post element in allPosts.
      * If no post is present, the returned date will be:
      * Current date - 1 Day
+     *
      * @return Date
      */
     private Date getFirstPostDate() {
@@ -138,6 +146,7 @@ public class PostManager {
     /**
      * Returns the date of the last post element in allPosts.
      * If no post is present, the returned date will be the current date.
+     *
      * @return Date
      */
     private Date getLastPostDate() {
@@ -166,7 +175,7 @@ public class PostManager {
     }
 
     /**
-     *  Root fetching Method to call all specific fetching methods for new Posts.
+     * Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
@@ -179,25 +188,24 @@ public class PostManager {
         manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
     }
 
-
-    /**
-     * Gets the Post size of allPosts
-     *
-     * @return Integer size
-     **/
-    public int getAllPostsCount() {
-        return allPosts.size();
-    }
-
     /**
      * Subscribes to the merged Observables emitting the loaded posts.
      * Filters the result and finally adds the selected posts to the allPost List with addPosts().
+     *
      * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
      */
     private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
         postObs.observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
+                .filter(postBuilder -> {
+                    if (postBuilder == null) {
+                        PsLog.e("Post Builder is null", new Throwable("Post Builder is null"));
+                        mView.showError("Not all posts were loaded correctly");
+                        return false;
+                    }
+                    return true;
+                })
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()
@@ -228,6 +236,7 @@ public class PostManager {
 
     /**
      * Checks if a post is after / before the fetching direction.
+     *
      * @param post Post object to check
      * @return boolean shouldFilter
      */

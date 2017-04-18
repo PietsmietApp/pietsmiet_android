@@ -131,6 +131,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         reloadTwitchBanner();
 
         new DatabaseHelper(this).displayPostsFromCache(this);
+
+        if (BuildConfig.DEBUG) {
+            Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
+                PsLog.e("Uncaught Exception!", paramThrowable);
+                System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
+            });
+        }
     }
 
     /**
@@ -145,9 +152,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             } else {
                 pietstream_banner.setVisible(false);
             }
-        }, (err) -> {
-            PsLog.e(err.getMessage());
-        });
+        }, (err) -> PsLog.e("Could not update Twitch status", err));
     }
 
     @Override

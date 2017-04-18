@@ -81,8 +81,9 @@ public class YoutubePresenter extends MainPresenter {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
                     } catch (ParseException e) {
-                        PsLog.e(e.getMessage());
+                        PsLog.w("YouTube date parsing error", e);
                         view.showError("YouTube date parsing error");
+                        return null;
                     }
                     return postBuilder;
                 });

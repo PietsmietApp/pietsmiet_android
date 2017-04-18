@@ -33,7 +33,6 @@ android {
         }
         debug {
             resValue "string", "app_name", "Pietsmiet " + gitBranch()
-            setProperty("archivesBaseName", "Pietsmiet-Community-App-$defaultConfig.versionName")
         }
     }
     lintOptions {

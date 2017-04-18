@@ -24,6 +24,7 @@ public class PietcastPresenter extends MainPresenter {
      */
     private Observable<Post.PostBuilder> parsePietcast(int num) {
         return Observable.defer(() -> Observable.just(loadRss(pietcastUrl)))
+                .filter(result -> result != null)
                 .flatMap(Observable::from)
                 .take(num)
                 .onBackpressureBuffer()

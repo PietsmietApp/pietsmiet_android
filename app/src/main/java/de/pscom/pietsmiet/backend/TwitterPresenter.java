@@ -48,7 +48,9 @@ public class TwitterPresenter extends MainPresenter {
     private Observable<Post.PostBuilder> parseTweets(Query q) {
         return Observable.defer(() -> Observable.just(q))
                 .compose(getToken())
-                .flatMapIterable(this::fetchTweets)
+                .map(this::fetchTweets)
+                .filter(result -> result != null)
+                .flatMapIterable(l -> l)
                 .map(tweet -> {
                     Drawable thumb = null;
 

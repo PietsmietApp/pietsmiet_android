@@ -155,7 +155,6 @@ public class PostManager {
      **/
     public void fetchNextPosts(int numPosts) {
         FETCH_DIRECTION_DOWN = true;
-        //todo if this is called and fetchNewPosts too cancel all RxSubs
         postLoadCount = numPosts;
         mView.setRefreshAnim(true);
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
@@ -210,7 +209,7 @@ public class PostManager {
                     mView.setRefreshAnim(false);
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
-                    PsLog.e(e.toString());
+                    PsLog.w("Fehler bei Laden der Kategorie ", e);
                     mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
                     mView.setRefreshAnim(false);
                 });

@@ -74,7 +74,7 @@ public class YoutubePresenter extends MainPresenter {
                 })
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
-                        postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getDefault().getUrl()));
+                        postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getMedium().getUrl()));
                         postBuilder.title(snippet.getTitle());
                         postBuilder.description("");
                     try {

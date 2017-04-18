@@ -20,10 +20,24 @@ public class YoutubeThumbnails {
     }
 
     /**
+     * @return The medium
+     */
+    public YoutubeThumbnail getMedium() {
+        return medium;
+    }
+
+    /**
      * @param _default The default
      */
     public void setDefault(YoutubeThumbnail _default) {
         this._default = _default;
+    }
+
+    /**
+     * @param medium The medium
+     */
+    public void setMedium(YoutubeThumbnail medium) {
+        this.medium = medium;
     }
 
     public Map<String, Object> getAdditionalProperties() {

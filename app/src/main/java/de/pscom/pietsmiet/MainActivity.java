@@ -22,6 +22,7 @@ import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.model.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
+import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.PostManager;
 import de.pscom.pietsmiet.util.PostType;
@@ -291,6 +292,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_SETTINGS){
             if (resultCode == RESULT_CLEAR_CACHE){
                 new DatabaseHelper(this).clearDB();
+                CacheUtil.trimCache(this);
                 postManager.clearPosts();
                 scrollListener.resetState();
                 postManager.fetchNextPosts(NUM_POST_TO_LOAD_ON_START);

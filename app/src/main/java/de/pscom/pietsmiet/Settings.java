@@ -45,6 +45,7 @@ public class Settings extends BaseActivity {
 
         btnClearCache.setOnClickListener((btn) -> {
             setResult(MainActivity.RESULT_CLEAR_CACHE);
+            finish();
         });
 
         qualityLoadHDImagesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

@@ -215,12 +215,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     this.close();
                     PsLog.v("Loaded " + items.size() + " posts from DB");
                     pm.addPosts(items);
-                    pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
                 }, e -> {
                     this.close();
                     PsLog.e("Could not load posts from DB: ", e);
-                    pm.fetchNextPosts(context.NUM_POST_TO_LOAD_ON_START);
-                });
+                    pm.fetchNextPosts(MainActivity.NUM_POST_TO_LOAD_ON_START);
+                }, () -> pm.fetchNextPosts(MainActivity.NUM_POST_TO_LOAD_ON_START));
     }
 
 }

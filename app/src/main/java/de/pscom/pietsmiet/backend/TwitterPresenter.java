@@ -27,7 +27,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 
 public class TwitterPresenter extends MainPresenter {
-    public static long lastTweetId, firstTweetId;
+    public static Post lastTweet, firstTweet;
     private Twitter twitterInstance;
 
     public TwitterPresenter(MainActivity view) {
@@ -155,9 +155,11 @@ public class TwitterPresenter extends MainPresenter {
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
                 "exclude:replies")
-                .sinceId(firstTweetId)
-                .count(50)
+                .count(20)
                 .resultType(Query.ResultType.recent);
+        if (firstTweet != null){
+            q.sinceId(firstTweet.getId());
+        }
 
         return parseTweets(q);
     }
@@ -169,12 +171,12 @@ public class TwitterPresenter extends MainPresenter {
                 "OR from:jaypietsmiet, " +
                 "OR from:brosator, " +
                 "OR from:br4mm3n " +
-                "exclude:replies");
-        if (lastTweetId != 0) {
-            q.maxId(lastTweetId);
-        }
-        q.count(numPosts)
+                "exclude:replies")
+                .count(numPosts)
                 .resultType(Query.ResultType.recent);
+        if (lastTweet != null) {
+            q.maxId(lastTweet.getId());
+        }
 
         return parseTweets(q);
     }

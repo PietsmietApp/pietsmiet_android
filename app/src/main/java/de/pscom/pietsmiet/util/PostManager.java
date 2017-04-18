@@ -58,18 +58,18 @@ public class PostManager {
                 })
                 .distinct()
                 .doOnNext(post -> {
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweetId < post.getId() || TwitterPresenter.firstTweetId == 0))
-                        TwitterPresenter.firstTweetId = post.getId();
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweetId > post.getId() || TwitterPresenter.lastTweetId == 0))
-                        TwitterPresenter.lastTweetId = post.getId();
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getDate().getTime() < post.getDate().getTime()))
+                        TwitterPresenter.firstTweet = post;
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getDate().getTime() > post.getDate().getTime()))
+                        TwitterPresenter.lastTweet = post;
                 })
-                .toList()
+                .toSortedList()
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
                     updateCurrentPosts();
                 }, (throwable) -> {
-                    throwable.printStackTrace();
+                    PsLog.e("Couldn't update all posts!", throwable);
                 });
     }
 
@@ -85,7 +85,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
-                .toSortedList()
+                .toList()
                 .subscribe(list -> {
                     currentPosts.clear();
                     currentPosts.addAll(list);
@@ -166,6 +166,7 @@ public class PostManager {
         FETCH_DIRECTION_DOWN = true;
         postLoadCount = numPosts;
         mView.setRefreshAnim(true);
+        PsLog.v("Loading the " + postLoadCount + " next posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
@@ -180,6 +181,7 @@ public class PostManager {
     public void fetchNewPosts() {
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
+        PsLog.v("Loading new posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
@@ -207,6 +209,7 @@ public class PostManager {
                 .subscribe(items -> {
                     addPosts(items);
                     mView.setRefreshAnim(false);
+                    PsLog.v("Finished with " + items.size() + " Posts");
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
                     PsLog.w("Fehler bei Laden der Kategorie ", e);
@@ -221,8 +224,8 @@ public class PostManager {
     public void clearPosts() {
         allPosts.clear();
         currentPosts.clear();
-        TwitterPresenter.lastTweetId = 0;
-        TwitterPresenter.firstTweetId = 0;
+        TwitterPresenter.lastTweet = null;
+        TwitterPresenter.firstTweet = null;
         updateCurrentPosts();
     }
 
@@ -244,13 +247,13 @@ public class PostManager {
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST*/) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (neuster) Post Datum: " + getFirstPostDate());
             }
         }
-        return shouldFilter;
+        return true;
     }
 }

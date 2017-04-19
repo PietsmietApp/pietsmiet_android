@@ -238,10 +238,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     public void setRefreshAnim(boolean val) {
-        Observable.just("")
+        Observable.just(val)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                    if (refreshLayout != null) refreshLayout.setRefreshing(val);
+                .subscribe(bool -> {
+                    if (refreshLayout != null) refreshLayout.setRefreshing(bool);
                 });
     }
 
@@ -249,6 +249,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
+                    if(recyclerView != null) recyclerView.getRecycledViewPool().clear();
                             if (adapter != null) adapter.notifyDataSetChanged();
                         }
                 );

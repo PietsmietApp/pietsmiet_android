@@ -31,10 +31,17 @@
     <string name="settings_header_quality">Qualität</string>
     <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
     <string name="drawer_pietstream_banner">Pietstream</string>
+    <string name="settings_source_video">Quelle für Videos:</string>
 
     <string-array name="qualityHDImagesSpinnerItems_array">
         <item>Niemals</item>
         <item>bei WLAN-Verbindung</item>
         <item>Immer</item>
+    </string-array>
+
+    <string-array name="sourceVideoSpinnerItems_array">
+        <item>Pietsmiet.de</item>
+        <item>Youtube</item>
+        <item>Beide</item>
     </string-array>
 </resources>

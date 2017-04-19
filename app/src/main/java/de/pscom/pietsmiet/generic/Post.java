@@ -19,7 +19,8 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class Post implements Comparable<Post> {
     @Nullable
@@ -97,7 +98,9 @@ public class Post implements Comparable<Post> {
     public int getBackgroundColor() {
         String hexColor;
         switch (postType) {
-            case VIDEO:
+            case PS_VIDEO:
+            //fixme different colors?
+            case YOUTUBE:
                 hexColor = Youtube;
                 break;
             case UPLOADPLAN:

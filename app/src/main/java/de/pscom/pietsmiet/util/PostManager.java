@@ -19,10 +19,13 @@ import rx.schedulers.Schedulers;
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_PIETSMIET;
+import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_YOUTUBE;
 
 
 public class PostManager {
@@ -173,7 +176,9 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading the " + postLoadCount + " next posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
         manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
@@ -187,7 +192,9 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
@@ -207,6 +214,7 @@ public class PostManager {
                 .filter(post -> post != null)
                 .sorted()
                 .filter(this::filterWrongPosts)
+                .doOnNext(post -> PsLog.v(post.getPostType() + ""))
                 .take(postLoadCount)
                 .toList()
                 .subscribe(items -> {
@@ -227,9 +235,12 @@ public class PostManager {
      * Should be called if the App gets closed.
      */
     public void clearSubscriptions() {
-        if(subLoadingPosts != null && !subLoadingPosts.isUnsubscribed()) subLoadingPosts.unsubscribe();
-        if(subAddingPosts != null && !subAddingPosts.isUnsubscribed()) subAddingPosts.unsubscribe();
-        if(subUpdatePosts != null && !subUpdatePosts.isUnsubscribed()) subUpdatePosts.unsubscribe();
+        if (subLoadingPosts != null && !subLoadingPosts.isUnsubscribed())
+            subLoadingPosts.unsubscribe();
+        if (subAddingPosts != null && !subAddingPosts.isUnsubscribed())
+            subAddingPosts.unsubscribe();
+        if (subUpdatePosts != null && !subUpdatePosts.isUnsubscribed())
+            subUpdatePosts.unsubscribe();
     }
 
     /**
@@ -244,30 +255,46 @@ public class PostManager {
     }
 
     /**
-     * Checks if a post is after / before the fetching direction.
+     * First checks if a video posts is from a unallowed category
+     *
+     * Then checks if a post is after / before the fetching direction
+     *  and overrides the previous check if needed.
      *
      * @param post Post object to check
-     * @return boolean shouldFilter
+     * @return boolean shouldFilter Returns true if the post is not allowed
      */
     private boolean filterWrongPosts(Post post) {
-        boolean shouldFilter;
+        boolean shouldFilter = false;
+        if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
+            shouldFilter = true;
+        } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
+            PsLog.v("hi");
+            //fixme warum wird der scheiß hier nicht true obwohl die Zeile ausgeführt wird. Halp
+            shouldFilter = true;
+        }
         if (FETCH_DIRECTION_DOWN) {
-            shouldFilter = post.getDate().before(getLastPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        " letzter (ältester) Post Datum: " + getLastPostDate());
+            if (post.getDate().before(getLastPostDate())) {
+                shouldFilter = true;
+                if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                            " Titel: " + post.getTitle() +
+                            " Datum: " + post.getDate() +
+                            " letzter (ältester) Post Datum: " + getLastPostDate());
+                }
             }
         } else {
-            shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        " letzter (neuster) Post Datum: " + getFirstPostDate());
+            if (post.getDate().after(getFirstPostDate())) {
+                shouldFilter = true;
+                if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                            " Titel: " + post.getTitle() +
+                            " Datum: " + post.getDate() +
+                            " letzter (neuster) Post Datum: " + getFirstPostDate());
+                }
             }
+
         }
+        PsLog.v(shouldFilter? "hi": "");
         return shouldFilter;
     }
 }

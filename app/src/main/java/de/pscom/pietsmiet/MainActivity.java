@@ -305,6 +305,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS){
+            SettingsHelper.loadAllSettings(this);
             if (resultCode == RESULT_CLEAR_CACHE){
                 new DatabaseHelper(this).clearDB();
                 CacheUtil.trimCache(this);

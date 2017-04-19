@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class YoutubePresenter extends MainPresenter {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
@@ -66,7 +66,7 @@ public class YoutubePresenter extends MainPresenter {
         return Observable.defer(() -> call.flatMapIterable(YoutubeRoot::getItems))
                 .filter(result -> result != null)
                 .doOnNext(item -> {
-                    this.postBuilder = new Post.PostBuilder(VIDEO);
+                    this.postBuilder = new Post.PostBuilder(YOUTUBE);
                     String videoID = item.getId().getVideoId();
                     if (videoID != null && !videoID.isEmpty()) {
                         postBuilder.url("http://www.youtube.com/watch?v=" + videoID);

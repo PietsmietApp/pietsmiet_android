@@ -26,9 +26,10 @@ import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
@@ -109,7 +110,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
-        } else if (currentType == VIDEO) {
+        } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
             Drawable thumbnail = currentItem.getThumbnail();
             if (thumbnail != null) holder.thumbnail.setImageDrawable(thumbnail);

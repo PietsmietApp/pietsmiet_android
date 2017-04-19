@@ -15,8 +15,8 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
 
 public class FirebasePresenter extends MainPresenter {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
@@ -53,7 +53,7 @@ public class FirebasePresenter extends MainPresenter {
                             type = PIETCAST;
                             break;
                         case "video":
-                            type = VIDEO;
+                            type = PS_VIDEO;
                             break;
                         default:
                             type = -1;

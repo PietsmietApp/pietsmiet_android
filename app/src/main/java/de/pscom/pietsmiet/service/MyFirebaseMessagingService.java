@@ -41,7 +41,7 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -81,8 +81,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     notificationId = PIETCAST;
                     break;
                 case "video":
-                    type = VIDEO;
-                    notificationId = VIDEO;
+                    type = PS_VIDEO;
+                    notificationId = PS_VIDEO;
                     break;
                 default:
                     PsLog.w("Falsche Kategorie " + data.get("topic"));
@@ -127,7 +127,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setWhen(0)
                 .setPriority(Notification.PRIORITY_MAX);
-        if (type == VIDEO) {
+        if (type == PS_VIDEO) {
             notificationBuilder.setContentIntent(urlIntent);
         } else {
             notificationBuilder.setContentIntent(clickIntent);

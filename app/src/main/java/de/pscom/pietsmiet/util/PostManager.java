@@ -8,9 +8,8 @@ import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.PietcastPresenter;
+import de.pscom.pietsmiet.backend.FirebasePresenter;
 import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.UploadplanPresenter;
 import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
@@ -18,10 +17,15 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_PIETSMIET;
+import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_YOUTUBE;
 
 
 public class PostManager {
@@ -89,6 +93,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
+                .filter(this::filterWrongCategories)
                 .toList()
                 .subscribe(list -> {
                     currentPosts.clear();
@@ -141,7 +146,7 @@ public class PostManager {
      */
     private Date getFirstPostDate() {
         if (allPosts.isEmpty()) {
-            return new Date(new Date().getTime() - 86400000);
+            return new Date(new Date().getTime() - 864000000);
         } else {
             return allPosts.get(0).getDate();
         }
@@ -172,11 +177,12 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading the " + postLoadCount + " next posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> uploadplanObs = new PietcastPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> pietcastObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> facebookObs = new UploadplanPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
+        Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
     /**
@@ -187,11 +193,12 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> youtubeObs = new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> uploadplanObs = new UploadplanPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> pietcastObs = new PietcastPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
+        Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
         Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, uploadplanObs, pietcastObs, facebookObs));
+        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
     /**
@@ -208,6 +215,7 @@ public class PostManager {
                 .filter(post -> post != null)
                 .sorted()
                 .filter(this::filterWrongPosts)
+                .doOnNext(post -> PsLog.v(post.getPostType() + ""))
                 .take(postLoadCount)
                 .toList()
                 .subscribe(items -> {
@@ -228,9 +236,12 @@ public class PostManager {
      * Should be called if the App gets closed.
      */
     public void clearSubscriptions() {
-        if(subLoadingPosts != null && !subLoadingPosts.isUnsubscribed()) subLoadingPosts.unsubscribe();
-        if(subAddingPosts != null && !subAddingPosts.isUnsubscribed()) subAddingPosts.unsubscribe();
-        if(subUpdatePosts != null && !subUpdatePosts.isUnsubscribed()) subUpdatePosts.unsubscribe();
+        if (subLoadingPosts != null && !subLoadingPosts.isUnsubscribed())
+            subLoadingPosts.unsubscribe();
+        if (subAddingPosts != null && !subAddingPosts.isUnsubscribed())
+            subAddingPosts.unsubscribe();
+        if (subUpdatePosts != null && !subUpdatePosts.isUnsubscribed())
+            subUpdatePosts.unsubscribe();
     }
 
     /**
@@ -245,16 +256,19 @@ public class PostManager {
     }
 
     /**
-     * Checks if a post is after / before the fetching direction.
+     * First checks if a video posts is from a unallowed category
+     *
+     * Then checks if a post is after / before the fetching direction
+     *  and overrides the previous check if needed.
      *
      * @param post Post object to check
-     * @return boolean shouldFilter
+     * @return boolean shouldFilter Returns true if the post is not allowed
      */
     private boolean filterWrongPosts(Post post) {
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
@@ -262,7 +276,7 @@ public class PostManager {
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
@@ -270,5 +284,14 @@ public class PostManager {
             }
         }
         return shouldFilter;
+    }
+
+    private boolean filterWrongCategories(Post post){
+        if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
+            return false;
+        } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
+            return false;
+        }
+        return true;
     }
 }

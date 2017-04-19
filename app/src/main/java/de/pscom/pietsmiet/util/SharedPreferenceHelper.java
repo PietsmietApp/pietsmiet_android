@@ -13,6 +13,7 @@ public class SharedPreferenceHelper {
     public static final String KEY_NOTIFY_NEWS_SETTING = "KEY_NOTIFY_NEWS_SETTING";
     public static final String KEY_NOTIFY_PIETCAST_SETTING = "KEY_NOTIFY_PIETCAST_SETTING";
     public static final String KEY_QUALITY_IMAGE_LOAD_HD_SETTING = "KEY_QUALITY_IMAGE_LOAD_HD_SETTING";
+    public static final String KEY_SOURCE_VIDEO_SETTING = "KEY_SOURCE_VIDEO_SETTING";
 
     private final static String PREF_FILE = "PREF";
 

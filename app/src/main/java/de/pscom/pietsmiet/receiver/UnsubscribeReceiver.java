@@ -17,7 +17,7 @@ import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.KEY_UNSUBSCR
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
@@ -49,10 +49,10 @@ public class UnsubscribeReceiver extends BroadcastReceiver {
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
                     notifManager.cancel(NEWS);
                     break;
-                case VIDEO:
+                case PS_VIDEO:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
                     FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
-                    notifManager.cancel(VIDEO);
+                    notifManager.cancel(PS_VIDEO);
                     break;
                 default:
                     PsLog.w("Wrong or empty topic");

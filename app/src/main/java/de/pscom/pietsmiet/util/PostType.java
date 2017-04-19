@@ -13,8 +13,9 @@ import de.pscom.pietsmiet.R;
 public class PostType {
     //Scales dynamically
     //Renamed to shorter version
-    public static final int VIDEO = 0;
-    public static final int PIETCAST = VIDEO + 1;
+    public static final int YOUTUBE = 0;
+    public static final int PS_VIDEO = YOUTUBE + 1;
+    public static final int PIETCAST = PS_VIDEO + 1;
     public static final int TWITTER = PIETCAST + 1;
     public static final int FACEBOOK = TWITTER + 1;
     public static final int UPLOADPLAN = FACEBOOK + 1;
@@ -23,10 +24,12 @@ public class PostType {
     public static List<Integer> getPossibleTypes() {
         List<Integer> navigationItems = new ArrayList<>();
         navigationItems.add(UPLOADPLAN);
-        navigationItems.add(VIDEO);
+        navigationItems.add(YOUTUBE);
+        navigationItems.add(PS_VIDEO);
         navigationItems.add(FACEBOOK);
         navigationItems.add(TWITTER);
         navigationItems.add(PIETCAST);
+        navigationItems.add(NEWS);
 
         return navigationItems;
     }
@@ -39,8 +42,10 @@ public class PostType {
      */
     public static String getName(@AllTypes int i) {
         switch (i) {
-            case VIDEO:
-                return "Videos";
+            case PS_VIDEO:
+                return "Pietsmiet.de Videos";
+            case YOUTUBE:
+                return "YouTube Videos";
             case PIETCAST:
                 return "Pietcast";
             case TWITTER:
@@ -58,7 +63,8 @@ public class PostType {
 
     public static int getDrawerIdForType(int postType) {
         switch (postType) {
-            case VIDEO:
+            case PS_VIDEO:
+            case YOUTUBE:
                 return R.id.nav_video;
             case PIETCAST:
                 return R.id.nav_pietcast;
@@ -75,7 +81,7 @@ public class PostType {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, VIDEO, NEWS})
+    @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, PS_VIDEO, NEWS, YOUTUBE})
     public @interface AllTypes {
     }
 }

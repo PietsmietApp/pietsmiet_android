@@ -66,8 +66,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
 
-    compile 'com.github.ahorn:android-rss:599fdab'
-    compile('com.mikepenz:aboutlibraries:5.9.5')
+    compile 'com.mikepenz:aboutlibraries:5.9.5'
 
     testCompile 'junit:junit:4.12'
 }

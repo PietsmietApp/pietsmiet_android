@@ -17,9 +17,11 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.PostType.VIDEO;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 
@@ -251,7 +253,7 @@ public class PostManager {
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
@@ -259,7 +261,7 @@ public class PostManager {
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST) {
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +

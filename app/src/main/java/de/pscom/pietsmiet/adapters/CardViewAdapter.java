@@ -24,6 +24,7 @@ import de.pscom.pietsmiet.util.TimeUtils;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
@@ -87,7 +88,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
-        } else if (currentType == UPLOADPLAN) {
+        } else if (currentType == UPLOADPLAN || currentType == NEWS) {
             //Disable thumbnail for uploadplan
             holder.thumbnail.setVisibility(GONE);
 

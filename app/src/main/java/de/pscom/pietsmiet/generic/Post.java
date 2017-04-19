@@ -216,10 +216,11 @@ public class Post implements Comparable<Post> {
                 PsLog.e("Date is not given");
                 return null;
             }
+            /*fixme pietsmiet.de videos with no thumbnail
             if ((description == null || description.isEmpty()) && thumbnail == null) {
                 PsLog.e("No thumbnail and no description given");
                 return null;
-            }
+            }*/
             if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
                 PsLog.e("Uploadplan with no description");
                 return null;

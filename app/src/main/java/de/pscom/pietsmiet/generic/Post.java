@@ -224,6 +224,11 @@ public class Post implements Comparable<Post> {
                 PsLog.e("Uploadplan with no description");
                 return null;
             }
+
+            if(!PostType.getPossibleTypes().contains(postType)){
+                PsLog.e("Not a valid type!");
+                return null;
+            }
             return new Post(this);
         }
     }

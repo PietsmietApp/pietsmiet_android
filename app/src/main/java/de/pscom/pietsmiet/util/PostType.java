@@ -27,6 +27,7 @@ public class PostType {
         navigationItems.add(FACEBOOK);
         navigationItems.add(TWITTER);
         navigationItems.add(PIETCAST);
+        navigationItems.add(NEWS);
 
         return navigationItems;
     }

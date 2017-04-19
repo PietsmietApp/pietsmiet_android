@@ -93,6 +93,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
+                .filter(this::filterWrongCategories)
                 .toList()
                 .subscribe(list -> {
                     currentPosts.clear();
@@ -264,37 +265,33 @@ public class PostManager {
      * @return boolean shouldFilter Returns true if the post is not allowed
      */
     private boolean filterWrongPosts(Post post) {
-        boolean shouldFilter = false;
-        if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
-            shouldFilter = true;
-        } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
-            PsLog.v("hi");
-            //fixme warum wird der scheiß hier nicht true obwohl die Zeile ausgeführt wird. Halp
-            shouldFilter = true;
-        }
+        boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
-            if (post.getDate().before(getLastPostDate())) {
-                shouldFilter = true;
-                if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                            " Titel: " + post.getTitle() +
-                            " Datum: " + post.getDate() +
-                            " letzter (ältester) Post Datum: " + getLastPostDate());
-                }
+            shouldFilter = post.getDate().before(getLastPostDate());
+            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (ältester) Post Datum: " + getLastPostDate());
             }
         } else {
-            if (post.getDate().after(getFirstPostDate())) {
-                shouldFilter = true;
-                if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                            " Titel: " + post.getTitle() +
-                            " Datum: " + post.getDate() +
-                            " letzter (neuster) Post Datum: " + getFirstPostDate());
-                }
+            shouldFilter = post.getDate().after(getFirstPostDate());
+            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (neuster) Post Datum: " + getFirstPostDate());
             }
-
         }
-        PsLog.v(shouldFilter? "hi": "");
         return shouldFilter;
+    }
+
+    private boolean filterWrongCategories(Post post){
+        if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
+            return false;
+        } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
+            return false;
+        }
+        return true;
     }
 }

@@ -56,7 +56,7 @@ public class Settings extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position < 3) {
                     SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
-                    setResult(MainActivity.RESULT_CLEAR_CACHE);
+                    setResult(MainActivity.RESULT_RELOAD);
                 } else {
                     ((Spinner) view).setSelection(0);
                 }

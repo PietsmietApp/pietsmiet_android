@@ -38,6 +38,7 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
+    public static final int RESULT_RELOAD = 18;
     public static final int REQUEST_SETTINGS = 16;
     private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
     private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
@@ -143,7 +144,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     *   Reloads the stream status and updates the banner in the SideMenu
+     * Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
         // todo handle unsubscribe
@@ -160,16 +161,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(postManager != null) postManager.clearSubscriptions();
-        if(refreshLayout != null) refreshLayout.setRefreshing(false);
+        if (postManager != null) postManager.clearSubscriptions();
+        if (refreshLayout != null) refreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(postManager != null) postManager.clearSubscriptions();
-        if(refreshLayout != null) refreshLayout.setRefreshing(false);
-        if(scrollListener !=null) scrollListener.resetState();
+        if (postManager != null) postManager.clearSubscriptions();
+        if (refreshLayout != null) refreshLayout.setRefreshing(false);
+        if (scrollListener != null) scrollListener.resetState();
     }
 
     @Override
@@ -180,7 +181,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     /**
-     *  Returns the current instance of the PostManager.
+     * Returns the current instance of the PostManager.
+     *
      * @return PostManager reference
      */
     public PostManager getPostManager() {
@@ -304,11 +306,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SETTINGS){
+        if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
-            if (resultCode == RESULT_CLEAR_CACHE){
+            if (resultCode == RESULT_CLEAR_CACHE) {
                 new DatabaseHelper(this).clearDB();
                 CacheUtil.trimCache(this);
+            }
+            if (resultCode == RESULT_RELOAD || resultCode == RESULT_CLEAR_CACHE) {
                 postManager.clearPosts();
                 scrollListener.resetState();
                 postManager.fetchNewPosts();

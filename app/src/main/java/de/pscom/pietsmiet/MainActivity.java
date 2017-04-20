@@ -21,7 +21,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
-import de.pscom.pietsmiet.model.TwitchStream;
+import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
@@ -107,6 +107,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         SettingsHelper.loadAllSettings(this);
         FirebaseMessaging.getInstance().subscribeToTopic("test");
+        //fixme
 
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
@@ -178,6 +179,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
+        updateAdapter();
         reloadTwitchBanner();
     }
 

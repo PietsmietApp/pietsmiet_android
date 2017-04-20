@@ -1,12 +1,12 @@
-package de.pscom.pietsmiet.backend;
+package de.pscom.pietsmiet.presenter;
 
 import java.util.Date;
 import java.util.Map;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.FirebaseApiInterface;
-import de.pscom.pietsmiet.model.FirebaseItem;
+import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
+import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;

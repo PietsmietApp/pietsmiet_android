@@ -1,25 +1,27 @@
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.youtubeApi;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class YoutubeContent {
+public class YoutubeThumbnail {
 
-    private String videoId;
+    private String url;
+    private Integer width;
+    private Integer height;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
-     * @return The videoId
+     * @return The url
      */
-    public String getVideoId() {
-        return videoId;
+    public String getUrl() {
+        return url;
     }
 
     /**
-     * @param videoId The videoId
+     * @param url The url
      */
-    public void setVideoId(String videoId) {
-        this.videoId = videoId;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Map<String, Object> getAdditionalProperties() {

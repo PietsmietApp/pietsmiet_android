@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.twitchApi;
 
 import retrofit2.http.GET;
 import retrofit2.http.Path;

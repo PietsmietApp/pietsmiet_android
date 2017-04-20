@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.youtubeApi;
 
 
 public class YoutubeItem {

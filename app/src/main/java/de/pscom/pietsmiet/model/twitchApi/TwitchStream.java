@@ -1,5 +1,5 @@
 
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.twitchApi;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

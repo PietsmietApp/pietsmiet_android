@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.firebaseApi;
 
 import java.util.Map;
 

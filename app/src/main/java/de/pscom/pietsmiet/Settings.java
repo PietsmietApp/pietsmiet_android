@@ -44,7 +44,7 @@ public class Settings extends BaseActivity {
         notifyNewsSwitch.setChecked(SettingsHelper.boolNewsNotification);
         notifyPietcastSwitch.setChecked(SettingsHelper.boolPietcastNotification);
         qualityLoadHDImagesSpinner.setSelection(SettingsHelper.intQualityLoadHDImages);
-        sourceVideoSpinner.setSelection(SettingsHelper.sourceVideo);
+        sourceVideoSpinner.setSelection(SettingsHelper.intSourceVideo);
 
         btnClearCache.setOnClickListener((btn) -> {
             setResult(MainActivity.RESULT_CLEAR_CACHE);

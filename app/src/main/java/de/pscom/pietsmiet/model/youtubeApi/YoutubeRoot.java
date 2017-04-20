@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.model;
+package de.pscom.pietsmiet.model.youtubeApi;
 
 
 import java.util.ArrayList;

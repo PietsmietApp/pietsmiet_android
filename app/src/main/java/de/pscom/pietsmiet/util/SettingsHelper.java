@@ -22,7 +22,7 @@ public class SettingsHelper {
     public static final int TYPE_HD_WIFI = 1;
     public static final int TYPE_HD_ALWAYS = 2;
 
-    public static int sourceVideo;
+    public static int intSourceVideo;
     public static final int TYPE_SOURCE_VIDEO_PIETSMIET = 0;
     public static final int TYPE_SOURCE_VIDEO_YOUTUBE = 1;
     public static final int TYPE_SOURCE_VIDEO_ALL = 2;
@@ -34,7 +34,7 @@ public class SettingsHelper {
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
         intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_WIFI);
-        sourceVideo = getSharedPreferenceInt(context, KEY_SOURCE_VIDEO_SETTING, TYPE_SOURCE_VIDEO_PIETSMIET);
+        intSourceVideo = getSharedPreferenceInt(context, KEY_SOURCE_VIDEO_SETTING, TYPE_SOURCE_VIDEO_PIETSMIET);
     }
 
     public static boolean shouldLoadHDImages(Context c) {

@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import de.pscom.pietsmiet.MainActivity;
-import de.pscom.pietsmiet.backend.FacebookPresenter;
-import de.pscom.pietsmiet.backend.FirebasePresenter;
-import de.pscom.pietsmiet.backend.TwitterPresenter;
-import de.pscom.pietsmiet.backend.YoutubePresenter;
+import de.pscom.pietsmiet.presenter.FacebookPresenter;
+import de.pscom.pietsmiet.presenter.FirebasePresenter;
+import de.pscom.pietsmiet.presenter.TwitterPresenter;
+import de.pscom.pietsmiet.presenter.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.Subscription;
@@ -186,7 +186,7 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading the " + postLoadCount + " next posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.intSourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
                 new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
@@ -207,7 +207,7 @@ public class PostManager {
         mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
         Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.sourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.intSourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
                 new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
@@ -308,9 +308,9 @@ public class PostManager {
     }
 
     private boolean filterWrongCategories(Post post) {
-        if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
+        if (SettingsHelper.intSourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
             return false;
-        } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
+        } else if (SettingsHelper.intSourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
             return false;
         }
         return true;

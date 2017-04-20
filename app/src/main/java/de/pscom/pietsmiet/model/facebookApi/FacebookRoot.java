@@ -1,5 +1,5 @@
 
-package de.pscom.pietsmiet.model.facebookGraph;
+package de.pscom.pietsmiet.model.facebookApi;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

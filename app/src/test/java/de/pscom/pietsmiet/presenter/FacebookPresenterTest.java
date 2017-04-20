@@ -14,6 +14,8 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import rx.observers.TestSubscriber;
 
+import static junit.framework.Assert.assertTrue;
+
 public class FacebookPresenterTest extends MainTestPresenter {
     @Override
     public FacebookPresenter preparePresenter() {
@@ -37,6 +39,11 @@ public class FacebookPresenterTest extends MainTestPresenter {
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();
+        List<Throwable> kl = testSubscriber.getOnErrorEvents();
+        for (Throwable tr :
+                kl){
+            System.out.println(tr.getMessage());
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
         Post example1 = new Post.PostBuilder(PostType.FACEBOOK)
                 .title("Der Jay")
@@ -46,20 +53,14 @@ public class FacebookPresenterTest extends MainTestPresenter {
                 .build();
 
         Post example2 = new Post.PostBuilder(PostType.FACEBOOK)
-                .title("Chris")
-                .url("http://www.facebook.com/" + "275192789211423_1550921351638554")
-                .date(dateFormat.parse("2017-02-08T22:32:16+0000"))
-                .description("Hab grad nen 7. Sinn f\u00fcr krimi Spiele \ud83d\ude01\nHier mit dem Gewinner vom #pes2017 gewinnspiel \ud83d\ude0e\ud83d\udc4d\ud83c\udf89")
+                .title("Sep Pietsmiet")
+                .url("http://www.facebook.com/" + "411585615549330_1499313376776543")
+                .date(dateFormat.parse("2017-04-18T08:16:14+0000"))
+                .description("Die Jungs haben was spannendes aufgenommen, mal schauen was ihr davon haltet! :D Zum Upload-Plan: \nhttp://www.pietsmiet.de/news/uploadplan/1458-upload-plan-am-18-04-2017")
                 .build();
-        for (Post post :
-                list) {
-            System.out.println(post.getTitle());
-        }
 
-        //todo Get this to work. Currently the observable above *always* returns a zero size list
-
-        //assertTrue(list.contains(example1));
-        //assertTrue(list.contains(example2));
+        assertTrue(list.contains(example1));
+        assertTrue(list.contains(example2));
     }
 
 }

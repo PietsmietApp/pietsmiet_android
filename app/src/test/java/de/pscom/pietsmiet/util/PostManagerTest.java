@@ -34,7 +34,7 @@ public class PostManagerTest {
                 testSubscriber.getOnNextEvents()) {
             System.out.println(post.getTitle());
         }
-        //todo add tests if all categories have tests
+        //todo add tests if Twitter has tests
     }
 
 }

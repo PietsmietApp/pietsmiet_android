@@ -3,7 +3,6 @@ package de.pscom.pietsmiet.adapters;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +16,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.TimeUtils;
@@ -112,19 +112,25 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             });
         } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
-            Drawable thumbnail = currentItem.getThumbnail();
-            if (thumbnail != null) holder.thumbnail.setImageDrawable(thumbnail);
-            else holder.thumbnail.setVisibility(GONE);
+            holder.thumbnail.setVisibility(VISIBLE);
+            if (currentItem.getThumbnail() != null) {
+                holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
+            } else if (currentItem.getThumbnailUrl() != null) {
+                DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.thumbnail);
+            } else {
+                holder.thumbnail.setVisibility(GONE);
+            }
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             // Social media: Setup wide image
-            holder.thumbnail.setVisibility(GONE);
-
-            Drawable thumbnail = currentItem.getThumbnail();
-            if (thumbnail != null) {
-                holder.wideImage.setVisibility(VISIBLE);
-                holder.wideImage.setImageDrawable(thumbnail);
-                holder.wideImage.setVisibility(VISIBLE);
+            holder.wideImage.setVisibility(VISIBLE);
+            if (currentItem.getThumbnail() != null) {
+                holder.wideImage.setImageDrawable(currentItem.getThumbnail());
+            } else if (currentItem.getThumbnailUrl() != null) {
+                DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.wideImage);
+            } else {
+                holder.wideImage.setVisibility(GONE);
             }
+
         }
         // Setup text for (Uploadplan) & social media
         if (currentType == TWITTER || currentType == FACEBOOK) {

@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.drawable.Drawable;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -188,11 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
                                     .date(new Date(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
                             if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                String filename = Integer.toString(old_hashcode);
-                                Drawable thumb = DrawableFetcher.loadDrawableFromFile(context, filename);
-                                if (thumb != null) {
-                                    postBuilder.thumbnail(thumb);
-                                }
+                                postBuilder.thumbnailUrl(DrawableFetcher.LOAD_FROM_CACHE);
                             }
                             Post post = postBuilder.build();
 

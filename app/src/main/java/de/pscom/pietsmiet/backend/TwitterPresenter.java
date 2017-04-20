@@ -1,17 +1,13 @@
 package de.pscom.pietsmiet.backend;
 
-import android.graphics.drawable.Drawable;
-
 import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 import twitter4j.Query;
@@ -24,7 +20,9 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.conf.ConfigurationBuilder;
 
+import static de.pscom.pietsmiet.util.DrawableFetcher.getThumbnailUrlFromTweet;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.SettingsHelper.shouldLoadHDImages;
 
 public class TwitterPresenter extends MainPresenter {
     public static Post lastTweet, firstTweet;
@@ -57,15 +55,10 @@ public class TwitterPresenter extends MainPresenter {
                 .filter(result -> result != null)
                 .flatMapIterable(l -> l)
                 .map(tweet -> {
-                    Drawable thumb = null;
+                    String thumbUrl = getThumbnailUrlFromTweet(tweet, shouldLoadHDImages(view));
 
-                    if (SettingsHelper.shouldLoadHDImages(view)) {
-                        thumb = DrawableFetcher.getDrawableFromTweet(tweet);
-                    } else {
-                        thumb = DrawableFetcher.getDrawableThumbFromTweet(tweet);
-                    }
                     postBuilder = new Post.PostBuilder(TWITTER);
-                    postBuilder.thumbnail(thumb);
+                    postBuilder.thumbnailUrl(thumbUrl);
                     postBuilder.title(getDisplayName(tweet.getUser()));
                     postBuilder.description(tweet.getText());
                     postBuilder.id(tweet.getId());

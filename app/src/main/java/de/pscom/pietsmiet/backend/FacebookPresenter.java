@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.backend;
 
-import android.graphics.drawable.Drawable;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,8 +15,6 @@ import de.pscom.pietsmiet.model.facebookGraph.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
-import de.pscom.pietsmiet.util.SettingsHelper;
-
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -26,8 +22,8 @@ import rx.Observable;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
-
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.SettingsHelper.shouldLoadHDImages;
 
 public class FacebookPresenter extends MainPresenter {
     private FacebookApiInterface apiInterface;
@@ -51,7 +47,7 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
-        return Observable.defer(()->apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
+        return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
                 .filter(result -> result != null)
                 .flatMapIterable(res -> res)
                 .map(root -> {
@@ -66,7 +62,7 @@ public class FacebookPresenter extends MainPresenter {
                 .map(rawData -> {
                     List<JSONObject> jl = new ArrayList<>();
                     try {
-                        for(int i=0; i < rawData.length(); i++) {
+                        for (int i = 0; i < rawData.length(); i++) {
                             jl.add(i, rawData.getJSONObject(i));
                         }
                         return jl;
@@ -84,13 +80,14 @@ public class FacebookPresenter extends MainPresenter {
                 })
                 .filter(response -> response != null)
                 .map(post -> {
+
                     postBuilder = new Post.PostBuilder(FACEBOOK);
                     try {
-                        if ( !(post.has("from") && post.getJSONObject("from").has("name") && post.has("message") && post.has("created_time") ) ) {
+                        if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("message") && post.has("created_time"))) {
                             return postBuilder;
                         }
-                        Drawable thumb = (SettingsHelper.shouldLoadHDImages(view) ? DrawableFetcher.getFullDrawableFromPost(post) : DrawableFetcher.getDrawableFromPost(post));
-                        postBuilder.thumbnail(thumb);
+                        String thumbUrl = DrawableFetcher.getThumbnailUrlFromFacebook(post, shouldLoadHDImages(view));
+                        postBuilder.thumbnailUrl(thumbUrl);
                         postBuilder.title(post.getJSONObject("from").getString("name"));
                         postBuilder.description((post.has("message")) ? post.getString("message") : "");
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -98,9 +95,7 @@ public class FacebookPresenter extends MainPresenter {
                         if (post.has("id") && post.getString("id") != null && !post.getString("id").isEmpty()) {
                             postBuilder.url("http://www.facebook.com/" + post.getString("id"));
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (ParseException e) {
+                    } catch (JSONException | ParseException e) {
                         e.printStackTrace();
                     }
                     return postBuilder;
@@ -110,19 +105,21 @@ public class FacebookPresenter extends MainPresenter {
     /**
      * @return String with BatchRequest for FB posts from Team Pietsmiet
      */
+
     private String getBatchString(String strTime, int numPosts) {
-        String strFetch = "/posts?limit=" + numPosts + strTime + "&fields=from,created_time,message," + (SettingsHelper.shouldLoadHDImages(view) ? "full_" : "") + "picture" + "\",\"body\":\"\"";
+        String strFetch = "/posts?limit=" + numPosts + strTime + "&fields=from,created_time,message," +
+                (shouldLoadHDImages(view) ? "full_" : "") + "picture" + "\",\"body\":\"\"";
         String batch = "[";
-            //Piet
-            batch += "{\"method\":\"GET\",\"relative_url\":\"pietsmittie" + strFetch + "},";
-            //Chris
-            batch += "{\"method\":\"GET\",\"relative_url\":\"brosator" + strFetch + "},";
-            //Jay
-            batch += "{\"method\":\"GET\",\"relative_url\":\"icetea3105" + strFetch + "},";
-            //Sep
-            batch += "{\"method\":\"GET\",\"relative_url\":\"kessemak88" + strFetch + "},";
-            //Brammen
-            batch += "{\"method\":\"GET\",\"relative_url\":\"br4mm3n" + strFetch + "}";
+        //Piet
+        batch += "{\"method\":\"GET\",\"relative_url\":\"pietsmittie" + strFetch + "},";
+        //Chris
+        batch += "{\"method\":\"GET\",\"relative_url\":\"brosator" + strFetch + "},";
+        //Jay
+        batch += "{\"method\":\"GET\",\"relative_url\":\"icetea3105" + strFetch + "},";
+        //Sep
+        batch += "{\"method\":\"GET\",\"relative_url\":\"kessemak88" + strFetch + "},";
+        //Brammen
+        batch += "{\"method\":\"GET\",\"relative_url\":\"br4mm3n" + strFetch + "}";
         batch += "]";
         return batch;
     }

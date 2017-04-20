@@ -17,9 +17,9 @@ import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.ColorUtils.colorUploadplan;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class Post implements Comparable<Post> {
@@ -29,6 +29,8 @@ public class Post implements Comparable<Post> {
     private int postType;
     @Nullable
     private Drawable thumbnail;
+    @Nullable
+    private String thumbnailUrl;
     private long api_ID;
     private Date datetime;
     private int duration;
@@ -38,7 +40,7 @@ public class Post implements Comparable<Post> {
         description = builder.description;
         title = builder.title;
         postType = builder.postType;
-        thumbnail = builder.thumbnail;
+        thumbnailUrl = builder.thumbnailUrl;
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
@@ -48,6 +50,15 @@ public class Post implements Comparable<Post> {
     @Nullable
     public Drawable getThumbnail() {
         return this.thumbnail;
+    }
+
+    public void setThumbnail(Drawable thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    @Nullable
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
     }
 
     public boolean hasThumbnail() {
@@ -81,15 +92,6 @@ public class Post implements Comparable<Post> {
 
     public String getUrl() {
         return url;
-    }
-
-    public void setUrl(String url) {
-        if (url != null && !url.isEmpty()) {
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "http://" + url;
-            }
-            this.url = url;
-        }
     }
 
 
@@ -165,7 +167,7 @@ public class Post implements Comparable<Post> {
         @Nullable
         private String description;
         @Nullable
-        private Drawable thumbnail;
+        private String thumbnailUrl;
         private long api_ID;
         private Date date;
         private int duration;
@@ -185,8 +187,8 @@ public class Post implements Comparable<Post> {
             return this;
         }
 
-        public PostBuilder thumbnail(@Nullable Drawable thumbnail) {
-            this.thumbnail = thumbnail;
+        public PostBuilder thumbnailUrl(@Nullable String thumbnailUrl) {
+            this.thumbnailUrl = thumbnailUrl;
             return this;
         }
 

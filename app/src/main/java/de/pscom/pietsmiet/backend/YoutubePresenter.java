@@ -10,7 +10,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.YoutubeApiInterface;
 import de.pscom.pietsmiet.model.YoutubeItem;
 import de.pscom.pietsmiet.model.YoutubeRoot;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import retrofit2.Retrofit;
@@ -81,7 +80,7 @@ public class YoutubePresenter extends MainPresenter {
                 })
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
-                    postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getMedium().getUrl()));
+                    postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
                     postBuilder.title(snippet.getTitle());
                     postBuilder.description("");
                     try {

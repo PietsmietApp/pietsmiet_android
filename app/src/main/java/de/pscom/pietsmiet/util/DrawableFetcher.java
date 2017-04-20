@@ -8,6 +8,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.widget.ImageView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,36 +22,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 
 public class DrawableFetcher {
-
-    /**
-     * @param post A facebook posting
-     * @return The drawable from the post, if available
-     */
-    @Nullable
-    public static Drawable getDrawableFromPost(@Nullable JSONObject post) throws JSONException {
-        if (post != null && post.has("picture")) {
-            String imageUrl = post.getString("picture");
-            if (imageUrl != null) {
-                return getDrawableFromUrl(imageUrl);
-            }
-        }
-        return null;
-    }
+    public static final String LOAD_FROM_CACHE = "LOAD_FROM_CACHE";
 
     /**
      * @param post A facebook posting
      * @return The full drawable from the post, if available
      */
-    @Nullable
-    public static Drawable getFullDrawableFromPost(@Nullable JSONObject post) throws JSONException {
-        if (post != null && post.has("full_picture")) {
-            String imageUrl = post.getString("full_picture");
-            if (imageUrl != null) {
-                return getDrawableFromUrl(imageUrl);
+    public static String getThumbnailUrlFromFacebook(@Nullable JSONObject post, boolean isHD) throws JSONException {
+        if (post != null) {
+            if (!isHD && post.has("picture") && post.get("picture") != null) {
+                return post.get("picture").toString();
+            }
+            if (isHD && post.has("full_picture") && post.get("full_picture") != null) {
+                return post.get("full_picture").toString();
             }
         }
         return null;
@@ -60,26 +52,11 @@ public class DrawableFetcher {
      * @return The drawable from the tweet, if available
      */
     @Nullable
-    public static Drawable getDrawableThumbFromTweet(@Nullable Status status) {
+    public static String getThumbnailUrlFromTweet(@Nullable Status status, boolean isHd) {
         if (status != null) {
             MediaEntity[] mediaEntities = status.getMediaEntities();
             if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param status A tweet
-     * @return The drawable from the tweet, if available
-     */
-    @Nullable
-    public static Drawable getDrawableFromTweet(@Nullable Status status) {
-        if (status != null) {
-            MediaEntity[] mediaEntities = status.getMediaEntities();
-            if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL());
+                return mediaEntities[0].getMediaURL() + (isHd ? "" : ":thumb");
             }
         }
         return null;
@@ -90,7 +67,7 @@ public class DrawableFetcher {
      * @return A BitmapDrawable from the url
      */
     @Nullable
-    public static Drawable getDrawableFromUrl(@NonNull String url) {
+    private static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
             BitmapFactory.Options options = new BitmapFactory.Options();
@@ -104,6 +81,28 @@ public class DrawableFetcher {
             PsLog.w("Couldn't fetch thumbnail: " + e.toString());
         }
         return null;
+    }
+
+    public static void loadThumbnailIntoView(de.pscom.pietsmiet.generic.Post post, Context c, ImageView view) {
+        Single.just(post.getThumbnailUrl())
+                .subscribeOn(Schedulers.io())
+                .map(url -> {
+                    Drawable drawable = null;
+                    if (url == LOAD_FROM_CACHE) {
+                        drawable = loadDrawableFromFile(c, post.hashCode() + "");
+                    } else if (url != null) {
+                        drawable = getDrawableFromUrl(url);
+                    }
+                    post.setThumbnail(drawable);
+                    return drawable;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(drawable -> {
+                    if (view != null && drawable != null) {
+                        view.setVisibility(View.VISIBLE);
+                        view.setImageDrawable(drawable);
+                    }
+                }, Throwable::printStackTrace);
     }
 
     /**

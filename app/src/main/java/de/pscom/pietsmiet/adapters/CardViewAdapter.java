@@ -113,6 +113,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
             holder.thumbnail.setVisibility(VISIBLE);
+            holder.wideImage.setVisibility(GONE);
             if (currentItem.getThumbnail() != null) {
                 holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
             } else if (currentItem.getThumbnailUrl() != null) {
@@ -122,6 +123,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             }
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             // Social media: Setup wide image
+            holder.thumbnail.setVisibility(GONE);
             holder.wideImage.setVisibility(VISIBLE);
             if (currentItem.getThumbnail() != null) {
                 holder.wideImage.setImageDrawable(currentItem.getThumbnail());

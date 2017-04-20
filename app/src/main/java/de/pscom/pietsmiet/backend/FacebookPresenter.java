@@ -23,7 +23,9 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
+
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
@@ -57,8 +59,8 @@ public class FacebookPresenter extends MainPresenter {
                         return new JSONObject(root.getBody()).getJSONArray("data");
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        throw Exceptions.propagate(e);
                     }
-                    return null;
                 })
                 .filter(rt -> rt != null)
                 .map(rawData -> {
@@ -70,12 +72,16 @@ public class FacebookPresenter extends MainPresenter {
                         return jl;
                     } catch (JSONException e) {
                         PsLog.w("Konnte post nicht parsen", e);
-                        view.showError("Facebook parsing error");
-                        return null;
+                        throw Exceptions.propagate(e);
                     }
                 })
                 .filter(res -> res != null)
                 .flatMapIterable(l -> l)
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't load Facebook", err);
+                    view.showError("Facebook konnte nicht geladen werden");
+                    return null;
+                })
                 .filter(response -> response != null)
                 .map(post -> {
                     postBuilder = new Post.PostBuilder(FACEBOOK);

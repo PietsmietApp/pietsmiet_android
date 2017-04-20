@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class YoutubePresenter extends MainPresenter {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
@@ -63,10 +63,17 @@ public class YoutubePresenter extends MainPresenter {
 
 
     private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
-        return Observable.defer(() -> call.flatMapIterable(YoutubeRoot::getItems))
+        return Observable.defer(() -> call
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't fetch Youtube: ", err);
+                    view.showError("Youtube konnte nicht geladen werden");
+                    return null;
+                })
+                .filter(result -> result != null)
+                .flatMapIterable(YoutubeRoot::getItems))
                 .filter(result -> result != null)
                 .doOnNext(item -> {
-                    this.postBuilder = new Post.PostBuilder(VIDEO);
+                    this.postBuilder = new Post.PostBuilder(YOUTUBE);
                     String videoID = item.getId().getVideoId();
                     if (videoID != null && !videoID.isEmpty()) {
                         postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
@@ -74,15 +81,16 @@ public class YoutubePresenter extends MainPresenter {
                 })
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
-                        postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getMedium().getUrl()));
-                        postBuilder.title(snippet.getTitle());
-                        postBuilder.description("");
+                    postBuilder.thumbnail(DrawableFetcher.getDrawableFromUrl(snippet.getThumbnails().getMedium().getUrl()));
+                    postBuilder.title(snippet.getTitle());
+                    postBuilder.description("");
                     try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.GERMANY);
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
                     } catch (ParseException e) {
+                        // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        view.showError("YouTube date parsing error");
+                        view.showError("Einige Youtube-Posts konnte nicht geladen werden");
                     }
                     return postBuilder;
                 });

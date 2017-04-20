@@ -7,6 +7,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_LOAD_HD_SETTING;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_SOURCE_VIDEO_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceBoolean;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceInt;
 
@@ -15,24 +16,30 @@ public class SettingsHelper {
     public static boolean boolVideoNotification;
     public static boolean boolNewsNotification;
     public static boolean boolPietcastNotification;
-    /* intQualityLoadHDImages values: reference to position in spinner
-     * 0 - NEVER
-     * 1 - WIFI_ONLY
-     * 2 - FORCE
-     */
+
     public static int intQualityLoadHDImages;
+    public static final int TYPE_HD_NEVER = 0;
+    public static final int TYPE_HD_WIFI = 1;
+    public static final int TYPE_HD_ALWAYS = 2;
+
+    public static int sourceVideo;
+    public static final int TYPE_SOURCE_VIDEO_PIETSMIET = 0;
+    public static final int TYPE_SOURCE_VIDEO_YOUTUBE = 1;
+    public static final int TYPE_SOURCE_VIDEO_ALL = 2;
+
 
     public static void loadAllSettings(Context context) {
         boolUploadplanNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, true);
         boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, true);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
-        intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, 0);
+        intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_WIFI);
+        sourceVideo = getSharedPreferenceInt(context, KEY_SOURCE_VIDEO_SETTING, TYPE_SOURCE_VIDEO_PIETSMIET);
     }
 
     public static boolean shouldLoadHDImages(Context c) {
-        if(intQualityLoadHDImages == 2) return true;
-        if(intQualityLoadHDImages == 1 && NetworkUtil.isConnectedWifi(c)) return true;
+        if(intQualityLoadHDImages == TYPE_HD_ALWAYS) return true;
+        if(intQualityLoadHDImages == TYPE_HD_WIFI && NetworkUtil.isConnectedWifi(c)) return true;
         return false;
     }
 

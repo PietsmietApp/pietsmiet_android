@@ -11,8 +11,6 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mcsoxford.rss.MediaThumbnail;
-import org.mcsoxford.rss.RSSItem;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,7 +19,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -53,24 +50,6 @@ public class DrawableFetcher {
             String imageUrl = post.getString("full_picture");
             if (imageUrl != null) {
                 return getDrawableFromUrl(imageUrl);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param rssItem A rss item
-     * @return The drawable from the item, if available
-     */
-    @Nullable
-    public static Drawable getDrawableFromRss(@Nullable RSSItem rssItem) {
-        if (rssItem != null) {
-            List<MediaThumbnail> thumbs = rssItem.getThumbnails();
-            if (thumbs != null
-                    && thumbs.size() > 0
-                    && thumbs.get(0) != null
-                    && thumbs.get(0).getUrl() != null) {
-                return getDrawableFromUrl(thumbs.get(0).getUrl().toString());
             }
         }
         return null;

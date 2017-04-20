@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
@@ -26,15 +27,11 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.SettingsHelper.shouldLoadHDImages;
 
 public class FacebookPresenter extends MainPresenter {
-    private FacebookApiInterface apiInterface;
+    FacebookApiInterface apiInterface;
 
     public FacebookPresenter(MainActivity view) {
         super(view);
-        if (SecretConstants.facebookToken == null) {
-            PsLog.w("No facebook secret or token specified");
-            return;
-        }
-
+        if (!checkForKeys()) return;
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -44,6 +41,14 @@ public class FacebookPresenter extends MainPresenter {
                 .build();
 
         apiInterface = retrofit.create(FacebookApiInterface.class);
+    }
+
+    protected boolean checkForKeys() {
+        if (SecretConstants.facebookToken == null) {
+            PsLog.w("No facebook secret or token specified");
+            return false;
+        }
+        return true;
     }
 
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
@@ -90,7 +95,7 @@ public class FacebookPresenter extends MainPresenter {
                         postBuilder.thumbnailUrl(thumbUrl);
                         postBuilder.title(post.getJSONObject("from").getString("name"));
                         postBuilder.description((post.has("message")) ? post.getString("message") : "");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
                         postBuilder.date(dateFormat.parse(post.getString("created_time")));
                         if (post.has("id") && post.getString("id") != null && !post.getString("id").isEmpty()) {
                             postBuilder.url("http://www.facebook.com/" + post.getString("id"));

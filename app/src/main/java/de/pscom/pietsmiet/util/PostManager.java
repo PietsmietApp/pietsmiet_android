@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.presenter.FacebookPresenter;
 import de.pscom.pietsmiet.presenter.FirebasePresenter;
 import de.pscom.pietsmiet.presenter.TwitterPresenter;
 import de.pscom.pietsmiet.presenter.YoutubePresenter;
-import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
@@ -246,7 +246,7 @@ public class PostManager {
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
                     PsLog.e("Kritischer Fehler beim Laden aller Kategorien: ", e);
-                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet",  Snackbar.LENGTH_INDEFINITE);
+                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet", Snackbar.LENGTH_INDEFINITE);
                     mView.setRefreshAnim(false);
                 }, () -> mView.setRefreshAnim(false));
     }
@@ -283,13 +283,13 @@ public class PostManager {
      * and overrides the previous check if needed.
      *
      * @param post Post object to check
-     * @return boolean shouldFilter Returns true if the post is not allowed
+     * @return boolean shouldFilter
      */
     private boolean filterWrongPosts(Post post) {
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
-            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
@@ -297,7 +297,7 @@ public class PostManager {
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +

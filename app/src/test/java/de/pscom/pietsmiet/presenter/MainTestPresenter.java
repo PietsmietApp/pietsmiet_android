@@ -12,7 +12,7 @@ abstract class MainTestPresenter {
     @Mock
     protected MainActivity mMockContext;
 
-    public abstract <T extends MainPresenter> T preparePresenter(MockWebServer mockWebServer);
+    public abstract <T extends MainPresenter> T preparePresenter();
 
 
     protected  Retrofit getRetrofit(MockWebServer mockWebServer) {

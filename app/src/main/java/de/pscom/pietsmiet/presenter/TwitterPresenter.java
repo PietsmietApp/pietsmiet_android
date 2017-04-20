@@ -30,17 +30,22 @@ public class TwitterPresenter extends MainPresenter {
 
     public TwitterPresenter(MainActivity view) {
         super(view);
+        if (!checkForKeys()) return;
 
-        if (SecretConstants.twitterSecret == null) {
-            PsLog.w("No twitter secret specified");
-            return;
-        }
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setApplicationOnlyAuthEnabled(true);
         if (BuildConfig.DEBUG) builder.setDebugEnabled(true);
         TwitterFactory tf = new TwitterFactory(builder.build());
         twitterInstance = tf.getInstance();
         twitterInstance.setOAuthConsumer("btEhqyrrGF96AYQXP20Wwul4n", SecretConstants.twitterSecret);
+    }
+
+    protected boolean checkForKeys() {
+        if (SecretConstants.twitterSecret == null) {
+            PsLog.w("No twitter secret specified");
+            return false;
+        }
+        return true;
     }
 
     private Observable<Post.PostBuilder> parseTweets(Query q) {

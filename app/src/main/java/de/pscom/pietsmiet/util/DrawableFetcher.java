@@ -9,6 +9,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mcsoxford.rss.MediaThumbnail;
 import org.mcsoxford.rss.RSSItem;
 
@@ -21,7 +23,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import facebook4j.Post;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 
@@ -32,11 +33,11 @@ public class DrawableFetcher {
      * @return The drawable from the post, if available
      */
     @Nullable
-    public static Drawable getDrawableFromPost(@Nullable Post post) {
-        if (post != null) {
-            URL imageUrl = post.getPicture();
+    public static Drawable getDrawableFromPost(@Nullable JSONObject post) throws JSONException {
+        if (post != null && post.has("picture")) {
+            String imageUrl = post.getString("picture");
             if (imageUrl != null) {
-                return getDrawableFromUrl(imageUrl.toString());
+                return getDrawableFromUrl(imageUrl);
             }
         }
         return null;
@@ -47,11 +48,11 @@ public class DrawableFetcher {
      * @return The full drawable from the post, if available
      */
     @Nullable
-    public static Drawable getFullDrawableFromPost(@Nullable Post post) {
-        if (post != null) {
-            URL imageUrl = post.getFullPicture();
+    public static Drawable getFullDrawableFromPost(@Nullable JSONObject post) throws JSONException {
+        if (post != null && post.has("full_picture")) {
+            String imageUrl = post.getString("full_picture");
             if (imageUrl != null) {
-                return getDrawableFromUrl(imageUrl.toString());
+                return getDrawableFromUrl(imageUrl);
             }
         }
         return null;

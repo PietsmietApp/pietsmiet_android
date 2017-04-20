@@ -21,7 +21,7 @@ import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class FirebasePresenter extends MainPresenter {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
-    private final FirebaseApiInterface apiInterface;
+    FirebaseApiInterface apiInterface;
 
     public FirebasePresenter(MainActivity view) {
         super(view);

@@ -49,6 +49,11 @@ public class TwitterPresenter extends MainPresenter {
         return Observable.defer(() -> Observable.just(q))
                 .compose(getToken())
                 .map(this::fetchTweets)
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't fetch tweets: ", err);
+                    view.showError("Twitter konnte nicht geladen werden");
+                    return null;
+                })
                 .filter(result -> result != null)
                 .flatMapIterable(l -> l)
                 .map(tweet -> {
@@ -83,9 +88,7 @@ public class TwitterPresenter extends MainPresenter {
         try {
             result = twitterInstance.search(psTwitt);
         } catch (TwitterException e) {
-            PsLog.e("Couldn't fetch tweets: ", e);
-            view.showError("Twitter unreachable");
-            return null;
+            throw Exceptions.propagate(e);
         }
 
         return result.getTweets();
@@ -132,6 +135,7 @@ public class TwitterPresenter extends MainPresenter {
 
     /**
      * Show the remaining calls to the search api with this app's token.
+     * Only used for testing
      */
     private void getRateLimit() {
         try {
@@ -143,7 +147,6 @@ public class TwitterPresenter extends MainPresenter {
 
         } catch (TwitterException e) {
             PsLog.w("Couldn't get rate limit: " + e.getErrorMessage());
-            view.showError("Twitter error");
         }
     }
 
@@ -157,7 +160,7 @@ public class TwitterPresenter extends MainPresenter {
                 "exclude:replies")
                 .count(50)
                 .resultType(Query.ResultType.recent);
-        if (firstTweet != null){
+        if (firstTweet != null) {
             q.sinceId(firstTweet.getId());
         }
 

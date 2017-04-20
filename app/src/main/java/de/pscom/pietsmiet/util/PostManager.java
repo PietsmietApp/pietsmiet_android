@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.backend.FacebookPresenter;
@@ -14,6 +15,7 @@ import de.pscom.pietsmiet.backend.YoutubePresenter;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 import rx.Subscription;
+import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -172,6 +174,11 @@ public class PostManager {
      * @param numPosts int
      **/
     public void fetchNextPosts(int numPosts) {
+        if (!NetworkUtil.isConnected(mView)){
+            mView.showError("Keine Netzwerkverbindung");
+            mView.setRefreshAnim(false);
+            return;
+        }
         FETCH_DIRECTION_DOWN = true;
         postLoadCount = numPosts;
         mView.setRefreshAnim(true);
@@ -189,6 +196,11 @@ public class PostManager {
      * Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
+        if (!NetworkUtil.isConnected(mView)){
+            mView.showError("Keine Netzwerkverbindung");
+            mView.setRefreshAnim(false);
+            return;
+        }
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
@@ -208,26 +220,33 @@ public class PostManager {
      * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
      */
     private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
-        subLoadingPosts = postObs.observeOn(Schedulers.io())
+        subLoadingPosts = postObs.observeOn(Schedulers.io(), true)
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()
                 .filter(this::filterWrongPosts)
-                .doOnNext(post -> PsLog.v(post.getPostType() + ""))
                 .take(postLoadCount)
                 .toList()
+                .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
+                    if (attempt == 2) throw Exceptions.propagate(throwable);
+                    else {
+                        mView.showError("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
+                        PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
+                        return attempt;
+                    }
+                }).flatMap(retryCount -> Observable.timer((long) Math.pow(2, retryCount), TimeUnit.SECONDS)))
                 .subscribe(items -> {
                     addPosts(items);
                     mView.setRefreshAnim(false);
                     PsLog.v("Finished with " + items.size() + " Posts");
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
-                    PsLog.w("Fehler bei Laden der Kategorie ", e);
-                    mView.showError("Eine oder mehrere Kategorien konnten nicht geladen werden");
+                    PsLog.e("Kritischer Fehler beim Laden aller Kategorien: ", e);
+                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet");
                     mView.setRefreshAnim(false);
-                });
+                }, () -> mView.setRefreshAnim(false));
     }
 
     /**
@@ -257,9 +276,9 @@ public class PostManager {
 
     /**
      * First checks if a video posts is from a unallowed category
-     *
+     * <p>
      * Then checks if a post is after / before the fetching direction
-     *  and overrides the previous check if needed.
+     * and overrides the previous check if needed.
      *
      * @param post Post object to check
      * @return boolean shouldFilter Returns true if the post is not allowed
@@ -286,7 +305,7 @@ public class PostManager {
         return shouldFilter;
     }
 
-    private boolean filterWrongCategories(Post post){
+    private boolean filterWrongCategories(Post post) {
         if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
             return false;
         } else if (SettingsHelper.sourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {

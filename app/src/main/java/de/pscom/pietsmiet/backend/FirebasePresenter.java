@@ -7,6 +7,7 @@ import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.FirebaseItem;
+import de.pscom.pietsmiet.util.PsLog;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -37,6 +38,11 @@ public class FirebasePresenter extends MainPresenter {
 
     private Observable<Post.PostBuilder> parsePostsFromDb(Observable<Map<String, Map<String, FirebaseItem>>> obs) {
         return Observable.defer(() -> obs)
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't load Firebase", err);
+                    view.showError("Pietsmiet.de konnte nicht geladen werden");
+                    return null;
+                })
                 .filter(result -> result != null)
                 .flatMapIterable(Map::values)
                 .flatMapIterable(Map::values)

@@ -21,6 +21,7 @@ import facebook4j.auth.AccessToken;
 import facebook4j.internal.http.RequestMethod;
 import facebook4j.json.DataObjectFactory;
 import rx.Observable;
+import rx.exceptions.Exceptions;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
@@ -46,19 +47,22 @@ public class FacebookPresenter extends MainPresenter {
                         return result.asResponseList();
                     } catch (FacebookException e) {
                         PsLog.w("Konnte result nicht parsen", e);
-                        return null;
+                        throw Exceptions.propagate(e);
                     }
                 })
-                .filter(result -> result != null)
                 .flatMapIterable(l -> l)
                 .map(rawPost -> {
                     try {
                         return DataObjectFactory.createPost(rawPost.toString());
                     } catch (FacebookException e) {
                         PsLog.w("Konnte post nicht parsen", e);
-                        view.showError("Facebook parsing error");
-                        return null;
+                        throw Exceptions.propagate(e);
                     }
+                })
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't load Facebook", err);
+                    view.showError("Facebook konnte nicht geladen werden");
+                    return null;
                 })
                 .filter(response -> response != null)
                 .map(post -> {
@@ -95,8 +99,7 @@ public class FacebookPresenter extends MainPresenter {
 
             return mFacebook.executeBatch(batch);
         } catch (Exception e) {
-            view.showError("Facebook API unreachable");
-            PsLog.e("Facebook Api Error: ", e);
+            Exceptions.propagate(e);
         }
         return null;
     }

@@ -258,7 +258,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void showError(String msg) {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
                 );
     }
 

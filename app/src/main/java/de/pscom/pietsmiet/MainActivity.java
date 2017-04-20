@@ -39,7 +39,6 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
-    public static final int RESULT_RELOAD = 18;
     public static final int REQUEST_SETTINGS = 16;
     private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
     private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
@@ -106,9 +105,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // End Top Button init
 
         SettingsHelper.loadAllSettings(this);
-        FirebaseMessaging.getInstance().subscribeToTopic("test");
-        //fixme
 
+        if (BuildConfig.DEBUG) {
+            FirebaseMessaging.getInstance().subscribeToTopic("test");
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("test");
+        }
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
         } else {
@@ -320,13 +322,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
             if (resultCode == RESULT_CLEAR_CACHE) {
-                new DatabaseHelper(this).clearDB();
-                CacheUtil.trimCache(this);
-            }
-            if (resultCode == RESULT_RELOAD || resultCode == RESULT_CLEAR_CACHE) {
                 postManager.clearPosts();
                 scrollListener.resetState();
                 postManager.fetchNewPosts();
+                new DatabaseHelper(this).clearDB();
+                CacheUtil.trimCache(this);
             }
         }
     }

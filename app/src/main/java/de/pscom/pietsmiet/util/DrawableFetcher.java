@@ -93,14 +93,16 @@ public class DrawableFetcher {
                     } else if (url != null) {
                         drawable = getDrawableFromUrl(url);
                     }
-                    post.setThumbnail(drawable);
                     return drawable;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(drawable -> {
-                    if (view != null && drawable != null) {
-                        view.setVisibility(View.VISIBLE);
-                        view.setImageDrawable(drawable);
+                    if (drawable != null) {
+                        if (view != null) {
+                            view.setVisibility(View.VISIBLE);
+                            view.setImageDrawable(drawable);
+                        }
+                        post.setThumbnail(drawable);
                     }
                 }, Throwable::printStackTrace);
     }
@@ -146,7 +148,7 @@ public class DrawableFetcher {
      * @param fileName Filename
      * @return BitmapDrawable from the file
      */
-    public static Drawable loadDrawableFromFile(Context context, String fileName) {
+    private static Drawable loadDrawableFromFile(Context context, String fileName) {
         Bitmap bitmap;
 
         File path = context.getCacheDir();

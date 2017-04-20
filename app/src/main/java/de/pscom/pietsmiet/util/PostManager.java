@@ -69,6 +69,7 @@ public class PostManager {
                     return list;
                 })
                 .distinct()
+                .filter(this::filterWrongCategories)
                 .doOnNext(post -> {
                     if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getDate().getTime() < post.getDate().getTime()))
                         TwitterPresenter.firstTweet = post;
@@ -97,7 +98,6 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(this::isAllowedType)
-                .filter(this::filterWrongCategories)
                 .toList()
                 .subscribe(list -> {
                     currentPosts.clear();

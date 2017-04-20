@@ -56,7 +56,6 @@ public class Settings extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position < 3) {
                     SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
-                    setResult(MainActivity.RESULT_CLEAR_CACHE);
                 } else {
                     ((Spinner) view).setSelection(0);
                 }
@@ -72,8 +71,8 @@ public class Settings extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position < 3) {
+                    if(position != SettingsHelper.intSourceVideo) setResult(MainActivity.RESULT_CLEAR_CACHE);
                     SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_SOURCE_VIDEO_SETTING, position);
-                    setResult(MainActivity.RESULT_CLEAR_CACHE);
                 } else {
                     ((Spinner) view).setSelection(0);
                 }

@@ -5,39 +5,42 @@
         android:id="@+id/nav_pietstream_banner"
         android:visible="false"
         app:actionLayout="@layout/pietstream_banner_layout" />
-    <item
-        android:id="@+id/nav_video"
-        android:icon="@drawable/ic_watch_later_black_24dp"
-        android:title="@string/drawer_youtube"
-        app:actionLayout="@layout/widget_switch"/>
-    <item
-        android:id="@+id/nav_facebook"
-        android:icon="@drawable/ic_share_black_24dp"
-        android:title="@string/type_facebook"
-        app:actionLayout="@layout/widget_switch"/>
-    <item
-        android:id="@+id/nav_twitter"
-        android:icon="@drawable/ic_share_black_24dp"
-        android:title="@string/type_twitter"
-        app:actionLayout="@layout/widget_switch"/>
-    <item
-        android:id="@+id/nav_upload_plan"
-        android:icon="@drawable/ic_assignment_black_24dp"
-        android:title="@string/type_uploadplan"
-        app:actionLayout="@layout/widget_switch"/>
-    <item
-        android:id="@+id/nav_pietcast"
-        android:icon="@drawable/ic_music_note_black_24dp"
-        android:title="@string/type_pietcast"
-        app:actionLayout="@layout/widget_switch"/>
-
+    <item android:title="@string/drawer_filter">
+        <menu>
+            <item
+                android:id="@+id/nav_video"
+                android:icon="@drawable/ic_watch_later_black_24dp"
+                android:title="@string/drawer_youtube"
+                app:actionLayout="@layout/widget_switch"/>
+            <item
+                android:id="@+id/nav_facebook"
+                android:icon="@drawable/ic_share_black_24dp"
+                android:title="@string/type_facebook"
+                app:actionLayout="@layout/widget_switch"/>
+            <item
+                android:id="@+id/nav_twitter"
+                android:icon="@drawable/ic_share_black_24dp"
+                android:title="@string/type_twitter"
+                app:actionLayout="@layout/widget_switch"/>
+            <item
+                android:id="@+id/nav_upload_plan"
+                android:icon="@drawable/ic_assignment_black_24dp"
+                android:title="@string/type_uploadplan"
+                app:actionLayout="@layout/widget_switch"/>
+            <item
+                android:id="@+id/nav_pietcast"
+                android:icon="@drawable/ic_music_note_black_24dp"
+                android:title="@string/type_pietcast"
+                app:actionLayout="@layout/widget_switch"/>
+        </menu>
+    </item>
 
     <item android:title="@string/drawer_sonstiges">
         <menu>
             <item
                 android:id="@+id/nav_feedback"
-                android:icon="@drawable/ic_help_black_24dp"
-                android:title="@string/drawer_Feedback"/>
+                android:icon="@drawable/ic_open_in_browser_black_24dp"
+                android:title="@string/drawer_Feedback" />
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/ic_help_black_24dp"

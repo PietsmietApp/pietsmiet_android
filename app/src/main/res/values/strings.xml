@@ -5,6 +5,9 @@
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="drawer_youtube">YouTube</string>
+    <string name="drawer_Feedback">Feedback</string>
+    <string name="drawer_filter">Filter</string>
+    <string name="drawer_pietstream_banner">Pietstream</string>
 
     <string name="about_text">Developed by l3d00m and saibotk (tkindanight)
         \n\nSource Code: \n https://github.com/l3d00m/pietsmiet_android/
@@ -25,13 +28,10 @@
     <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
     <string name="settings_header_others">Sonstige Einstellungen</string>
     <string name="settings_clear_cache">Clear Cache</string>
-
-    <string name="other_coming_soon">Coming soon</string>
-    <string name="drawer_Feedback">Feedback</string>
     <string name="settings_header_quality">Qualität</string>
-    <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
-    <string name="drawer_pietstream_banner">Pietstream</string>
     <string name="settings_source_video">Quelle für Videos:</string>
+    <string name="other_coming_soon">Coming soon</string>
+    <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
 
     <string-array name="qualityHDImagesSpinnerItems_array">
         <item>Niemals</item>

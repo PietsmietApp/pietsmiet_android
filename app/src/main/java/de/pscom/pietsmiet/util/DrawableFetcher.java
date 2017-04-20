@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import org.json.JSONException;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import de.pscom.pietsmiet.R;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -84,6 +86,14 @@ public class DrawableFetcher {
     }
 
     public static void loadThumbnailIntoView(de.pscom.pietsmiet.generic.Post post, Context c, ImageView view) {
+        if(view != null) {
+            view.setImageResource(R.drawable.ic_loading_circle);
+            view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            view.setScaleX(1.5f);
+            view.setScaleY(1.5f);
+            view.setAnimation(AnimationUtils.loadAnimation(c, R.anim.loading_animation));
+            view.animate();
+        }
         Single.just(post.getThumbnailUrl())
                 .subscribeOn(Schedulers.io())
                 .map(url -> {
@@ -100,6 +110,10 @@ public class DrawableFetcher {
                     if (drawable != null) {
                         if (view != null) {
                             view.setVisibility(View.VISIBLE);
+                            view.setAnimation(null);
+                            view.setScaleX(1f);
+                            view.setScaleY(1f);
+                            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
                             view.setImageDrawable(drawable);
                         }
                         post.setThumbnail(drawable);

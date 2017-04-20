@@ -30,7 +30,7 @@ public class FacebookPresenter extends MainPresenter {
 
     public FacebookPresenter(MainActivity view) {
         super(view);
-        if (SecretConstants.facebookToken == null || SecretConstants.facebookSecret == null) {
+        if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");
             return;
         }

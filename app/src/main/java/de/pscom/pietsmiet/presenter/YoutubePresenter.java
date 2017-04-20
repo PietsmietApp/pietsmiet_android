@@ -23,15 +23,11 @@ import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 public class YoutubePresenter extends MainPresenter {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
-    private final YoutubeApiInterface apiInterface;
+    YoutubeApiInterface apiInterface;
 
     public YoutubePresenter(MainActivity view) {
         super(view);
-
-        if (SecretConstants.youtubeAPIkey == null || SecretConstants.youtubeAPIkey == null) {
-            PsLog.w("No Youtube API-key or token specified");
-        }
-
+        checkForKeys();
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -41,6 +37,12 @@ public class YoutubePresenter extends MainPresenter {
                 .build();
 
         apiInterface = retrofit.create(YoutubeApiInterface.class);
+    }
+
+    protected void checkForKeys(){
+        if (SecretConstants.youtubeAPIkey == null) {
+            PsLog.w("No Youtube API-key or token specified");
+        }
     }
 
     @Override
@@ -82,7 +84,6 @@ public class YoutubePresenter extends MainPresenter {
                 .map(snippet -> {
                     postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
                     postBuilder.title(snippet.getTitle());
-                    postBuilder.description("");
                     try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
                         postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));

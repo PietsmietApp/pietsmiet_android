@@ -19,8 +19,6 @@ public class SecretConstants {
     @Nullable
     public static String facebookToken;
     @Nullable
-    public static String facebookSecret;
-    @Nullable
     public static String youtubeAPIkey;
     @Nullable
     public static String twitchClientId;
@@ -33,7 +31,6 @@ public class SecretConstants {
 
             twitterSecret = properties.getProperty("twitterSecret");
             facebookToken = properties.getProperty("facebookToken");
-            facebookSecret = properties.getProperty("facebookSecret");
             youtubeAPIkey = properties.getProperty("youtubeAPIkey");
             twitchClientId = properties.getProperty("twitchClientId");
         } catch (IOException e) {

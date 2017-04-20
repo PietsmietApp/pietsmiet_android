@@ -1,5 +1,7 @@
 package de.pscom.pietsmiet.util;
 
+import android.support.design.widget.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -174,7 +176,7 @@ public class PostManager {
      * @param numPosts int
      **/
     public void fetchNextPosts(int numPosts) {
-        if (!NetworkUtil.isConnected(mView)){
+        if (!NetworkUtil.isConnected(mView)) {
             mView.showError("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
             return;
@@ -196,7 +198,7 @@ public class PostManager {
      * Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
-        if (!NetworkUtil.isConnected(mView)){
+        if (!NetworkUtil.isConnected(mView)) {
             mView.showError("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
             return;
@@ -244,7 +246,7 @@ public class PostManager {
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
                     PsLog.e("Kritischer Fehler beim Laden aller Kategorien: ", e);
-                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet");
+                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet",  Snackbar.LENGTH_INDEFINITE);
                     mView.setRefreshAnim(false);
                 }, () -> mView.setRefreshAnim(false));
     }

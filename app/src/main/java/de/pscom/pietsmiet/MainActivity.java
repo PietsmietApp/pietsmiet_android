@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -254,12 +255,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         }
                 );
     }
-
-    public void showError(String msg) {
-        Observable.just("")
+    public void showError(String message){
+        showError(message, Snackbar.LENGTH_LONG);
+    }
+    public void showError(String message, int length) {
+        Observable.just(message)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
-                );
+                .subscribe(msg -> {
+                    if(findViewById(R.id.main_layout) != null) {
+                        Snackbar.make(findViewById(R.id.main_layout), msg, length).show();
+                    } else {
+                        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Override

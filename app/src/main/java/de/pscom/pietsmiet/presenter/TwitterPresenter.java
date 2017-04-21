@@ -28,7 +28,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
 public class TwitterPresenter extends MainPresenter {
     public static Post firstTweet, lastTweet;
-    private TwitterApiInterface apiInterface;
+    TwitterApiInterface apiInterface;
     private final String query = "from:pietsmiet, " +
             "OR from:kessemak2, " +
             "OR from:jaypietsmiet, " +
@@ -84,7 +84,7 @@ public class TwitterPresenter extends MainPresenter {
                     try {
                         postBuilder.description(status.text)
                                 .date(getTwitterDate(status.createdAt))
-                                .url("https://twitter.com/" + status.user.screenName + "/status/" + status.id)
+                                .url("https://twitter.com/" + status.user.screenName + "/status/" + status.idStr)
                                 .id(status.id)
                                 .title(getDisplayName(status.user));
                         if (status.entities.media != null && status.entities.media.size() > 0) {
@@ -104,7 +104,7 @@ public class TwitterPresenter extends MainPresenter {
         return sf.parse(date);
     }
 
-    private Observable<String> getToken() {
+    protected Observable<String> getToken() {
         return Observable.just("")
                 .flatMap(ign -> {
                     // Use token from sharedPrefs if not empty

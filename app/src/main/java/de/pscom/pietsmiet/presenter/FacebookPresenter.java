@@ -112,8 +112,7 @@ public class FacebookPresenter extends MainPresenter {
      */
 
     private String getBatchString(String strTime, int numPosts) {
-        String strFetch = "/posts?limit=" + numPosts + strTime + "&fields=from,created_time,message," +
-                (shouldLoadHDImages(view) ? "full_" : "") + "picture" + "\",\"body\":\"\"";
+        String strFetch = "/posts?limit=" + numPosts + strTime + "&fields=from,created_time,message,full_picture,picture\",\"body\":\"\"";
         String batch = "[";
         //Piet
         batch += "{\"method\":\"GET\",\"relative_url\":\"pietsmittie" + strFetch + "},";

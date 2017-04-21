@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.presenter;
 
+import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,11 +14,17 @@ import de.pscom.pietsmiet.model.twitterApi.TwitterUser;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
+import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
+import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
+
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
 public class TwitterPresenter extends MainPresenter {
     public static Post firstTweet, lastTweet;
@@ -53,8 +60,25 @@ public class TwitterPresenter extends MainPresenter {
 
     private Observable<Post.PostBuilder> parseTweets(Observable<TwitterRoot> obs) {
         return obs
+                .retryWhen(throwable -> throwable.flatMap(error -> {
+                    if (error instanceof HttpException) {
+                        // Bearer is no longer valid; this happens rarely
+                        if (((HttpException) error).code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                            PsLog.w("Not authenticated / wrong bearer. Retrying");
+                            SettingsHelper.stringTwitterBearer = null;
+                            return Observable.just(null);
+                        }
+                    }
+                    // Unrelated error, throw it
+                    return Observable.error(error);
+                }))
                 .filter(root -> root != null)
                 .flatMapIterable(root -> root.statuses)
+                .onErrorReturn(err -> {
+                    PsLog.e("Couldn't load Twitter", err);
+                    view.showError("Twitter konnte nicht geladen werden");
+                    return null;
+                })
                 .map(status -> {
                     postBuilder = new Post.PostBuilder(PostType.TWITTER);
                     try {
@@ -80,16 +104,28 @@ public class TwitterPresenter extends MainPresenter {
         return sf.parse(date);
     }
 
-
     private Observable<String> getToken() {
-        return apiInterface.getToken("Basic " + SecretConstants.twitterSecret, "client_credentials")
-                .map(twitterToken -> {
-                    if (twitterToken.tokenType.equals("bearer")) {
-                        return twitterToken.accessToken;
-                    } else {
-                        //todo warning, but should never happen
-                        return "";
+        return Observable.just("")
+                .flatMap(ign -> {
+                    // Use token from sharedPrefs if not empty
+                    String token = SettingsHelper.stringTwitterBearer;
+                    if (token != null) {
+                        return Observable.just(token);
                     }
+                    // Load new token
+                    return apiInterface
+                            .getToken("Basic " + SecretConstants.twitterSecret, "client_credentials")
+                            .map(twitterToken -> {
+                                PsLog.d("Loading new twitter authentication bearer");
+                                if (twitterToken.tokenType.equals("bearer")) {
+                                    SharedPreferenceHelper.setSharedPreferenceString(view,
+                                            KEY_TWITTER_BEARER, twitterToken.accessToken);
+                                    return twitterToken.accessToken;
+                                } else {
+                                    PsLog.e("Twitter did not return a bearer, critical!");
+                                    throw Exceptions.propagate(new Throwable("Twitter did not return a bearer, critical!"));
+                                }
+                            });
                 });
     }
 

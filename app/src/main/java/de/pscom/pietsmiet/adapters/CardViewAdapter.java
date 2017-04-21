@@ -116,7 +116,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             holder.wideImage.setVisibility(GONE);
             if (currentItem.getThumbnail() != null) {
                 holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
-            } else if (currentItem.getThumbnailUrl() != null) {
+            } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
                 DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.thumbnail);
             } else {
                 holder.thumbnail.setVisibility(GONE);
@@ -127,7 +127,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             holder.wideImage.setVisibility(VISIBLE);
             if (currentItem.getThumbnail() != null) {
                 holder.wideImage.setImageDrawable(currentItem.getThumbnail());
-            } else if (currentItem.getThumbnailUrl() != null) {
+            } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
                 DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.wideImage);
             } else {
                 holder.wideImage.setVisibility(GONE);

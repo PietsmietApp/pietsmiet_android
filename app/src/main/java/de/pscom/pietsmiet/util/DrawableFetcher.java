@@ -31,7 +31,6 @@ import twitter4j.MediaEntity;
 import twitter4j.Status;
 
 public class DrawableFetcher {
-    public static final String LOAD_FROM_CACHE = "LOAD_FROM_CACHE";
 
     /**
      * @param post A facebook posting
@@ -94,14 +93,35 @@ public class DrawableFetcher {
             view.setAnimation(AnimationUtils.loadAnimation(c, R.anim.loading_animation));
             view.animate();
         }
-        Single.just(post.getThumbnailUrl())
+        if(post == null) return;
+
+        boolean loadHD = SettingsHelper.shouldLoadHDImages(c);
+
+        Single.just(loadHD)
                 .subscribeOn(Schedulers.io())
-                .map(url -> {
+                .map(boolLoadHD -> {
                     Drawable drawable = null;
-                    if (url == LOAD_FROM_CACHE) {
-                        drawable = loadDrawableFromFile(c, post.hashCode() + "");
-                    } else if (url != null) {
-                        drawable = getDrawableFromUrl(url);
+                    int pHash = post.hashCode();
+                    String pathCacheDirHash = c.getCacheDir().getAbsolutePath() + "/" + pHash;
+                    // Try finding cached HD image
+                    if(new File(pathCacheDirHash + "_HD").exists()) {
+                        drawable = loadDrawableFromFile(c, pHash + "_HD");
+                        if(drawable != null) post.setIsThumbnailHD(true);
+                    }
+                    // Try loading HD image because boolLoadHD == true
+                    if(drawable == null && boolLoadHD && post.getThumbnailHDUrl() != null) {
+                        drawable = getDrawableFromUrl(post.getThumbnailHDUrl());
+                        if(drawable != null) post.setIsThumbnailHD(true);
+                    }
+                    // Try finding cached image
+                    if(drawable == null && new File(pathCacheDirHash).exists()) {
+                        drawable = loadDrawableFromFile(c, pHash + "");
+                        if(drawable != null) post.setIsThumbnailHD(false);
+                    }
+                    // Try loading image
+                    if(drawable == null && post.getThumbnailUrl() != null){
+                        drawable = getDrawableFromUrl(post.getThumbnailUrl());
+                        if(drawable != null) post.setIsThumbnailHD(false);
                     }
                     return drawable;
                 })
@@ -135,7 +155,7 @@ public class DrawableFetcher {
         try {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
             File path = context.getCacheDir();
-            out = new FileOutputStream(path.getAbsolutePath() + fileName);
+            out = new FileOutputStream(path.getAbsolutePath() + "/" + fileName);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             // PNG is a lossless format, the compression factor (100) is ignored; it's just for saving
         } catch (Exception e) {
@@ -166,7 +186,10 @@ public class DrawableFetcher {
         Bitmap bitmap;
 
         File path = context.getCacheDir();
-        File f = new File(path.getAbsolutePath() + fileName);
+        File f = new File(path.getAbsolutePath() + "/" + fileName);
+
+        if(!f.exists()) return null;
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         try {

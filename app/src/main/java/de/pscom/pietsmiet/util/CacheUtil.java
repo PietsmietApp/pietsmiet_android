@@ -12,7 +12,7 @@ public class CacheUtil {
                 deleteDir(dir);
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            PsLog.e("CLEARING CACHE FAILED: " + e.getMessage());
         }
     }
 

@@ -14,6 +14,7 @@ import static de.pscom.pietsmiet.util.ColorUtils.Default;
 import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
 import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
 import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
+import static de.pscom.pietsmiet.util.ColorUtils.colorPSVideo;
 import static de.pscom.pietsmiet.util.ColorUtils.colorUploadplan;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
@@ -31,20 +32,25 @@ public class Post implements Comparable<Post> {
     private Drawable thumbnail;
     @Nullable
     private String thumbnailUrl;
+    @Nullable
+    private String thumbnailHDUrl;
     private long api_ID;
     private Date datetime;
     private int duration;
     private String url;
+    private boolean isThumbnailHD;
 
     private Post(PostBuilder builder) {
         description = builder.description;
         title = builder.title;
         postType = builder.postType;
         thumbnailUrl = builder.thumbnailUrl;
+        thumbnailHDUrl = builder.thumbnailHDUrl;
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
         api_ID = builder.api_ID;
+        isThumbnailHD = builder.isThumbnailHD;
     }
 
     @Nullable
@@ -52,13 +58,18 @@ public class Post implements Comparable<Post> {
         return this.thumbnail;
     }
 
-    public void setThumbnail(Drawable thumbnail) {
+    public void setThumbnail(@Nullable Drawable thumbnail) {
         this.thumbnail = thumbnail;
     }
 
     @Nullable
     public String getThumbnailUrl() {
         return thumbnailUrl;
+    }
+
+    @Nullable
+    public String getThumbnailHDUrl() {
+        return thumbnailHDUrl;
     }
 
     public boolean hasThumbnail() {
@@ -94,6 +105,11 @@ public class Post implements Comparable<Post> {
         return url;
     }
 
+    public boolean isThumbnailHD() { return isThumbnailHD; }
+
+    public void setIsThumbnailHD(boolean isHD) {
+        this.isThumbnailHD = isHD;
+    }
 
     //UPPER_CASE: PostType constants
     //CamelCase: ColorUtils constants
@@ -101,7 +117,8 @@ public class Post implements Comparable<Post> {
         String hexColor;
         switch (postType) {
             case PS_VIDEO:
-            //fixme different colors?
+                hexColor = colorPSVideo;
+                break;
             case YOUTUBE:
                 hexColor = Youtube;
                 break;
@@ -168,6 +185,9 @@ public class Post implements Comparable<Post> {
         private String description;
         @Nullable
         private String thumbnailUrl;
+        @Nullable
+        private String thumbnailHDUrl;
+        private boolean isThumbnailHD = false;
         private long api_ID;
         private Date date;
         private int duration;
@@ -189,6 +209,16 @@ public class Post implements Comparable<Post> {
 
         public PostBuilder thumbnailUrl(@Nullable String thumbnailUrl) {
             this.thumbnailUrl = thumbnailUrl;
+            return this;
+        }
+
+        public PostBuilder thumbnailHDUrl(@Nullable String thumbnailHDUrl) {
+            this.thumbnailHDUrl = thumbnailHDUrl;
+            return this;
+        }
+
+        public PostBuilder isThumbnailHD(boolean isHD) {
+            this.isThumbnailHD = isHD;
             return this;
         }
 

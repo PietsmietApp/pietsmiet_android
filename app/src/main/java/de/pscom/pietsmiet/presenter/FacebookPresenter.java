@@ -91,8 +91,8 @@ public class FacebookPresenter extends MainPresenter {
                         if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("message") && post.has("created_time"))) {
                             return postBuilder;
                         }
-                        String thumbUrl = DrawableFetcher.getThumbnailUrlFromFacebook(post, shouldLoadHDImages(view));
-                        postBuilder.thumbnailUrl(thumbUrl);
+                        postBuilder.thumbnailUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, false));
+                        postBuilder.thumbnailHDUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, true));
                         postBuilder.title(post.getJSONObject("from").getString("name"));
                         postBuilder.description((post.has("message")) ? post.getString("message") : "");
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());

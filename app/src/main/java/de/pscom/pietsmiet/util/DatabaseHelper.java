@@ -20,7 +20,7 @@ import rx.schedulers.Schedulers;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION_NUMBER = 3;
+    private static final int VERSION_NUMBER = 4;
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
@@ -28,10 +28,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TITLE = "title";
     private static final String POSTS_COLUMN_DESC = "desc";
     private static final String POSTS_COLUMN_URL = "url";
+    private static final String POSTS_COLUMN_URL_THUMBNAIL = "url_thumbnail";
+    private static final String POSTS_COLUMN_URL_THUMBNAIL_HD = "url_thumbnail_hd";
     private static final String POSTS_COLUMN_TYPE = "type";
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
-    private static final String POSTS_COLUMN_HAS_THUMBNAIL = "thumbnail";
 
     // MAX_AGE_DAYS defines the maxium age of the stored posts, before it gets cleared
     private static final int MAX_AGE_DAYS = 5;
@@ -42,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    /** Initializes a new DatabaseHelper object
+    /*  Initializes a new DatabaseHelper object
      *  @param context Context reference to access PostManager etc
      */
     public DatabaseHelper(Context context) {
@@ -63,10 +64,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         POSTS_COLUMN_TITLE + " TINY_TEXT, " +
                         POSTS_COLUMN_DESC + " TEXT," +
                         POSTS_COLUMN_URL + " TEXT," +
+                        POSTS_COLUMN_URL_THUMBNAIL + " TEXT," +
+                        POSTS_COLUMN_URL_THUMBNAIL_HD + " TEXT," +
                         POSTS_COLUMN_TYPE + " INT," +
                         POSTS_COLUMN_TIME + " INT," +
-                        POSTS_COLUMN_DURATION + " INT," +
-                        POSTS_COLUMN_HAS_THUMBNAIL + " TEXT)"
+                        POSTS_COLUMN_DURATION + " INT)"
         );
     }
 
@@ -105,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
                     if (post.hasThumbnail()) {
-                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), mContext, Integer.toString(post.hashCode()));
+                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), mContext, post.hashCode() + (post.isThumbnailHD() ? "_HD" : ""));
                     }
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
@@ -113,10 +115,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_TITLE, post.getTitle());
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
                     contentValues.put(POSTS_COLUMN_URL, post.getUrl());
+                    contentValues.put(POSTS_COLUMN_URL_THUMBNAIL, post.getThumbnailUrl());
+                    contentValues.put(POSTS_COLUMN_URL_THUMBNAIL_HD, post.getThumbnailHDUrl());
                     contentValues.put(POSTS_COLUMN_TYPE, post.getPostType());
                     contentValues.put(POSTS_COLUMN_TIME, post.getDate().getTime());
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
-                    contentValues.put(POSTS_COLUMN_HAS_THUMBNAIL, post.hasThumbnail());
                     db.replace(TABLE_POSTS, null, contentValues);
                 }, (throwable) -> {
                     throwable.printStackTrace();
@@ -184,11 +187,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     .id(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
                                     .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
                                     .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
+                                    .thumbnailUrl(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL_THUMBNAIL)))
+                                    .thumbnailHDUrl(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL_THUMBNAIL_HD)))
                                     .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))
                                     .date(new Date(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_TIME))));
-                            if (cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_HAS_THUMBNAIL)) == 1) {
-                                postBuilder.thumbnailUrl(DrawableFetcher.LOAD_FROM_CACHE);
-                            }
                             Post post = postBuilder.build();
 
                             if (post != null && post.hashCode() == old_hashcode) {

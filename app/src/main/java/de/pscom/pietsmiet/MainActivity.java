@@ -262,6 +262,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void showError(String message){
         showError(message, Snackbar.LENGTH_LONG);
     }
+
     public void showError(String message, int length) {
         Observable.just(message)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -322,11 +323,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
             if (resultCode == RESULT_CLEAR_CACHE) {
-                postManager.clearPosts();
-                scrollListener.resetState();
-                postManager.fetchNewPosts();
                 new DatabaseHelper(this).clearDB();
+                postManager.clearPosts();
                 CacheUtil.trimCache(this);
+                scrollListener.resetState();
+                fabToTop.hide();
+                showError("Cache gelöscht");
+                postManager.fetchNewPosts();
             }
         }
     }

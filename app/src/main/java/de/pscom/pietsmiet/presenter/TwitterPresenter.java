@@ -60,10 +60,9 @@ public class TwitterPresenter extends MainPresenter {
                 .filter(result -> result != null)
                 .flatMapIterable(l -> l)
                 .map(tweet -> {
-                    String thumbUrl = getThumbnailUrlFromTweet(tweet, shouldLoadHDImages(view));
-
                     postBuilder = new Post.PostBuilder(TWITTER);
-                    postBuilder.thumbnailUrl(thumbUrl);
+                    postBuilder.thumbnailUrl(getThumbnailUrlFromTweet(tweet, false));
+                    postBuilder.thumbnailHDUrl(getThumbnailUrlFromTweet(tweet, true));
                     postBuilder.title(getDisplayName(tweet.getUser()));
                     postBuilder.description(tweet.getText());
                     postBuilder.id(tweet.getId());

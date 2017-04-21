@@ -166,7 +166,7 @@ public class TwitterPresenter extends MainPresenter {
     public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
         Observable<TwitterRoot> obs;
         if (lastTweet != null) {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweetsUntil("Bearer " + bearer, query, numPosts, lastTweet.getId()));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweetsUntil("Bearer " + bearer, query, numPosts, lastTweet.getId() - 1));
         } else {
             obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, numPosts));
         }

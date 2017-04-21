@@ -38,8 +38,9 @@ public class Post implements Comparable<Post> {
     private Date datetime;
     private int duration;
     private String url;
-    private boolean isThumbnailHD;
+    private boolean isThumbnailHD = false;
 
+    //todo remove bad getter / setter methods -> Performance
     private Post(PostBuilder builder) {
         description = builder.description;
         title = builder.title;
@@ -50,7 +51,6 @@ public class Post implements Comparable<Post> {
         duration = builder.duration;
         url = builder.url;
         api_ID = builder.api_ID;
-        isThumbnailHD = builder.isThumbnailHD;
     }
 
     @Nullable
@@ -62,6 +62,10 @@ public class Post implements Comparable<Post> {
         this.thumbnail = thumbnail;
     }
 
+    public boolean isThumbnailHD() { return isThumbnailHD; }
+
+    public void setIsThumbnailHD(boolean isHD) { this.isThumbnailHD = isHD; }
+
     @Nullable
     public String getThumbnailUrl() {
         return thumbnailUrl;
@@ -70,10 +74,6 @@ public class Post implements Comparable<Post> {
     @Nullable
     public String getThumbnailHDUrl() {
         return thumbnailHDUrl;
-    }
-
-    public boolean hasThumbnail() {
-        return thumbnail != null;
     }
 
     public int getPostType() {
@@ -103,12 +103,6 @@ public class Post implements Comparable<Post> {
 
     public String getUrl() {
         return url;
-    }
-
-    public boolean isThumbnailHD() { return isThumbnailHD; }
-
-    public void setIsThumbnailHD(boolean isHD) {
-        this.isThumbnailHD = isHD;
     }
 
     //UPPER_CASE: PostType constants
@@ -187,7 +181,6 @@ public class Post implements Comparable<Post> {
         private String thumbnailUrl;
         @Nullable
         private String thumbnailHDUrl;
-        private boolean isThumbnailHD = false;
         private long api_ID;
         private Date date;
         private int duration;
@@ -214,11 +207,6 @@ public class Post implements Comparable<Post> {
 
         public PostBuilder thumbnailHDUrl(@Nullable String thumbnailHDUrl) {
             this.thumbnailHDUrl = thumbnailHDUrl;
-            return this;
-        }
-
-        public PostBuilder isThumbnailHD(boolean isHD) {
-            this.isThumbnailHD = isHD;
             return this;
         }
 

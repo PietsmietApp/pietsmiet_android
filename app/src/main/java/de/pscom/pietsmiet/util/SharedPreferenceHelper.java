@@ -14,7 +14,14 @@ public class SharedPreferenceHelper {
     public static final String KEY_NOTIFY_PIETCAST_SETTING = "KEY_NOTIFY_PIETCAST_SETTING";
     public static final String KEY_TWITTER_BEARER = "KEY_TWITTER_BEARER";
     public static final String KEY_QUALITY_IMAGE_LOAD_HD_SETTING = "KEY_QUALITY_IMAGE_LOAD_HD_SETTING";
-    public static final String KEY_SOURCE_VIDEO_SETTING = "KEY_SOURCE_VIDEO_SETTING";
+
+    public static final String KEY_CATEGORY_YOUTUBE_VIDEOS = "KEY_CATEGORY_YOUTUBE_VIDEOS";
+    public static final String KEY_CATEGORY_PIETSMIET_VIDEOS = "KEY_CATEGORY_PIETSMIET_VIDEOS";
+    public static final String KEY_CATEGORY_PIETSMIET_NEWS = "KEY_CATEGORY_PIETSMIET_NEWS";
+    public static final String KEY_CATEGORY_PIETSMIET_UPLOADPLAN = "KEY_CATEGORY_PIETSMIET_UPLOADPLAN";
+    public static final String KEY_CATEGORY_PIETCAST = "KEY_CATEGORY_PIETCAST";
+    public static final String KEY_CATEGORY_TWITTER = "KEY_CATEGORY_TWITTER";
+    public static final String KEY_CATEGORY_FACEBOOK = "KEY_CATEGORY_FACEBOOK";
 
     private final static String PREF_FILE = "PREF";
 

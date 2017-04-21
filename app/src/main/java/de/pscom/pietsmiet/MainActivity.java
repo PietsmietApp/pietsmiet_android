@@ -30,6 +30,7 @@ import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -44,12 +45,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
     private static final String twitch_channel_id_pietstream = "pietsmiet";
 
+    private boolean CLEAR_CACHE_FLAG = false;
+
     private CardViewAdapter adapter;
-    private LinearLayoutManager layoutManager;
     private DrawerLayout mDrawer;
 
     private NavigationView mNavigationView;
-    private EndlessScrollListener scrollListener;
+    public EndlessScrollListener scrollListener;
     private SwipeRefreshLayout refreshLayout;
     private FloatingActionButton fabToTop;
     private RecyclerView recyclerView;
@@ -61,7 +63,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
         postManager = new PostManager(this);
@@ -104,7 +106,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         // End Top Button init
 
-        SettingsHelper.loadAllSettings(this);
+
 
         if (BuildConfig.DEBUG) {
             FirebaseMessaging.getInstance().subscribeToTopic("test");
@@ -151,7 +153,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
      * Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
-        // todo handle unsubscribe
         Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
         obsTTV.subscribe((stream) -> {
             if (stream != null) {
@@ -185,19 +186,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         reloadTwitchBanner();
     }
 
-    /**
-     * Returns the current instance of the PostManager.
-     *
-     * @return PostManager reference
-     */
-    public PostManager getPostManager() {
-        return postManager;
-    }
-
     private void setupRecyclerView() {
         recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(postManager.getPostsToDisplay(), this);
-        layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
@@ -219,17 +211,32 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
+
+        for (Integer item : PostType.getPossibleTypes()) {
+            // Iterate through every menu item and save it's state in a map
+            if(mNavigationView != null) {
+                Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                checker.setChecked(SettingsHelper.getSettingsValueForType(item));
+                checker.setOnCheckedChangeListener((view, check) -> {
+                    if (check) CLEAR_CACHE_FLAG = true; //todo improve if for example a user jsut switched on off on -> dont clear cache
+                    SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
+                });
+            }
+        }
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                for (Integer item : PostType.getPossibleTypes()) {
-                    // Iterate through every menu item and save it's state in a map
-                    Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
-                    postManager.allowedTypes.put(item, checker.isChecked());
+                SettingsHelper.loadAllSettings(getBaseContext());
+                if(CLEAR_CACHE_FLAG) {
+                    clearCache();
+                    CLEAR_CACHE_FLAG = false;
+                } else {
+                    postManager.updateCurrentPosts();
+                    scrollListener.resetState(); //todo check
                 }
-                postManager.updateCurrentPosts();
             }
 
             @Override
@@ -259,6 +266,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         }
                 );
     }
+
     public void showError(String message){
         showError(message, Snackbar.LENGTH_LONG);
     }
@@ -275,6 +283,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
+    private void clearCache() {
+        new DatabaseHelper(this).clearDB();
+        postManager.clearPosts();
+        CacheUtil.trimCache(this);
+        scrollListener.resetState();
+        fabToTop.hide();
+        postManager.fetchNewPosts();
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
@@ -282,7 +299,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.nav_facebook:
             case R.id.nav_twitter:
             case R.id.nav_pietcast:
-            case R.id.nav_video:
+            case R.id.nav_ps_news:
+            case R.id.nav_video_ps:
+            case R.id.nav_video_yt:
                 for (int i : getPossibleTypes()) {
                     int id = getDrawerIdForType(i);
                     Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
@@ -322,14 +341,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
+            updateAdapter();
             if (resultCode == RESULT_CLEAR_CACHE) {
-                new DatabaseHelper(this).clearDB();
-                postManager.clearPosts();
-                CacheUtil.trimCache(this);
-                scrollListener.resetState();
-                fabToTop.hide();
+                clearCache();
                 showError("Cache gelöscht");
-                postManager.fetchNewPosts();
             }
         }
     }

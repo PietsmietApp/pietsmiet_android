@@ -26,20 +26,13 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
-import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_PIETSMIET;
-import static de.pscom.pietsmiet.util.SettingsHelper.TYPE_SOURCE_VIDEO_YOUTUBE;
-
 
 public class PostManager {
     private static boolean FETCH_DIRECTION_DOWN = false;
 
     private final MainActivity mView;
-    public Map<Integer, Boolean> allowedTypes = new HashMap<>();
-    // Posts that are currently displayed in adapter
-    @SuppressWarnings("CanBeFinal")
-    private List<Post> currentPosts = new ArrayList<>();
+
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
     private List<Post> allPosts = new ArrayList<>();
@@ -61,7 +54,9 @@ public class PostManager {
 
     @SuppressWarnings("WeakerAccess")
     public void addPosts(List<Post> posts) {
-        subAddingPosts = Observable.just(posts)
+        List<Post> lposts = new ArrayList<>();
+        lposts.addAll(posts);
+        subAddingPosts = Observable.just(lposts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMapIterable(list -> {
@@ -69,20 +64,21 @@ public class PostManager {
                     return list;
                 })
                 .distinct()
-                .filter(this::filterWrongCategories)
+                .filter((post) -> SettingsHelper.getSettingsValueForType(post.getPostType()))
                 .doOnNext(post -> {
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getDate().getTime() < post.getDate().getTime()))
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getId() < post.getId()))
                         TwitterPresenter.firstTweet = post;
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getDate().getTime() > post.getDate().getTime()))
+                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getId() > post.getId()))
                         TwitterPresenter.lastTweet = post;
                 })
                 .toSortedList()
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
-                    updateCurrentPosts();
                 }, (throwable) -> {
                     PsLog.e("Couldn't update all posts!", throwable);
+                }, () -> {
+                    if (mView != null) mView.updateAdapter();
                 });
     }
 
@@ -97,14 +93,12 @@ public class PostManager {
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter(this::isAllowedType)
+                .filter((post) -> SettingsHelper.getSettingsValueForType(post.getPostType()))
                 .toList()
                 .subscribe(list -> {
-                    currentPosts.clear();
-                    currentPosts.addAll(list);
-                }, throwable -> {
-                    PsLog.e("Couldn't update current posts: ", throwable);
-                }, () -> {
+                    allPosts.clear();
+                    allPosts.addAll(list);
+                }, throwable -> PsLog.e("Couldn't update current posts: ", throwable), () -> {
                     if (mView != null) mView.updateAdapter();
                 });
     }
@@ -116,9 +110,10 @@ public class PostManager {
      */
     public void displayOnlyType(@AllTypes int postType) {
         for (int type : getPossibleTypes()) {
-            if (type == postType) allowedTypes.put(type, true);
-            else allowedTypes.put(type, false);
+            if (type == postType) SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), true);
+            else SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), false);
         }
+        SettingsHelper.loadAllSettings(mView);
         updateCurrentPosts();
     }
 
@@ -128,17 +123,7 @@ public class PostManager {
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<Post> getPostsToDisplay() {
-        return currentPosts;
-    }
-
-    /**
-     * @param post Post object
-     * @return returns true if the specified post is allowed (belongs to the currently shown categories / types)
-     */
-    private boolean isAllowedType(Post post) {
-        Boolean allowed = allowedTypes.get(post.getPostType());
-        if (allowed == null) allowed = true;
-        return allowed;
+        return allPosts;
     }
 
     /**
@@ -184,13 +169,19 @@ public class PostManager {
         FETCH_DIRECTION_DOWN = true;
         postLoadCount = numPosts;
         mView.setRefreshAnim(true);
-        PsLog.v("Loading the " + postLoadCount + " next posts");
-        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.intSourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
-                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+        PsLog.v("Loading the next " + postLoadCount + " posts");
+        Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
+                new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
                 : Observable.empty();
-        Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
-        Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts);
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
+                new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
+                : Observable.empty();
+        Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
+                new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
+                : Observable.empty();
+        Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
+                new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
+                : Observable.empty();
         manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
@@ -201,17 +192,25 @@ public class PostManager {
         if (!NetworkUtil.isConnected(mView)) {
             mView.showError("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
+            //todo does this fix the unable to reload ? What about safety? scrollListener is now public -> Performance
+            mView.scrollListener.resetState();
             return;
         }
         FETCH_DIRECTION_DOWN = false;
         mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
-        Observable<Post.PostBuilder> twitterObs = new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.intSourceVideo != TYPE_SOURCE_VIDEO_PIETSMIET ?
+        Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
+                new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
+        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
                 new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
                 : Observable.empty();
-        Observable<Post.PostBuilder> firebaseObs = new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
-        Observable<Post.PostBuilder> facebookObs = new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate());
+        Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
+                new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
+        Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
+                new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
+                : Observable.empty();
         manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
@@ -225,10 +224,11 @@ public class PostManager {
         subLoadingPosts = postObs.observeOn(Schedulers.io(), true)
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
+                .filter(postBuilder -> postBuilder != null)
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
-                .sorted()
                 .filter(this::filterWrongPosts)
+                .sorted()
                 .take(postLoadCount)
                 .toList()
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
@@ -270,7 +270,6 @@ public class PostManager {
      **/
     public void clearPosts() {
         allPosts.clear();
-        currentPosts.clear();
         TwitterPresenter.lastTweet = null;
         TwitterPresenter.firstTweet = null;
         updateCurrentPosts();
@@ -293,7 +292,7 @@ public class PostManager {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        " letzter (ältester) Post Datum: " + getLastPostDate());
+                        " letzter (ältester) Post " + ((!allPosts.isEmpty()) ? allPosts.get(allPosts.size() - 1).getTitle() : "") + " Datum: " + getLastPostDate());
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
@@ -301,18 +300,9 @@ public class PostManager {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        " letzter (neuster) Post Datum: " + getFirstPostDate());
+                        "\n letzter (neuster) Post " + ((!allPosts.isEmpty()) ? allPosts.get(0).getTitle() : "") + " Datum: " + getFirstPostDate() );
             }
         }
         return shouldFilter;
-    }
-
-    private boolean filterWrongCategories(Post post) {
-        if (SettingsHelper.intSourceVideo == TYPE_SOURCE_VIDEO_PIETSMIET && post.getPostType() == YOUTUBE) {
-            return false;
-        } else if (SettingsHelper.intSourceVideo == TYPE_SOURCE_VIDEO_YOUTUBE && post.getPostType() == PS_VIDEO) {
-            return false;
-        }
-        return true;
     }
 }

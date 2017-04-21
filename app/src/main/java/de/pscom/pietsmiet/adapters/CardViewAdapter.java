@@ -8,17 +8,22 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.squareup.haha.perflib.Main;
+
 import java.util.List;
 
+import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.TimeUtils;
 
 import static android.view.View.GONE;
@@ -30,6 +35,7 @@ import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
@@ -96,7 +102,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.description.setText(Html.fromHtml(currentItem.getDescription()));
             }
-
             holder.ivDuration.setVisibility(GONE);
             holder.tvDuration.setVisibility(GONE);
             holder.btnExpand.setVisibility(VISIBLE);
@@ -114,7 +119,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             // Youtube: Setup video thumbnails
             holder.thumbnail.setVisibility(VISIBLE);
             holder.wideImage.setVisibility(GONE);
-            if (currentItem.getThumbnail() != null) {
+            if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
                 holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
             } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
                 DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.thumbnail);
@@ -125,7 +130,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             // Social media: Setup wide image
             holder.thumbnail.setVisibility(GONE);
             holder.wideImage.setVisibility(VISIBLE);
-            if (currentItem.getThumbnail() != null) {
+            if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
                 holder.wideImage.setImageDrawable(currentItem.getThumbnail());
             } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
                 DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.wideImage);
@@ -145,13 +150,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
                     try {
+                        ((MainActivity) context).showError("Opening URL...");
                         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));
                         context.startActivity(browserIntent);
                     } catch (ActivityNotFoundException | NullPointerException e) {
                         PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
-                        //Error Toast Notification
-                        CharSequence errMsg = "URL konnte nicht geöffnet werden";
-                        Toast.makeText(context, errMsg, Toast.LENGTH_SHORT).show();
+                        //Error Notification
+                        ((MainActivity) context).showError("URL konnte nicht geöffnet werden");
                     }
                 }
         );

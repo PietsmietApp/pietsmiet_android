@@ -8,6 +8,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -99,16 +100,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @SuppressWarnings("WeakerAccess")
     public void insertPosts(List<Post> posts) {
-        deleteTable();
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
                 .flatMap(Observable::from)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
-                    if (post.hasThumbnail()) {
-                        DrawableFetcher.saveDrawableToFile(post.getThumbnail(), mContext, post.hashCode() + (post.isThumbnailHD() ? "_HD" : ""));
-                    }
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
                     contentValues.put(POSTS_COLUMN_API_ID, post.getId());

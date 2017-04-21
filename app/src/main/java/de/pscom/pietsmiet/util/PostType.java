@@ -64,8 +64,9 @@ public class PostType {
     public static int getDrawerIdForType(int postType) {
         switch (postType) {
             case PS_VIDEO:
+                return R.id.nav_video_ps;
             case YOUTUBE:
-                return R.id.nav_video;
+                return R.id.nav_video_yt;
             case PIETCAST:
                 return R.id.nav_pietcast;
             case TWITTER:
@@ -73,8 +74,9 @@ public class PostType {
             case FACEBOOK:
                 return R.id.nav_facebook;
             case UPLOADPLAN:
-            case NEWS:
                 return R.id.nav_upload_plan;
+            case NEWS:
+                return R.id.nav_ps_news;
             default:
                 return -1;
         }

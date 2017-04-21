@@ -18,7 +18,6 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_LOAD_HD_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_SOURCE_VIDEO_SETTING;
 
 
 public class Settings extends BaseActivity {
@@ -32,7 +31,6 @@ public class Settings extends BaseActivity {
         Switch notifyNewsSwitch = (Switch) findViewById(R.id.notifyNewsSwitch);
         Switch notifyPietcastSwitch = (Switch) findViewById(R.id.notifyPietcastSwitch);
         Spinner qualityLoadHDImagesSpinner = (Spinner) findViewById(R.id.qualityLoadHDImagesSpinner);
-        Spinner sourceVideoSpinner = (Spinner) findViewById(R.id.sourceVideoSpinner);
         Button btnClearCache = (Button) findViewById(R.id.btnClearCache);
 
         setupToolbar(getString(R.string.drawer_einstellungen));
@@ -44,7 +42,6 @@ public class Settings extends BaseActivity {
         notifyNewsSwitch.setChecked(SettingsHelper.boolNewsNotification);
         notifyPietcastSwitch.setChecked(SettingsHelper.boolPietcastNotification);
         qualityLoadHDImagesSpinner.setSelection(SettingsHelper.intQualityLoadHDImages);
-        sourceVideoSpinner.setSelection(SettingsHelper.intSourceVideo);
 
         btnClearCache.setOnClickListener((btn) -> {
             setResult(MainActivity.RESULT_CLEAR_CACHE);
@@ -56,23 +53,6 @@ public class Settings extends BaseActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position < 3) {
                     SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
-                } else {
-                    ((Spinner) view).setSelection(0);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // do nothing
-            }
-        });
-
-        sourceVideoSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position < 3) {
-                    if(position != SettingsHelper.intSourceVideo) setResult(MainActivity.RESULT_CLEAR_CACHE);
-                    SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_SOURCE_VIDEO_SETTING, position);
                 } else {
                     ((Spinner) view).setSelection(0);
                 }

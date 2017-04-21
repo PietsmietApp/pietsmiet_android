@@ -4,7 +4,6 @@
     <string name="drawer_sonstiges">Sonstiges</string>
     <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
     <string name="drawer_einstellungen">Einstellungen</string>
-    <string name="drawer_youtube">YouTube</string>
     <string name="drawer_Feedback">Feedback</string>
     <string name="drawer_filter">Filter</string>
     <string name="drawer_pietstream_banner">Pietstream</string>
@@ -18,12 +17,13 @@
     <string name="time_hours_short">%dh</string>
     <string name="time_minutes_short">%dm</string>
 
+    <string name="type_youtube">YouTube</string>
     <string name="type_uploadplan">Uploadplan</string>
     <string name="type_facebook">Facebook</string>
     <string name="type_twitter">Twitter</string>
     <string name="type_pietcast">Pietcast</string>
     <string name="type_news">News</string>
-    <string name="type_video">Videos</string>
+    <string name="type_video_ps">PS.de Videos</string>
 
     <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
     <string name="settings_header_others">Sonstige Einstellungen</string>
@@ -32,6 +32,7 @@
     <string name="settings_source_video">Quelle für Videos:</string>
     <string name="other_coming_soon">Coming soon</string>
     <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
+    <string name="drawer_video_ps">PS.de Videos</string>
 
     <string-array name="qualityHDImagesSpinnerItems_array">
         <item>Niemals</item>

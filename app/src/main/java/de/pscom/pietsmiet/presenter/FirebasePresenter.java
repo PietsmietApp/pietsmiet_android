@@ -8,6 +8,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SettingsHelper;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -32,7 +33,6 @@ public class FirebasePresenter extends MainPresenter {
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(rxAdapter)
                 .build();
-
         apiInterface = retrofit.create(FirebaseApiInterface.class);
     }
 
@@ -64,6 +64,10 @@ public class FirebasePresenter extends MainPresenter {
                         default:
                             type = -1;
                     }
+                    if(!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) return postBuilder;
+                    if(!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) return postBuilder;
+                    if(!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) return postBuilder;
+                    if(!SettingsHelper.boolCategoryPietcast && type == PIETCAST) return postBuilder;
                     postBuilder = new Post.PostBuilder(type);
                     postBuilder.title(item.title);
                     postBuilder.description(item.desc);

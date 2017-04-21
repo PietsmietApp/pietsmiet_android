@@ -70,7 +70,7 @@ public class DrawableFetcher {
 
     public static void loadThumbnailIntoView(de.pscom.pietsmiet.generic.Post post, Context c, ImageView view) {
         if(view != null) {
-            view.setImageResource(R.drawable.ic_loading_circle);
+            view.setImageResource(R.drawable.ic_cached_black_24dp);
             view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             view.setScaleX(1.5f);
             view.setScaleY(1.5f);
@@ -78,9 +78,7 @@ public class DrawableFetcher {
             view.animate();
         }
         if(post == null) return;
-
         boolean loadHD = SettingsHelper.shouldLoadHDImages(c);
-
         Single.just(loadHD)
                 .subscribeOn(Schedulers.io())
                 .map(boolLoadHD -> {
@@ -95,7 +93,12 @@ public class DrawableFetcher {
                     // Try loading HD image because boolLoadHD == true
                     if(drawable == null && boolLoadHD && post.getThumbnailHDUrl() != null) {
                         drawable = getDrawableFromUrl(post.getThumbnailHDUrl());
-                        if(drawable != null) post.setIsThumbnailHD(true);
+                        if(drawable != null) {
+                            post.setIsThumbnailHD(true);
+                            saveDrawableToFile(drawable, c, pHash + "_HD");
+                        }
+                        File cachedImage = new File(pathCacheDirHash);
+                        if (cachedImage.exists() && new File(pathCacheDirHash + "_HD").exists()) cachedImage.delete();
                     }
                     // Try finding cached image
                     if(drawable == null && new File(pathCacheDirHash).exists()) {
@@ -105,7 +108,10 @@ public class DrawableFetcher {
                     // Try loading image
                     if(drawable == null && post.getThumbnailUrl() != null){
                         drawable = getDrawableFromUrl(post.getThumbnailUrl());
-                        if(drawable != null) post.setIsThumbnailHD(false);
+                        if(drawable != null) {
+                            post.setIsThumbnailHD(false);
+                            saveDrawableToFile(drawable, c, pHash + "");
+                        }
                     }
                     return drawable;
                 })

@@ -3,7 +3,7 @@ package de.pscom.pietsmiet.util;
 import android.content.Context;
 
 import java.io.File;
-
+// Source: http://stackoverflow.com/questions/6898090/how-to-clear-cache-android/6898278#6898278
 public class CacheUtil {
     public static void trimCache(Context context) {
         try {
@@ -25,9 +25,7 @@ public class CacheUtil {
                     return false;
                 }
             }
-            // The directory is now empty so delete it
-            return dir.delete();
         }
-        return false;
+        return dir.delete();
     }
 }

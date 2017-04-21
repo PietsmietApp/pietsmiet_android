@@ -27,8 +27,6 @@ import de.pscom.pietsmiet.R;
 import rx.Single;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import twitter4j.MediaEntity;
-import twitter4j.Status;
 
 public class DrawableFetcher {
 
@@ -48,20 +46,6 @@ public class DrawableFetcher {
         return null;
     }
 
-    /**
-     * @param status A tweet
-     * @return The drawable from the tweet, if available
-     */
-    @Nullable
-    public static String getThumbnailUrlFromTweet(@Nullable Status status, boolean isHd) {
-        if (status != null) {
-            MediaEntity[] mediaEntities = status.getMediaEntities();
-            if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return mediaEntities[0].getMediaURL() + (isHd ? "" : ":thumb");
-            }
-        }
-        return null;
-    }
 
     /**
      * @param url Url to the image

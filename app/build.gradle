@@ -57,8 +57,6 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.2.1'
     compile 'com.google.firebase:firebase-crash:10.2.1'
 
-    compile 'org.twitter4j:twitter4j-core:4.0.6'
-
     compile 'io.reactivex:rxjava:1.2.9'
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.2.0'

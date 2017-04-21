@@ -24,7 +24,6 @@ import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.SettingsHelper.shouldLoadHDImages;
 
 public class FacebookPresenter extends MainPresenter {
     FacebookApiInterface apiInterface;
@@ -95,7 +94,7 @@ public class FacebookPresenter extends MainPresenter {
                         postBuilder.thumbnailHDUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, true));
                         postBuilder.title(post.getJSONObject("from").getString("name"));
                         postBuilder.description((post.has("message")) ? post.getString("message") : "");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
                         postBuilder.date(dateFormat.parse(post.getString("created_time")));
                         if (post.has("id") && post.getString("id") != null && !post.getString("id").isEmpty()) {
                             postBuilder.url("http://www.facebook.com/" + post.getString("id"));

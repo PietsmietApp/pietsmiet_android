@@ -181,6 +181,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
+        // Update adapter to refresh times
         updateAdapter();
         reloadTwitchBanner();
     }
@@ -341,6 +342,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
+            // Update adapter to refresh times
             updateAdapter();
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();

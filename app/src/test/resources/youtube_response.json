@@ -1,0 +1,481 @@
+{
+  "kind": "youtube#playlistItemListResponse",
+  "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/YjGLq1Vlt1dScAbu3hsaLfxKFSw\"",
+  "nextPageToken": "CAoQAA",
+  "pageInfo": {
+    "totalResults": 17888,
+    "resultsPerPage": 10
+  },
+  "items": [
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/xAhXj2AfcTsGMRzHESARalHSkpM\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLi1kSlU5V203b0c0",
+      "snippet": {
+        "publishedAt": "2017-04-22T13:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "PietSmiet piest Pommentare #6",
+        "description": "Buch: http://pietsmiet.de/buch | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nConan Exiles günstig & schnell per Email bei MMOGA https://mmo.ga/0IRy\r\nPodcast: http://pietsmiet.de/pietcast | Live-Streams: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von PietSmiet piest Pommentare gibt es hier: https://goo.gl/WtxhDF\r\n\r\n» PietSmiet piest Pommentare «\r\nWir lesen ein paar Kommentare und reden Bullshit dazu.\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n\r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://ffacebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\nWer bis hier gelesen hat, freut sich über neue Formate :D",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/-dJU9Wm7oG4/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/-dJU9Wm7oG4/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/-dJU9Wm7oG4/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/-dJU9Wm7oG4/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 0,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "-dJU9Wm7oG4"
+        }
+      },
+      "contentDetails": {
+        "videoId": "-dJU9Wm7oG4",
+        "videoPublishedAt": "2017-04-22T13:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/hyTxhgimlJXQMdRqazzqyv474XI\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLkJiTE55aWROdDhV",
+      "snippet": {
+        "publishedAt": "2017-04-22T12:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "Schwerelos beim Parabelflug",
+        "description": "Endlich ist der Tag gekommen: Der Septonaut wird schwerelos beim Parabelflug! Ob er dabei sein Essen bei sich behalten kann, erfahrt ihr in diesem Video.\nZu Mass Effect Andromeda: https://www.masseffect.com/de-de\nSep - http://twitter.com/Kessemak2 | http://ffacebook.com/Kessemak88 | http://instagr.am/Kessemak2\n\n------\n\nWas bedeutet “Unterstützt durch Produktplatzierungen”?\nDas bedeutet in diesem Fall, dass der Publisher auf uns zu gekommen ist und einen Betrag dafür geboten hat, dass wir das Spiel in Videos auf unserem Kanal vorstellen. Solche Angebote bekommen wir täglich mehrfach und es ist in der Let’s Play Branche absolut nichts Neues. Wir wollen mit der Thematik aber absolut transparent umgehen und klar sagen, welche Projekte eine Produktplatzierung sind und welche nicht.\n\nWie entscheidet ihr, wenn ihr solch ein Angebot bekommt, ob ihr es annehmt?\nWir schauen uns das Spiel vorher an und überlegen, ob wir es auch spielen würden wenn uns niemand dafür bezahlen würde. Die meisten Anfragen beantworten wir deswegen mit “Nein”. Sollte es passieren, dass wir durch so eine Anfrage auf ein Spiel aufmerksam gemacht werden, dass unser Interesse weckt und wir es für gut befinden, sagen wir zu.\n\nAber beeinträchtigt das nicht eure Meinung zum Spiel?\nWir akzeptieren keine Vorgaben bzgl. unserer Meinungsäußerung zum Spiel. Angebote, die voraussetzen, dass wir bestimmte Dinge nicht sagen dürfen, werden ohne Ausnahme abgelehnt. Man könnte argumentieren, dass eine Bezahlung trotzdem uns zumindest unterschwellig beeinflusst. In dem Fall ist zumindest durch die klare Kennzeichnung gewährleistet, dass ihr euch immer sicher sein könnt, wenn wir ein Product Placement machen. D.h. wenn dieser Hinweis nicht auftaucht ist auch kein Geld im Spiel.\n\nWarum macht ihr das überhaupt? Habt ihr es so nötig?\nDas hat nichts mit “es nötig haben” zutun. Es ist eine Win-Win-Situation. Der Entwickler ist happy darüber, dass sein Spiel eine Öffentlichkeit erreicht und wir bekommen die Möglichkeit etwas Geld mit unserem Hobby zu verdienen. Unserer Meinung nach ist unser Auswahlverfahren sowie unsere Kennzeichnung und Offenheit fair gegenüber euch, unseren Zuschauern. Promotionen werden nicht versteckt - so wie bei einigen anderen - sondern klar gekennzeichnet und wir erklären sogar umfangreich, was sie bedeuten. Ich hoffe, dass wir euch damit zufrieden stellen können. Und jetzt genug geschrieben, genießt das Video! :D\n\n» TEAM PIETSMIET «\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\n\nOffizielle Internetseite: http://www.pietsmiet.de\nWir sind Live auf: http://twitch.tv/pietsmiet\n24/7/365 Live-Stream: http://www.pietsmiet.tv\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\n\nUnsere Kanäle:\nGeile Gaming-Videos: http://youtube.com/PietSmiet\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\n\nUnser Podcast:\nPietCast hören: http://pietsmiet.de/pietcast\nLink für eure Podcast-App: http://pietsmiet.de/cast\nPietCast auf iTunes: http://goo.gl/myIYdB\n\n«»--«»--«»--«»--«»--«»--«»--«»\n\n» SOCIAL MEDIA «\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\n\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\nSep - http://twitter.com/Kessemak2 | http://ffacebook.com/Kessemak88 | http://instagr.am/Kessemak2\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\n\n«»--«»--«»--«»--«»--«»--«»--«»",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/BbLNyidNt8U/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/BbLNyidNt8U/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/BbLNyidNt8U/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/BbLNyidNt8U/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 1,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "BbLNyidNt8U"
+        }
+      },
+      "contentDetails": {
+        "videoId": "BbLNyidNt8U",
+        "videoPublishedAt": "2017-04-22T12:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/GYGGGJsCQ0y3l-i3eDE04r4CN1A\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLktha3ZQUWViZFFZ",
+      "snippet": {
+        "publishedAt": "2017-04-21T12:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "DISCO ?? Golf it! #18",
+        "description": "Site: http://pietsmiet.de | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von Golf it! auf Youtube gibt es hier: https://goo.gl/ZOKRsf\r\nMehr Folgen von Golf it! auf PietSmiet.de gibt es hier: https://goo.gl/xYuNbK\r\n\r\n» Let's Play Golf it! «\r\nKommentiertes Golf it! PC von Jay & Co!\r\n\r\n» Golf it! «\r\nGolfspiel von Entwickler Perfuse Entertainment.\r\nHier bei Steam: http://store.steampowered.com/app/571740/\r\nDas Spiel wurde uns vom Entwickler zur Verfügung gestellt :-)\r\n\r\n» Gäste «\r\nDhalucard: https://www.youtube.com/user/DHAlucard\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n \r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n \r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.\r\n\r\nWer bis hier gelesen hat, ist geiler als Tiger Woods :D",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/KakvPQebdQY/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/KakvPQebdQY/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/KakvPQebdQY/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/KakvPQebdQY/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 2,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "KakvPQebdQY"
+        }
+      },
+      "contentDetails": {
+        "videoId": "KakvPQebdQY",
+        "videoPublishedAt": "2017-04-21T12:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/5Co2Hh67amP9V_Mo_ekxF_efDiI\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLjBJOFFIYlFaUGk0",
+      "snippet": {
+        "publishedAt": "2017-04-21T17:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "Infinite Mini Golf ?? Trashnight #179",
+        "description": "Buch: http://pietsmiet.de/Buch | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Trash gibt es hier: https://goo.gl/bxOuis\r\n\r\n» Trashnight «\r\nTeam PietSmiet checkt Spiele ab, die auf den ersten Blick nicht gerade Begeisterungsstürme auslösen.\r\nKommentiertes Infinite Mini Golf PC Gameplay von Team PietSmiet.\r\n\r\n» Infinite Mini Golf «\r\nMinigolfspiel von Entwickler und Publisher Zen Studios.\r\nOffizielle Internetseite: http://www.infiniteminigolf.com/\r\n\r\n» Musik «\r\nBatty McFaddin - Silent Film Light von Kevin MacLeod ist unter der Lizenz Creative Commons Attribution license (creativecommons.org/licenses/by/4.0/) lizenziert.\r\nQuelle: http://incompetech.com/music/royalty-free/index.html?isrc=USUAN1200003\r\nInterpret: http://incompetech.com/\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n \r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n \r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\nWer bis hier gelesen hat, spielt Minigolf bis zur Unendlichkeit :D",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/0I8QHbQZPi4/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/0I8QHbQZPi4/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/0I8QHbQZPi4/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/0I8QHbQZPi4/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 3,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "0I8QHbQZPi4"
+        }
+      },
+      "contentDetails": {
+        "videoId": "0I8QHbQZPi4",
+        "videoPublishedAt": "2017-04-21T17:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/TBEO4RVxqmIP-0wPff0tSMWLdTk\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLkU3cjY1TFA4MDVJ",
+      "snippet": {
+        "publishedAt": "2017-04-21T14:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "GLÜCK ODER KÖNNEN? ?? Schlag den Raab #6",
+        "description": "Buch: http://pietsmiet.de/Buch | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von Schlag den Raab gibt es hier: https://goo.gl/pkAW51\r\n\r\n» Schlag den Raab «\r\nGesellschaftsspiel von Ravensburger.\r\nOffizielle Internetseite: https://www.ravensburger.de/shop/spiele/erwachsenenspiele/schlag-den-raab-das-1-spiel-27227/index.html\r\n\r\n» Benutzte Kamera «\r\nLumix GH4R: http://amzn.to/2khiRbF\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n\r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/E7r65LP805I/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/E7r65LP805I/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/E7r65LP805I/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/E7r65LP805I/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 4,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "E7r65LP805I"
+        }
+      },
+      "contentDetails": {
+        "videoId": "E7r65LP805I",
+        "videoPublishedAt": "2017-04-21T14:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/HBIGrHc76zKm4Lxg1m6kwDJJEQM\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLlVZWjJ5YmRDVVBZ",
+      "snippet": {
+        "publishedAt": "2017-04-21T16:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "HOMERUN PIET ?? TTT #402",
+        "description": "Site: http://pietsmiet.de | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von TTT gibt es hier: https://goo.gl/b9YjE0\r\n\r\n» Let's Play TTT «\r\nKommentiertes TTT PC Gameplay von Jay und Kollegen.\r\n\r\n» Trouble in Terrorist Town «\r\nGarry's Mod auf Steam Verbrecher jagen Verbrecher\r\nOffizielle Internetseite: http://ttt.badking.net/\r\n\r\n» Gäste «\r\nDhalucard: https://www.youtube.com/user/DHAlucard\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://pietsmiet.de/live\r\nalternativ auf Twitch: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n \r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n \r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/UYZ2ybdCUPY/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/UYZ2ybdCUPY/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/UYZ2ybdCUPY/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/UYZ2ybdCUPY/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 5,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "UYZ2ybdCUPY"
+        }
+      },
+      "contentDetails": {
+        "videoId": "UYZ2ybdCUPY",
+        "videoPublishedAt": "2017-04-21T16:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/4mCKl4-0_8bX1Xi-ka3RE4p4Q6Q\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLnphNkw0aXFEaktv",
+      "snippet": {
+        "publishedAt": "2017-04-20T13:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "KINDER ODER KARRIERE ?? Spiel des Lebens #1",
+        "description": "Buch: pietsmiet.de/Buch | Shirts: pietsmiet.de/shop | PCs: pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: pietsmiet.de/pietcast | Twitch: twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Spiel des Lebens gibt es dann hier: https://goo.gl/J2s4gd\r\n\r\n» Spiel des Lebens (THE GAME OF LIFE) «\r\nGesellschaftsspiel vom Entwickler Marmalade Game Studio Ltd, Publisher ist Marmalade Technologies\r\nOffizielle Internetseite: https://marmaladegamestudio.com/game-gol/\r\n\r\nP.S.\r\nJa, die Kamreposi war am Anfang semi optimal. Die Folge ist auch nicht all zu lang, aber da steht im Titel ja ne #1 ;)\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: www.pietsmiet.de\r\nWir sind Live auf: twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: www.pietsmiet.tv\r\nalternativ auf Twitch: twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: youtube.com/PietSmiet\r\nWir beantworten eure Fragen: youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: pietsmiet.de/pietcast\r\nLink für eure Podcast-App: pietsmiet.de/cast\r\nPietCast auf iTunes: goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n\r\nPiet - twitter.com/PietSmiet | facebook.com/PietSmittie | instagr.am/RealPietSmiet\r\nBr4mm3n - twitter.com/Br4mm3n | facebook.com/Br4mm3n | instagr.am/TheBrammen\r\nSep - twitter.com/Kessemak2 | facebook.com/Kessemak88 | instagr.am/Kessemak2\r\nChris - twitter.com/Brosator | facebook.com/Brosator | instagr.am/HusarenChris\r\nJay - twitter.com/JayPietSmiet | facebook.com/Icetea3105 | instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/za6L4iqDjKo/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/za6L4iqDjKo/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/za6L4iqDjKo/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/za6L4iqDjKo/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 6,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "za6L4iqDjKo"
+        }
+      },
+      "contentDetails": {
+        "videoId": "za6L4iqDjKo",
+        "videoPublishedAt": "2017-04-20T13:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/FCX_Cw9DSzIPwaFem814o2Hb4-0\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLjdjdnJpeVY1LTBj",
+      "snippet": {
+        "publishedAt": "2017-04-20T16:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "VIERT LETZTE FOLGE ?? Mario Kart 8 #271",
+        "description": "Buch: http://pietsmiet.de/buch | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nSpiele günstig & schnell per Email bei MMOGA http://mmo.ga/F7Ms\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von Mario Kart 8 gibt es hier: http://goo.gl/3ZLXrd\r\n\r\n» Let's Play Mario Kart 8 «\r\nKommentiertes Mario Kart 8 WiiU Gameplay von Team PietSmiet.\r\n\r\n» Mario Kart 8 «\r\nRennspiel vom Entwickler & Publisher Nintendo.\r\nOffizielle Internetseite: http://www.nintendo.de/Spiele/Wii-U/Mario-Kart-8-765384.html\r\n\r\n» Gäste «\r\nDhalucard - http://www.youtube.com/dhalucard\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n \r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n \r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\nWer bis hier gelesen hat, kann bis 4 zählen :D",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/7cvriyV5-0c/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/7cvriyV5-0c/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/7cvriyV5-0c/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/7cvriyV5-0c/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 7,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "7cvriyV5-0c"
+        }
+      },
+      "contentDetails": {
+        "videoId": "7cvriyV5-0c",
+        "videoPublishedAt": "2017-04-20T16:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/yvlNSNU8M7t27xdjYZcXMqydMs0\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLmxpb0RmNnVDeU1r",
+      "snippet": {
+        "publishedAt": "2017-04-20T14:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "Coole Mods für The Witcher 3",
+        "description": "Mal was Neues! Ich zeige euch die Mods, die ich für meinen aktuellen The Witcher 3 Run installiert habe :)\nThe Witcher 3 Game of The Year bei GOG kaufen: https://goo.gl/djglPc\nGefällt es euch? Dann lasst es mich wissen! \n\nAlle Mods kommen von: http://www.nexusmods.com/witcher3\n\nMeine Mods:\nThe Witcher 3 HD Reworked Project: http://www.nexusmods.com/witcher3/mods/1021/?\nSuper Turbo Lightning Mod: http://www.nexusmods.com/witcher3/mods/657/?\nRealistic Weather: http://www.nexusmods.com/witcher3/mods/2084/?\nHigh Quality Faces: http://www.nexusmods.com/witcher3/mods/1024/?\nGriffin Set Redesign: http://www.nexusmods.com/witcher3/mods/457/?\nBetter Icons: http://www.nexusmods.com/witcher3/mods/493/?\nAll Quest Objects On Maps: http://www.nexusmods.com/witcher3/mods/943/?\nBetter Trophies: http://www.nexusmods.com/witcher3/mods/1006/?\nNitpickers Patch: http://www.nexusmods.com/witcher3/mods/2117/?\nAutoLoot: http://www.nexusmods.com/witcher3/mods/1996/?\nMore Money For Traders: http://www.nexusmods.com/witcher3/mods/819/?\nOver 9000: http://www.nexusmods.com/witcher3/mods/3/?",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/lioDf6uCyMk/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/lioDf6uCyMk/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/lioDf6uCyMk/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/lioDf6uCyMk/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 8,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "lioDf6uCyMk"
+        }
+      },
+      "contentDetails": {
+        "videoId": "lioDf6uCyMk",
+        "videoPublishedAt": "2017-04-20T14:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    },
+    {
+      "kind": "youtube#playlistItem",
+      "etag": "\"m2yskBQFythfE4irbTIeOgYYfBU/AgBCzdzmUnGK0C43B66kfay8VWI\"",
+      "id": "VVVxd0dhVXZxX2wwUktzemVIaFo1bGVBLlZLWTFQdGFLZFlJ",
+      "snippet": {
+        "publishedAt": "2017-04-20T12:05:00.000Z",
+        "channelId": "UCqwGaUvq_l0RKszeHhZ5leA",
+        "title": "BRAMMEN HAT DIE AUFNAHME ?? Counterstrike: Global Offensive #216",
+        "description": "Site: http://pietsmiet.de | Shirts: http://pietsmiet.de/shop | PCs: http://pietsmiet.de/pc\r\nCS:GO günstig & schnell per Email bei MMOGA http://mmo.ga/VAt3\r\nPodcast: http://pietsmiet.de/pietcast | Twitch: http://twitch.tv/pietsmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» Playlist «\r\nMehr Folgen von CS:GO gibt es hier: https://goo.gl/TwbO5h\r\n\r\n» Counter-Strike: Global Offensive «\r\nDie Jungs von PietSmiet haben einen Traum: Global Elite. Das versuchen sie zu packen. \r\nKommentiertes CS:GO Gameplay von Sep und Kollegen.\r\n\r\n» Counter-Strike: Global Offensive «\r\nEgo-Schooter vom Entwickler Valve und Hidden Path Entertainment.\r\nOffizielle Internetseite: http://store.steampowered.com/app/730/\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» TEAM PIETSMIET «\r\nUnser Team besteht aus fünf spieleverrückten Teilzeit-Bekloppten, die sich größtenteils seit der Kindheit kennen. Irgendwann kamen wir auf die Idee unsere allabendlichen Zockersessions aufzuzeichnen und auf Youtube zu veröffentlichen. So entstand der Kanal PietSmittie, wie ihr ihn heute kennt.\r\n\r\nOffizielle Internetseite: http://www.pietsmiet.de\r\nWir sind Live auf: http://pietsmiet.de/live\r\nalternativ auf Twitch: http://twitch.tv/pietsmiet\r\n24/7/365 Live-Stream: http://www.pietsmiet.tv\r\nalternativ auf Twitch: http://twitch.tv/pietsmiettv\r\n\r\nUnsere Kanäle:\r\nGeile Gaming-Videos: http://youtube.com/PietSmiet\r\nWir beantworten eure Fragen: http://youtube.com/FragPietSmiet\r\nBrilliante Best-Ofs: http://youtube.com/BestPietSmiet\r\n\r\nUnser Podcast:\r\nPietCast hören: http://pietsmiet.de/pietcast\r\nLink für eure Podcast-App: http://pietsmiet.de/cast\r\nPietCast auf iTunes: http://goo.gl/myIYdB\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n \r\n» SOCIAL MEDIA «\r\nSelbstverständlich sind wir auch auf den Social-Media-Plattformen unterwegs, falls euch unser Gequatsche auf Youtube nicht schon genug nervt :D\r\n \r\nPiet - http://twitter.com/PietSmiet | http://facebook.com/PietSmittie | http://instagr.am/RealPietSmiet\r\nBr4mm3n - http://twitter.com/Br4mm3n | http://facebook.com/Br4mm3n | http://instagr.am/TheBrammen\r\nSep - http://twitter.com/Kessemak2 | http://facebook.com/Kessemak88 | http://instagr.am/Kessemak2\r\nChris - http://twitter.com/Brosator | http://facebook.com/Brosator | http://instagr.am/HusarenChris\r\nJay - http://twitter.com/JayPietSmiet | http://facebook.com/Icetea3105 | http://instagr.am/JayPietSmiet\r\n\r\n«»--«»--«»--«»--«»--«»--«»--«»\r\n\r\n» PietSmiet PCs «\r\nUnsere in Zusammenarbeit mit One.de und GameStar produzierten Komplett-PCs haben keine Probleme mit aktuellen Games!\r\nSchnittchen-PC oder Porno-PC kaufen: http://pietsmiet.de/pc\r\n\r\n» Merchandise «\r\nOb T-Shirt, Tasse oder Handy-Hülle, der grüne Controller passt immer!\r\nUnser Merch-Shop: http://pietsmiet.de/shop\r\n\r\n» Donation «\r\nWer sicherstellen will, dass wir unsere Zigarren auch zukünftig mit Youtube-Money-Scheinen anzünden können, klickt hier: http://pietsmiet.de/donate\r\n\r\n» Amazon «\r\nIhr wollt etwas bei Amazon kaufen und ohne weitere Kosten PietSmiet unterstützen? Dann könnt ihr einfach über diesen Link shoppen: http://pietsmiet.de/amazon\r\n\r\n» Full Disclosure «\r\nLinks auf Amazon, MMOGA & Co. sind Affiliate Links. Das heißt sobald ihr diese Links benutzt um einzukaufen erhalten wir eine Vergütung. Dafür kostet euch der Einkauf allerdings nicht mehr.",
+        "thumbnails": {
+          "default": {
+            "url": "https://i.ytimg.com/vi/VKY1PtaKdYI/default.jpg",
+            "width": 120,
+            "height": 90
+          },
+          "medium": {
+            "url": "https://i.ytimg.com/vi/VKY1PtaKdYI/mqdefault.jpg",
+            "width": 320,
+            "height": 180
+          },
+          "high": {
+            "url": "https://i.ytimg.com/vi/VKY1PtaKdYI/hqdefault.jpg",
+            "width": 480,
+            "height": 360
+          },
+          "standard": {
+            "url": "https://i.ytimg.com/vi/VKY1PtaKdYI/sddefault.jpg",
+            "width": 640,
+            "height": 480
+          }
+        },
+        "channelTitle": "PietSmiet",
+        "playlistId": "UUqwGaUvq_l0RKszeHhZ5leA",
+        "position": 9,
+        "resourceId": {
+          "kind": "youtube#video",
+          "videoId": "VKY1PtaKdYI"
+        }
+      },
+      "contentDetails": {
+        "videoId": "VKY1PtaKdYI",
+        "videoPublishedAt": "2017-04-20T12:05:00.000Z"
+      },
+      "status": {
+        "privacyStatus": "public"
+      }
+    }
+  ]
+}

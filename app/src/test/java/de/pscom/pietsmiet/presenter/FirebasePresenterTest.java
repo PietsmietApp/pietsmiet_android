@@ -24,6 +24,10 @@ public class FirebasePresenterTest extends MainTestPresenter {
 
     @Override
     public FirebasePresenter preparePresenter() throws Exception {
+        SettingsHelper.boolCategoryPietsmietVideos = true;
+        SettingsHelper.boolCategoryPietsmietNews = true;
+        SettingsHelper.boolCategoryPietsmietUploadplan = true;
+        SettingsHelper.boolCategoryPietcast = true;
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("firebase_response.json")));
         FirebasePresenter presenter = new FirebasePresenter(mMockContext);
@@ -34,10 +38,6 @@ public class FirebasePresenterTest extends MainTestPresenter {
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        SettingsHelper.boolCategoryPietsmietVideos = true;
-        SettingsHelper.boolCategoryPietsmietNews = true;
-        SettingsHelper.boolCategoryPietsmietUploadplan = true;
-        SettingsHelper.boolCategoryPietcast = true;
         FirebasePresenter presenter = preparePresenter();
 
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();

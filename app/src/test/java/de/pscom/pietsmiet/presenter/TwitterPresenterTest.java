@@ -19,9 +19,11 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
-public class TwitterPresenterTest extends MainTestPresenter{
+public class TwitterPresenterTest extends MainTestPresenter {
     @Override
-    public TwitterPresenter preparePresenter() throws Exception{
+    public TwitterPresenter preparePresenter() throws Exception {
+        SecretConstants.twitterSecret = "s";
+        SettingsHelper.stringTwitterBearer = "totallyValidBearerYo";
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("twitter_response.json")));
         TwitterPresenter presenter = new TwitterPresenter(mMockContext);
@@ -31,15 +33,13 @@ public class TwitterPresenterTest extends MainTestPresenter{
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        SecretConstants.twitterSecret = "s";
-        SettingsHelper.stringTwitterBearer = "totallyValidBearerYo";
         TwitterPresenter presenter = preparePresenter();
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
         presenter.fetchPostsSinceObservable(new Date())
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();
-        for (Throwable tr : testSubscriber.getOnErrorEvents()){
+        for (Throwable tr : testSubscriber.getOnErrorEvents()) {
             System.out.println(tr.getMessage());
         }
 

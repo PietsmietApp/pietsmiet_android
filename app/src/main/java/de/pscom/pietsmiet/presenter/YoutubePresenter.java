@@ -27,7 +27,10 @@ public class YoutubePresenter extends MainPresenter {
 
     public YoutubePresenter(MainActivity view) {
         super(view);
-        if (!checkForKeys()) return;
+        if (SecretConstants.youtubeAPIkey == null) {
+            PsLog.w("No Youtube API-key or token specified");
+            return;
+        }
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -37,14 +40,6 @@ public class YoutubePresenter extends MainPresenter {
                 .build();
 
         apiInterface = retrofit.create(YoutubeApiInterface.class);
-    }
-
-    protected boolean checkForKeys() {
-        if (SecretConstants.youtubeAPIkey == null) {
-            PsLog.w("No Youtube API-key or token specified");
-            return false;
-        }
-        return true;
     }
 
     @Override

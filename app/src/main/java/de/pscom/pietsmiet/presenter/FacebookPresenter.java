@@ -30,7 +30,10 @@ public class FacebookPresenter extends MainPresenter {
 
     public FacebookPresenter(MainActivity view) {
         super(view);
-        if (!checkForKeys()) return;
+        if (SecretConstants.facebookToken == null) {
+            PsLog.w("No facebook secret or token specified");
+            return;
+        }
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -42,13 +45,6 @@ public class FacebookPresenter extends MainPresenter {
         apiInterface = retrofit.create(FacebookApiInterface.class);
     }
 
-    protected boolean checkForKeys() {
-        if (SecretConstants.facebookToken == null) {
-            PsLog.w("No facebook secret or token specified");
-            return false;
-        }
-        return true;
-    }
 
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))

@@ -7,7 +7,9 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.presenter.FacebookPresenterTest;
 import de.pscom.pietsmiet.presenter.FirebasePresenterTest;
+import de.pscom.pietsmiet.presenter.TwitterPresenterTest;
 import de.pscom.pietsmiet.presenter.YoutubePresenterTest;
 import rx.Observable;
 import rx.observers.TestSubscriber;
@@ -21,10 +23,10 @@ public class PostManagerTest {
         PostManager postManager = new PostManager(mainActivity);
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
         Observable<Post.PostBuilder> youtubeObs = new YoutubePresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
-        //Observable<Post.PostBuilder> facebookObs = new FacebookPresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
-        //Observable<Post.PostBuilder> twitterObs = new TwitterPresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
+        Observable<Post.PostBuilder> facebookObs = new FacebookPresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
+        Observable<Post.PostBuilder> twitterObs = new TwitterPresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
         Observable<Post.PostBuilder> firebaseObs = new FirebasePresenterTest().preparePresenter().fetchPostsSinceObservable(new Date());
-        Observable.mergeDelayError(youtubeObs, firebaseObs)
+        Observable.mergeDelayError(youtubeObs, firebaseObs, facebookObs, twitterObs)
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()
@@ -32,9 +34,13 @@ public class PostManagerTest {
                 .subscribe(testSubscriber);
         for (Post post :
                 testSubscriber.getOnNextEvents()) {
-            System.out.println(post.getTitle());
+            System.out.println(post.getPostType());
         }
-        //todo add tests if Twitter has tests
+        for (Throwable tr :
+                testSubscriber.getOnErrorEvents()) {
+            System.out.println(tr.getMessage());
+        }
+        //todo add tests to assure correct ordering
     }
 
 }

@@ -38,7 +38,10 @@ public class TwitterPresenter extends MainPresenter {
 
     public TwitterPresenter(MainActivity view) {
         super(view);
-        if (!checkForKeys()) return;
+        if (SecretConstants.twitterSecret == null) {
+            PsLog.w("No twitter secret specified");
+            return;
+        }
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.twitter.com")
@@ -50,13 +53,6 @@ public class TwitterPresenter extends MainPresenter {
         getToken();
     }
 
-    protected boolean checkForKeys() {
-        if (SecretConstants.twitterSecret == null) {
-            PsLog.w("No twitter secret specified");
-            return false;
-        }
-        return true;
-    }
 
     private Observable<Post.PostBuilder> parseTweets(Observable<TwitterRoot> obs) {
         return obs
@@ -104,7 +100,7 @@ public class TwitterPresenter extends MainPresenter {
         return sf.parse(date);
     }
 
-    protected Observable<String> getToken() {
+    private Observable<String> getToken() {
         return Observable.just("")
                 .flatMap(ign -> {
                     // Use token from sharedPrefs if not empty

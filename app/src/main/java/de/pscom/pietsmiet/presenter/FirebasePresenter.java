@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.presenter;
 
+import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
 
@@ -38,9 +39,18 @@ public class FirebasePresenter extends MainPresenter {
 
     private Observable<Post.PostBuilder> parsePostsFromDb(Observable<Map<String, Map<String, FirebaseItem>>> obs) {
         return Observable.defer(() -> obs)
+                .retryWhen(throwable -> throwable.flatMap(error -> {
+                    if (error instanceof SocketTimeoutException) {
+                        PsLog.w("Firebase Timeout", error);
+                        view.showSnackbar("Firebase Timeout, neuer Versuch...");
+                        return Observable.just(null);
+                    }
+                    // Unrelated error, throw it
+                    return Observable.error(error);
+                }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    view.showError("Pietsmiet.de konnte nicht geladen werden");
+                    view.showSnackbar("Pietsmiet.de konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -64,6 +74,7 @@ public class FirebasePresenter extends MainPresenter {
                         default:
                             type = -1;
                     }
+                    postBuilder = new Post.PostBuilder(type);
                     if(!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) return postBuilder;
                     if(!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) return postBuilder;
                     if(!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) return postBuilder;

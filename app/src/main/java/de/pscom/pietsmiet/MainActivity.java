@@ -107,7 +107,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // End Top Button init
 
 
-
         if (BuildConfig.DEBUG) {
             FirebaseMessaging.getInstance().subscribeToTopic("test");
         } else {
@@ -214,11 +213,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         for (Integer item : PostType.getPossibleTypes()) {
             // Iterate through every menu item and save it's state in a map
-            if(mNavigationView != null) {
+            if (mNavigationView != null) {
                 Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
                 checker.setOnCheckedChangeListener((view, check) -> {
-                    if (check) CLEAR_CACHE_FLAG = true; //todo improve if for example a user jsut switched on off on -> dont clear cache
+                    if (check)
+                        CLEAR_CACHE_FLAG = true; //todo improve if for example a user jsut switched on off on -> dont clear cache
                     SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
                 });
             }
@@ -230,7 +230,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 SettingsHelper.loadAllSettings(getBaseContext());
-                if(CLEAR_CACHE_FLAG) {
+                if (CLEAR_CACHE_FLAG) {
                     clearCache();
                     CLEAR_CACHE_FLAG = false;
                 } else {
@@ -261,21 +261,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
-                    if(recyclerView != null) recyclerView.getRecycledViewPool().clear();
+                            if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
                             if (adapter != null) adapter.notifyDataSetChanged();
                         }
                 );
     }
 
-    public void showError(String message){
-        showError(message, Snackbar.LENGTH_LONG);
+    public void showSnackbar(String message) {
+        showSnackbar(message, Snackbar.LENGTH_LONG);
     }
 
-    public void showError(String message, int length) {
+    public void showSnackbar(String message, int length) {
         Observable.just(message)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(msg -> {
-                    if(findViewById(R.id.main_layout) != null) {
+                    if (findViewById(R.id.main_layout) != null) {
                         Snackbar.make(findViewById(R.id.main_layout), msg, length).show();
                     } else {
                         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
@@ -344,7 +344,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             updateAdapter();
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();
-                showError("Cache gelöscht");
+                showSnackbar("Cache gelöscht");
             }
         }
     }

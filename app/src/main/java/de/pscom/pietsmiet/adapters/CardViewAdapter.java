@@ -1,19 +1,15 @@
 package de.pscom.pietsmiet.adapters;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.squareup.haha.perflib.Main;
 
 import java.util.List;
 
@@ -35,14 +31,13 @@ import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
-import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
     private final List<Post> items;
-    private final Context context;
+    private final MainActivity context;
 
-    public CardViewAdapter(List<Post> items, Context context) {
+    public CardViewAdapter(List<Post> items, MainActivity context) {
         this.items = items;
         this.context = context;
     }
@@ -64,46 +59,36 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         holder.title.setText(currentItem.getTitle());
         holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
 
-        // Setup default visibilities
+        // Setup default visibilities as you never can trust the view holder
         holder.btnExpand.setVisibility(GONE);
         holder.descriptionContainer.setVisibility(GONE);
-        holder.thumbnail.setVisibility(VISIBLE);
+        holder.description.setVisibility(VISIBLE);
+        holder.thumbnail.setVisibility(GONE);
+        holder.thumbnail.setImageDrawable(null);
         holder.wideImage.setVisibility(GONE);
+        holder.wideImage.setImageDrawable(null);
         holder.text.setVisibility(GONE);
+        holder.ivDuration.setVisibility(GONE);
+        holder.tvDuration.setVisibility(GONE);
 
         if (currentType == PIETCAST) {
             // Pietcast: Setup placeholder thumbnail, text in expandable description,
-            // setup expandable container
+            holder.thumbnail.setVisibility(VISIBLE);
             holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
-
-            if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
-                holder.description.setText(Html.fromHtml(currentItem.getDescription()));
-            }
 
             // TEMP because of unavailable data about durations
             holder.ivDuration.setVisibility(GONE);
             holder.tvDuration.setVisibility(GONE);
 
-            holder.btnExpand.setVisibility(VISIBLE);
-            holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-            holder.btnExpand.setOnClickListener(view -> {
-                if (holder.descriptionContainer.getVisibility() == GONE) {
-                    holder.descriptionContainer.setVisibility(VISIBLE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
-                } else {
-                    holder.descriptionContainer.setVisibility(GONE);
-                    view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
-                }
-            });
-        } else if (currentType == UPLOADPLAN || currentType == NEWS) {
-            //Disable thumbnail for uploadplan
-            holder.thumbnail.setVisibility(GONE);
-
+        }
+        // Setup expand container and description
+        if (currentType == UPLOADPLAN || currentType == NEWS || currentType == PIETCAST) {
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.description.setText(Html.fromHtml(currentItem.getDescription()));
+            } else {
+                holder.description.setVisibility(GONE);
             }
-            holder.ivDuration.setVisibility(GONE);
-            holder.tvDuration.setVisibility(GONE);
+
             holder.btnExpand.setVisibility(VISIBLE);
             holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
             holder.btnExpand.setOnClickListener(view -> {
@@ -118,7 +103,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
             holder.thumbnail.setVisibility(VISIBLE);
-            holder.wideImage.setVisibility(GONE);
             if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
                 holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
             } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
@@ -128,7 +112,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             }
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             // Social media: Setup wide image
-            holder.thumbnail.setVisibility(GONE);
             holder.wideImage.setVisibility(VISIBLE);
             if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
                 holder.wideImage.setImageDrawable(currentItem.getThumbnail());
@@ -138,25 +121,25 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.wideImage.setVisibility(GONE);
             }
 
-        }
-        // Setup text for (Uploadplan) & social media
-        if (currentType == TWITTER || currentType == FACEBOOK) {
+            // Setup text for social media
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.text.setVisibility(VISIBLE);
                 holder.text.setText(Html.fromHtml(currentItem.getDescription()));
             }
+
         }
+
 
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
                     try {
-                        ((MainActivity) context).showError("Opening URL...");
+                        context.showSnackbar("Opening URL...", Snackbar.LENGTH_SHORT);
                         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));
                         context.startActivity(browserIntent);
                     } catch (ActivityNotFoundException | NullPointerException e) {
                         PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
                         //Error Notification
-                        ((MainActivity) context).showError("URL konnte nicht geöffnet werden");
+                        context.showSnackbar("URL konnte nicht geöffnet werden");
                     }
                 }
         );

@@ -4,10 +4,9 @@ import android.support.design.widget.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
@@ -110,8 +109,10 @@ public class PostManager {
      */
     public void displayOnlyType(@AllTypes int postType) {
         for (int type : getPossibleTypes()) {
-            if (type == postType) SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), true);
-            else SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), false);
+            if (type == postType)
+                SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), true);
+            else
+                SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), false);
         }
         SettingsHelper.loadAllSettings(mView);
         updateCurrentPosts();
@@ -162,7 +163,7 @@ public class PostManager {
      **/
     public void fetchNextPosts(int numPosts) {
         if (!NetworkUtil.isConnected(mView)) {
-            mView.showError("Keine Netzwerkverbindung");
+            mView.showSnackbar("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
             return;
         }
@@ -190,7 +191,7 @@ public class PostManager {
      **/
     public void fetchNewPosts() {
         if (!NetworkUtil.isConnected(mView)) {
-            mView.showError("Keine Netzwerkverbindung");
+            mView.showSnackbar("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
             //todo does this fix the unable to reload ? What about safety? scrollListener is now public -> Performance
             mView.scrollListener.resetState();
@@ -234,19 +235,26 @@ public class PostManager {
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
                     if (attempt == 2) throw Exceptions.propagate(throwable);
                     else {
-                        mView.showError("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
+                        mView.showSnackbar("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
                         PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
                         return attempt;
                     }
                 }).flatMap(retryCount -> Observable.timer((long) Math.pow(2, retryCount), TimeUnit.SECONDS)))
+                .timeout(15, TimeUnit.SECONDS)
                 .subscribe(items -> {
                     addPosts(items);
                     mView.setRefreshAnim(false);
                     PsLog.v("Finished with " + items.size() + " Posts");
                     new DatabaseHelper(mView).insertPosts(items);
                 }, e -> {
-                    PsLog.e("Kritischer Fehler beim Laden aller Kategorien: ", e);
-                    mView.showError("Kritischer Fehler beim Laden aller Kategorien. Der Fehler wurde den Entwicklern gemeldet", Snackbar.LENGTH_INDEFINITE);
+                    if (e instanceof TimeoutException) {
+                        PsLog.w("Laden dauerte zu lange, Abbruch...");
+                        mView.showSnackbar("Konnte Posts nicht laden (Timeout)", Snackbar.LENGTH_INDEFINITE);
+                    } else {
+                        PsLog.e("Kritischer Fehler beim Laden: ", e);
+                        mView.showSnackbar("Kritischer Fehler beim Laden. " +
+                                "Der Fehler wurde den Entwicklern gemeldet", Snackbar.LENGTH_INDEFINITE);
+                    }
                     mView.setRefreshAnim(false);
                 }, () -> mView.setRefreshAnim(false));
     }
@@ -300,7 +308,7 @@ public class PostManager {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        "\n letzter (neuster) Post " + ((!allPosts.isEmpty()) ? allPosts.get(0).getTitle() : "") + " Datum: " + getFirstPostDate() );
+                        "\n letzter (neuster) Post " + ((!allPosts.isEmpty()) ? allPosts.get(0).getTitle() : "") + " Datum: " + getFirstPostDate());
             }
         }
         return shouldFilter;

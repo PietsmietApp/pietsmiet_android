@@ -79,7 +79,7 @@ public class FacebookPresenter extends MainPresenter {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    view.showError("Facebook konnte nicht geladen werden");
+                    view.showSnackbar("Facebook konnte nicht geladen werden");
                     return null;
                 })
                 .filter(response -> response != null)

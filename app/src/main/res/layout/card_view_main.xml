@@ -63,7 +63,7 @@
                 android:layout_below="@+id/tvTitle"
                 android:layout_toStartOf="@id/ivThumbnail"
                 android:autoLink="web"
-                android:linksClickable="true"
+                android:linksClickable="false"
                 android:text="Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 

@@ -69,7 +69,7 @@ public class YoutubePresenter extends MainPresenter {
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
-                    view.showError("Youtube konnte nicht geladen werden");
+                    view.showSnackbar("Youtube konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -92,7 +92,7 @@ public class YoutubePresenter extends MainPresenter {
                     } catch (ParseException e) {
                         // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        view.showError("Einige Youtube-Posts konnte nicht geladen werden");
+                        view.showSnackbar("Einige Youtube-Posts konnte nicht geladen werden");
                     }
                     return postBuilder;
                 });

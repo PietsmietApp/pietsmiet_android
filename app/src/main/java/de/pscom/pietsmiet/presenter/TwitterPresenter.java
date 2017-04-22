@@ -76,7 +76,7 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    view.showError("Twitter konnte nicht geladen werden");
+                    view.showSnackbar("Twitter konnte nicht geladen werden");
                     return null;
                 })
                 .map(status -> {

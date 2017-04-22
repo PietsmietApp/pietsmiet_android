@@ -10,13 +10,15 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -102,33 +104,17 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             });
         } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
-            holder.thumbnail.setVisibility(VISIBLE);
-            if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
-                holder.thumbnail.setImageDrawable(currentItem.getThumbnail());
-            } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
-                DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.thumbnail);
-            } else {
-                holder.thumbnail.setVisibility(GONE);
-            }
+            setupImageViews(holder.thumbnail, currentItem, holder);
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             // Social media: Setup wide image
-            holder.wideImage.setVisibility(VISIBLE);
-            if (currentItem.getThumbnail() != null && !(!currentItem.isThumbnailHD() && SettingsHelper.shouldLoadHDImages(context))) {
-                holder.wideImage.setImageDrawable(currentItem.getThumbnail());
-            } else if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
-                DrawableFetcher.loadThumbnailIntoView(currentItem, context, holder.wideImage);
-            } else {
-                holder.wideImage.setVisibility(GONE);
-            }
+            setupImageViews(holder.wideImage, currentItem, holder);
 
             // Setup text for social media
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                 holder.text.setVisibility(VISIBLE);
                 holder.text.setText(Html.fromHtml(currentItem.getDescription()));
             }
-
         }
-
 
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
@@ -145,6 +131,24 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         );
 
 
+    }
+
+    private void setupImageViews(ImageView view, Post currentItem, CardViewHolder holder) {
+        view.setVisibility(VISIBLE);
+        if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
+            Glide.with(context)
+                    .load((SettingsHelper.shouldLoadHDImages(context) ?
+                            currentItem.getThumbnailHDUrl() :
+                            currentItem.getThumbnailUrl()))
+                    .centerCrop()
+                    //fixme.placeholder(R.drawable.ic_cached_black_24dp)
+                    .crossFade()
+                    .into(view);
+        } else {
+            view.setVisibility(GONE);
+            Glide.clear(holder.thumbnail);
+            Glide.clear(holder.wideImage);
+        }
     }
 
     @Override

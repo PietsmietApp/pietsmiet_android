@@ -85,6 +85,7 @@ public class YoutubePresenter extends MainPresenter {
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
                     postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
+                    postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
                     postBuilder.title(snippet.getTitle());
                     try {
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());

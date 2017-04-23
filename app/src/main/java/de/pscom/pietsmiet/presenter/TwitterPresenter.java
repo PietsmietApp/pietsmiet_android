@@ -82,6 +82,7 @@ public class TwitterPresenter extends MainPresenter {
                                 .date(getTwitterDate(status.createdAt))
                                 .url("https://twitter.com/" + status.user.screenName + "/status/" + status.idStr)
                                 .id(status.id)
+                                .username(status.user.screenName)
                                 .title(getDisplayName(status.user));
                         if (status.entities.media != null && status.entities.media.size() > 0) {
                             postBuilder.thumbnailHDUrl(status.entities.media.get(0).mediaUrlHttps)

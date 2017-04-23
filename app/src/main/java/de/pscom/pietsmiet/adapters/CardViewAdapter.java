@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.bumptech.glide.Glide;
-
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
@@ -125,11 +123,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         switch (currentType) {
             case PIETCAST:
                 resPostTypeImage = R.drawable.ic_radio_white_24dp;
-                Glide.with(context)
-                        .load(R.drawable.pietcast_placeholder)
-                        .centerCrop()
-                        .crossFade()
-                        .into(holder.wideImage);
                 break;
             case UPLOADPLAN:
                 resPostTypeImage = R.drawable.ic_assignment_white_24dp;
@@ -149,7 +142,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 resPostTypeImage = R.drawable.ic_twitter_social_icon_circle_white_24dp;
                 holder.line.setVisibility(VISIBLE);
                 holder.username.setVisibility(VISIBLE);
-                holder.username.setText("@" + currentItem.getTitle()); //// TODO: 23.04.2017
+                holder.username.setText("@" + currentItem.getUsername()); // TODO: 23.04.2017
                 setupImageViews(holder.wideImage, currentItem, holder);
                 // Setup text for social media
                 if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {

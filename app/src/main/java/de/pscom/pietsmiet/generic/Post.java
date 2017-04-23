@@ -32,6 +32,9 @@ public class Post implements Comparable<Post> {
     private String thumbnailUrl;
     @Nullable
     private String thumbnailHDUrl;
+    @Nullable
+    private String username;
+    
     private long api_ID;
     private Date datetime;
     private int duration;
@@ -45,6 +48,7 @@ public class Post implements Comparable<Post> {
         postType = builder.postType;
         thumbnailUrl = builder.thumbnailUrl;
         thumbnailHDUrl = builder.thumbnailHDUrl;
+        username = builder.username;
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
@@ -81,6 +85,9 @@ public class Post implements Comparable<Post> {
     public Date getDate() {
         return datetime;
     }
+
+    @Nullable
+    public String getUsername() { return username; }
 
     @Nullable
     public String getDescription() {
@@ -180,10 +187,13 @@ public class Post implements Comparable<Post> {
         private String thumbnailUrl;
         @Nullable
         private String thumbnailHDUrl;
+        @Nullable
+        private String username;
         private long api_ID;
         private Date date;
         private int duration;
         private String url;
+
 
         public PostBuilder(@PostType.AllTypes int postType) {
             this.postType = postType;
@@ -191,6 +201,11 @@ public class Post implements Comparable<Post> {
 
         public PostBuilder description(@Nullable String description) {
             this.description = description;
+            return this;
+        }
+
+        public PostBuilder username(@Nullable String username) {
+            this.username = username;
             return this;
         }
 
@@ -238,11 +253,6 @@ public class Post implements Comparable<Post> {
                 PsLog.e("Date is not given");
                 return null;
             }
-            /*fixme pietsmiet.de videos with no thumbnail
-            if ((description == null || description.isEmpty()) && thumbnail == null) {
-                PsLog.e("No thumbnail and no description given");
-                return null;
-            }*/
             if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
                 PsLog.e("Uploadplan with no description");
                 return null;

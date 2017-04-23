@@ -21,11 +21,12 @@ import rx.schedulers.Schedulers;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION_NUMBER = 4;
+    private static final int VERSION_NUMBER = 5;
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
     private static final String POSTS_COLUMN_API_ID = "api_id";
+    private static final String POSTS_COLUMN_USERNAME = "username";
     private static final String POSTS_COLUMN_TITLE = "title";
     private static final String POSTS_COLUMN_DESC = "desc";
     private static final String POSTS_COLUMN_URL = "url";
@@ -67,6 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         POSTS_COLUMN_URL + " TEXT," +
                         POSTS_COLUMN_URL_THUMBNAIL + " TEXT," +
                         POSTS_COLUMN_URL_THUMBNAIL_HD + " TEXT," +
+                        POSTS_COLUMN_USERNAME + " TEXT," +
                         POSTS_COLUMN_TYPE + " INT," +
                         POSTS_COLUMN_TIME + " INT," +
                         POSTS_COLUMN_DURATION + " INT)"
@@ -109,6 +111,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(POSTS_COLUMN_ID, post.hashCode());
                     contentValues.put(POSTS_COLUMN_API_ID, post.getId());
+                    contentValues.put(POSTS_COLUMN_USERNAME, post.getUsername());
                     contentValues.put(POSTS_COLUMN_TITLE, post.getTitle());
                     contentValues.put(POSTS_COLUMN_DESC, post.getDescription());
                     contentValues.put(POSTS_COLUMN_URL, post.getUrl());
@@ -184,6 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     .id(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
                                     .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))
                                     .url(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL)))
+                                    .username(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_USERNAME)))
                                     .thumbnailUrl(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL_THUMBNAIL)))
                                     .thumbnailHDUrl(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_URL_THUMBNAIL_HD)))
                                     .duration(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_DURATION)))

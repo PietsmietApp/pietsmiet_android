@@ -96,7 +96,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_alignParentStart="true"
-                android:contentDescription="Thumbnail of the post" />
+                android:contentDescription="Thumbnail of the post"
+                android:scaleType="centerCrop" />
 
         </RelativeLayout>
 

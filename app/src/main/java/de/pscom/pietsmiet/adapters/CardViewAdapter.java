@@ -2,7 +2,6 @@ package de.pscom.pietsmiet.adapters;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -21,9 +20,9 @@ import java.util.List;
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
-import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.TimeUtils;
 
 import static android.view.View.GONE;
@@ -217,13 +216,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
     private void setupImageViews(ImageView view, Post currentItem, CardViewHolder holder) {
         view.setVisibility(VISIBLE);
         if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
-            Glide.with(context)
-                    .load((SettingsHelper.shouldLoadHDImages(context) ?
-                            currentItem.getThumbnailHDUrl() :
-                            currentItem.getThumbnailUrl()))
-                    .centerCrop()
-                    .crossFade()
-                    .into(view);
+            DrawableFetcher.loadThumbnailIntoView(currentItem, context, view);
         } else {
             view.setVisibility(GONE);
             Glide.clear(holder.wideImage);

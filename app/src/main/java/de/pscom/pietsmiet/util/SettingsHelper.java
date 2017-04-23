@@ -50,7 +50,7 @@ public class SettingsHelper {
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
         stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, "AAAAAAAAAAAAAAAAAAAAABETxQAAAAAAQXmiTXMnIIgG0Qx%2FOPsllsLM6gE%3DqyVdj97gZAREeIgccnOcxL2H8fcIOHWPOV1NTmWCdb9m4Dnlde");
-        intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_WIFI);
+        intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_ALWAYS);
 
         // SWITCHES
         boolCategoryYoutubeVideos = getSharedPreferenceBoolean(context, KEY_CATEGORY_YOUTUBE_VIDEOS, false);

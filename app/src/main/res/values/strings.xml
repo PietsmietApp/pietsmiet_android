@@ -24,7 +24,7 @@
     <string name="type_twitter">Twitter</string>
     <string name="type_pietcast">Pietcast</string>
     <string name="type_news">News</string>
-    <string name="type_video_ps">PS.de Videos</string>
+    <string name="type_video_ps">Videos</string>
 
     <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
     <string name="settings_header_others">Sonstige Einstellungen</string>

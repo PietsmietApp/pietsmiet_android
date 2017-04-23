@@ -34,7 +34,7 @@
         android:clickable="true"
         android:theme="@style/Theme.SwitchTheme"
         app:backgroundTint="@color/colorAccent"
-        app:elevation="0dp"
+        app:elevation="6dp"
         app:fabSize="normal"
         app:layout_anchor="@id/cardList"
         app:layout_anchorGravity="bottom|right|end"

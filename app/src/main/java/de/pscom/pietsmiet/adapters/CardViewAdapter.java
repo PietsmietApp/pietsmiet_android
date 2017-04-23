@@ -13,14 +13,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.TimeUtils;
 
 import static android.view.View.GONE;
@@ -59,6 +61,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         holder.title.setText(currentItem.getTitle());
         holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor(context));
+        holder.text.setLinkTextColor(currentItem.getBackgroundColor(context));
 
         holder.time.setTextColor(ContextCompat.getColor(context, android.R.color.white));
         holder.timeClockImage.setImageResource(R.drawable.ic_access_time_white_24dp);
@@ -83,7 +86,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         //      holder.wideImage.setImageDrawable(null);
 
         // WITHOUT ANY IMAGE
-        if(currentItem.getThumbnailUrl() == null && currentItem.getThumbnailHDUrl() == null) {
+        if (currentItem.getThumbnailUrl() == null && currentItem.getThumbnailHDUrl() == null) {
             params.removeRule(RelativeLayout.ALIGN_TOP);
             params.removeRule(RelativeLayout.ALIGN_BOTTOM);
             params.addRule(RelativeLayout.BELOW, R.id.rlHeadlineContainer);
@@ -98,7 +101,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             paramsTimeContainerChange.removeRule(RelativeLayout.ALIGN_BOTTOM);
             holder.timeContainer.setLayoutParams(paramsTimeContainerChange);
         } else {
-        //WITH EMBEDDED IMAGE:
+            //WITH EMBEDDED IMAGE:
             params.removeRule(RelativeLayout.ALIGN_TOP);
             params.removeRule(RelativeLayout.ALIGN_BOTTOM);
             params.addRule(RelativeLayout.BELOW, R.id.rlImageContainer);
@@ -208,11 +211,15 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
     private void setupImageViews(ImageView view, Post currentItem, CardViewHolder holder) {
         if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
-            if (currentItem.getThumbnail() != null) {
-                view.setImageDrawable(currentItem.getThumbnail());
-            } else DrawableFetcher.loadThumbnailIntoView(currentItem, context, view);
+            Glide.with(context)
+                    .load((SettingsHelper.shouldLoadHDImages(context) ?
+                            currentItem.getThumbnailHDUrl() :
+                            currentItem.getThumbnailUrl()))
+                    .centerCrop()
+                    .into(view);
         } else {
             view.setVisibility(GONE);
+            Glide.clear(view);
         }
     }
 

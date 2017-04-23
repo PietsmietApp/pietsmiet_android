@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
+                android:layout_marginLeft="5dp"
                 android:layout_toEndOf="@+id/ivTimeIcon"
                 android:text="1 h"
                 android:textColor="@android:color/white"
@@ -148,6 +148,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginTop="16dp"
                 android:autoLink="web"
+                android:textColor="#424242"
                 android:linksClickable="false"
                 android:text="Wow ist das Bitter für #Hamilton Sorry for that :-( @LewisHamilton #MalaysiaGP"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -172,8 +173,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginBottom="4dp"
                 android:layout_marginTop="10dp"
-                android:text="Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist! Dauer: 2:50 Stunden"
-                android:textColorLink="@color/colorSecondary" />
+                android:text="Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist! Dauer: 2:50 Stunden"/>
 
         </RelativeLayout>
 

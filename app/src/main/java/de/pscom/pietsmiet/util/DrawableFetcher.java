@@ -81,44 +81,57 @@ public class DrawableFetcher {
                 .subscribeOn(Schedulers.io())
                 .map(boolLoadHD -> {
                     Drawable drawable = null;
-                    int pHash = post.hashCode();
-                    String pathCacheDirHash = c.getCacheDir().getAbsolutePath() + "/" + pHash;
-                    // Try finding cached HD image
-                    if (new File(pathCacheDirHash + "_HD").exists()) {
-                        drawable = loadDrawableFromFile(c, pHash + "_HD");
-                        if (drawable != null) post.setIsThumbnailHD(true);
-                    }
-                    // Try loading HD image because boolLoadHD == true
-                    if (drawable == null && boolLoadHD && post.getThumbnailHDUrl() != null) {
-                        drawable = getDrawableFromUrl(post.getThumbnailHDUrl());
-                        if (drawable != null) {
-                            post.setIsThumbnailHD(true);
-                            saveDrawableToFile(drawable, c, pHash + "_HD");
+
+                    if (post.getThumbnailHDUrl() != null) {
+                        String pathThumbHdFile = c.getCacheDir().getAbsolutePath() + "/" + post.getThumbnailHDUrl().hashCode();
+                        // Try finding cached HD image
+                        if (new File(pathThumbHdFile).exists()) {
+                            drawable = loadDrawableFromFile(c, pathThumbHdFile);
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(true);
+                                return drawable;
+                            }
                         }
-                        File cachedImage = new File(pathCacheDirHash);
-                        if (cachedImage.exists() && new File(pathCacheDirHash + "_HD").exists())
-                            cachedImage.delete();
+
+                        // Try loading HD image because boolLoadHD == true
+                        if (boolLoadHD) {
+                            drawable = getDrawableFromUrl(post.getThumbnailHDUrl());
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(true);
+                                saveDrawableToFile(drawable, c, post.getThumbnailHDUrl().hashCode() + "");
+
+                                if (post.getThumbnailUrl() != null) {
+                                    //todo delete sd image if exists cause hd exists
+                                }
+                                return drawable;
+                            }
+                        }
                     }
-                    // Try finding cached image
-                    if (drawable == null && new File(pathCacheDirHash).exists()) {
-                        drawable = loadDrawableFromFile(c, pHash + "");
-                        if (drawable != null) post.setIsThumbnailHD(false);
-                    }
-                    // Try loading image
-                    if (drawable == null && post.getThumbnailUrl() != null) {
+
+                    if (post.getThumbnailUrl() != null) {
+                        String pathThumbFile = c.getCacheDir().getAbsolutePath() + "/" + post.getThumbnailUrl().hashCode();
+                        // Try finding cached SD image
+                        if (new File(pathThumbFile).exists()) {
+                            drawable = loadDrawableFromFile(c, pathThumbFile);
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(false);
+                                return drawable;
+                            }
+                        }
+
                         drawable = getDrawableFromUrl(post.getThumbnailUrl());
                         if (drawable != null) {
                             post.setIsThumbnailHD(false);
-                            saveDrawableToFile(drawable, c, pHash + "");
+                            saveDrawableToFile(drawable, c, post.getThumbnailUrl().hashCode() + "");
+                            return drawable;
                         }
                     }
-                    return drawable;
+                    return null;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(drawable -> {
                     if (drawable != null) {
                         if (view != null) {
-                            //view.setVisibility(View.VISIBLE);
                             view.setAnimation(null);
                             view.setScaleX(1f);
                             view.setScaleY(1f);

@@ -214,12 +214,12 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
     }
 
     private void setupImageViews(ImageView view, Post currentItem, CardViewHolder holder) {
-        view.setVisibility(VISIBLE);
         if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
-            DrawableFetcher.loadThumbnailIntoView(currentItem, context, view);
+            if (currentItem.getThumbnail() != null) {
+                view.setImageDrawable(currentItem.getThumbnail());
+            } else DrawableFetcher.loadThumbnailIntoView(currentItem, context, view);
         } else {
             view.setVisibility(GONE);
-            Glide.clear(holder.wideImage);
         }
     }
 

@@ -59,28 +59,28 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         // Set basic information (title, time, color)
         holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         holder.title.setText(currentItem.getTitle());
-        holder.cv.setCardBackgroundColor(currentItem.getBackgroundColor());
+        holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor());
 
         // Setup default visibilities as you never can trust the view holder
+        holder.line.setVisibility(GONE);
+        holder.username.setVisibility(GONE);
         holder.btnExpand.setVisibility(GONE);
-        holder.descriptionContainer.setVisibility(GONE);
+        holder.descriptionContainer.setVisibility(VISIBLE);
+        holder.expandableContainer.setVisibility(GONE);
         holder.description.setVisibility(VISIBLE);
-        holder.thumbnail.setVisibility(GONE);
-        holder.thumbnail.setImageDrawable(null);
-        holder.wideImage.setVisibility(GONE);
+        holder.wideImage.setVisibility(VISIBLE);
         holder.wideImage.setImageDrawable(null);
         holder.text.setVisibility(GONE);
-        holder.ivDuration.setVisibility(GONE);
-        holder.tvDuration.setVisibility(GONE);
 
         if (currentType == PIETCAST) {
             // Pietcast: Setup placeholder thumbnail, text in expandable description,
-            holder.thumbnail.setVisibility(VISIBLE);
-            holder.thumbnail.setImageResource(R.drawable.pietcast_placeholder);
+            holder.wideImage.setVisibility(VISIBLE);
 
-            // TEMP because of unavailable data about durations
-            holder.ivDuration.setVisibility(GONE);
-            holder.tvDuration.setVisibility(GONE);
+            Glide.with(context)
+                    .load(R.drawable.pietcast_placeholder)
+                    .centerCrop()
+                    .crossFade()
+                    .into(holder.wideImage);
 
         }
         // Setup expand container and description
@@ -90,21 +90,22 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
             } else {
                 holder.description.setVisibility(GONE);
             }
-
+            if(currentType != PIETCAST) holder.wideImage.setVisibility(GONE);
+            holder.descriptionContainer.setVisibility(GONE);
             holder.btnExpand.setVisibility(VISIBLE);
             holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
             holder.btnExpand.setOnClickListener(view -> {
-                if (holder.descriptionContainer.getVisibility() == GONE) {
-                    holder.descriptionContainer.setVisibility(VISIBLE);
+                if (holder.expandableContainer.getVisibility() == GONE) {
+                    holder.expandableContainer.setVisibility(VISIBLE);
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
                 } else {
-                    holder.descriptionContainer.setVisibility(GONE);
+                    holder.expandableContainer.setVisibility(GONE);
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
         } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
             // Youtube: Setup video thumbnails
-            setupImageViews(holder.thumbnail, currentItem, holder);
+            setupImageViews(holder.wideImage, currentItem, holder);
         } else if (currentType == TWITTER || currentType == FACEBOOK) {
             // Social media: Setup wide image
             setupImageViews(holder.wideImage, currentItem, holder);
@@ -115,6 +116,16 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                 holder.text.setText(Html.fromHtml(currentItem.getDescription()));
             }
         }
+        if( currentType == TWITTER ) {
+            holder.postTypeLogo.setImageResource(R.drawable.ic_twitter_social_icon_circle_white_24dp);
+            holder.line.setVisibility(VISIBLE);
+            holder.username.setVisibility(VISIBLE);
+            holder.username.setText("@JayPietsmiet"); //todo
+        }
+        if(currentType == FACEBOOK) {
+            holder.postTypeLogo.setImageResource(R.drawable.ic_facebook_white);
+        }
+
 
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
@@ -141,12 +152,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                             currentItem.getThumbnailHDUrl() :
                             currentItem.getThumbnailUrl()))
                     .centerCrop()
-                    //fixme.placeholder(R.drawable.ic_cached_black_24dp)
                     .crossFade()
                     .into(view);
         } else {
             view.setVisibility(GONE);
-            Glide.clear(holder.thumbnail);
             Glide.clear(holder.wideImage);
         }
     }

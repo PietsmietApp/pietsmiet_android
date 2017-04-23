@@ -19,12 +19,12 @@
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_facebook"
-                android:icon="@drawable/ic_share_black_24dp"
+                android:icon="@drawable/ic_facebook_white"
                 android:title="@string/type_facebook"
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_twitter"
-                android:icon="@drawable/ic_message_black_24dp"
+                android:icon="@drawable/ic_twitter_social_icon_circle_white_24dp"
                 android:title="@string/type_twitter"
                 app:actionLayout="@layout/widget_switch" />
             <item

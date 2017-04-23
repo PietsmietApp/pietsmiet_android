@@ -18,11 +18,13 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
     public final TextView time;
     public final TextView description;
     public final ImageView wideImage;
-    public final ImageView thumbnail;
+    public final RelativeLayout headlineContainer;
     public final RelativeLayout descriptionContainer;
+    public final RelativeLayout expandableContainer;
+    public final TextView line;
+    public final TextView username;
     public final Button btnExpand;
-    public final ImageView ivDuration;
-    public final TextView tvDuration;
+    public final ImageView postTypeLogo;
 
     public CardViewHolder(View itemView) {
         super(itemView);
@@ -32,10 +34,12 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
         description = (TextView) itemView.findViewById(R.id.tvDescription);
         time = (TextView) itemView.findViewById(R.id.tvDateTime);
         wideImage = (ImageView) itemView.findViewById(R.id.ivWideImage);
-        thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
         btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
-        descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlExpandableContainer);
-        ivDuration = (ImageView) itemView.findViewById(R.id.ivDuration);
-        tvDuration = (TextView) itemView.findViewById(R.id.tvDuration);
+        expandableContainer = (RelativeLayout) itemView.findViewById(R.id.rlExpandableContainer);
+        descriptionContainer = (RelativeLayout) itemView.findViewById(R.id.rlDescriptionContainer);
+        headlineContainer = (RelativeLayout) itemView.findViewById(R.id.rlHeadlineContainer);
+        line = (TextView) itemView.findViewById(R.id.tvLine);
+        username = (TextView) itemView.findViewById(R.id.tvUsername);
+        postTypeLogo = (ImageView) itemView.findViewById(R.id.ivPostTypeLogo);
     }
 }

@@ -2,14 +2,15 @@
     <string name="drawer_open">Menü öffnen</string>
     <string name="drawer_close">Menü schließen</string>
     <string name="drawer_sonstiges">Sonstiges</string>
-    <string name="drawer_support"><![CDATA[Hilfe & Support]]></string>
+    <string name="drawer_support">Hilfe</string>
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="drawer_Feedback">Feedback</string>
     <string name="drawer_filter">Filter</string>
     <string name="drawer_pietstream_banner">Pietstream</string>
 
-    <string name="about_text">Developed by l3d00m and saibotk (tkindanight)
-        \n\nSource Code: \n https://github.com/l3d00m/pietsmiet_android/
+    <string name="about_text"><b><i>Developed by</i></b>\n     l3d00m and saibotk (tkindanight)\n
+        \n<b><i>UI/UX Design by</i></b>\n     Argus
+        \n\n<b><i>Source Code:</i></b> \n https://github.com/l3d00m/pietsmiet_android/
         \n \nCreated with &lt;3</string>
 
     <string name="time_just_now">Gerade eben</string>

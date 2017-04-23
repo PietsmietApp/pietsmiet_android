@@ -1,22 +1,20 @@
 package de.pscom.pietsmiet.generic;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import java.util.Date;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
-import static de.pscom.pietsmiet.util.ColorUtils.Default;
-import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
-import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
-import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
-import static de.pscom.pietsmiet.util.ColorUtils.colorPSVideo;
-import static de.pscom.pietsmiet.util.ColorUtils.colorUploadplan;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
@@ -107,30 +105,31 @@ public class Post implements Comparable<Post> {
 
     //UPPER_CASE: PostType constants
     //CamelCase: ColorUtils constants
-    public int getBackgroundColor() {
-        String hexColor;
+    public int getBackgroundColor(Context c) {
+        int hexColor;
         switch (postType) {
             case PS_VIDEO:
-                hexColor = colorPSVideo;
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
                 break;
             case YOUTUBE:
-                hexColor = Youtube;
+                hexColor = ContextCompat.getColor(c, R.color.youtube);
                 break;
             case UPLOADPLAN:
+            case NEWS:
             case PIETCAST:
-                hexColor = colorUploadplan;
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
                 break;
             case FACEBOOK:
-                hexColor = Facebook;
+                hexColor = ContextCompat.getColor(c, R.color.facebook);
                 break;
             case TWITTER:
-                hexColor = Twitter;
+                hexColor = ContextCompat.getColor(c, R.color.twitter);
                 break;
             default:
-                hexColor = Default;
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
                 break;
         }
-        return Color.parseColor(hexColor);
+        return hexColor;
     }
 
     @Override

@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.adapters;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 
@@ -59,7 +61,56 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         // Set basic information (title, time, color)
         holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
         holder.title.setText(currentItem.getTitle());
-        holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor());
+        holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor(context));
+
+        holder.time.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+        holder.timeClockImage.setImageResource(R.drawable.ic_access_time_white_24dp);
+
+        RelativeLayout.LayoutParams paramsTimeContainer =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramsTimeContainer.removeRule(RelativeLayout.BELOW);
+        paramsTimeContainer.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.rlImageContainer);
+        holder.timeContainer.setLayoutParams(paramsTimeContainer);
+
+        RelativeLayout.LayoutParams params =
+                new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        // WITHOUT EMBEDDED IMAGE BUT PROFILE IMAGE IN BG: TODO
+        //if(currentItem.getProfilePictureUrl() == null && currentItem.getProfilePictureHDUrl() == null) {
+        //    params.addRule(RelativeLayout.ALIGN_BOTTOM, R.id.rlImageContainer);
+        //    params.addRule(RelativeLayout.ALIGN_TOP, R.id.rlImageContainer);
+        //    params.removeRule(RelativeLayout.BELOW);
+        //      holder.wideImage.setVisibility(VISIBLE);
+        //      holder.wideImage.setImageDrawable(null);
+
+        // WITHOUT ANY IMAGE
+        if(currentItem.getThumbnailUrl() == null && currentItem.getThumbnailHDUrl() == null) {
+            params.removeRule(RelativeLayout.ALIGN_TOP);
+            params.removeRule(RelativeLayout.ALIGN_BOTTOM);
+            params.addRule(RelativeLayout.BELOW, R.id.rlHeadlineContainer);
+            holder.wideImage.setVisibility(GONE);
+            holder.wideImage.setImageDrawable(null);
+            holder.time.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+            holder.timeClockImage.setImageResource(R.drawable.ic_access_time_black_24dp);
+            RelativeLayout.LayoutParams paramsTimeContainerChange =
+                    new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT);
+            paramsTimeContainerChange.addRule(RelativeLayout.BELOW, R.id.rlExpandableContainer);
+            paramsTimeContainerChange.removeRule(RelativeLayout.ALIGN_BOTTOM);
+            holder.timeContainer.setLayoutParams(paramsTimeContainerChange);
+        } else {
+        //WITH EMBEDDED IMAGE:
+            params.removeRule(RelativeLayout.ALIGN_TOP);
+            params.removeRule(RelativeLayout.ALIGN_BOTTOM);
+            params.addRule(RelativeLayout.BELOW, R.id.rlImageContainer);
+            holder.wideImage.setVisibility(VISIBLE);
+            holder.wideImage.setImageDrawable(null);
+        }
+        // apply RULES
+        holder.descriptionContainer.setLayoutParams(params);
+
 
         // Setup default visibilities as you never can trust the view holder
         holder.line.setVisibility(GONE);
@@ -67,33 +118,74 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         holder.btnExpand.setVisibility(GONE);
         holder.descriptionContainer.setVisibility(VISIBLE);
         holder.expandableContainer.setVisibility(GONE);
-        holder.description.setVisibility(VISIBLE);
-        holder.wideImage.setVisibility(VISIBLE);
-        holder.wideImage.setImageDrawable(null);
+        holder.expandedDescription.setVisibility(VISIBLE);
         holder.text.setVisibility(GONE);
 
-        if (currentType == PIETCAST) {
-            // Pietcast: Setup placeholder thumbnail, text in expandable description,
-            holder.wideImage.setVisibility(VISIBLE);
+        int resPostTypeImage;
 
-            Glide.with(context)
-                    .load(R.drawable.pietcast_placeholder)
-                    .centerCrop()
-                    .crossFade()
-                    .into(holder.wideImage);
-
+        switch (currentType) {
+            case PIETCAST:
+                resPostTypeImage = R.drawable.ic_radio_white_24dp;
+                Glide.with(context)
+                        .load(R.drawable.pietcast_placeholder)
+                        .centerCrop()
+                        .crossFade()
+                        .into(holder.wideImage);
+                break;
+            case UPLOADPLAN:
+                resPostTypeImage = R.drawable.ic_assignment_white_24dp;
+                break;
+            case NEWS:
+                resPostTypeImage = R.drawable.ic_rss_feed_white_24dp;
+                break;
+            case PS_VIDEO:
+                resPostTypeImage = R.drawable.ic_ondemand_video_white_24dp;
+                holder.wideImage.setVisibility(GONE);
+                break;
+            case YOUTUBE:
+                resPostTypeImage = R.drawable.ic_youtube_light_logo;
+                setupImageViews(holder.wideImage, currentItem, holder);
+                break;
+            case TWITTER:
+                resPostTypeImage = R.drawable.ic_twitter_social_icon_circle_white_24dp;
+                holder.line.setVisibility(VISIBLE);
+                holder.username.setVisibility(VISIBLE);
+                holder.username.setText("@" + currentItem.getTitle()); //// TODO: 23.04.2017
+                setupImageViews(holder.wideImage, currentItem, holder);
+                // Setup text for social media
+                if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+                    holder.text.setVisibility(VISIBLE);
+                    holder.text.setText(Html.fromHtml(currentItem.getDescription()));
+                }
+                break;
+            case FACEBOOK:
+                resPostTypeImage = R.drawable.ic_facebook_white;
+                setupImageViews(holder.wideImage, currentItem, holder);
+                // Setup text for social media
+                if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
+                    holder.text.setVisibility(VISIBLE);
+                    holder.text.setText(Html.fromHtml(currentItem.getDescription()));
+                }
+                break;
+            default:
+                resPostTypeImage = R.drawable.ic_radio_white_24dp;
         }
+
+        holder.postTypeLogo.setImageResource(resPostTypeImage);
+
+
         // Setup expand container and description
         if (currentType == UPLOADPLAN || currentType == NEWS || currentType == PIETCAST) {
             if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
-                holder.description.setText(Html.fromHtml(currentItem.getDescription()));
+                holder.expandedDescription.setText(Html.fromHtml(currentItem.getDescription()));
             } else {
-                holder.description.setVisibility(GONE);
+                holder.expandedDescription.setVisibility(GONE);
             }
-            if(currentType != PIETCAST) holder.wideImage.setVisibility(GONE);
+
             holder.descriptionContainer.setVisibility(GONE);
             holder.btnExpand.setVisibility(VISIBLE);
             holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+
             holder.btnExpand.setOnClickListener(view -> {
                 if (holder.expandableContainer.getVisibility() == GONE) {
                     holder.expandableContainer.setVisibility(VISIBLE);
@@ -103,29 +195,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
                     view.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
                 }
             });
-        } else if (currentType == PS_VIDEO || currentType == YOUTUBE) {
-            // Youtube: Setup video thumbnails
-            setupImageViews(holder.wideImage, currentItem, holder);
-        } else if (currentType == TWITTER || currentType == FACEBOOK) {
-            // Social media: Setup wide image
-            setupImageViews(holder.wideImage, currentItem, holder);
-
-            // Setup text for social media
-            if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
-                holder.text.setVisibility(VISIBLE);
-                holder.text.setText(Html.fromHtml(currentItem.getDescription()));
-            }
         }
-        if( currentType == TWITTER ) {
-            holder.postTypeLogo.setImageResource(R.drawable.ic_twitter_social_icon_circle_white_24dp);
-            holder.line.setVisibility(VISIBLE);
-            holder.username.setVisibility(VISIBLE);
-            holder.username.setText("@JayPietsmiet"); //todo
-        }
-        if(currentType == FACEBOOK) {
-            holder.postTypeLogo.setImageResource(R.drawable.ic_facebook_white);
-        }
-
 
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {

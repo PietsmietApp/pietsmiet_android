@@ -16,11 +16,14 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
     public final TextView title;
     public final TextView text;
     public final TextView time;
-    public final TextView description;
+    public final ImageView timeClockImage;
+    public final TextView expandedDescription;
     public final ImageView wideImage;
     public final RelativeLayout headlineContainer;
     public final RelativeLayout descriptionContainer;
     public final RelativeLayout expandableContainer;
+    public final RelativeLayout bottomContainer;
+    public final RelativeLayout timeContainer;
     public final TextView line;
     public final TextView username;
     public final Button btnExpand;
@@ -31,7 +34,7 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
         cv = (CardView) itemView.findViewById(R.id.cv);
         title = (TextView) itemView.findViewById(R.id.tvTitle);
         text = (TextView) itemView.findViewById(R.id.tvText);
-        description = (TextView) itemView.findViewById(R.id.tvDescription);
+        expandedDescription = (TextView) itemView.findViewById(R.id.tvExpandedDescription);
         time = (TextView) itemView.findViewById(R.id.tvDateTime);
         wideImage = (ImageView) itemView.findViewById(R.id.ivWideImage);
         btnExpand = (Button) itemView.findViewById(R.id.btnExpand);
@@ -41,5 +44,8 @@ public class CardViewHolder extends RecyclerView.ViewHolder {
         line = (TextView) itemView.findViewById(R.id.tvLine);
         username = (TextView) itemView.findViewById(R.id.tvUsername);
         postTypeLogo = (ImageView) itemView.findViewById(R.id.ivPostTypeLogo);
+        bottomContainer = (RelativeLayout) itemView.findViewById(R.id.rlBottomContainer);
+        timeClockImage = (ImageView) itemView.findViewById(R.id.ivTimeIcon);
+        timeContainer = (RelativeLayout) itemView.findViewById(R.id.rlTimeContainer);
     }
 }

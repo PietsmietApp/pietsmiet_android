@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginEnd="4dp"
     android:layout_marginStart="4dp"
-    card_view:cardCornerRadius="6dp"
+    card_view:cardCornerRadius="4dp"
     card_view:cardElevation="2dp"
     card_view:cardUseCompatPadding="true">
 
@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/twitter"
-            android:elevation="4dp">
+            android:elevation="2dp">
 
             <RelativeLayout
                 android:id="@+id/rlTitleContainer"
@@ -36,9 +36,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="false"
                     android:layout_alignParentTop="true"
-                    android:layout_marginBottom="18dp"
-                    android:layout_marginLeft="18dp"
-                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="15dp"
                     android:text="Jay"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@android:color/white"
@@ -72,15 +72,15 @@
                     android:textColor="@color/username_twitter_light"
                     android:textSize="12dp" />
             </RelativeLayout>
+
             <ImageView
                 android:id="@+id/ivPostTypeLogo"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="18dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="18dp"
+                android:layout_marginRight="15dp"
                 android:scaleType="fitCenter"
                 card_view:srcCompat="@drawable/ic_twitter_social_icon_circle_white_24dp" />
         </RelativeLayout>
@@ -98,44 +98,43 @@
                 android:layout_alignParentStart="true"
                 android:contentDescription="Thumbnail of the post" />
 
-            <RelativeLayout
-                android:id="@+id/rlTimeContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/ivWideImage"
-                android:layout_alignParentStart="true">
-
-                <ImageView
-                    android:id="@+id/ivTimeIcon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="15dp"
-                    android:src="@drawable/ic_access_time_white_24dp" />
-
-                <TextView
-                    android:id="@+id/tvDateTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@+id/ivTimeIcon"
-                    android:text="1 h"
-                    android:textColor="@android:color/white"
-                    android:textSize="17dp" />
-            </RelativeLayout>
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/rlTimeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/rlImageContainer"
+            android:layout_alignParentStart="false">
+
+            <ImageView
+                android:id="@+id/ivTimeIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_access_time_white_24dp" />
+
+            <TextView
+                android:id="@+id/tvDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_toEndOf="@+id/ivTimeIcon"
+                android:text="1 h"
+                android:textColor="@android:color/white"
+                android:textSize="17dp" />
+        </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rlDescriptionContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/rlDescriptionContainer"
-            android:layout_below="@id/rlImageContainer"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/rlImageContainer"
             android:paddingEnd="16dp"
             android:paddingStart="16dp">
 
@@ -145,6 +144,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:layout_marginTop="16dp"
                 android:autoLink="web"
                 android:linksClickable="false"
@@ -164,11 +164,12 @@
             android:visibility="visible">
 
             <TextView
-                android:id="@+id/tvDescription"
+                android:id="@+id/tvExpandedDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
+                android:layout_marginBottom="4dp"
                 android:layout_marginTop="10dp"
                 android:text="Der erste Podcast nach unserer Pause und es gab super viel zu bereden. Wir haben über unseren Urlaub gesprochen. Darüber wie wir mit Hate und Flame umgehen. Warum Produktplatzierungen existieren und warum wir sie machen. Warum Maschinenbau ein geiler Studiengang ist und zu guter Letzt welche 5 Personen auf einer Non-Cheat Liste stehen würden. Ihr wisst nicht was das ist! Dauer: 2:50 Stunden"
                 android:textColorLink="@color/colorSecondary" />
@@ -176,7 +177,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/rlMessageContainer"
+            android:id="@+id/rlBottomContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="false"

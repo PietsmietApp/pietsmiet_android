@@ -9,12 +9,12 @@
         <menu>
             <item
                 android:id="@+id/nav_video_yt"
-                android:icon="@drawable/ic_subscriptions_black_24dp"
+                android:icon="@drawable/ic_youtube_light_logo"
                 android:title="@string/type_youtube"
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_video_ps"
-                android:icon="@drawable/ic_ondemand_video_black_24dp"
+                android:icon="@drawable/ic_ondemand_video_white_24dp"
                 android:title="@string/type_video_ps"
                 app:actionLayout="@layout/widget_switch"/>
             <item
@@ -24,22 +24,22 @@
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_twitter"
-                android:icon="@drawable/ic_twitter_social_icon_circle_white_24dp"
+                android:icon="@drawable/ic_twitter_social_square_white"
                 android:title="@string/type_twitter"
                 app:actionLayout="@layout/widget_switch" />
             <item
                 android:id="@+id/nav_upload_plan"
-                android:icon="@drawable/ic_assignment_black_24dp"
+                android:icon="@drawable/ic_assignment_white_24dp"
                 android:title="@string/type_uploadplan"
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_ps_news"
-                android:icon="@drawable/ic_rss_feed_black_24dp"
+                android:icon="@drawable/ic_rss_feed_white_24dp"
                 android:title="@string/type_news"
                 app:actionLayout="@layout/widget_switch" />
             <item
                 android:id="@+id/nav_pietcast"
-                android:icon="@drawable/ic_radio_black_24dp"
+                android:icon="@drawable/ic_radio_white_24dp"
                 android:title="@string/type_pietcast"
                 app:actionLayout="@layout/widget_switch" />
         </menu>
@@ -60,7 +60,6 @@
                 android:id="@+id/nav_help"
                 android:icon="@drawable/ic_help_black_24dp"
                 android:title="@string/drawer_support"/>
-
 
         </menu>
     </item>

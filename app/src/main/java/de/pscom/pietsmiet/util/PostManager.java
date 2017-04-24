@@ -1,7 +1,9 @@
 package de.pscom.pietsmiet.util;
 
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.generic.DateTag;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.presenter.FacebookPresenter;
 import de.pscom.pietsmiet.presenter.FirebasePresenter;
 import de.pscom.pietsmiet.presenter.TwitterPresenter;
@@ -17,6 +21,8 @@ import de.pscom.pietsmiet.presenter.YoutubePresenter;
 import rx.Observable;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -34,7 +40,7 @@ public class PostManager {
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
-    private List<Post> allPosts = new ArrayList<>();
+    private List<ViewItem> allPosts = new ArrayList<>();
 
     private int postLoadCount = 15;
 
@@ -53,8 +59,9 @@ public class PostManager {
 
     @SuppressWarnings("WeakerAccess")
     public void addPosts(List<Post> posts) {
-        List<Post> lposts = new ArrayList<>();
+        List<ViewItem> lposts = new ArrayList<>();
         lposts.addAll(posts);
+        final Date lastPostDate = getLastPostDate();
         subAddingPosts = Observable.just(lposts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -63,14 +70,35 @@ public class PostManager {
                     return list;
                 })
                 .distinct()
-                .filter((post) -> SettingsHelper.getSettingsValueForType(post.getPostType()))
-                .doOnNext(post -> {
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getId() < post.getId()))
-                        TwitterPresenter.firstTweet = post;
-                    if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getId() > post.getId()))
-                        TwitterPresenter.lastTweet = post;
+                .filter((post) -> {
+                    if(post.getType() == ViewItem.TYPE_POST) {
+                        return SettingsHelper.getSettingsValueForType(((Post) post).getPostType()); // todo rename
+                    }
+                    return true;
+                })
+                .doOnNext(post_ -> {
+                    if (post_.getType() == ViewItem.TYPE_POST) {
+                        Post post = (Post) post_;
+                        if (post.getPostType() == TWITTER && (TwitterPresenter.firstTweet == null || TwitterPresenter.firstTweet.getId() < post.getId()))
+                            TwitterPresenter.firstTweet = post;
+                        if (post.getPostType() == TWITTER && (TwitterPresenter.lastTweet == null || TwitterPresenter.lastTweet.getId() > post.getId()))
+                            TwitterPresenter.lastTweet = post;
+                    }
                 })
                 .toSortedList()
+                .map(list -> {
+                    List<ViewItem> listV = new ArrayList<>();
+                    listV.addAll(list);
+                    Date lastPostDate_ = lastPostDate;
+                    for(ViewItem vi: listV) {
+                        if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
+                            if (!new SimpleDateFormat("dd").format(vi.getDate()).equals(new SimpleDateFormat("dd").format(lastPostDate_)))
+                                list.add(list.indexOf(vi), new DateTag(vi.getDate()));
+                            lastPostDate_ = vi.getDate();
+                        }
+                    }
+                    return list;
+                })
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
@@ -88,12 +116,37 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
+        final Date lastPostDate = getLastPostDate();
         subUpdatePosts = Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter((post) -> SettingsHelper.getSettingsValueForType(post.getPostType()))
+                .filter(new Func1<ViewItem, Boolean>() {
+                    Date lastPostDate;
+                    @Override
+                    public Boolean call(ViewItem post) {
+
+                        if (post.getType() == ViewItem.TYPE_POST) {
+                            lastPostDate = post.getDate();
+                            return SettingsHelper.getSettingsValueForType(((Post) post).getPostType());
+                        }
+                        return false;
+                    }
+                })
                 .toList()
+                .map(list -> {
+                    List<ViewItem> listV = new ArrayList<>();
+                    listV.addAll(list);
+                    Date lastPostDate_ = lastPostDate;
+                    for(ViewItem vi: listV) {
+                        if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
+                            if (!new SimpleDateFormat("dd").format(vi.getDate()).equals(new SimpleDateFormat("dd").format(lastPostDate_)))
+                                list.add(list.indexOf(vi), new DateTag(vi.getDate()));
+                            lastPostDate_ = vi.getDate();
+                        }
+                    }
+                    return list;
+                })
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
@@ -123,8 +176,29 @@ public class PostManager {
      *
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
-    public List<Post> getPostsToDisplay() {
+    public List<ViewItem> getPostsToDisplay() {
         return allPosts;
+    }
+
+    @Nullable
+    private Post getFirstPost() {
+        if (!allPosts.isEmpty()) {
+            for (ViewItem vi : allPosts) {
+                if(vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    private Post getLastPost() {
+        Post lastPost = null;
+        if (!allPosts.isEmpty()) {
+            for (ViewItem vi : allPosts) {
+                if(vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
+            }
+        }
+        return lastPost;
     }
 
     /**
@@ -135,11 +209,8 @@ public class PostManager {
      * @return Date
      */
     private Date getFirstPostDate() {
-        if (allPosts.isEmpty()) {
-            return new Date(new Date().getTime() - 864000000);
-        } else {
-            return allPosts.get(0).getDate();
-        }
+        Post p = getFirstPost();
+        return (p == null) ? new Date(new Date().getTime() - 864000000) : p.getDate();
     }
 
     /**
@@ -149,11 +220,8 @@ public class PostManager {
      * @return Date
      */
     private Date getLastPostDate() {
-        if (allPosts.isEmpty()) {
-            return new Date();
-        } else {
-            return allPosts.get(allPosts.size() - 1).getDate();
-        }
+        Post lPost = getLastPost();
+        return (lPost == null) ? new Date() : lPost.getDate();
     }
 
     /**
@@ -293,22 +361,27 @@ public class PostManager {
      * @return boolean shouldFilter
      */
     private boolean filterWrongPosts(Post post) {
+
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                Post lPost = getLastPost();
+
+                if(lPost != null) PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        " letzter (ältester) Post " + ((!allPosts.isEmpty()) ? allPosts.get(allPosts.size() - 1).getTitle() : "") + " Datum: " + getLastPostDate());
+                        " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + getLastPostDate());
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                Post firstPost = getFirstPost();
+
+                if(firstPost != null) PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        "\n letzter (neuster) Post " + ((!allPosts.isEmpty()) ? allPosts.get(0).getTitle() : "") + " Datum: " + getFirstPostDate());
+                        "\n letzter (neuster) Post " + getFirstPost().getTitle() + " Datum: " + getFirstPostDate());
             }
         }
         return shouldFilter;

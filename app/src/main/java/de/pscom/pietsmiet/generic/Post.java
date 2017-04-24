@@ -1,7 +1,6 @@
 package de.pscom.pietsmiet.generic;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,7 +20,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
-public class Post implements Comparable<Post> {
+public class Post extends ViewItem {
     @Nullable
     private String description;
     private String title;
@@ -36,13 +35,13 @@ public class Post implements Comparable<Post> {
     private String username;
     
     private long api_ID;
-    private Date datetime;
     private int duration;
     private String url;
     private boolean isThumbnailHD = false;
 
     //todo remove bad getter / setter methods -> Performance
     private Post(PostBuilder builder) {
+        super(ViewItem.TYPE_POST);
         description = builder.description;
         title = builder.title;
         postType = builder.postType;
@@ -80,10 +79,6 @@ public class Post implements Comparable<Post> {
 
     public int getPostType() {
         return postType;
-    }
-
-    public Date getDate() {
-        return datetime;
     }
 
     @Nullable
@@ -137,11 +132,6 @@ public class Post implements Comparable<Post> {
                 break;
         }
         return hexColor;
-    }
-
-    @Override
-    public int compareTo(@NonNull Post item) {
-        return item.getDate().compareTo(this.getDate());
     }
 
     @Override

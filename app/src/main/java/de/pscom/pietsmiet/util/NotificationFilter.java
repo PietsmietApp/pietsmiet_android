@@ -22,12 +22,27 @@ public class NotificationFilter {
      */
     public boolean contains(String content, String filter)
     {
+        /*
+         * .toLowerCase() because contains does not have the ability to ignore the case
+         */
         content = content.toLowerCase();
+        /*
+         * same argument here
+         */
         String[] filters = filter.toLowerCase().split(",");
+        /*
+         * check if any filter applied
+         */
         for (String current : filters) {
+            /*
+             * if filter matches, return true
+             */
             if(content.contains(current))
                 return true;
         }
+        /*
+         * no filter matches, return false
+         */
         return false;
     }
 

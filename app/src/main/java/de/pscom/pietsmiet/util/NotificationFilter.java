@@ -20,7 +20,7 @@ public class NotificationFilter {
      * @param filter The filters to check
      * @return Whether or not the filter applies to the content
      */
-    public boolean contains(String content, String filter)
+    public static boolean contains(String content, String filter)
     {
         /*
          * .toLowerCase() because contains does not have the ability to ignore the case

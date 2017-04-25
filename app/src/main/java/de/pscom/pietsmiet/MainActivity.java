@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
@@ -73,6 +74,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
         if (PostType.getDrawerIdForType(category) != -1) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
+            FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
             postManager.displayOnlyType(category);
         }
@@ -109,6 +113,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (BuildConfig.DEBUG) {
             FirebaseMessaging.getInstance().subscribeToTopic("test");
+            FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false);
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic("test");
         }

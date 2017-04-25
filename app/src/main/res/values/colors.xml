@@ -12,4 +12,6 @@
     <color name="facebook">#3b5998</color>
     <color name="feed_background_light">#DDDDDD</color>
     <color name="username_twitter_light">#b8e2fa</color>
+
+    <color name="date_tag_text">#757575</color>
 </resources>

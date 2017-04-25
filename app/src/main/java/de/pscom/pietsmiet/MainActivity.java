@@ -319,7 +319,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
                         if (id == item.getItemId()) {
                             aSwitch.setChecked(true);
-                            //postManager.displayOnlyType(i);
                             recyclerView.scrollToPosition(0);
                         } else aSwitch.setChecked(false);
                     }

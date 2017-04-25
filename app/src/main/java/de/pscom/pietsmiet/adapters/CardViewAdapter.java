@@ -66,15 +66,16 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder_, int position) {
+        // Don't use int position to avoid crashes!
         if(holder_ == null) return;
         switch (holder_.getItemViewType()) {
             case ViewItem.TYPE_DATE_TAG:
                 DateTagCardViewHolder dtcvHolder = (DateTagCardViewHolder) holder_;
-                dtcvHolder.tvDate.setText(new SimpleDateFormat ("dd. MMMM yyyy", Locale.getDefault()).format(items.get(position).getDate()));
+                dtcvHolder.tvDate.setText(new SimpleDateFormat ("dd. MMMM yyyy", Locale.getDefault()).format(items.get(holder_.getAdapterPosition()).getDate()));
                 break;
             case ViewItem.TYPE_POST:
                 CardViewHolder holder = (CardViewHolder) holder_;
-                Post currentItem = (Post) items.get(position);
+                Post currentItem = (Post) items.get(holder.getAdapterPosition());
                 @AllTypes int currentType = currentItem.getPostType();
 
                 // Set basic information (title, time, color)

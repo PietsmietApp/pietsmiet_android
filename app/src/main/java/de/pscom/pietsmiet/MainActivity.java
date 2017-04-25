@@ -38,6 +38,8 @@ import rx.android.schedulers.AndroidSchedulers;
 
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
+import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
@@ -78,12 +80,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
             FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
-            postManager.displayOnlyType(category);
         }
 
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(() -> postManager.fetchNewPosts());
-        refreshLayout.setProgressViewOffset(false, -130, 80); //fixme can't be the right solution
+        refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
@@ -141,8 +142,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         new SecretConstants(this);
 
-        reloadTwitchBanner();
-
         new DatabaseHelper(this).displayPostsFromCache(this);
 
         if (BuildConfig.DEBUG) {
@@ -188,7 +187,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         SettingsHelper.loadAllSettings(this);
         // Update adapter to refresh times
         updateAdapter();
-        reloadTwitchBanner();
     }
 
     private void setupRecyclerView() {
@@ -218,13 +216,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
 
         for (Integer item : PostType.getPossibleTypes()) {
-            // Iterate through every menu item and save it's state in a map
+            // Iterate through every menu item and save it's state
             if (mNavigationView != null) {
                 Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
                 checker.setOnCheckedChangeListener((view, check) -> {
                     if (check)
-                        CLEAR_CACHE_FLAG = true; //todo improve if for example a user jsut switched on off on -> dont clear cache
+                        CLEAR_CACHE_FLAG = true; //todo improve if for example a user just switched on off on -> dont clear cache
                     SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
                 });
             }
@@ -235,13 +233,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                SettingsHelper.loadAllSettings(getBaseContext());
+                SettingsHelper.loadAllSettings(getBaseContext()); //todo too much everytime?
                 if (CLEAR_CACHE_FLAG) {
                     clearCache();
                     CLEAR_CACHE_FLAG = false;
                 } else {
                     postManager.updateCurrentPosts();
-                    scrollListener.resetState(); //todo check
+                    scrollListener.resetState();
                 }
             }
 
@@ -308,14 +306,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.nav_ps_news:
             case R.id.nav_video_ps:
             case R.id.nav_video_yt:
-                for (int i : getPossibleTypes()) {
-                    int id = getDrawerIdForType(i);
-                    Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
-                    if (id == item.getItemId()) {
+                if(((Switch)item.getActionView()).isChecked() && isOnlyType(getTypeForDrawerId(item.getItemId()))) {
+                    for(int z : getPossibleTypes()) {
+                        int id = getDrawerIdForType(z);
+                        Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
                         aSwitch.setChecked(true);
-                        postManager.displayOnlyType(i);
                         recyclerView.scrollToPosition(0);
-                    } else aSwitch.setChecked(false);
+                    }
+                } else {
+                    for (int i : getPossibleTypes()) {
+                        int id = getDrawerIdForType(i);
+                        Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
+                        if (id == item.getItemId()) {
+                            aSwitch.setChecked(true);
+                            //postManager.displayOnlyType(i);
+                            recyclerView.scrollToPosition(0);
+                        } else aSwitch.setChecked(false);
+                    }
                 }
                 break;
             case R.id.nav_feedback:

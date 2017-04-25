@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.util;
 
 import android.content.Context;
 
+import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETCAST;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSMIET_NEWS;
@@ -108,6 +109,13 @@ public class SettingsHelper {
             default:
                 return true;
         }
+    }
+
+    public static boolean isOnlyType(@PostType.AllTypes int type) {
+        for(int i : getPossibleTypes()) {
+            if(getSettingsValueForType(i) && i != type) return false;
+        }
+        return true;
     }
 
 }

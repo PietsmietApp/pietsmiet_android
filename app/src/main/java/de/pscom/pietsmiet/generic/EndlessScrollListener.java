@@ -5,6 +5,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
+import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.util.NetworkUtil;
+
 /*
  * Source/Inspiration: https://github.com/codepath/android_guides/wiki/Endless-Scrolling-with-AdapterViews-and-RecyclerView
  */
@@ -12,9 +15,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
 
-    public static final int LOAD_MORE_ITEMS_COUNT = 15;
-    RecyclerView.LayoutManager mLayoutManager;
+    protected static final int LOAD_MORE_ITEMS_COUNT = 15;
+    private RecyclerView.LayoutManager mLayoutManager;
 
+    private boolean FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     private int visibleThreshold = 10;
@@ -37,7 +41,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }
 
-    public int getLastVisibleItem(int[] lastVisibleItemPositions) {
+    private int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
         for (int i = 0; i < lastVisibleItemPositions.length; i++) {
             if (i == 0) {
@@ -88,8 +92,16 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-            onLoadMore(totalItemCount, view);
-            loading = true;
+            if(NetworkUtil.isConnected(view.getContext())) {
+                onLoadMore(totalItemCount, view);
+                loading = true;
+                FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
+            } else {
+                if(!FLAG_SHOWED_NO_NETWORK_MESSAGE){
+                    ((MainActivity) view.getContext()).showSnackbar("Keine Netzwerkverbindung");
+                    FLAG_SHOWED_NO_NETWORK_MESSAGE = true;
+                }
+            }
         }
     }
 

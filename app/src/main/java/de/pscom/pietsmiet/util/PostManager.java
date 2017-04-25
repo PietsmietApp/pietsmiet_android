@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -21,8 +22,6 @@ import de.pscom.pietsmiet.presenter.YoutubePresenter;
 import rx.Observable;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.AllTypes;
@@ -61,21 +60,16 @@ public class PostManager {
     public void addPosts(List<Post> posts) {
         List<ViewItem> lposts = new ArrayList<>();
         lposts.addAll(posts);
-        final Date lastPostDate = getLastPostDate();
+        final Date lastPostDate = getLastPostDate(); // todo fix for fetchNewPosts()
         subAddingPosts = Observable.just(lposts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMapIterable(list -> {
-                    list.addAll(allPosts);
+                    list.addAll(allPosts); // todo check if this is useful, after all checks (CPU cost)
                     return list;
                 })
                 .distinct()
-                .filter((post) -> {
-                    if(post.getType() == ViewItem.TYPE_POST) {
-                        return SettingsHelper.getSettingsValueForType(((Post) post).getPostType()); // todo rename
-                    }
-                    return true;
-                })
+                .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .doOnNext(post_ -> {
                     if (post_.getType() == ViewItem.TYPE_POST) {
                         Post post = (Post) post_;
@@ -92,7 +86,7 @@ public class PostManager {
                     Date lastPostDate_ = lastPostDate;
                     for(ViewItem vi: listV) {
                         if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
-                            if (!new SimpleDateFormat("dd").format(vi.getDate()).equals(new SimpleDateFormat("dd").format(lastPostDate_)))
+                            if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))
                                 list.add(list.indexOf(vi), new DateTag(vi.getDate()));
                             lastPostDate_ = vi.getDate();
                         }
@@ -101,10 +95,8 @@ public class PostManager {
                 })
                 .subscribe(list -> {
                     allPosts.clear();
-                    allPosts.addAll(list);
-                }, (throwable) -> {
-                    PsLog.e("Couldn't update all posts!", throwable);
-                }, () -> {
+                    allPosts.addAll(list); //todo unefficient see above
+                }, (throwable) -> PsLog.e("Couldn't update all posts!", throwable), () -> {
                     if (mView != null) mView.updateAdapter();
                 });
     }
@@ -116,23 +108,12 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        final Date lastPostDate = getLastPostDate();
+        final Date lastPostDate = getFirstPostDate();
         subUpdatePosts = Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter(new Func1<ViewItem, Boolean>() {
-                    Date lastPostDate;
-                    @Override
-                    public Boolean call(ViewItem post) {
-
-                        if (post.getType() == ViewItem.TYPE_POST) {
-                            lastPostDate = post.getDate();
-                            return SettingsHelper.getSettingsValueForType(((Post) post).getPostType());
-                        }
-                        return false;
-                    }
-                })
+                .filter((ViewItem post) -> post.getType() == ViewItem.TYPE_POST && SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .toList()
                 .map(list -> {
                     List<ViewItem> listV = new ArrayList<>();
@@ -140,7 +121,7 @@ public class PostManager {
                     Date lastPostDate_ = lastPostDate;
                     for(ViewItem vi: listV) {
                         if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
-                            if (!new SimpleDateFormat("dd").format(vi.getDate()).equals(new SimpleDateFormat("dd").format(lastPostDate_)))
+                            if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))
                                 list.add(list.indexOf(vi), new DateTag(vi.getDate()));
                             lastPostDate_ = vi.getDate();
                         }
@@ -233,6 +214,7 @@ public class PostManager {
         if (!NetworkUtil.isConnected(mView)) {
             mView.showSnackbar("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
+            mView.scrollListener.resetState();
             return;
         }
         FETCH_DIRECTION_DOWN = true;
@@ -261,7 +243,6 @@ public class PostManager {
         if (!NetworkUtil.isConnected(mView)) {
             mView.showSnackbar("Keine Netzwerkverbindung");
             mView.setRefreshAnim(false);
-            //todo does this fix the unable to reload ? What about safety? scrollListener is now public -> Performance
             mView.scrollListener.resetState();
             return;
         }
@@ -349,6 +330,7 @@ public class PostManager {
         TwitterPresenter.lastTweet = null;
         TwitterPresenter.firstTweet = null;
         updateCurrentPosts();
+        mView.scrollListener.resetState();
     }
 
     /**

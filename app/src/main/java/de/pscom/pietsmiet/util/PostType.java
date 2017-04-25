@@ -82,6 +82,27 @@ public class PostType {
         }
     }
 
+    public static int getTypeForDrawerId(int dId) {
+        switch (dId) {
+            case R.id.nav_video_ps:
+                return PS_VIDEO;
+            case R.id.nav_video_yt:
+                return YOUTUBE;
+            case R.id.nav_pietcast:
+                return PIETCAST;
+            case R.id.nav_twitter:
+                return TWITTER;
+            case R.id.nav_facebook:
+                return FACEBOOK;
+            case R.id.nav_upload_plan:
+                return UPLOADPLAN;
+            case R.id.nav_ps_news:
+                return NEWS;
+            default:
+                return -1;
+        }
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PIETCAST, UPLOADPLAN, FACEBOOK, TWITTER, PS_VIDEO, NEWS, YOUTUBE})
     public @interface AllTypes {

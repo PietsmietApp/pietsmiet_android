@@ -8,10 +8,10 @@
     <string name="drawer_filter">Filter</string>
     <string name="drawer_pietstream_banner">Pietstream</string>
 
-    <string name="about_text"><b><i>Developed by</i></b>\n     l3d00m and saibotk (tkindanight)\n
-        \n<b><i>UI/UX Design by</i></b>\n     Argus
-        \n\n<b><i>Source Code:</i></b> \n https://github.com/l3d00m/pietsmiet_android/
-        \n \nCreated with &lt;3</string>
+    <string name="about_text"><b><i>Entwickelt von</i></b>\n     l3d00m und saibotk (tkindanight)\n
+        \n<b><i>UI/UX Design von</i></b>\n     Argus
+        \n\n<b><i>Quellcode:</i></b> \n https://github.com/l3d00m/pietsmiet_android/
+        \n \nErstellt mit &lt;3</string>
 
     <string name="time_just_now">Gerade eben</string>
     <string name="time_days_short">%d d</string>
@@ -28,10 +28,9 @@
 
     <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
     <string name="settings_header_others">Sonstige Einstellungen</string>
-    <string name="settings_clear_cache">Clear Cache</string>
+    <string name="settings_clear_cache">Cache löschen</string>
     <string name="settings_header_quality">Qualität</string>
     <string name="settings_source_video">Quelle für Videos:</string>
-    <string name="other_coming_soon">Coming soon</string>
     <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
     <string name="drawer_video_ps">PS.de Videos</string>
 

@@ -112,37 +112,11 @@
                 android:layout_marginTop="10dp"
                 android:entries="@array/qualityHDImagesSpinnerItems_array" />
 
-            <TextView
-                android:id="@+id/sectionOthers"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/qualityLoadHDImagesSpinner"
-                android:paddingBottom="8dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:text="@string/settings_header_others"
-                android:textColor="?attr/colorAccent"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvComingSoon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/sectionOthers"
-                android:paddingStart="16dp"
-                android:text="@string/other_coming_soon"
-                android:theme="@style/AppTheme" />
-
             <Button
                 android:id="@+id/btnClearCache"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tvComingSoon"
+                android:layout_below="@id/qualityLoadHDImagesSpinner"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:gravity="center"

@@ -24,13 +24,11 @@ import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.AllTypes;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 
 public class PostManager {
     private static boolean FETCH_DIRECTION_DOWN = false;
@@ -114,22 +112,6 @@ public class PostManager {
                 }, throwable -> PsLog.e("Couldn't update current posts: ", throwable), () -> {
                     if (mView != null) mView.updateAdapter();
                 });
-    }
-
-    /**
-     * Sets the allowedTypes only to the received postType, to display just one category.
-     *
-     * @param postType Type to display
-     */
-    public void displayOnlyType(@AllTypes int postType) {
-        for (int type : getPossibleTypes()) {
-            if (type == postType)
-                SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), true);
-            else
-                SharedPreferenceHelper.setSharedPreferenceBoolean(mView, SettingsHelper.getSharedPreferenceKeyForType(type), false);
-        }
-        SettingsHelper.loadAllSettings(mView);
-        updateCurrentPosts();
     }
 
     /**

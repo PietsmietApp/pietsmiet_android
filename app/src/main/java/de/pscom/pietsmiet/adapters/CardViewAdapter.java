@@ -198,7 +198,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         holder.btnExpand.setVisibility(VISIBLE);
 
                         if (SettingsHelper.isOnlyType(currentItem.getPostType())) {
-                            holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                            holder.btnExpand.setVisibility(GONE);
                             holder.expandableContainer.setVisibility(VISIBLE);
                         } else {
                             holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));

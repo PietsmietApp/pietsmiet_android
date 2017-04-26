@@ -15,7 +15,7 @@
             <item
                 android:id="@+id/nav_video_ps"
                 android:icon="@drawable/ic_ondemand_video_white_24dp"
-                android:title="@string/type_video_ps"
+                android:title="@string/drawer_video_ps"
                 app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_facebook"

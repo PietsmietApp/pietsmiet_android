@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
+import de.pscom.pietsmiet.presenter.FirebasePresenter;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;

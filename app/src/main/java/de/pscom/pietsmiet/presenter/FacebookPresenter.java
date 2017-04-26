@@ -26,18 +26,33 @@ import rx.schedulers.Schedulers;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
 public class FacebookPresenter extends MainPresenter {
+
+    private static final String strNoFacebookSecretOrTokenSpecified = "No facebook secret or token specified";
+    private static final String strGraphDotFacebookDotCom = "https://graph.facebook.com";
+    private static final String strData = "data";
+    private static final String strKonntePostNichtParsen = "Konnte post nicht parsen";
+    private static final String strCouldntLoadFacebook = "Couldn't load Facebook";
+    private static final String strFacebookKonnteNichtGeladenWerden = "Facebook konnte nicht geladen werden";
+    private static final String strFrom = "from";
+    private static final String strName = "name";
+    private static final String strMessage = "message";
+    private static final String strCreatedTime = "created_time";
+    private static final String strSimpleDateFormat = "yyyy-MM-dd'T'HH:mm:ssZ";
+    private static final String strId = "id";
+    private static final String strWwwDotFacebookDotCom = "http://www.facebook.com/";
+
     FacebookApiInterface apiInterface;
 
     public FacebookPresenter(MainActivity view) {
         super(view);
         if (SecretConstants.facebookToken == null) {
-            PsLog.w("No facebook secret or token specified");
+            PsLog.w(strNoFacebookSecretOrTokenSpecified);
             return;
         }
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://graph.facebook.com")
+                .baseUrl(strGraphDotFacebookDotCom)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(rxAdapter)
                 .build();
@@ -45,14 +60,13 @@ public class FacebookPresenter extends MainPresenter {
         apiInterface = retrofit.create(FacebookApiInterface.class);
     }
 
-
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
                 .filter(result -> result != null)
                 .flatMapIterable(res -> res)
                 .map(root -> {
                     try {
-                        return new JSONObject(root.getBody()).getJSONArray("data");
+                        return new JSONObject(root.getBody()).getJSONArray(strData);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         throw Exceptions.propagate(e);
@@ -67,15 +81,15 @@ public class FacebookPresenter extends MainPresenter {
                         }
                         return jl;
                     } catch (JSONException e) {
-                        PsLog.w("Konnte post nicht parsen", e);
+                        PsLog.w(strKonntePostNichtParsen, e);
                         throw Exceptions.propagate(e);
                     }
                 })
                 .filter(res -> res != null)
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
-                    PsLog.e("Couldn't load Facebook", err);
-                    view.showSnackbar("Facebook konnte nicht geladen werden");
+                    PsLog.e(strCouldntLoadFacebook, err);
+                    view.showSnackbar(strFacebookKonnteNichtGeladenWerden);
                     return null;
                 })
                 .filter(response -> response != null)
@@ -83,17 +97,17 @@ public class FacebookPresenter extends MainPresenter {
 
                     postBuilder = new Post.PostBuilder(FACEBOOK);
                     try {
-                        if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("message") && post.has("created_time"))) {
+                        if (!(post.has(strFrom) && post.getJSONObject(strFrom).has(strName) && post.has(strMessage) && post.has(strCreatedTime))) {
                             return postBuilder;
                         }
                         postBuilder.thumbnailUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, false));
                         postBuilder.thumbnailHDUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, true));
-                        postBuilder.title(post.getJSONObject("from").getString("name"));
-                        postBuilder.description((post.has("message")) ? post.getString("message") : "");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
-                        postBuilder.date(dateFormat.parse(post.getString("created_time")));
-                        if (post.has("id") && post.getString("id") != null && !post.getString("id").isEmpty()) {
-                            postBuilder.url("http://www.facebook.com/" + post.getString("id"));
+                        postBuilder.title(post.getJSONObject(strFrom).getString(strName));
+                        postBuilder.description((post.has(strMessage)) ? post.getString(strMessage) : "");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat(strSimpleDateFormat, Locale.ENGLISH);
+                        postBuilder.date(dateFormat.parse(post.getString(strCreatedTime)));
+                        if (post.has(strId) && post.getString(strId) != null && !post.getString(strId).isEmpty()) {
+                            postBuilder.url(strWwwDotFacebookDotCom+ post.getString(strId));
                         }
                     } catch (JSONException | ParseException e) {
                         e.printStackTrace();

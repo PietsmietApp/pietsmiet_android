@@ -22,6 +22,12 @@ import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class Post implements Comparable<Post> {
+
+    private static final String strTitleIsNotGiven = "Title is not given";
+    private static final String strDateIsNotGiven ="Date is not given";
+    private static final String strUploadplanWihNoDescription = "Uploadplan with no description";
+    private static final String strNotAValidType ="Not a valid type!";
+
     @Nullable
     private String description;
     private String title;
@@ -246,20 +252,20 @@ public class Post implements Comparable<Post> {
 
         public Post build() {
             if (title == null || title.isEmpty()) {
-                PsLog.e("Title is not given");
+                PsLog.e(strTitleIsNotGiven);
                 return null;
             }
             if (date == null) {
-                PsLog.e("Date is not given");
+                PsLog.e(strDateIsNotGiven);
                 return null;
             }
             if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
-                PsLog.e("Uploadplan with no description");
+                PsLog.e(strUploadplanWihNoDescription);
                 return null;
             }
 
             if(!PostType.getPossibleTypes().contains(postType)){
-                PsLog.e("Not a valid type!");
+                PsLog.e(strNotAValidType);
                 return null;
             }
             return new Post(this);

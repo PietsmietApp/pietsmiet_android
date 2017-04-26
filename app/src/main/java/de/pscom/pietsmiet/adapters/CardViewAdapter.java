@@ -37,6 +37,10 @@ import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
 
+    private static final String strOpeningUrlStr = "Opening URL...";
+    private static final String strCannotOpenBrowserIntentUrlWas = "Cannot open browser intent. Url was: ";
+    private static final String strUrlKonnteNichtGeoeffnetWerden = "URL konnte nicht geöffnet werden";
+
     private final List<Post> items;
     private final MainActivity context;
 
@@ -195,13 +199,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewHolder> {
         // Open card externally on click
         holder.itemView.setOnClickListener(ignored -> {
                     try {
-                        context.showSnackbar("Opening URL...", Snackbar.LENGTH_SHORT);
+                        context.showSnackbar(strOpeningUrlStr, Snackbar.LENGTH_SHORT);
                         final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));
                         context.startActivity(browserIntent);
                     } catch (ActivityNotFoundException | NullPointerException e) {
-                        PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
+                        PsLog.w(strCannotOpenBrowserIntentUrlWas + currentItem.getUrl());
                         //Error Notification
-                        context.showSnackbar("URL konnte nicht geöffnet werden");
+                        context.showSnackbar(strUrlKonnteNichtGeoeffnetWerden);
                     }
                 }
         );

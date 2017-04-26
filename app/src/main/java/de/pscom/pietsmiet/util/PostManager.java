@@ -60,14 +60,10 @@ public class PostManager {
     public void addPosts(List<Post> posts) {
         List<ViewItem> lposts = new ArrayList<>();
         lposts.addAll(posts);
-        final Date lastPostDate = getLastPostDate(); // todo fix for fetchNewPosts()
         subAddingPosts = Observable.just(lposts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .flatMapIterable(list -> {
-                    list.addAll(allPosts); // todo check if this is useful, after all checks (CPU cost)
-                    return list;
-                })
+                .flatMapIterable(list -> list)
                 .distinct()
                 .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .doOnNext(post_ -> {
@@ -80,25 +76,9 @@ public class PostManager {
                     }
                 })
                 .toSortedList()
-                .map(list -> {
-                    List<ViewItem> listV = new ArrayList<>();
-                    listV.addAll(list);
-                    Date lastPostDate_ = lastPostDate;
-                    for(ViewItem vi: listV) {
-                        if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
-                            if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))
-                                list.add(list.indexOf(vi), new DateTag(vi.getDate()));
-                            lastPostDate_ = vi.getDate();
-                        }
-                    }
-                    return list;
-                })
                 .subscribe(list -> {
-                    allPosts.clear();
-                    allPosts.addAll(list); //todo unefficient see above
-                }, (throwable) -> PsLog.e("Couldn't update all posts!", throwable), () -> {
-                    if (mView != null) mView.updateAdapter();
-                });
+                    allPosts.addAll(list);
+                }, (throwable) -> PsLog.e("Couldn't update all posts!", throwable), this::updateCurrentPosts);
     }
 
     /**

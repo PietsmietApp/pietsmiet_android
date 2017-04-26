@@ -40,6 +40,6 @@
         app:layout_anchor="@id/cardList"
         app:layout_anchorGravity="bottom|right|end"
         app:layout_behavior="de.pscom.pietsmiet.generic.ScrollAwareFABBehavior"
-        app:srcCompat="@drawable/ic_expand_less_black_24dp" />
+        app:srcCompat="@drawable/ic_expand_less_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

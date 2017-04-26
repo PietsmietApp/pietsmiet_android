@@ -33,6 +33,8 @@
     <string name="settings_source_video">Quelle für Videos:</string>
     <string name="quality_hd_images_spinner_label">HD Bilder laden:</string>
     <string name="drawer_video_ps">PS.de Videos</string>
+    <string name="notification_unsubscribe">Abbestellen</string>
+    <string name="notification_open_url">Link öffnen</string>
 
     <string-array name="qualityHDImagesSpinnerItems_array">
         <item>Niemals</item>

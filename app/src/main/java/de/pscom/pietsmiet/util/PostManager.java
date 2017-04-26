@@ -94,7 +94,7 @@ public class PostManager {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter((ViewItem post) -> post.getType() == ViewItem.TYPE_POST && SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
-                .toList()
+                .toSortedList()
                 .map(list -> {
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);

@@ -10,14 +10,12 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSM
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSMIET_VIDEOS;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_YOUTUBE_VIDEOS;
-
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_LOAD_HD_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
-
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceBoolean;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceInt;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceString;
@@ -50,7 +48,7 @@ public class SettingsHelper {
         boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, true);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
-        stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, "AAAAAAAAAAAAAAAAAAAAABETxQAAAAAAQXmiTXMnIIgG0Qx%2FOPsllsLM6gE%3DqyVdj97gZAREeIgccnOcxL2H8fcIOHWPOV1NTmWCdb9m4Dnlde");
+        stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, "");
         intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_ALWAYS);
 
         // SWITCHES
@@ -64,8 +62,8 @@ public class SettingsHelper {
     }
 
     public static boolean shouldLoadHDImages(Context c) {
-        if(intQualityLoadHDImages == TYPE_HD_ALWAYS) return true;
-        if(intQualityLoadHDImages == TYPE_HD_WIFI && NetworkUtil.isConnectedWifi(c)) return true;
+        if (intQualityLoadHDImages == TYPE_HD_ALWAYS) return true;
+        if (intQualityLoadHDImages == TYPE_HD_WIFI && NetworkUtil.isConnectedWifi(c)) return true;
         return false;
     }
 
@@ -111,9 +109,10 @@ public class SettingsHelper {
         }
     }
 
+
     public static boolean isOnlyType(@PostType.AllTypes int type) {
-        for(int i : getPossibleTypes()) {
-            if(getSettingsValueForType(i) && i != type) return false;
+        for (int i : getPossibleTypes()) {
+            if (getSettingsValueForType(i) && i != type) return false;
         }
         return true;
     }

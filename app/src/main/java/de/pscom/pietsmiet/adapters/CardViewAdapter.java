@@ -67,11 +67,11 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder_, int position) {
         // Don't use int position to avoid crashes!
-        if(holder_ == null) return;
+        if (holder_ == null) return;
         switch (holder_.getItemViewType()) {
             case ViewItem.TYPE_DATE_TAG:
                 DateTagCardViewHolder dtcvHolder = (DateTagCardViewHolder) holder_;
-                dtcvHolder.tvDate.setText(new SimpleDateFormat ("dd. MMMM yyyy", Locale.getDefault()).format(items.get(holder_.getAdapterPosition()).getDate()));
+                dtcvHolder.tvDate.setText(new SimpleDateFormat("dd. MMMM yyyy", Locale.getDefault()).format(items.get(holder_.getAdapterPosition()).getDate()));
                 break;
             case ViewItem.TYPE_POST:
                 CardViewHolder holder = (CardViewHolder) holder_;
@@ -192,15 +192,20 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 // Setup expand container and description
                 if (currentType == UPLOADPLAN || currentType == NEWS || currentType == PIETCAST) {
+                    holder.descriptionContainer.setVisibility(GONE);
                     if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                         holder.expandedDescription.setText(Html.fromHtml(currentItem.getDescription()));
-                    } else {
-                        holder.expandedDescription.setVisibility(GONE);
+                        holder.btnExpand.setVisibility(VISIBLE);
+
+                        if (SettingsHelper.isOnlyType(currentItem.getPostType())) {
+                            holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_less_black_24dp));
+                            holder.expandableContainer.setVisibility(VISIBLE);
+                        } else {
+                            holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
+                            holder.expandableContainer.setVisibility(GONE);
+                        }
                     }
 
-                    holder.descriptionContainer.setVisibility(GONE);
-                    holder.btnExpand.setVisibility(VISIBLE);
-                    holder.btnExpand.setBackground(ContextCompat.getDrawable(context, R.drawable.ic_expand_more_black_24dp));
 
                     holder.btnExpand.setOnClickListener(view -> {
                         if (holder.expandableContainer.getVisibility() == GONE) {
@@ -228,7 +233,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 );
                 break;
         }
-
 
 
     }

@@ -113,10 +113,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         if (BuildConfig.DEBUG) {
-            FirebaseMessaging.getInstance().subscribeToTopic("test");
+            FirebaseMessaging.getInstance().subscribeToTopic("test2");
             FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false);
         } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("test");
+            FirebaseMessaging.getInstance().unsubscribeFromTopic("test2");
         }
         if (SettingsHelper.boolUploadplanNotification) {
             FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");

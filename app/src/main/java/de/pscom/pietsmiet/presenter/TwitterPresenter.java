@@ -70,12 +70,12 @@ public class TwitterPresenter extends MainPresenter {
                 }))
                 .filter(root -> root != null)
                 .flatMapIterable(root -> root.statuses)
-                .filter(status -> status != null)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
                     view.showSnackbar("Twitter konnte nicht geladen werden");
                     return null;
                 })
+                .filter(status -> status != null)
                 .map(status -> {
                     postBuilder = new Post.PostBuilder(PostType.TWITTER);
                     try {
@@ -107,7 +107,7 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMap(ign -> {
                     // Use token from sharedPrefs if not empty
                     String token = SettingsHelper.stringTwitterBearer;
-                    if (token != null) {
+                    if (token != null && token != "") {
                         return Observable.just(token);
                     }
                     // Load new token

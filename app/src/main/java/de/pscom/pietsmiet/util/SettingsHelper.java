@@ -48,7 +48,7 @@ public class SettingsHelper {
         boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, true);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
-        stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, "");
+        stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, null);
         intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_ALWAYS);
 
         // SWITCHES

@@ -43,7 +43,7 @@ public class FirebaseRepository extends MainRepository {
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof SocketTimeoutException) {
                         PsLog.w("Firebase Timeout", error);
-                        //fixme view.showSnackbar("Firebase Timeout, neuer Versuch...");
+                        //fixme view.showMessage("Firebase Timeout, neuer Versuch...");
                         return Observable.just(null);
                     }
                     // Unrelated error, throw it
@@ -51,7 +51,7 @@ public class FirebaseRepository extends MainRepository {
                 }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    //fixme view.showSnackbar("Pietsmiet.de konnte nicht geladen werden");
+                    //fixme view.showMessage("Pietsmiet.de konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)

@@ -76,7 +76,7 @@ public class FacebookRepository extends MainRepository {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    //fixme view.showSnackbar("Facebook konnte nicht geladen werden");
+                    //fixme view.showMessage("Facebook konnte nicht geladen werden");
                     return null;
                 })
                 .filter(response -> response != null)

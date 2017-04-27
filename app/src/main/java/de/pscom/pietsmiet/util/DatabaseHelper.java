@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.presenter.PostPresenter;
@@ -157,14 +156,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Loads all post objects from the database and displays it
      * Clears the database if it's too old
      *
-     * @param context For loading the drawable & displaying the post after finished loading
+     * @param presenter For notifiying on finished load
      */
     @SuppressWarnings("WeakerAccess")
-    public void displayPostsFromCache(MainActivity context) {
-        if (context == null) {
-            return;
-        }
-
+    public void displayPostsFromCache(PostPresenter presenter) {
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
@@ -173,7 +168,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
                 "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
                 "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
-        PostPresenter pm = context.postPresenter;
+
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -214,14 +209,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 })
                 .flatMapIterable(l -> l)
-                .compose(pm.addPosts(false))
+                .compose(presenter.addPosts(false))
                 .subscribe(items -> {
                     PsLog.v("Loaded " + items.size() + " posts from DB");
-                    pm.updateCurrentPosts();
-                    pm.fetchNewPosts();
+                    presenter.updateCurrentPosts();
+                    presenter.fetchNewPosts();
                 }, e -> {
                     PsLog.e("Could not load posts from DB: ", e);
-                    pm.fetchNewPosts();
+                    presenter.fetchNewPosts();
                 });
     }
 

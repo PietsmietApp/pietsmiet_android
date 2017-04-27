@@ -1,15 +1,13 @@
 package de.pscom.pietsmiet.view;
 
-import java.util.List;
-
-import de.pscom.pietsmiet.generic.ViewItem;
-
 public interface MainActivityView {
-    void loadingCompleted(List<ViewItem> posts);
+    void loadingCompleted();
 
     void noNetworkError();
 
     void loadingStarted();
 
     void loadingFailed(String message);
+
+    void showMessage(String message);
 }

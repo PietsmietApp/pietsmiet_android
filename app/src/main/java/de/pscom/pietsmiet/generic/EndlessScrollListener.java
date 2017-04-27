@@ -98,7 +98,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
                 FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
             } else {
                 if(!FLAG_SHOWED_NO_NETWORK_MESSAGE){
-                    ((MainActivity) view.getContext()).showSnackbar("Keine Netzwerkverbindung");
+                    ((MainActivity) view.getContext()).showMessage("Keine Netzwerkverbindung");
                     FLAG_SHOWED_NO_NETWORK_MESSAGE = true;
                 }
             }

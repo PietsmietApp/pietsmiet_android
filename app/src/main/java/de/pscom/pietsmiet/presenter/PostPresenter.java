@@ -3,17 +3,14 @@ package de.pscom.pietsmiet.presenter;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.pscom.pietsmiet.generic.DateTag;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
-import de.pscom.pietsmiet.view.MainActivityView;
 import de.pscom.pietsmiet.repository.PostRepository;
 import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.DatabaseHelper;
@@ -21,15 +18,13 @@ import de.pscom.pietsmiet.util.NetworkUtil;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.view.MainActivityView;
 import rx.Observable;
 import rx.Subscription;
+import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class PostPresenter {
 
@@ -41,10 +36,7 @@ public class PostPresenter {
     @SuppressWarnings("CanBeFinal")
     private List<ViewItem> allPosts = new ArrayList<>();
 
-    private int postLoadCount = 15;
-
     private Subscription subLoadingPosts;
-    private Subscription subAddingPosts;
     private Subscription subUpdatePosts;
 
     public PostPresenter(MainActivityView view, PostRepository postRepository, Context context) {
@@ -64,9 +56,9 @@ public class PostPresenter {
                 .distinct()
                 .filter((item) -> filterWrongPosts(item, fetchDirectionDown))
                 .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
-                .doOnNext(post_ -> {
-                    if (post_.getType() == ViewItem.TYPE_POST) {
-                        Post post = (Post) post_;
+                .doOnNext(item -> {
+                    if (item.getType() == ViewItem.TYPE_POST) {
+                        Post post = (Post) item;
                         if (post.getPostType() == TWITTER && (TwitterRepository.firstTweet == null || TwitterRepository.firstTweet.getId() < post.getId()))
                             TwitterRepository.firstTweet = post;
                         if (post.getPostType() == TWITTER && (TwitterRepository.lastTweet == null || TwitterRepository.lastTweet.getId() > post.getId()))
@@ -92,8 +84,9 @@ public class PostPresenter {
                 .distinct()
                 .toSortedList()
                 .map(list -> {
-                    List<ViewItem> listV = new ArrayList<>();
+                    /*List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
+                    //todo tk fragen wie das geht
                     Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
                     for (ViewItem vi : listV) {
                         if (vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_)) {
@@ -101,10 +94,16 @@ public class PostPresenter {
                                 list.add(list.indexOf(vi), new DateTag(vi.getDate()));
                             lastPostDate_ = vi.getDate();
                         }
-                    }
+                    }*/
                     return list;
                 })
-                .subscribe(view::loadingCompleted, throwable -> PsLog.e("Couldn't update current posts: ", throwable));
+                .subscribe(list -> {
+                    allPosts.clear();
+                    allPosts.addAll(list);
+                }, throwable -> {
+                    PsLog.e("Couldn't update current posts: ", throwable);
+                    view.loadingFailed("Posts konnten nicht aktualisiert werden");
+                }, view::loadingCompleted);
     }
 
     /**
@@ -145,8 +144,8 @@ public class PostPresenter {
      * @return Date
      */
     private Date getFirstPostDate() {
-        Post p = getFirstPost();
-        return (p == null) ? new Date(new Date().getTime() - 864000000) : p.getDate();
+        Post post = getFirstPost();
+        return (post == null) ? new Date(new Date().getTime() - 864000000) : new Date(post.getDate().getTime() + 1000);
     }
 
     /**
@@ -155,9 +154,9 @@ public class PostPresenter {
      *
      * @return Date
      */
-    private Date lastPostDate {
-        Post lPost = getLastPost();
-        return (lPost == null) ? new Date() : lPost.getDate();
+    private Date getLastPostDate() {
+        Post post = getLastPost();
+        return (post == null) ? new Date() : new Date(post.getDate().getTime() - 1000);
     }
 
     /**
@@ -180,8 +179,22 @@ public class PostPresenter {
         subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate()), false);
     }
 
-    public void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown){
+    /**
+     * Subscribes to the load Post observable and does the error handling
+     *
+     * @param observable         Fetch next or Fetch new observable to subscribe on
+     * @param fetchDirectionDown In which direction the observable is fetching (for the filter and later for notifyAdapter)
+     */
+    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown) {
         subLoadingPosts = observable
+                .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
+                    if (attempt == 2) throw Exceptions.propagate(throwable);
+                    else {
+                        view.loadingFailed("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
+                        PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
+                        return Observable.timer(3L, TimeUnit.SECONDS);
+                    }
+                }))
                 .compose(addPosts(fetchDirectionDown))
                 .subscribe(items -> {
                     updateCurrentPosts();
@@ -199,6 +212,9 @@ public class PostPresenter {
                 });
     }
 
+    /**
+     * Checks if network's available and informs the view about the started loading
+     */
     private void setupLoading() {
         if (!NetworkUtil.isConnected(context)) {
             view.noNetworkError();
@@ -215,8 +231,6 @@ public class PostPresenter {
     public void clearSubscriptions() {
         if (subLoadingPosts != null && !subLoadingPosts.isUnsubscribed())
             subLoadingPosts.unsubscribe();
-        if (subAddingPosts != null && !subAddingPosts.isUnsubscribed())
-            subAddingPosts.unsubscribe();
         if (subUpdatePosts != null && !subUpdatePosts.isUnsubscribed())
             subUpdatePosts.unsubscribe();
     }
@@ -247,25 +261,25 @@ public class PostPresenter {
         Post post = (Post) item;
         boolean shouldFilter;
         if (fetchDirectionDown) {
-            shouldFilter = post.getDate().before(lastPostDate);
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+            shouldFilter = post.getDate().before(getLastPostDate());
+            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS*/) {
                 Post lPost = getLastPost();
 
                 if (lPost != null)
                     PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
                             " Titel: " + post.getTitle() +
-                            " Datum: " + post.getDate() +
-                            " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + lastPostDate);
+                            " Datum: " + getLastPostDate() +
+                            " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + getLastPostDate());
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS*/) {
                 Post firstPost = getFirstPost();
 
                 if (firstPost != null)
                     PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                             " Titel: " + post.getTitle() +
-                            " Datum: " + post.getDate() +
+                            " Datum: " + getFirstPostDate() +
                             "\n letzter (neuster) Post " + getFirstPost().getTitle() + " Datum: " + getFirstPostDate());
             }
         }

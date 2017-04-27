@@ -3,13 +3,10 @@ package de.pscom.pietsmiet.repository;
 import android.content.Context;
 
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
-import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 public class PostRepositoryImpl implements PostRepository {
@@ -34,7 +31,7 @@ public class PostRepositoryImpl implements PostRepository {
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
                 new FacebookRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
-        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
+        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs), numPosts);
     }
 
     @Override
@@ -52,7 +49,7 @@ public class PostRepositoryImpl implements PostRepository {
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
                 new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
-        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
+        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs), 15);
     }
 
     /**
@@ -61,7 +58,7 @@ public class PostRepositoryImpl implements PostRepository {
      *
      * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
      */
-    private Observable<Post> manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
+    private Observable<Post> manageEmittedPosts(Observable<Post.PostBuilder> postObs, int numPosts/*fixme not sure, ask tk*/) {
         return postObs.observeOn(Schedulers.io(), true)
                 .subscribeOn(Schedulers.io())
                 .onBackpressureBuffer()
@@ -69,14 +66,6 @@ public class PostRepositoryImpl implements PostRepository {
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()
-                .take(15) //fixme
-                .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
-                    if (attempt == 2) throw Exceptions.propagate(throwable);
-                    else {
-                        //fixme mView.loadingFailed("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
-                        PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
-                        return Observable.timer(3L, TimeUnit.SECONDS);
-                    }
-                }));
+                .take(numPosts);
     }
 }

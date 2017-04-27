@@ -73,7 +73,7 @@ public class TwitterRepository extends MainRepository {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    //Fixme view.showSnackbar("Twitter konnte nicht geladen werden");
+                    //Fixme view.showMessage("Twitter konnte nicht geladen werden");
                     return null;
                 })
                 .filter(status -> status != null)

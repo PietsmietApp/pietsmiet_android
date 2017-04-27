@@ -20,19 +20,16 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.util.List;
-
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
-import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
+import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
-import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -148,7 +145,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         new SecretConstants(this);
 
-        new DatabaseHelper(this).displayPostsFromCache(this); //fixme!
+        new DatabaseHelper(this).displayPostsFromCache(postPresenter); //fixme!
 
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
@@ -192,7 +189,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         // Update adapter to refresh times
-        //fixme updateAdapter();
+        updateAdapter();
     }
 
     private void setupRecyclerView() {
@@ -259,6 +256,16 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         toggle.syncState();
     }
 
+    public void updateAdapter() {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
+                            if (adapter != null) adapter.notifyDataSetChanged();
+                        }
+                );
+    }
+
     public void setRefreshAnim(boolean val) {
         Observable.just(val)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -267,11 +274,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 });
     }
 
-    public void showSnackbar(String message) {
-        showSnackbar(message, Snackbar.LENGTH_LONG);
-    }
-
-    public void showSnackbar(String message, int length) {
+    public void showMessage(String message, int length) {
         Observable.just(message)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(msg -> {
@@ -351,30 +354,25 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
             // Update adapter to refresh times
-            loadingCompleted(null); //fixme
+            updateAdapter();
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();
-                showSnackbar("Cache gelöscht");
+                showMessage("Cache gelöscht");
             }
         }
     }
 
 
     @Override
-    public void loadingCompleted(List<ViewItem> posts) {
-        Observable.just("")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            setRefreshAnim(false);
-                            if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
-                            if (adapter != null) adapter.notifyDataSetChanged();
-                        }
-                );
+    public void loadingCompleted() {
+        PsLog.v("Loading Completed in View");
+        updateAdapter();
+        setRefreshAnim(false);
     }
 
     @Override
     public void noNetworkError() {
-        showSnackbar("Keine Netzwerkverbindung");
+        showMessage("Keine Netzwerkverbindung");
         setRefreshAnim(false);
         scrollListener.resetState();
     }
@@ -386,7 +384,12 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
     @Override
     public void loadingFailed(String message) {
-        showSnackbar(message, Snackbar.LENGTH_INDEFINITE);
+        showMessage(message, Snackbar.LENGTH_INDEFINITE);
         setRefreshAnim(false);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        showMessage(message, Snackbar.LENGTH_LONG);
     }
 }

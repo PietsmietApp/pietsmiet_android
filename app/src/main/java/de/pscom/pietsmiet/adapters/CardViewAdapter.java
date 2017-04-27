@@ -221,13 +221,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 // Open card externally on click
                 holder.itemView.setOnClickListener(ignored -> {
                             try {
-                                context.showSnackbar("Opening URL...", Snackbar.LENGTH_SHORT);
+                                context.showMessage("Opening URL...", Snackbar.LENGTH_SHORT);
                                 final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentItem.getUrl()));
                                 context.startActivity(browserIntent);
                             } catch (ActivityNotFoundException | NullPointerException e) {
                                 PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
                                 //Error Notification
-                                context.showSnackbar("URL konnte nicht geöffnet werden");
+                                context.showMessage("URL konnte nicht geöffnet werden");
                             }
                         }
                 );

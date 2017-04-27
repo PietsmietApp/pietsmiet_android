@@ -65,7 +65,7 @@ public class YoutubeRepository extends MainRepository {
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
-                    //fixme view.showSnackbar("Youtube konnte nicht geladen werden");
+                    //fixme view.showMessage("Youtube konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -89,7 +89,7 @@ public class YoutubeRepository extends MainRepository {
                     } catch (ParseException e) {
                         // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        //fixme view.showSnackbar("Einige Youtube-Posts konnte nicht geladen werden");
+                        //fixme view.showMessage("Einige Youtube-Posts konnte nicht geladen werden");
                     }
                     return postBuilder;
                 });

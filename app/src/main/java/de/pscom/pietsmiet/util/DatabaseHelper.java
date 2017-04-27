@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
+import de.pscom.pietsmiet.presenter.PostPresenter;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -172,7 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
                 "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
                 "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
-        PostManager pm = context.postManager;
+        PostPresenter pm = context.postPresenter;
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -213,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 })
                 .flatMapIterable(l -> l)
-                .compose(pm.addPosts())
+                .compose(pm.addPosts(false))
                 .subscribe(items -> {
                     PsLog.v("Loaded " + items.size() + " posts from DB");
                     pm.updateCurrentPosts();

@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet;
+package de.pscom.pietsmiet.repository;
 
 import android.content.Context;
 
@@ -6,11 +6,6 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.interfaces.PostRepository;
-import de.pscom.pietsmiet.presenter.FacebookPresenter;
-import de.pscom.pietsmiet.presenter.FirebasePresenter;
-import de.pscom.pietsmiet.presenter.TwitterPresenter;
-import de.pscom.pietsmiet.presenter.YoutubePresenter;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
@@ -28,16 +23,16 @@ public class PostRepositoryImpl implements PostRepository {
     public Observable<Post> fetchNextPosts(Date lastPostDate, int numPosts) {
 
         Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterPresenter(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new TwitterRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubePresenter(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new YoutubeRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebasePresenter(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new FirebaseRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookPresenter(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new FacebookRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
@@ -46,16 +41,16 @@ public class PostRepositoryImpl implements PostRepository {
     public Observable<Post> fetchNewPosts(Date firstPostDate) {
 
         Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterPresenter(context).fetchPostsSinceObservable(firstPostDate)
+                new TwitterRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
         Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubePresenter(context).fetchPostsSinceObservable(firstPostDate)
+                new YoutubeRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebasePresenter(context).fetchPostsSinceObservable(firstPostDate)
+                new FirebaseRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookPresenter(context).fetchPostsSinceObservable(firstPostDate)
+                new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
         return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
@@ -74,14 +69,14 @@ public class PostRepositoryImpl implements PostRepository {
                 .map(Post.PostBuilder::build)
                 .filter(post -> post != null)
                 .sorted()
-                //fixme.take(15)
+                .take(15) //fixme
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
                     if (attempt == 2) throw Exceptions.propagate(throwable);
                     else {
                         //fixme mView.loadingFailed("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
                         PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
-                        return attempt;
+                        return Observable.timer(3L, TimeUnit.SECONDS);
                     }
-                }).flatMap(retryCount -> Observable.timer((long) Math.pow(2, retryCount), TimeUnit.SECONDS)));
+                }));
     }
 }

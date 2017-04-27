@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import android.content.Context;
 
@@ -27,7 +27,7 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
-public class TwitterPresenter extends MainPresenter {
+public class TwitterRepository extends MainRepository {
     public static Post firstTweet, lastTweet;
     TwitterApiInterface apiInterface;
     private final String query = "from:pietsmiet, " +
@@ -37,7 +37,7 @@ public class TwitterPresenter extends MainPresenter {
             "OR from:br4mm3n " +
             "exclude:replies";
 
-    public TwitterPresenter(Context context) {
+    public TwitterRepository(Context context) {
         super(context);
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");

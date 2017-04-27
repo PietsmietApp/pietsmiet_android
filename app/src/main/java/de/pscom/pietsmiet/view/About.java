@@ -1,10 +1,13 @@
-package de.pscom.pietsmiet;
+package de.pscom.pietsmiet.view;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
+
+import de.pscom.pietsmiet.BuildConfig;
+import de.pscom.pietsmiet.R;
 
 public class About extends BaseActivity {
     @Override

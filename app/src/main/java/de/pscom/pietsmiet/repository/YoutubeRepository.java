@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import android.content.Context;
 
@@ -21,12 +21,12 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
-public class YoutubePresenter extends MainPresenter {
+public class YoutubeRepository extends MainRepository {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
     YoutubeApiInterface apiInterface;
 
-    public YoutubePresenter(Context context) {
+    public YoutubeRepository(Context context) {
         super(context);
         if (SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");

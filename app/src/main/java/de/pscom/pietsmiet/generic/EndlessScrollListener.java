@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.util.NetworkUtil;
 
 /*

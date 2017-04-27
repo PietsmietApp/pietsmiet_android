@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import android.content.Context;
 
@@ -26,10 +26,10 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
-public class FacebookPresenter extends MainPresenter {
+public class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
-    public FacebookPresenter(Context context) {
+    public FacebookRepository(Context context) {
         super(context);
         if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");

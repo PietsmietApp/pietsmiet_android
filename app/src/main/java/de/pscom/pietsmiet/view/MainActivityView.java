@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.interfaces;
+package de.pscom.pietsmiet.view;
 
 import java.util.List;
 

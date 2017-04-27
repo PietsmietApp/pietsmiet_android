@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -20,12 +20,12 @@
         </activity>
 
         <activity
-            android:name=".Settings"
+            android:name=".view.Settings"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".About"
+            android:name=".view.About"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

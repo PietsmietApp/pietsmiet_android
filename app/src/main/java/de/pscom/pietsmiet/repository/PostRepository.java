@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.interfaces;
+package de.pscom.pietsmiet.repository;
 
 import java.util.Date;
 

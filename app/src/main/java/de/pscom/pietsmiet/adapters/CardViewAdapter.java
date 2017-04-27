@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;

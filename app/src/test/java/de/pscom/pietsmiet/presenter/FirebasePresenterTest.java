@@ -11,6 +11,7 @@ import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.Post.PostBuilder;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
+import de.pscom.pietsmiet.repository.FirebaseRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import okhttp3.mockwebserver.MockResponse;
@@ -23,14 +24,14 @@ import static junit.framework.Assert.assertTrue;
 public class FirebasePresenterTest extends MainTestPresenter {
 
     @Override
-    public FirebasePresenter preparePresenter() throws Exception {
+    public FirebaseRepository preparePresenter() throws Exception {
         SettingsHelper.boolCategoryPietsmietVideos = true;
         SettingsHelper.boolCategoryPietsmietNews = true;
         SettingsHelper.boolCategoryPietsmietUploadplan = true;
         SettingsHelper.boolCategoryPietcast = true;
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("firebase_response.json")));
-        FirebasePresenter presenter = new FirebasePresenter(mMockContext);
+        FirebaseRepository presenter = new FirebaseRepository(mMockContext);
 
         presenter.apiInterface = getRetrofit(mockWebServer).create(FirebaseApiInterface.class);
         return presenter;
@@ -38,7 +39,7 @@ public class FirebasePresenterTest extends MainTestPresenter {
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        FirebasePresenter presenter = preparePresenter();
+        FirebaseRepository presenter = preparePresenter();
 
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
         presenter.fetchPostsSinceObservable(new Date())

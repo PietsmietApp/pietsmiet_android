@@ -2,7 +2,8 @@ package de.pscom.pietsmiet.presenter;
 
 import org.mockito.Mock;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
+import de.pscom.pietsmiet.repository.MainPresenter;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;

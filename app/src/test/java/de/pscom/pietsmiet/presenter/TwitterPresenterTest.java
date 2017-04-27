@@ -10,6 +10,7 @@ import java.util.Locale;
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
+import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -21,19 +22,19 @@ import static junit.framework.Assert.assertTrue;
 
 public class TwitterPresenterTest extends MainTestPresenter {
     @Override
-    public TwitterPresenter preparePresenter() throws Exception {
+    public TwitterRepository preparePresenter() throws Exception {
         SecretConstants.twitterSecret = "s";
         SettingsHelper.stringTwitterBearer = "totallyValidBearerYo";
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("twitter_response.json")));
-        TwitterPresenter presenter = new TwitterPresenter(mMockContext);
+        TwitterRepository presenter = new TwitterRepository(mMockContext);
         presenter.apiInterface = getRetrofit(mockWebServer).create(TwitterApiInterface.class);
         return presenter;
     }
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        TwitterPresenter presenter = preparePresenter();
+        TwitterRepository presenter = preparePresenter();
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
         presenter.fetchPostsSinceObservable(new Date())
                 .map(Post.PostBuilder::build)

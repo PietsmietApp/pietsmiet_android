@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import android.content.Context;
 
@@ -9,13 +9,13 @@ import java.util.List;
 import de.pscom.pietsmiet.generic.Post;
 import rx.Observable;
 
-abstract class MainPresenter {
+abstract class MainRepository {
     Post.PostBuilder postBuilder;
     @SuppressWarnings("CanBeFinal")
     List<Post> posts = new ArrayList<>();
     protected Context context;
 
-    MainPresenter(Context context) {
+    MainRepository(Context context) {
         this.context = context;
     }
 

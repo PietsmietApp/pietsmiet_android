@@ -93,10 +93,11 @@ public class PostManager {
                 .flatMap(Observable::from)
                 .filter((ViewItem post) -> post.getType() == ViewItem.TYPE_POST && SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .toSortedList()
+                .distinct()
                 .map(list -> {
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
-                    Date lastPostDate_ = lastPostDate;
+                    Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
                     for(ViewItem vi: listV) {
                         if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
                             if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))

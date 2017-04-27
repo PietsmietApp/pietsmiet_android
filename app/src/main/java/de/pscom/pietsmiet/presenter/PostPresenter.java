@@ -3,19 +3,21 @@ package de.pscom.pietsmiet.presenter;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import de.pscom.pietsmiet.generic.DateTag;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.repository.PostRepository;
 import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.NetworkUtil;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivityView;
@@ -51,10 +53,9 @@ public class PostPresenter {
      */
 
     @SuppressWarnings("WeakerAccess")
-    public Observable.Transformer<ViewItem, List<ViewItem>> addPosts(boolean fetchDirectionDown) {
+    public Observable.Transformer<ViewItem, List<ViewItem>> addPosts(boolean fetchDirectionDown /*todo notifyRange*/) {
         return postObservable -> postObservable
                 .distinct()
-                .filter((item) -> filterWrongPosts(item, fetchDirectionDown))
                 .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .doOnNext(item -> {
                     if (item.getType() == ViewItem.TYPE_POST) {
@@ -84,8 +85,11 @@ public class PostPresenter {
                 .distinct()
                 .toSortedList()
                 .map(list -> {
-                    /*List<ViewItem> listV = new ArrayList<>();
+                    List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
+                    if (listV.size() == 0) {
+                        return list;
+                    }
                     //todo tk fragen wie das geht
                     Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
                     for (ViewItem vi : listV) {
@@ -94,7 +98,7 @@ public class PostPresenter {
                                 list.add(list.indexOf(vi), new DateTag(vi.getDate()));
                             lastPostDate_ = vi.getDate();
                         }
-                    }*/
+                    }
                     return list;
                 })
                 .subscribe(list -> {
@@ -107,8 +111,6 @@ public class PostPresenter {
     }
 
     /**
-     * Returns currentPosts.
-     *
      * @return All posts that are displayed (the adapter is "linked" to this arrayList)
      */
     public List<ViewItem> getPostsToDisplay() {
@@ -228,7 +230,7 @@ public class PostPresenter {
      * DONT CALL IT TOO OFTEN!
      * Should be called if the App gets closed.
      */
-    public void clearSubscriptions() {
+    public void stopSubscriptions() {
         if (subLoadingPosts != null && !subLoadingPosts.isUnsubscribed())
             subLoadingPosts.unsubscribe();
         if (subUpdatePosts != null && !subUpdatePosts.isUnsubscribed())
@@ -242,47 +244,5 @@ public class PostPresenter {
         allPosts.clear();
         TwitterRepository.lastTweet = null;
         TwitterRepository.firstTweet = null;
-        updateCurrentPosts();
-    }
-
-    /**
-     * First checks if a video posts is from a unallowed category
-     * <p>
-     * Then checks if a post is after / before the fetching direction
-     * and overrides the previous check if needed.
-     *
-     * @param item ViewItem object to check
-     * @return boolean shouldFilter
-     */
-    private boolean filterWrongPosts(ViewItem item, boolean fetchDirectionDown) {
-        if (!(item instanceof Post)) {
-            return true;
-        }
-        Post post = (Post) item;
-        boolean shouldFilter;
-        if (fetchDirectionDown) {
-            shouldFilter = post.getDate().before(getLastPostDate());
-            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS*/) {
-                Post lPost = getLastPost();
-
-                if (lPost != null)
-                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                            " Titel: " + post.getTitle() +
-                            " Datum: " + getLastPostDate() +
-                            " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + getLastPostDate());
-            }
-        } else {
-            shouldFilter = post.getDate().after(getFirstPostDate());
-            if (!shouldFilter/* && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS*/) {
-                Post firstPost = getFirstPost();
-
-                if (firstPost != null)
-                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                            " Titel: " + post.getTitle() +
-                            " Datum: " + getFirstPostDate() +
-                            "\n letzter (neuster) Post " + getFirstPost().getTitle() + " Datum: " + getFirstPostDate());
-            }
-        }
-        return shouldFilter;
     }
 }

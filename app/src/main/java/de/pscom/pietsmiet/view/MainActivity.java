@@ -172,14 +172,14 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (postPresenter != null) postPresenter.clearSubscriptions();
+        if (postPresenter != null) postPresenter.stopSubscriptions();
         if (refreshLayout != null) refreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (postPresenter != null) postPresenter.clearSubscriptions();
+        if (postPresenter != null) postPresenter.stopSubscriptions();
         if (refreshLayout != null) refreshLayout.setRefreshing(false);
         if (scrollListener != null) scrollListener.resetState();
     }
@@ -365,7 +365,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
     @Override
     public void loadingCompleted() {
-        PsLog.v("Loading Completed in View");
         updateAdapter();
         setRefreshAnim(false);
     }

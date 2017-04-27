@@ -1,5 +1,7 @@
 package de.pscom.pietsmiet.presenter;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
@@ -28,8 +29,8 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 public class FacebookPresenter extends MainPresenter {
     FacebookApiInterface apiInterface;
 
-    public FacebookPresenter(MainActivity view) {
-        super(view);
+    public FacebookPresenter(Context context) {
+        super(context);
         if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");
             return;
@@ -75,7 +76,7 @@ public class FacebookPresenter extends MainPresenter {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    view.showSnackbar("Facebook konnte nicht geladen werden");
+                    //fixme view.showSnackbar("Facebook konnte nicht geladen werden");
                     return null;
                 })
                 .filter(response -> response != null)

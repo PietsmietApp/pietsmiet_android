@@ -20,8 +20,12 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.util.List;
+
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.generic.ViewItem;
+import de.pscom.pietsmiet.interfaces.MainActivityView;
 import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
@@ -41,7 +45,7 @@ import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
 import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
     private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
@@ -69,7 +73,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
-        postManager = new PostManager(this);
+        postManager = new PostManager(this, new PostRepositoryImpl(this), getApplicationContext());
 
         setupRecyclerView();
         setupDrawer();
@@ -142,7 +146,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         new SecretConstants(this);
 
-        new DatabaseHelper(this).displayPostsFromCache(this);
+        //fixme! new DatabaseHelper(this).displayPostsFromCache(this);
 
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
@@ -186,7 +190,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         // Update adapter to refresh times
-        updateAdapter();
+        //fixme updateAdapter();
     }
 
     private void setupRecyclerView() {
@@ -261,16 +265,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 });
     }
 
-    public void updateAdapter() {
-        Observable.just("")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(ignored -> {
-                            if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
-                            if (adapter != null) adapter.notifyDataSetChanged();
-                        }
-                );
-    }
-
     public void showSnackbar(String message) {
         showSnackbar(message, Snackbar.LENGTH_LONG);
     }
@@ -290,6 +284,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void clearCache() {
         new DatabaseHelper(this).clearDB();
         postManager.clearPosts();
+        scrollListener.resetState();
         CacheUtil.trimCache(this);
         scrollListener.resetState();
         fabToTop.hide();
@@ -306,8 +301,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.nav_ps_news:
             case R.id.nav_video_ps:
             case R.id.nav_video_yt:
-                if(((Switch)item.getActionView()).isChecked() && isOnlyType(getTypeForDrawerId(item.getItemId()))) {
-                    for(int z : getPossibleTypes()) {
+                if (((Switch) item.getActionView()).isChecked() && isOnlyType(getTypeForDrawerId(item.getItemId()))) {
+                    for (int z : getPossibleTypes()) {
                         int id = getDrawerIdForType(z);
                         Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
                         aSwitch.setChecked(true);
@@ -354,7 +349,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
             // Update adapter to refresh times
-            updateAdapter();
+            loadingCompleted(null); //fixme
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();
                 showSnackbar("Cache gelöscht");
@@ -363,4 +358,33 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
 
+    @Override
+    public void loadingCompleted(List<ViewItem> posts) {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            setRefreshAnim(false);
+                            if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
+                            if (adapter != null) adapter.notifyDataSetChanged();
+                        }
+                );
+    }
+
+    @Override
+    public void noNetworkError() {
+        showSnackbar("Keine Netzwerkverbindung");
+        setRefreshAnim(false);
+        scrollListener.resetState();
+    }
+
+    @Override
+    public void loadingStarted() {
+        setRefreshAnim(true);
+    }
+
+    @Override
+    public void loadingFailed(String message) {
+        showSnackbar(message, Snackbar.LENGTH_INDEFINITE);
+        setRefreshAnim(false);
+    }
 }

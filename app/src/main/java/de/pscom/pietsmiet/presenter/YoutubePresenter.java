@@ -1,11 +1,12 @@
 package de.pscom.pietsmiet.presenter;
 
+import android.content.Context;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeItem;
@@ -25,8 +26,8 @@ public class YoutubePresenter extends MainPresenter {
 
     YoutubeApiInterface apiInterface;
 
-    public YoutubePresenter(MainActivity view) {
-        super(view);
+    public YoutubePresenter(Context context) {
+        super(context);
         if (SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");
             return;
@@ -64,7 +65,7 @@ public class YoutubePresenter extends MainPresenter {
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
-                    view.showSnackbar("Youtube konnte nicht geladen werden");
+                    //fixme view.showSnackbar("Youtube konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -88,7 +89,7 @@ public class YoutubePresenter extends MainPresenter {
                     } catch (ParseException e) {
                         // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        view.showSnackbar("Einige Youtube-Posts konnte nicht geladen werden");
+                        //fixme view.showSnackbar("Einige Youtube-Posts konnte nicht geladen werden");
                     }
                     return postBuilder;
                 });

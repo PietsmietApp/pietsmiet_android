@@ -1,27 +1,23 @@
 package de.pscom.pietsmiet.util;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.DateTag;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
-import de.pscom.pietsmiet.presenter.FacebookPresenter;
-import de.pscom.pietsmiet.presenter.FirebasePresenter;
+import de.pscom.pietsmiet.interfaces.MainActivityView;
+import de.pscom.pietsmiet.interfaces.PostRepository;
 import de.pscom.pietsmiet.presenter.TwitterPresenter;
-import de.pscom.pietsmiet.presenter.YoutubePresenter;
 import rx.Observable;
 import rx.Subscription;
-import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.NEWS;
@@ -33,7 +29,9 @@ import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 public class PostManager {
     private static boolean FETCH_DIRECTION_DOWN = false;
 
-    private final MainActivity mView;
+    private final MainActivityView view;
+    private final PostRepository postRepository;
+    private final Context context;
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
@@ -45,8 +43,10 @@ public class PostManager {
     private Subscription subAddingPosts;
     private Subscription subUpdatePosts;
 
-    public PostManager(MainActivity view) {
-        mView = view;
+    public PostManager(MainActivityView view, PostRepository postRepository, Context context) {
+        this.view = view;
+        this.postRepository = postRepository;
+        this.context = context;
     }
 
     /**
@@ -55,14 +55,10 @@ public class PostManager {
      */
 
     @SuppressWarnings("WeakerAccess")
-    public void addPosts(List<Post> posts) {
-        List<ViewItem> lposts = new ArrayList<>();
-        lposts.addAll(posts);
-        subAddingPosts = Observable.just(lposts)
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .flatMapIterable(list -> list)
+    public Observable.Transformer<ViewItem, List<ViewItem>> addPosts() {
+        return postObservable -> postObservable
                 .distinct()
+                .filter(this::filterWrongPosts)
                 .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
                 .doOnNext(post_ -> {
                     if (post_.getType() == ViewItem.TYPE_POST) {
@@ -74,9 +70,7 @@ public class PostManager {
                     }
                 })
                 .toSortedList()
-                .subscribe(list -> {
-                    allPosts.addAll(list);
-                }, (throwable) -> PsLog.e("Couldn't update all posts!", throwable), this::updateCurrentPosts);
+                .doOnNext(list -> allPosts.addAll(list));
     }
 
     /**
@@ -86,7 +80,6 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        final Date lastPostDate = getFirstPostDate();
         subUpdatePosts = Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -98,8 +91,8 @@ public class PostManager {
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
                     Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
-                    for(ViewItem vi: listV) {
-                        if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
+                    for (ViewItem vi : listV) {
+                        if (vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_)) {
                             if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))
                                 list.add(list.indexOf(vi), new DateTag(vi.getDate()));
                             lastPostDate_ = vi.getDate();
@@ -107,12 +100,7 @@ public class PostManager {
                     }
                     return list;
                 })
-                .subscribe(list -> {
-                    allPosts.clear();
-                    allPosts.addAll(list);
-                }, throwable -> PsLog.e("Couldn't update current posts: ", throwable), () -> {
-                    if (mView != null) mView.updateAdapter();
-                });
+                .subscribe(view::loadingCompleted, throwable -> PsLog.e("Couldn't update current posts: ", throwable));
     }
 
     /**
@@ -128,7 +116,7 @@ public class PostManager {
     private Post getFirstPost() {
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
-                if(vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
+                if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
             }
         }
         return null;
@@ -139,7 +127,7 @@ public class PostManager {
         Post lastPost = null;
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
-                if(vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
+                if (vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
             }
         }
         return lastPost;
@@ -174,101 +162,45 @@ public class PostManager {
      * @param numPosts int
      **/
     public void fetchNextPosts(int numPosts) {
-        if (!NetworkUtil.isConnected(mView)) {
-            mView.showSnackbar("Keine Netzwerkverbindung");
-            mView.setRefreshAnim(false);
-            mView.scrollListener.resetState();
-            return;
-        }
-        FETCH_DIRECTION_DOWN = true;
-        postLoadCount = numPosts;
-        mView.setRefreshAnim(true);
-        PsLog.v("Loading the next " + postLoadCount + " posts");
-        Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
-                : Observable.empty();
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
-                : Observable.empty();
-        Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebasePresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
-                : Observable.empty();
-        Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookPresenter(mView).fetchPostsUntilObservable(getLastPostDate(), numPosts)
-                : Observable.empty();
-        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
+        PsLog.v("Loading the next " + numPosts + " posts");
+        setupLoading();
+        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), numPosts), true);
     }
 
     /**
      * Root fetching Method to call all specific fetching methods for new Posts.
      **/
     public void fetchNewPosts() {
-        if (!NetworkUtil.isConnected(mView)) {
-            mView.showSnackbar("Keine Netzwerkverbindung");
-            mView.setRefreshAnim(false);
-            mView.scrollListener.resetState();
-            return;
-        }
-        FETCH_DIRECTION_DOWN = false;
-        mView.setRefreshAnim(true);
         PsLog.v("Loading new posts");
-        Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterPresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
-                : Observable.empty();
-        Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
-                : Observable.empty();
-        Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebasePresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
-                : Observable.empty();
-        Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookPresenter(mView).fetchPostsSinceObservable(getFirstPostDate())
-                : Observable.empty();
-        manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
+        setupLoading();
+        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate()), false);
     }
 
-    /**
-     * Subscribes to the merged Observables emitting the loaded posts.
-     * Filters the result and finally adds the selected posts to the allPost List with addPosts().
-     *
-     * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
-     */
-    private void manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
-        subLoadingPosts = postObs.observeOn(Schedulers.io(), true)
-                .subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
-                .filter(postBuilder -> postBuilder != null)
-                .map(Post.PostBuilder::build)
-                .filter(post -> post != null)
-                .filter(this::filterWrongPosts)
-                .sorted()
-                .take(postLoadCount)
-                .toList()
-                .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
-                    if (attempt == 2) throw Exceptions.propagate(throwable);
-                    else {
-                        mView.showSnackbar("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
-                        PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
-                        return attempt;
-                    }
-                }).flatMap(retryCount -> Observable.timer((long) Math.pow(2, retryCount), TimeUnit.SECONDS)))
-                .timeout(15, TimeUnit.SECONDS)
+    public void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown){
+        subLoadingPosts = observable
+                .compose(addPosts())
                 .subscribe(items -> {
-                    addPosts(items);
-                    mView.setRefreshAnim(false);
+                    updateCurrentPosts();
                     PsLog.v("Finished with " + items.size() + " Posts");
-                    new DatabaseHelper(mView).insertPosts(items);
+                    new DatabaseHelper(context).insertPosts(items);
                 }, e -> {
                     if (e instanceof TimeoutException) {
                         PsLog.w("Laden dauerte zu lange, Abbruch...");
-                        mView.showSnackbar("Konnte Posts nicht laden (Timeout)", Snackbar.LENGTH_INDEFINITE);
+                        view.loadingFailed("Konnte Posts nicht laden (Timeout)");
                     } else {
                         PsLog.e("Kritischer Fehler beim Laden: ", e);
-                        mView.showSnackbar("Kritischer Fehler beim Laden. " +
-                                "Der Fehler wurde den Entwicklern gemeldet", Snackbar.LENGTH_INDEFINITE);
+                        view.loadingFailed("Kritischer Fehler beim Laden. " +
+                                "Der Fehler wurde den Entwicklern gemeldet");
                     }
-                    mView.setRefreshAnim(false);
-                }, () -> mView.setRefreshAnim(false));
+                });
+    }
+
+    private void setupLoading() {
+        if (!NetworkUtil.isConnected(context)) {
+            view.noNetworkError();
+            return;
+        }
+        view.loadingStarted();
     }
 
     /**
@@ -293,7 +225,6 @@ public class PostManager {
         TwitterPresenter.lastTweet = null;
         TwitterPresenter.firstTweet = null;
         updateCurrentPosts();
-        mView.scrollListener.resetState();
     }
 
     /**
@@ -302,31 +233,36 @@ public class PostManager {
      * Then checks if a post is after / before the fetching direction
      * and overrides the previous check if needed.
      *
-     * @param post Post object to check
+     * @param item ViewItem object to check
      * @return boolean shouldFilter
      */
-    private boolean filterWrongPosts(Post post) {
-
+    private boolean filterWrongPosts(ViewItem item) {
+        if (!(item instanceof Post)) {
+            return true;
+        }
+        Post post = (Post) item;
         boolean shouldFilter;
         if (FETCH_DIRECTION_DOWN) {
             shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 Post lPost = getLastPost();
 
-                if(lPost != null) PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + getLastPostDate());
+                if (lPost != null)
+                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                            " Titel: " + post.getTitle() +
+                            " Datum: " + post.getDate() +
+                            " letzter (ältester) Post " + lPost.getTitle() + " Datum: " + getLastPostDate());
             }
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 Post firstPost = getFirstPost();
 
-                if(firstPost != null) PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        "\n letzter (neuster) Post " + getFirstPost().getTitle() + " Datum: " + getFirstPostDate());
+                if (firstPost != null)
+                    PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                            " Titel: " + post.getTitle() +
+                            " Datum: " + post.getDate() +
+                            "\n letzter (neuster) Post " + getFirstPost().getTitle() + " Datum: " + getFirstPostDate());
             }
         }
         return shouldFilter;

@@ -1,10 +1,11 @@
 package de.pscom.pietsmiet.presenter;
 
+import android.content.Context;
+
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
@@ -25,8 +26,8 @@ public class FirebasePresenter extends MainPresenter {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
     FirebaseApiInterface apiInterface;
 
-    public FirebasePresenter(MainActivity view) {
-        super(view);
+    public FirebasePresenter(Context context) {
+        super(context);
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -42,7 +43,7 @@ public class FirebasePresenter extends MainPresenter {
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof SocketTimeoutException) {
                         PsLog.w("Firebase Timeout", error);
-                        view.showSnackbar("Firebase Timeout, neuer Versuch...");
+                        //fixme view.showSnackbar("Firebase Timeout, neuer Versuch...");
                         return Observable.just(null);
                     }
                     // Unrelated error, throw it
@@ -50,7 +51,7 @@ public class FirebasePresenter extends MainPresenter {
                 }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    view.showSnackbar("Pietsmiet.de konnte nicht geladen werden");
+                    //fixme view.showSnackbar("Pietsmiet.de konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)

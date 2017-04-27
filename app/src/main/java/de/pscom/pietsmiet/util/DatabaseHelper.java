@@ -8,13 +8,13 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.generic.ViewItem;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -101,10 +101,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param posts Posts to store
      */
     @SuppressWarnings("WeakerAccess")
-    public void insertPosts(List<Post> posts) {
+    public void insertPosts(List<ViewItem> posts) {
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
                 .flatMap(Observable::from)
+                .filter(post -> post instanceof Post)
+                .map(post -> (Post) post)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
@@ -206,18 +208,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
+                    this.close();
                     return toReturn;
 
                 })
+                .flatMapIterable(l -> l)
+                .compose(pm.addPosts())
                 .subscribe(items -> {
-                    this.close();
                     PsLog.v("Loaded " + items.size() + " posts from DB");
-                    pm.addPosts(items);
+                    pm.updateCurrentPosts();
+                    pm.fetchNewPosts();
                 }, e -> {
-                    this.close();
                     PsLog.e("Could not load posts from DB: ", e);
                     pm.fetchNewPosts();
-                }, pm::fetchNewPosts);
+                });
     }
 
 }

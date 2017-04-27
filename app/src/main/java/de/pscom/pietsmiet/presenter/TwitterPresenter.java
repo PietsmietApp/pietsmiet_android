@@ -1,12 +1,13 @@
 package de.pscom.pietsmiet.presenter;
 
+import android.content.Context;
+
 import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
 import de.pscom.pietsmiet.model.twitterApi.TwitterRoot;
@@ -36,8 +37,8 @@ public class TwitterPresenter extends MainPresenter {
             "OR from:br4mm3n " +
             "exclude:replies";
 
-    public TwitterPresenter(MainActivity view) {
-        super(view);
+    public TwitterPresenter(Context context) {
+        super(context);
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
             return;
@@ -72,7 +73,7 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    view.showSnackbar("Twitter konnte nicht geladen werden");
+                    //Fixme view.showSnackbar("Twitter konnte nicht geladen werden");
                     return null;
                 })
                 .filter(status -> status != null)
@@ -116,7 +117,7 @@ public class TwitterPresenter extends MainPresenter {
                             .map(twitterToken -> {
                                 PsLog.d("Loading new twitter authentication bearer");
                                 if (twitterToken.tokenType.equals("bearer")) {
-                                    SharedPreferenceHelper.setSharedPreferenceString(view,
+                                    SharedPreferenceHelper.setSharedPreferenceString(context,
                                             KEY_TWITTER_BEARER, twitterToken.accessToken);
                                     return twitterToken.accessToken;
                                 } else {

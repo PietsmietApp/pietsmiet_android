@@ -86,6 +86,7 @@ public class PsLog {
     public static void e(String message, Throwable tr) {
         if (!BuildConfig.DEBUG) {
             FirebaseCrash.log("Catched Exception in " + getTag() + ": " + Log.getStackTraceString(tr));
+            FirebaseCrash.report(tr);
         }
         Log.e(getTag(), message, tr);
     }

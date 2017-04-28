@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
@@ -39,7 +40,11 @@ import rx.android.schedulers.AndroidSchedulers;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolAppFirstRun;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolVideoNotification;
 import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
@@ -111,6 +116,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         });
         // End Top Button init
 
+        if (boolAppFirstRun) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.dialog_video_notification_message)
+                    .setPositiveButton(R.string.yes, (dialog, id) -> {
+                        boolVideoNotification = true;
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
+                    })
+                    .setNegativeButton(R.string.no, (dialog, id) -> {
+                        boolVideoNotification = false;
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
+                    });
+            builder.create().show();
+
+            // Set AppFirstRun to false //todo maybe position this in OnDestroy / OnPause, because of logic
+            boolAppFirstRun = false;
+            SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
+        }
 
         if (BuildConfig.DEBUG) {
             FirebaseMessaging.getInstance().subscribeToTopic("test2");
@@ -185,7 +207,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onResume() {
         super.onResume();
         SettingsHelper.loadAllSettings(this);
-        // Update adapter to refresh times
+        // Update adapter to refresh timestamps
         updateAdapter();
     }
 

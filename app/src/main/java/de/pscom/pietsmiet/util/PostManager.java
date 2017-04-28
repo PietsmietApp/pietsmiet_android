@@ -86,7 +86,6 @@ public class PostManager {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        final Date lastPostDate = getFirstPostDate();
         subUpdatePosts = Observable.just(allPosts)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
@@ -95,9 +94,10 @@ public class PostManager {
                 .distinct()
                 .toSortedList()
                 .map(list -> {
+                    if(list == null ||list.isEmpty()) return list; //todo right?
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
-                    Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
+                    Date lastPostDate_ = listV.get(0).getDate();
                     for(ViewItem vi: listV) {
                         if(vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_) ) {
                             if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))

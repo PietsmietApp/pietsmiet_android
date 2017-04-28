@@ -5,16 +5,9 @@ import android.content.Context;
 import java.util.Date;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import rx.Observable;
 import rx.schedulers.Schedulers;
-
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class PostRepositoryImpl implements PostRepository {
     private final Context context;
@@ -37,7 +30,7 @@ public class PostRepositoryImpl implements PostRepository {
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
                 new FacebookRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
-        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs), numPosts, true, lastPostDate);
+        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
     @Override
@@ -54,53 +47,20 @@ public class PostRepositoryImpl implements PostRepository {
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
                 new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate)
                 : Observable.empty();
-        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs), 15, false, firstPostDate);
+        return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
 
     /**
-     * Subscribes to the merged Observables emitting the loaded posts.
-     * Filters the result and finally adds the selected posts to the allPost List with addPosts().
+     * Builds the post and filters null objects
      *
      * @param postObs Observable<PostBuilder> emitting loaded posts from various sources.
      */
-    private Observable<Post> manageEmittedPosts(Observable<Post.PostBuilder> postObs, int numPosts/*fixme not sure, ask tk*/, boolean fetchDirectionDown, Date date) {
-        return postObs.observeOn(Schedulers.io(), true)
+    private Observable<Post> manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
+        return postObs
+                .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
-                .onBackpressureBuffer()
                 .filter(postBuilder -> postBuilder != null)
                 .map(Post.PostBuilder::build)
-                .filter(post -> post != null)
-                .filter(post -> filterWrongPosts(post, fetchDirectionDown, date))
-                .sorted()
-                .take(numPosts);
-    }
-
-    /**
-     * Checks if a post is after / before the fetching direction
-     * and overrides the previous check if needed.
-     *
-     * @param post Post object to check
-     * @return boolean shouldFilter
-     */
-    private boolean filterWrongPosts(Post post, boolean fetchDirectionDown, Date date) {
-        boolean shouldFilter;
-        if (fetchDirectionDown) {
-            shouldFilter = post.getDate().before(date);
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        " letzter (ältester) Post Datum: " + date);
-            }
-        } else {
-            shouldFilter = post.getDate().after(date);
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        "\n letzter (neuster) Post: Datum: " + date);
-            }
-        }
-        return shouldFilter;
+                .filter(post -> post != null);
     }
 }

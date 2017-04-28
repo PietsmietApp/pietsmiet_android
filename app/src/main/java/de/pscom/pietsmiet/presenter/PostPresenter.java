@@ -18,6 +18,7 @@ import de.pscom.pietsmiet.repository.PostRepository;
 import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.NetworkUtil;
+import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivityView;
@@ -26,7 +27,11 @@ import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.util.PostType.NEWS;
+import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
+import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class PostPresenter {
 
@@ -169,7 +174,7 @@ public class PostPresenter {
     public void fetchNextPosts(int numPosts) {
         PsLog.v("Loading the next " + numPosts + " posts");
         setupLoading();
-        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), numPosts), true);
+        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), numPosts), true, getLastPostDate(), 15);
     }
 
     /**
@@ -178,7 +183,7 @@ public class PostPresenter {
     public void fetchNewPosts() {
         PsLog.v("Loading new posts");
         setupLoading();
-        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate()), false);
+        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate()), false, getFirstPostDate(), 15);
     }
 
     /**
@@ -187,8 +192,11 @@ public class PostPresenter {
      * @param observable         Fetch next or Fetch new observable to subscribe on
      * @param fetchDirectionDown In which direction the observable is fetching (for the filter and later for notifyAdapter)
      */
-    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown) {
+    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, Date date, int numPosts/*fixme not sure, ask tk*/) {
         subLoadingPosts = observable
+                .filter(post -> filterWrongPosts(post, fetchDirectionDown, date))
+                .sorted()
+                .take(numPosts)
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
                     if (attempt == 2) throw Exceptions.propagate(throwable);
                     else {
@@ -244,5 +252,34 @@ public class PostPresenter {
         allPosts.clear();
         TwitterRepository.lastTweet = null;
         TwitterRepository.firstTweet = null;
+    }
+
+    /**
+     * Checks if a post is after / before the fetching direction
+     * and overrides the previous check if needed.
+     *
+     * @param post Post object to check
+     * @return boolean shouldFilter
+     */
+    private boolean filterWrongPosts(Post post, boolean fetchDirectionDown, Date date) {
+        boolean shouldFilter;
+        if (fetchDirectionDown) {
+            shouldFilter = post.getDate().before(date);
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        " letzter (ältester) Post Datum: " + date);
+            }
+        } else {
+            shouldFilter = post.getDate().after(date);
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        "\n letzter (neuster) Post: Datum: " + date);
+            }
+        }
+        return shouldFilter;
     }
 }

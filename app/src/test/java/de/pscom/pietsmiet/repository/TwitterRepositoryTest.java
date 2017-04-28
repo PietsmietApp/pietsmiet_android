@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 
@@ -10,7 +10,6 @@ import java.util.Locale;
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
-import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -20,7 +19,7 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
-public class TwitterPresenterTest extends MainTestPresenter {
+public class TwitterRepositoryTest extends MainTestPresenter {
     @Override
     public TwitterRepository preparePresenter() throws Exception {
         SecretConstants.twitterSecret = "s";
@@ -36,7 +35,7 @@ public class TwitterPresenterTest extends MainTestPresenter {
     public void fetchPostsSinceObservable() throws Exception {
         TwitterRepository presenter = preparePresenter();
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
+        presenter.fetchPostsSinceObservable(new Date(), 50)
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();

@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,9 +9,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.generic.Post.PostBuilder;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
-import de.pscom.pietsmiet.repository.FirebaseRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import okhttp3.mockwebserver.MockResponse;
@@ -20,8 +18,9 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
+
 @RunWith(MockitoJUnitRunner.class)
-public class FirebasePresenterTest extends MainTestPresenter {
+public class FirebaseRepositoryTest extends MainTestPresenter {
 
     @Override
     public FirebaseRepository preparePresenter() throws Exception {
@@ -42,8 +41,8 @@ public class FirebasePresenterTest extends MainTestPresenter {
         FirebaseRepository presenter = preparePresenter();
 
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
-                .map(PostBuilder::build)
+        presenter.fetchPostsSinceObservable(new Date(), 50)
+                .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();
         for (Throwable tr : testSubscriber.getOnErrorEvents()) {

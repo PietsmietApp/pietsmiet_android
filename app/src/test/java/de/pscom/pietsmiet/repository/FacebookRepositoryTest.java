@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 
@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
-import de.pscom.pietsmiet.repository.FacebookRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import okhttp3.mockwebserver.MockResponse;
@@ -18,7 +17,7 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
-public class FacebookPresenterTest extends MainTestPresenter {
+public class FacebookRepositoryTest extends MainTestPresenter {
     @Override
     public FacebookRepository preparePresenter() {
         SecretConstants.facebookToken = "s";
@@ -34,7 +33,7 @@ public class FacebookPresenterTest extends MainTestPresenter {
     public void fetchPostsSinceObservable() throws Exception {
         FacebookRepository presenter = preparePresenter();
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
+        presenter.fetchPostsSinceObservable(new Date(), 50)
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();

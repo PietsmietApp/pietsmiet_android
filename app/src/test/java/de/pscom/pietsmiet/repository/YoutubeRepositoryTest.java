@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 
@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
-import de.pscom.pietsmiet.repository.YoutubeRepository;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import okhttp3.mockwebserver.MockResponse;
@@ -18,7 +17,7 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
-public class YoutubePresenterTest extends MainTestPresenter {
+public class YoutubeRepositoryTest extends MainTestPresenter {
     @Override
     public YoutubeRepository preparePresenter() {
         SecretConstants.youtubeAPIkey = "s";
@@ -35,7 +34,7 @@ public class YoutubePresenterTest extends MainTestPresenter {
         YoutubeRepository presenter = preparePresenter();
 
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
+        presenter.fetchPostsSinceObservable(new Date(), 50)
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();

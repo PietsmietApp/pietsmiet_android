@@ -1,9 +1,8 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.mockito.Mock;
 
 import de.pscom.pietsmiet.view.MainActivity;
-import de.pscom.pietsmiet.repository.MainPresenter;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -13,7 +12,7 @@ abstract class MainTestPresenter {
     @Mock
     protected MainActivity mMockContext;
 
-    public abstract <T extends MainPresenter> T preparePresenter() throws Exception;
+    public abstract <T extends MainRepository> T preparePresenter() throws Exception;
 
 
     protected  Retrofit getRetrofit(MockWebServer mockWebServer) {

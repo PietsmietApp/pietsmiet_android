@@ -97,7 +97,6 @@ public class PostPresenter {
                     if (listV.size() == 0) {
                         return list;
                     }
-                    //todo tk fragen wie das geht
                     Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
                     for (ViewItem vi : listV) {
                         if (vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_)) {

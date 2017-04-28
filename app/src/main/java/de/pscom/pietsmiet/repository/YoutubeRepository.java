@@ -44,10 +44,10 @@ public class YoutubeRepository extends MainRepository {
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince, int numPosts) {
 
         String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(dSince);
-        Observable<YoutubeRoot> callObs = apiInterface.getPlaylistSinceDate(50, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
+        Observable<YoutubeRoot> callObs = apiInterface.getPlaylistSinceDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
         return fetchData(callObs);
     }

@@ -204,7 +204,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             @Override
             public void onLoadMore(int totalItemsCount, RecyclerView view) {
                 // Triggered only when new data needs to be appended to the list
-                postPresenter.fetchNextPosts(LOAD_MORE_ITEMS_COUNT);
+                postPresenter.fetchNextPosts();
             }
         };
         // Adds the scroll listener to RecyclerView

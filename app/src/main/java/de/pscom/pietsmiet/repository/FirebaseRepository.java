@@ -90,7 +90,7 @@ public class FirebaseRepository extends MainRepository {
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         return parsePostsFromDb(apiInterface.getAll());
 
     }

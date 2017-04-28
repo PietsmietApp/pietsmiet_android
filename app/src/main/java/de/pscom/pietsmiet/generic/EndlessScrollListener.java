@@ -13,9 +13,6 @@ import de.pscom.pietsmiet.util.NetworkUtil;
  */
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
-
-
-    protected static final int LOAD_MORE_ITEMS_COUNT = 15;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private boolean FLAG_SHOWED_NO_NETWORK_MESSAGE = false;

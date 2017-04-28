@@ -34,18 +34,18 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Observable<Post> fetchNewPosts(Date firstPostDate) {
+    public Observable<Post> fetchNewPosts(Date firstPostDate, int numPosts) {
         Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterRepository(context).fetchPostsSinceObservable(firstPostDate)
+                new TwitterRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubeRepository(context).fetchPostsSinceObservable(firstPostDate)
+                new YoutubeRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebaseRepository(context).fetchPostsSinceObservable(firstPostDate)
+                new FirebaseRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate)
+                new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }

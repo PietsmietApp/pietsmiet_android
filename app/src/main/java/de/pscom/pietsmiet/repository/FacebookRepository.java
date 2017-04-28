@@ -125,8 +125,8 @@ public class FacebookRepository extends MainRepository {
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
-        return parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), 50);
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince, int numPosts) {
+        return parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), numPosts);
     }
 
 

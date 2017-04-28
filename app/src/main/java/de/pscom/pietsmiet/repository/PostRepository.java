@@ -8,5 +8,5 @@ import rx.Observable;
 public interface PostRepository {
     Observable<Post> fetchNextPosts(Date lastPostDate, int numPosts);
 
-    Observable<Post> fetchNewPosts(Date firstPostDate);
+    Observable<Post> fetchNewPosts(Date firstPostDate, int numPosts);
 }

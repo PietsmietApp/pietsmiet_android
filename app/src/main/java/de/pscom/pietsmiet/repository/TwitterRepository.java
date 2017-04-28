@@ -151,12 +151,12 @@ public class TwitterRepository extends MainRepository {
 
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         Observable<TwitterRoot> obs;
         if (firstTweet != null) {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince("Bearer " + bearer, query, 50, firstTweet.getId()));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince("Bearer " + bearer, query, numPosts, firstTweet.getId()));
         } else {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, 50));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, numPosts));
         }
         return parseTweets(obs);
     }

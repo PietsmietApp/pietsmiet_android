@@ -34,6 +34,8 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class PostPresenter {
+    private static final int LOAD_MORE_ITEMS_COUNT = 25;
+    private static final int LOAD_NEW_ITEMS_COUNT = 50;
 
     private final MainActivityView view;
     private final PostRepository postRepository;
@@ -168,13 +170,11 @@ public class PostPresenter {
 
     /**
      * Root fetching Method to call all specific fetching methods for older Posts.
-     *
-     * @param numPosts int
      **/
-    public void fetchNextPosts(int numPosts) {
-        PsLog.v("Loading the next " + numPosts + " posts");
+    public void fetchNextPosts() {
+        PsLog.v("Loading the next " + LOAD_MORE_ITEMS_COUNT + " posts");
         setupLoading();
-        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), numPosts), true, getLastPostDate(), 15);
+        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), LOAD_MORE_ITEMS_COUNT), true, getLastPostDate(), LOAD_MORE_ITEMS_COUNT);
     }
 
     /**
@@ -183,7 +183,7 @@ public class PostPresenter {
     public void fetchNewPosts() {
         PsLog.v("Loading new posts");
         setupLoading();
-        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate()), false, getFirstPostDate(), 15);
+        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate(), LOAD_NEW_ITEMS_COUNT), false, getFirstPostDate(), LOAD_NEW_ITEMS_COUNT);
     }
 
     /**
@@ -192,7 +192,7 @@ public class PostPresenter {
      * @param observable         Fetch next or Fetch new observable to subscribe on
      * @param fetchDirectionDown In which direction the observable is fetching (for the filter and later for notifyAdapter)
      */
-    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, Date date, int numPosts/*fixme not sure, ask tk*/) {
+    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, Date date, int numPosts) {
         subLoadingPosts = observable
                 .filter(post -> filterWrongPosts(post, fetchDirectionDown, date))
                 .sorted()

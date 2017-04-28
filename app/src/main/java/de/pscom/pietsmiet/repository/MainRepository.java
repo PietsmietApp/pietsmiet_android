@@ -24,7 +24,7 @@ abstract class MainRepository {
      *
      * @param dAfter Date
      */
-    public abstract Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dAfter);
+    public abstract Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dAfter, int numPosts);
 
     /**
      * Fetches all posts before a specific date. Until the given date.

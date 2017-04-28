@@ -29,7 +29,7 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 public class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
-    public FacebookRepository(Context context) {
+    FacebookRepository(Context context) {
         super(context);
         if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");

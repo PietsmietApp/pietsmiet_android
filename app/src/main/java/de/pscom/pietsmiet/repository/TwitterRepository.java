@@ -37,7 +37,7 @@ public class TwitterRepository extends MainRepository {
             "OR from:br4mm3n " +
             "exclude:replies";
 
-    public TwitterRepository(Context context) {
+    TwitterRepository(Context context) {
         super(context);
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");

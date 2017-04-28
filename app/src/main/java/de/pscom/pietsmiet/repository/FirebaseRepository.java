@@ -26,7 +26,7 @@ public class FirebaseRepository extends MainRepository {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
     FirebaseApiInterface apiInterface;
 
-    public FirebaseRepository(Context context) {
+    FirebaseRepository(Context context) {
         super(context);
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 

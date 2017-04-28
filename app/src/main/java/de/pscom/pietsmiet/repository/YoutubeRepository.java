@@ -26,7 +26,7 @@ public class YoutubeRepository extends MainRepository {
 
     YoutubeApiInterface apiInterface;
 
-    public YoutubeRepository(Context context) {
+    YoutubeRepository(Context context) {
         super(context);
         if (SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");

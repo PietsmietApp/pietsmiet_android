@@ -21,7 +21,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SE
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_LOAD_HD_SETTING;
 
 
-public class Settings extends BaseActivity {
+public class SettingsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class Settings extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if(position < 3) {
-                    SharedPreferenceHelper.setSharedPreferenceInt(Settings.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
+                    SharedPreferenceHelper.setSharedPreferenceInt(SettingsActivity.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
                 } else {
                     ((Spinner) view).setSelection(0);
                 }
@@ -66,7 +66,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_UPLOADPLAN_SETTING, isChecked);
+            SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_UPLOADPLAN_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
             } else {
@@ -75,7 +75,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyVideoSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
+            SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("video");
             } else {
@@ -84,7 +84,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyNewsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_NEWS_SETTING, isChecked);
+            SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_NEWS_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("news");
             } else {
@@ -93,7 +93,7 @@ public class Settings extends BaseActivity {
         });
 
         notifyPietcastSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(Settings.this, KEY_NOTIFY_PIETCAST_SETTING, isChecked);
+            SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_PIETCAST_SETTING, isChecked);
             if (isChecked) {
                 FirebaseMessaging.getInstance().subscribeToTopic("pietcast");
             } else {

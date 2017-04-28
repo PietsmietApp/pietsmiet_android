@@ -330,10 +330,10 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 startActivity(i_Browser);
                 break;
             case R.id.nav_help:
-                startActivity(new Intent(MainActivity.this, About.class));
+                startActivity(new Intent(MainActivity.this, AboutActivity.class));
                 break;
             case R.id.nav_settings:
-                startActivityForResult(new Intent(MainActivity.this, Settings.class), REQUEST_SETTINGS);
+                startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                 break;
             case R.id.nav_pietstream_banner:
                 Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);

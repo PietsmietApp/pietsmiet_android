@@ -20,12 +20,12 @@
         </activity>
 
         <activity
-            android:name=".view.Settings"
+            android:name=".view.SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
-            android:name=".view.About"
+            android:name=".view.AboutActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

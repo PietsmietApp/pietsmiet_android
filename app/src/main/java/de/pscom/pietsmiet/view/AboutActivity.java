@@ -9,7 +9,7 @@ import com.mikepenz.aboutlibraries.ui.LibsSupportFragment;
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
 
-public class About extends BaseActivity {
+public class AboutActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

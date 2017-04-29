@@ -3,6 +3,7 @@ package de.pscom.pietsmiet.util;
 import android.content.Context;
 
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETCAST;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSMIET_NEWS;
@@ -21,6 +22,8 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreference
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreferenceString;
 
 public class SettingsHelper {
+    public static boolean boolAppFirstRun;
+
     public static boolean boolUploadplanNotification;
     public static boolean boolVideoNotification;
     public static boolean boolNewsNotification;
@@ -42,10 +45,11 @@ public class SettingsHelper {
     public static final int TYPE_HD_WIFI = 1;
     public static final int TYPE_HD_ALWAYS = 2;
 
-
     public static void loadAllSettings(Context context) {
+        boolAppFirstRun = getSharedPreferenceBoolean(context, KEY_APP_FIRST_RUN, true);
+
         boolUploadplanNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, true);
-        boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, true);
+        boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
         stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, null);

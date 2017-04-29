@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="30dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8.5dp"
+    android:layout_marginRight="8.5dp"
     android:layout_marginTop="30dp"
     android:orientation="horizontal">
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_gravity="left|center_vertical"
+        android:layout_gravity="left"
         android:layout_toStartOf="@+id/tvDate"
         android:background="@color/date_tag_text" />
 
@@ -21,24 +21,23 @@
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:layout_weight="0.41"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
         android:text="24. Mai 2017"
         android:textAlignment="center"
         android:textColor="@color/date_tag_text"
+        android:textSize="14.5dp"
         android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:layout_gravity="right|center_vertical"
+        android:layout_gravity="right"
         android:layout_toEndOf="@+id/tvDate"
         android:background="@color/date_tag_text" />
 </RelativeLayout>

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 
+import java.net.SocketTimeoutException;
+
 
 /**
  * Source: https://github.com/ccrama/Slide/blob/master/app/src/main/java/me/ccrama/redditslide/util/LogUtil.java
@@ -84,8 +86,9 @@ public class PsLog {
     }
 
     public static void e(String message, Throwable tr) {
-        if (!BuildConfig.DEBUG) {
-            FirebaseCrash.log("Catched Exception in " + getTag() + ": " + Log.getStackTraceString(tr));
+        if (!BuildConfig.DEBUG && !(tr instanceof SocketTimeoutException)) {
+            FirebaseCrash.log(getTag() + " " +  message + ": " + Log.getStackTraceString(tr));
+            FirebaseCrash.report(tr);
         }
         Log.e(getTag(), message, tr);
     }

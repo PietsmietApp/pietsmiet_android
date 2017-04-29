@@ -92,12 +92,13 @@ public class PostPresenter {
                 .distinct()
                 .toSortedList()
                 .map(list -> {
+                    if(list == null ||list.isEmpty()) return list;
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
                     if (listV.size() == 0) {
                         return list;
                     }
-                    Date lastPostDate_ = listV.get(0).getDate(); //todo ? not null
+                    Date lastPostDate_ = listV.get(0).getDate();
                     for (ViewItem vi : listV) {
                         if (vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_)) {
                             if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))

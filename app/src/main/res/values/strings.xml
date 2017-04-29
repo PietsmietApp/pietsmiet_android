@@ -13,6 +13,10 @@
         \n\n<b><i>Quellcode:</i></b> \n https://github.com/l3d00m/pietsmiet_android/
         \n \nErstellt mit &lt;3</string>
 
+    <string name="dialog_video_notification_message">Möchtest du Benachrichtigungen zu neuen Videos von pietsmiet.de erhalten?</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+
     <string name="time_just_now">Gerade eben</string>
     <string name="time_days_short">%d d</string>
     <string name="time_hours_short">%d h</string>

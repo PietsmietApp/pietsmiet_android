@@ -11,6 +11,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  */
 @SuppressWarnings("SameParameterValue")
 public class SharedPreferenceHelper {
+    public static final String KEY_APP_FIRST_RUN = "KEY_APP_FIRST_RUN";
+
     public static final String KEY_NOTIFY_UPLOADPLAN_SETTING = "KEY_NOTIFY_UPLOADPLAN_SETTING";
     public static final String KEY_NOTIFY_VIDEO_SETTING = "KEY_NOTIFY_VIDEO_SETTING";
     public static final String KEY_NOTIFY_NEWS_SETTING = "KEY_NOTIFY_NEWS_SETTING";

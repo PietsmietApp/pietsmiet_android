@@ -91,7 +91,6 @@
                 android:id="@+id/tvQualityHDImages"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/sectionQuality"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/sectionQuality"
                 android:layout_marginBottom="10dp"

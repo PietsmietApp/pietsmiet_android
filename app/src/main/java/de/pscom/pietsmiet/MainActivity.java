@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
-                PsLog.e("Uncaught Exception!", paramThrowable);
+                PsLog.w("Uncaught Exception!", paramThrowable);
                 System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
             });
         }

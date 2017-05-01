@@ -122,10 +122,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     .setPositiveButton(R.string.yes, (dialog, id) -> {
                         boolVideoNotification = true;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
+                        FirebaseMessaging.getInstance().subscribeToTopic("video");
                     })
                     .setNegativeButton(R.string.no, (dialog, id) -> {
                         boolVideoNotification = false;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
                     });
             builder.create().show();
 

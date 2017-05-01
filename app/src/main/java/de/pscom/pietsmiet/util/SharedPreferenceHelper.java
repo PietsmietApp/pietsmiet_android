@@ -39,7 +39,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(key.substring(0, 24), value + "");
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value + "");
     }
 
     /**
@@ -53,7 +53,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(key.substring(0, 24), value);
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value);
     }
 
     /**
@@ -67,7 +67,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(key.substring(0, 24), value + "");
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value + "");
     }
 
     /**
@@ -81,7 +81,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(key.substring(0, 24), value ? "true" : "false");
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value ? "true" : "false");
     }
 
     /**

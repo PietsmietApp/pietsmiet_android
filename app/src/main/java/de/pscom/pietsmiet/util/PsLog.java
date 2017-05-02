@@ -8,6 +8,8 @@ import com.google.firebase.crash.FirebaseCrash;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import javax.net.ssl.SSLException;
+
 
 /**
  * Source: https://github.com/ccrama/Slide/blob/master/app/src/main/java/me/ccrama/redditslide/util/LogUtil.java
@@ -87,8 +89,11 @@ public class PsLog {
     }
 
     public static void e(String message, Throwable tr) {
-        if (!BuildConfig.DEBUG && !(tr instanceof SocketTimeoutException) && !(tr instanceof UnknownHostException)) {
-            FirebaseCrash.log(getTag() + " " +  message + ": " + Log.getStackTraceString(tr));
+        if (!BuildConfig.DEBUG &&
+                !(tr instanceof SocketTimeoutException) &&
+                !(tr instanceof UnknownHostException) &&
+                !(tr instanceof SSLException)) {
+            FirebaseCrash.log(getTag() + " " + message + ": " + Log.getStackTraceString(tr));
             FirebaseCrash.report(tr);
         }
         Log.e(getTag(), message, tr);

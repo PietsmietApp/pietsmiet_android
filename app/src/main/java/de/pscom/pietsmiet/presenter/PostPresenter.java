@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet.presenter;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
@@ -39,7 +38,8 @@ public class PostPresenter {
 
     private final MainActivityView view;
     private final PostRepository postRepository;
-    private final Context context;
+    private final DatabaseHelper databaseHelper;
+    private final NetworkUtil networkUtil;
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
@@ -48,10 +48,11 @@ public class PostPresenter {
     private Subscription subLoadingPosts;
     private Subscription subUpdatePosts;
 
-    public PostPresenter(MainActivityView view, PostRepository postRepository, Context context) {
+    public PostPresenter(MainActivityView view, PostRepository postRepository, DatabaseHelper databaseHelper, NetworkUtil networkUtil) {
         this.view = view;
         this.postRepository = postRepository;
-        this.context = context;
+        this.databaseHelper = databaseHelper;
+        this.networkUtil = networkUtil;
     }
 
     /**
@@ -92,7 +93,7 @@ public class PostPresenter {
                 .distinct()
                 .toSortedList()
                 .map(list -> {
-                    if(list == null ||list.isEmpty()) return list;
+                    if (list == null || list.isEmpty()) return list;
                     List<ViewItem> listV = new ArrayList<>();
                     listV.addAll(list);
                     if (listV.size() == 0) {
@@ -209,7 +210,7 @@ public class PostPresenter {
                 .subscribe(items -> {
                     updateCurrentPosts();
                     PsLog.v("Finished with " + items.size() + " Posts");
-                    new DatabaseHelper(context).insertPosts(items);
+                    databaseHelper.insertPosts(items);
                 }, e -> {
                     if (e instanceof TimeoutException) {
                         PsLog.w("Laden dauerte zu lange, Abbruch...");
@@ -226,7 +227,7 @@ public class PostPresenter {
      * Checks if network's available and informs the view about the started loading
      */
     private void setupLoading() {
-        if (!NetworkUtil.isConnected(context)) {
+        if (!networkUtil.isConnected()) {
             view.noNetworkError();
             return;
         }

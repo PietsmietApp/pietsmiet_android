@@ -31,6 +31,7 @@ import de.pscom.pietsmiet.repository.PostRepositoryImpl;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
+import de.pscom.pietsmiet.util.NetworkUtil;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -77,7 +78,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
-        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this), getApplicationContext());
+        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this), new DatabaseHelper(this), new NetworkUtil(this));
 
         setupRecyclerView();
         setupDrawer();

@@ -89,7 +89,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-            if(NetworkUtil.isConnected(view.getContext())) {
+            if(new NetworkUtil(view.getContext()).isConnected()) {
                 onLoadMore(totalItemCount, view);
                 loading = true;
                 FLAG_SHOWED_NO_NETWORK_MESSAGE = false;

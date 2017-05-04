@@ -139,12 +139,13 @@ public class PostPresenter {
 
     @Nullable
     private synchronized Post getLastPost() {
+        Post lastPost = null;
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
-                if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
+                if (vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
             }
         }
-        return null;
+        return lastPost;
     }
 
     /**

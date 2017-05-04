@@ -171,4 +171,28 @@ public class PostPresenterTest {
         List<Post> shouldBe = Arrays.asList(lastPost, post2);
         assertThat(presenter.getPostsToDisplay(), is(shouldBe));
     }
+
+    @Test
+    public void testFirstPostDate() {
+        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
+        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
+
+        presenter.getPostsToDisplay().addAll(Arrays.asList(post1, post2, post3));
+
+        assertThat(presenter.getFirstPostDate().getTime(), is(RANDOM_TIME + 1000));
+    }
+
+    @Test
+    public void testLastPostDate() {
+        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
+        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
+
+        presenter.getPostsToDisplay().addAll(Arrays.asList(post1, post2, post3));
+
+        assertThat(presenter.getLastPostDate().getTime(), is(RANDOM_TIME - 5000 - 1000));
+    }
+
+
 }

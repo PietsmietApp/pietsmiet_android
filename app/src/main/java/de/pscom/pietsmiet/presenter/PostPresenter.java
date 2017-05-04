@@ -155,7 +155,7 @@ public class PostPresenter {
      *
      * @return Date
      */
-    private Date getFirstPostDate() {
+    Date getFirstPostDate() {
         Post post = getFirstPost();
         return (post == null) ? new Date(new Date().getTime() - 864000000) : new Date(post.getDate().getTime() + 1000);
     }
@@ -166,7 +166,7 @@ public class PostPresenter {
      *
      * @return Date
      */
-    private Date getLastPostDate() {
+    Date getLastPostDate() {
         Post post = getLastPost();
         return (post == null) ? new Date() : new Date(post.getDate().getTime() - 1000);
     }

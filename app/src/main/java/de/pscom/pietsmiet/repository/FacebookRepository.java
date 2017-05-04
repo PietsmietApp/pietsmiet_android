@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +15,7 @@ import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -29,8 +28,8 @@ import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 public class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
-    FacebookRepository(Context context) {
-        super(context);
+    FacebookRepository(MainActivity view) {
+        super(view);
         if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");
             return;
@@ -76,13 +75,12 @@ public class FacebookRepository extends MainRepository {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    //fixme view.showMessage("Facebook konnte nicht geladen werden");
+                    view.showMessage("Facebook konnte nicht geladen werden");
                     return null;
                 })
                 .filter(response -> response != null)
                 .map(post -> {
-
-                    postBuilder = new Post.PostBuilder(FACEBOOK);
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(FACEBOOK);
                     try {
                         if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("created_time"))) {
                             return postBuilder;

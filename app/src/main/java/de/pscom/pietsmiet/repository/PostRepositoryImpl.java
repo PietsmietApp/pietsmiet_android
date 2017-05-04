@@ -1,34 +1,33 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
 import java.util.Date;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.view.MainActivity;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
 public class PostRepositoryImpl implements PostRepository {
-    private final Context context;
+    private final MainActivity view;
 
-    public PostRepositoryImpl(Context context) {
-        this.context = context;
+    public PostRepositoryImpl(MainActivity view) {
+        this.view = view;
     }
 
     @Override
     public Observable<Post> fetchNextPosts(Date lastPostDate, int numPosts) {
         Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new TwitterRepository(view).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubeRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new YoutubeRepository(view).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebaseRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new FirebaseRepository(view).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookRepository(context).fetchPostsUntilObservable(lastPostDate, numPosts)
+                new FacebookRepository(view).fetchPostsUntilObservable(lastPostDate, numPosts)
                 : Observable.empty();
         return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }
@@ -36,16 +35,16 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public Observable<Post> fetchNewPosts(Date firstPostDate, int numPosts) {
         Observable<Post.PostBuilder> twitterObs = SettingsHelper.boolCategoryTwitter ?
-                new TwitterRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
+                new TwitterRepository(view).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> youtubeObs = SettingsHelper.boolCategoryYoutubeVideos ?
-                new YoutubeRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
+                new YoutubeRepository(view).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> firebaseObs = (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos) ?
-                new FirebaseRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
+                new FirebaseRepository(view).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         Observable<Post.PostBuilder> facebookObs = SettingsHelper.boolCategoryFacebook ?
-                new FacebookRepository(context).fetchPostsSinceObservable(firstPostDate, numPosts)
+                new FacebookRepository(view).fetchPostsSinceObservable(firstPostDate, numPosts)
                 : Observable.empty();
         return manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, firebaseObs, facebookObs));
     }

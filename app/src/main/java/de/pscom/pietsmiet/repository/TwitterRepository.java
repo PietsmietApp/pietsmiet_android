@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
 import java.net.HttpURLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,6 +15,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -37,8 +36,8 @@ public class TwitterRepository extends MainRepository {
             "OR from:br4mm3n " +
             "exclude:replies";
 
-    TwitterRepository(Context context) {
-        super(context);
+    TwitterRepository(MainActivity view) {
+        super(view);
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
             return;
@@ -73,12 +72,12 @@ public class TwitterRepository extends MainRepository {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    //Fixme view.showMessage("Twitter konnte nicht geladen werden");
+                    view.showMessage("Twitter konnte nicht geladen werden");
                     return null;
                 })
                 .filter(status -> status != null)
                 .map(status -> {
-                    postBuilder = new Post.PostBuilder(PostType.TWITTER);
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(PostType.TWITTER);
                     try {
                         postBuilder.description(status.text)
                                 .date(getTwitterDate(status.createdAt))
@@ -92,7 +91,7 @@ public class TwitterRepository extends MainRepository {
                         }
                     } catch (ParseException e) {
                         //todo
-                        PsLog.w("you suck", e);
+                        PsLog.w("Twitter Date parsing failed", e);
                     }
                     return postBuilder;
                 });
@@ -117,7 +116,7 @@ public class TwitterRepository extends MainRepository {
                             .map(twitterToken -> {
                                 PsLog.d("Loading new twitter authentication bearer");
                                 if (twitterToken.tokenType.equals("bearer")) {
-                                    SharedPreferenceHelper.setSharedPreferenceString(context,
+                                    SharedPreferenceHelper.setSharedPreferenceString(view,
                                             KEY_TWITTER_BEARER, twitterToken.accessToken);
                                     return twitterToken.accessToken;
                                 } else {

@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
@@ -11,6 +9,7 @@ import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -26,8 +25,8 @@ public class FirebaseRepository extends MainRepository {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
     FirebaseApiInterface apiInterface;
 
-    FirebaseRepository(Context context) {
-        super(context);
+    FirebaseRepository(MainActivity view) {
+        super(view);
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -43,7 +42,7 @@ public class FirebaseRepository extends MainRepository {
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof SocketTimeoutException) {
                         PsLog.w("Firebase Timeout", error);
-                        //fixme view.showMessage("Firebase Timeout, neuer Versuch...");
+                        view.showMessage("Firebase Timeout, neuer Versuch...");
                         return Observable.just(null);
                     }
                     // Unrelated error, throw it
@@ -51,7 +50,7 @@ public class FirebaseRepository extends MainRepository {
                 }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    //fixme view.showMessage("Pietsmiet.de konnte nicht geladen werden");
+                    view.showMessage("Pietsmiet.de konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -75,11 +74,16 @@ public class FirebaseRepository extends MainRepository {
                         default:
                             type = -1;
                     }
-                    postBuilder = new Post.PostBuilder(type);
-                    if(!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietcast && type == PIETCAST) return postBuilder;
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(type);
+                    if (!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietcast && type == PIETCAST) {
+                        return postBuilder;
+                    }
                     postBuilder = new Post.PostBuilder(type);
                     postBuilder.title(item.title);
                     postBuilder.description(item.desc);

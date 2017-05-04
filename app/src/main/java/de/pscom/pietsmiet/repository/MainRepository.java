@@ -1,22 +1,16 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.view.MainActivity;
 import rx.Observable;
 
 abstract class MainRepository {
-    Post.PostBuilder postBuilder;
-    @SuppressWarnings("CanBeFinal")
-    List<Post> posts = new ArrayList<>();
-    protected Context context;
+    protected final MainActivity view;
 
-    MainRepository(Context context) {
-        this.context = context;
+    MainRepository(MainActivity view) {
+        this.view = view;
     }
 
     /**

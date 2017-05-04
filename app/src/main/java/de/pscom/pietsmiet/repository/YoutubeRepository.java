@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.repository;
 
-import android.content.Context;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +11,7 @@ import de.pscom.pietsmiet.model.youtubeApi.YoutubeItem;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeRoot;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -26,8 +25,8 @@ public class YoutubeRepository extends MainRepository {
 
     YoutubeApiInterface apiInterface;
 
-    YoutubeRepository(Context context) {
-        super(context);
+    YoutubeRepository(MainActivity view) {
+        super(view);
         if (SecretConstants.youtubeAPIkey == null) {
             PsLog.w("No Youtube API-key or token specified");
             return;
@@ -62,17 +61,18 @@ public class YoutubeRepository extends MainRepository {
 
 
     private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
+        final Post.PostBuilder postBuilder = new Post.PostBuilder(YOUTUBE);
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
-                    //fixme view.showMessage("Youtube konnte nicht geladen werden");
+                    view.showMessage("Youtube konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
                 .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
                 .doOnNext(item -> {
-                    this.postBuilder = new Post.PostBuilder(YOUTUBE);
+
                     if (item.getId() != null) {
                         String videoID = item.getId().getVideoId();
                         if (videoID != null && !videoID.isEmpty()) {
@@ -91,7 +91,7 @@ public class YoutubeRepository extends MainRepository {
                     } catch (ParseException e) {
                         // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        //fixme view.showMessage("Einige Youtube-Posts konnte nicht geladen werden");
+                        view.showMessage("Einige Youtube-Posts konnte nicht geladen werden");
                     }
                     return postBuilder;
                 });

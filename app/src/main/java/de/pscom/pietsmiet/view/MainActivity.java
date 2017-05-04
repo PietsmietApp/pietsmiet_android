@@ -78,7 +78,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
-        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this), DatabaseHelper.getInstance(this), new NetworkUtil(this));
+        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this),
+                DatabaseHelper.getInstance(this.getApplicationContext()),
+                new NetworkUtil(this.getApplicationContext()));
 
         setupRecyclerView();
         setupDrawer();

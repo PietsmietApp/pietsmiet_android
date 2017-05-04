@@ -402,7 +402,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     public void noNetworkError() {
         showMessage("Keine Netzwerkverbindung");
-        setRefreshAnim(false);
         scrollListener.resetState();
     }
 

@@ -175,7 +175,7 @@ public class PostPresenter {
      **/
     public void fetchNextPosts() {
         PsLog.v("Loading the next " + LOAD_MORE_ITEMS_COUNT + " posts");
-        setupLoading();
+        if (!setupLoading()) return;
         subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), LOAD_MORE_ITEMS_COUNT), true, getLastPostDate(), LOAD_MORE_ITEMS_COUNT);
     }
 
@@ -184,7 +184,7 @@ public class PostPresenter {
      **/
     public void fetchNewPosts() {
         PsLog.v("Loading new posts");
-        setupLoading();
+        if (!setupLoading()) return;
         subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate(), LOAD_NEW_ITEMS_COUNT), false, getFirstPostDate(), LOAD_NEW_ITEMS_COUNT);
     }
 
@@ -227,12 +227,13 @@ public class PostPresenter {
     /**
      * Checks if network's available and informs the view about the started loading
      */
-    private void setupLoading() {
+    private boolean setupLoading() {
         if (!networkUtil.isConnected()) {
             view.noNetworkError();
-            return;
+            return false;
         }
         view.loadingStarted();
+        return true;
     }
 
     /**

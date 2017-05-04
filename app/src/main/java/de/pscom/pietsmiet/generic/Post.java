@@ -2,7 +2,6 @@ package de.pscom.pietsmiet.generic;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
@@ -39,7 +38,6 @@ public class Post extends ViewItem {
     private String url;
     private boolean isThumbnailHD = false;
 
-    //todo remove bad getter / setter methods -> Performance
     private Post(PostBuilder builder) {
         super(ViewItem.TYPE_POST);
         description = builder.description;

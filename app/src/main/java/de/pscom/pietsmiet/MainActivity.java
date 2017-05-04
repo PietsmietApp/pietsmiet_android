@@ -99,7 +99,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         fabToTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerView.smoothScrollToPosition(0);
+                if(((LinearLayoutManager)recyclerView.getLayoutManager()).findLastVisibleItemPosition() < 85) {
+                    recyclerView.smoothScrollToPosition(0);
+                } else {
+                    recyclerView.scrollToPosition(0);
+                }
                 fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onShown(FloatingActionButton fab) {
@@ -169,7 +173,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         DatabaseHelper.getInstance(this).displayPostsFromCache(this);
 
         if (BuildConfig.DEBUG) {
-            Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
+           Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
                 PsLog.w("Uncaught Exception!", paramThrowable);
                 System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
             });

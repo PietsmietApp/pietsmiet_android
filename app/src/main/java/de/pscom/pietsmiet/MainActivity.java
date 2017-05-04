@@ -166,7 +166,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         new SecretConstants(this);
 
-        new DatabaseHelper(this).displayPostsFromCache(this);
+        DatabaseHelper.getInstance(this).displayPostsFromCache(this);
 
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
@@ -312,7 +312,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void clearCache() {
-        new DatabaseHelper(this).clearDB();
+        DatabaseHelper.getInstance(this).clearDB();
         postManager.clearPosts();
         CacheUtil.trimCache(this);
         scrollListener.resetState();

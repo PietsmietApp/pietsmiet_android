@@ -79,6 +79,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @AllTypes int currentType = currentItem.getPostType();
 
                 // Set basic information (title, time, color)
+                Glide.clear(holder.wideImage);
                 holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
                 holder.title.setText(currentItem.getTitle());
                 holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor(context));

@@ -257,7 +257,7 @@ public class PostManager {
                     addPosts(items);
                     mView.setRefreshAnim(false);
                     PsLog.v("Finished with " + items.size() + " Posts");
-                    new DatabaseHelper(mView).insertPosts(items);
+                    DatabaseHelper.getInstance(mView).insertPosts(items);
                 }, e -> {
                     if (e instanceof TimeoutException) {
                         PsLog.w("Laden dauerte zu lange, Abbruch...");

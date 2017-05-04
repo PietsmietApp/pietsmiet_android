@@ -19,7 +19,7 @@ jdk:
 script:
 - "./gradlew build -PdisablePreDex"
 before_install:
-- openssl aes-256-cbc -K $encrypted_0e2be077a50f_key -iv $encrypted_0e2be077a50f_iv -in secrets.tar.enc -out secrets.tar -d
+- openssl aes-256-cbc -K $encrypted_1a819de9e622_key -iv $encrypted_1a819de9e622_iv -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
 deploy:
   provider: releases

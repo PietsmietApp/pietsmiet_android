@@ -73,9 +73,11 @@ public class YoutubeRepository extends MainRepository {
                 .filter(result -> result != null)
                 .doOnNext(item -> {
                     this.postBuilder = new Post.PostBuilder(YOUTUBE);
-                    String videoID = item.getId().getVideoId();
-                    if (videoID != null && !videoID.isEmpty()) {
-                        postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
+                    if (item.getId() != null) {
+                        String videoID = item.getId().getVideoId();
+                        if (videoID != null && !videoID.isEmpty()) {
+                            postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
+                        }
                     }
                 })
                 .map(YoutubeItem::getSnippet)

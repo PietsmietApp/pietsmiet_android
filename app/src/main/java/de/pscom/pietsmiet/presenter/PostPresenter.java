@@ -85,7 +85,9 @@ public class PostPresenter {
      * 4) Notifies the adapter about the change
      */
     public void updateCurrentPosts() {
-        subUpdatePosts = Observable.just(allPosts)
+        List<ViewItem> lVItem = new ArrayList<>(); // todo investigate might fix concurrent modification error
+        lVItem.addAll(allPosts);
+        subUpdatePosts = Observable.just(lVItem)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
@@ -126,7 +128,7 @@ public class PostPresenter {
     }
 
     @Nullable
-    private Post getFirstPost() {
+    private synchronized Post getFirstPost() {
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
                 if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
@@ -136,14 +138,13 @@ public class PostPresenter {
     }
 
     @Nullable
-    private Post getLastPost() {
-        Post lastPost = null;
+    private synchronized Post getLastPost() {
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
-                if (vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
+                if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
             }
         }
-        return lastPost;
+        return null;
     }
 
     /**

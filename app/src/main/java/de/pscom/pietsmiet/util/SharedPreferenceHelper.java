@@ -2,7 +2,6 @@ package de.pscom.pietsmiet.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -40,10 +39,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(key, value);
         editor.apply();
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, key);
-        bundle.putInt(FirebaseAnalytics.Param.VALUE, value);
-        FirebaseAnalytics.getInstance(context).logEvent("setting_changed", bundle);
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value + "");
     }
 
     /**
@@ -57,10 +53,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, value);
         editor.apply();
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, key);
-        bundle.putString(FirebaseAnalytics.Param.VALUE, value);
-        FirebaseAnalytics.getInstance(context).logEvent("setting_changed", bundle);
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value);
     }
 
     /**
@@ -74,10 +67,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(key, value);
         editor.apply();
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, key);
-        bundle.putLong(FirebaseAnalytics.Param.VALUE, value);
-        FirebaseAnalytics.getInstance(context).logEvent("setting_changed", bundle);
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value + "");
     }
 
     /**
@@ -91,10 +81,7 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean(key, value);
         editor.apply();
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, key);
-        bundle.putBoolean(FirebaseAnalytics.Param.VALUE, value);
-        FirebaseAnalytics.getInstance(context).logEvent("setting_changed", bundle);
+        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value ? "true" : "false");
     }
 
     /**

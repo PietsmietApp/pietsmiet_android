@@ -38,19 +38,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // MAX_AGE_DAYS defines the maxium age of the stored posts, before it gets cleared
     private static final int MAX_AGE_DAYS = 5;
-
-    private final Context mContext;
+    private static DatabaseHelper sInstance;
 
     @SuppressLint("SimpleDateFormat")
     //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
+    public static synchronized DatabaseHelper getInstance(Context context) {
+
+        // Use the application context, which will ensure that you
+        // don't accidentally leak an Activity's context.
+        // See this article for more information: http://bit.ly/6LRzfx
+        if (sInstance == null) {
+            sInstance = new DatabaseHelper(context.getApplicationContext());
+        }
+        return sInstance;
+    }
+
     /*  Initializes a new DatabaseHelper object
      *  @param context Context reference to access PostManager etc
      */
-    public DatabaseHelper(Context context) {
+    private DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION_NUMBER);
-        mContext = context;
     }
 
     /**

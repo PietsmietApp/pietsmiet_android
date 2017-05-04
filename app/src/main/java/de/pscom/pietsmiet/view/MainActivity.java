@@ -78,7 +78,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
-        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this), new DatabaseHelper(this), new NetworkUtil(this));
+        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this), DatabaseHelper.getInstance(this), new NetworkUtil(this));
 
         setupRecyclerView();
         setupDrawer();
@@ -103,7 +103,11 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         fabToTop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                recyclerView.smoothScrollToPosition(0);
+                if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() < 85) {
+                    recyclerView.smoothScrollToPosition(0);
+                } else {
+                    recyclerView.scrollToPosition(0);
+                }
                 fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
                     public void onShown(FloatingActionButton fab) {
@@ -126,10 +130,12 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                     .setPositiveButton(R.string.yes, (dialog, id) -> {
                         boolVideoNotification = true;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
+                        FirebaseMessaging.getInstance().subscribeToTopic("video");
                     })
                     .setNegativeButton(R.string.no, (dialog, id) -> {
                         boolVideoNotification = false;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
+                        FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
                     });
             builder.create().show();
 
@@ -169,7 +175,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         new SecretConstants(this);
 
-        new DatabaseHelper(this).displayPostsFromCache(postPresenter); //fixme!
+        DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
 
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
@@ -311,7 +317,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     }
 
     private void clearCache() {
-        new DatabaseHelper(this).clearDB();
+        DatabaseHelper.getInstance(this).clearDB();
         postPresenter.clearPosts();
         scrollListener.resetState();
         CacheUtil.trimCache(this);

@@ -110,7 +110,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher) //fixme one day: a different notif icon
+                .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                 .setContentTitle(title)
                 .addAction(R.drawable.ic_remove_black_24dp, getString(R.string.notification_unsubscribe), unsubscribePIntent)
                 .setGroup(type + "")

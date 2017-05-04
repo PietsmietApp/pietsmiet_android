@@ -6,6 +6,9 @@ import android.util.Log;
 import com.google.firebase.crash.FirebaseCrash;
 
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
+import javax.net.ssl.SSLException;
 
 
 /**
@@ -86,8 +89,11 @@ public class PsLog {
     }
 
     public static void e(String message, Throwable tr) {
-        if (!BuildConfig.DEBUG && !(tr instanceof SocketTimeoutException)) {
-            FirebaseCrash.log(getTag() + " " +  message + ": " + Log.getStackTraceString(tr));
+        if (!BuildConfig.DEBUG &&
+                !(tr instanceof SocketTimeoutException) &&
+                !(tr instanceof UnknownHostException) &&
+                !(tr instanceof SSLException)) {
+            FirebaseCrash.log(getTag() + " " + message + ": " + Log.getStackTraceString(tr));
             FirebaseCrash.report(tr);
         }
         Log.e(getTag(), message, tr);

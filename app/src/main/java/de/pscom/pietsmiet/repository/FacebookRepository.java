@@ -84,7 +84,7 @@ public class FacebookRepository extends MainRepository {
 
                     postBuilder = new Post.PostBuilder(FACEBOOK);
                     try {
-                        if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("message") && post.has("created_time"))) {
+                        if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("created_time"))) {
                             return postBuilder;
                         }
                         postBuilder.thumbnailUrl(DrawableFetcher.getThumbnailUrlFromFacebook(post, false));

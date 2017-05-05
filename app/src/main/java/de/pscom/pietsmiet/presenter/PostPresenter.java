@@ -56,68 +56,74 @@ public class PostPresenter {
     }
 
     /**
-     * Adds posts to the post list, where all posts are stored; removes duplicates and sorts it.
-     * It also stores the last and first twitter Id
+     * Sorts allPosts and removes Posts that are not allowed with the current filter settings
+     * It also removes and readds all DateTags so there are no DateTags with no posts
+     * <p>
+     * It calls adapter.notifyDataSetChanged because we don't know which items changed
      */
-
-    @SuppressWarnings("WeakerAccess")
-    public Observable.Transformer<ViewItem, List<ViewItem>> addPosts(boolean fetchDirectionDown /*todo notifyRange*/) {
-        return postObservable -> postObservable
-                .distinct()
-                .filter((post) -> post.getType() != ViewItem.TYPE_POST || SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
-                .doOnNext(item -> {
-                    if (item.getType() == ViewItem.TYPE_POST) {
-                        Post post = (Post) item;
-                        if (post.getPostType() == TWITTER && (TwitterRepository.firstTweet == null || TwitterRepository.firstTweet.getId() < post.getId()))
-                            TwitterRepository.firstTweet = post;
-                        if (post.getPostType() == TWITTER && (TwitterRepository.lastTweet == null || TwitterRepository.lastTweet.getId() > post.getId()))
-                            TwitterRepository.lastTweet = post;
-                    }
-                })
-                .toSortedList()
-                .doOnNext(list -> allPosts.addAll(list));
-    }
-
-    /**
-     * 1) Iterates through all posts
-     * 2) Check if posts have to be shown
-     * 3) Adds these posts to the currentPosts list
-     * 4) Notifies the adapter about the change
-     */
-    public void updateCurrentPosts() {
+    public void updateSettingsFilters() {
         List<ViewItem> lVItem = new ArrayList<>(); // todo investigate might fix concurrent modification error
         lVItem.addAll(allPosts);
         subUpdatePosts = Observable.just(lVItem)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
-                .filter((ViewItem post) -> post.getType() == ViewItem.TYPE_POST && SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
-                .distinct()
-                .toSortedList()
-                .map(list -> {
-                    if (list == null || list.isEmpty()) return list;
-                    List<ViewItem> listV = new ArrayList<>();
-                    listV.addAll(list);
-                    if (listV.size() == 0) {
-                        return list;
-                    }
-                    Date lastPostDate_ = listV.get(0).getDate();
-                    for (ViewItem vi : listV) {
-                        if (vi.getType() == ViewItem.TYPE_POST && vi.getDate().before(lastPostDate_)) {
-                            if (!new SimpleDateFormat("dd", Locale.getDefault()).format(vi.getDate()).equals(new SimpleDateFormat("dd", Locale.getDefault()).format(lastPostDate_)))
-                                list.add(list.indexOf(vi), new DateTag(vi.getDate()));
-                            lastPostDate_ = vi.getDate();
-                        }
-                    }
-                    return list;
-                })
+                .filter(viewItem -> viewItem.getType() == ViewItem.TYPE_POST)
+                .filter(post -> SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
+                .toList()
+                .compose(addDateTags())
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
                 }, throwable -> {
                     PsLog.e("Couldn't update current posts: ", throwable);
                     view.loadingFailed("Posts konnten nicht aktualisiert werden");
-                }, view::loadingCompleted);
+                }, view::freshLoadingCompleted);
+    }
+
+    /**
+     * Takes an Observable of new posts (from APIs or database), removes duplicates,
+     * makes sure they are allowed (current Filter settings), sorts them and adds date tags
+     *
+     * @return An Observable of a List of ViewItems that can be passed to the view
+     */
+    public Observable.Transformer<Post, List<ViewItem>> sortAndFilterNewPosts() {
+        return observable -> observable.map(l -> l)
+                .distinct()
+                .filter(post -> SettingsHelper.getSettingsValueForType(post.getPostType()))
+                .doOnNext(post -> {
+                    if (post.getPostType() == TWITTER && (TwitterRepository.firstTweet == null || TwitterRepository.firstTweet.getId() < post.getId()))
+                        TwitterRepository.firstTweet = post;
+                    if (post.getPostType() == TWITTER && (TwitterRepository.lastTweet == null || TwitterRepository.lastTweet.getId() > post.getId()))
+                        TwitterRepository.lastTweet = post;
+                })
+                .toSortedList()
+                .compose(addDateTags());
+    }
+
+    /**
+     * Adds DateTags (day separators) to the List of *Posts*
+     *
+     * @return A Observable of a List with ViewItems
+     */
+    private Observable.Transformer<List<? extends ViewItem>, List<ViewItem>> addDateTags() {
+        return listObservable -> listObservable.map(list -> {
+            List<ViewItem> viewItems = new ArrayList<>();
+            viewItems.addAll(list);
+            if (list.isEmpty()) return viewItems;
+
+            SimpleDateFormat dayFormatter = new SimpleDateFormat("dd", Locale.getDefault());
+            Date lastPostDate = list.get(0).getDate();
+            for (ViewItem vi : list) {
+                if (vi.getDate().before(lastPostDate)) {
+                    if (!dayFormatter.format(vi.getDate()).equals(dayFormatter.format(lastPostDate)))
+                        viewItems.add(viewItems.indexOf(vi), new DateTag(vi.getDate()));
+                    lastPostDate = vi.getDate();
+                }
+            }
+
+            return viewItems;
+        });
     }
 
     /**
@@ -127,6 +133,9 @@ public class PostPresenter {
         return allPosts;
     }
 
+    /**
+     * @return First post in allPosts or null if empty
+     */
     @Nullable
     private synchronized Post getFirstPost() {
         if (!allPosts.isEmpty()) {
@@ -137,6 +146,9 @@ public class PostPresenter {
         return null;
     }
 
+    /**
+     * @return Last post in allPosts or null if empty
+     */
     @Nullable
     private synchronized Post getLastPost() {
         Post lastPost = null;
@@ -177,7 +189,7 @@ public class PostPresenter {
     public void fetchNextPosts() {
         PsLog.v("Loading the next " + LOAD_MORE_ITEMS_COUNT + " posts");
         if (!setupLoading()) return;
-        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), LOAD_MORE_ITEMS_COUNT), true, getLastPostDate(), LOAD_MORE_ITEMS_COUNT);
+        subscribeLoadedPosts(postRepository.fetchNextPosts(getLastPostDate(), LOAD_MORE_ITEMS_COUNT), true, LOAD_MORE_ITEMS_COUNT);
     }
 
     /**
@@ -186,18 +198,23 @@ public class PostPresenter {
     public void fetchNewPosts() {
         PsLog.v("Loading new posts");
         if (!setupLoading()) return;
-        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate(), LOAD_NEW_ITEMS_COUNT), false, getFirstPostDate(), LOAD_NEW_ITEMS_COUNT);
+        subscribeLoadedPosts(postRepository.fetchNewPosts(getFirstPostDate(), LOAD_NEW_ITEMS_COUNT), false, LOAD_NEW_ITEMS_COUNT);
     }
 
     /**
-     * Subscribes to the load Post observable and does the error handling
+     * /**
+     * Subscribes to the load Post observable and pass the finished Items to the view
+     * Error handling for loading failed is included
      *
-     * @param observable         Fetch next or Fetch new observable to subscribe on
-     * @param fetchDirectionDown In which direction the observable is fetching (for the filter and later for notifyAdapter)
+     * @param observable         FetchNext or FetchNew observable to subscribe on
+     * @param fetchDirectionDown In which direction the observable is fetching (for the filter and for notifyAdapterItemRangeInserted)
+     *                           true means FetchNextPosts (=> down), false means FetchNewPosts (=> up)
+     * @param numPosts           Max Number of post to take, rest is discarded
      */
-    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, Date date, int numPosts) {
+
+    private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, int numPosts) {
         subLoadingPosts = observable
-                .filter(post -> filterWrongPosts(post, fetchDirectionDown, date))
+                .filter(post -> filterWrongPosts(post, fetchDirectionDown))
                 .sorted()
                 .take(numPosts)
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
@@ -208,9 +225,18 @@ public class PostPresenter {
                         return Observable.timer(3L, TimeUnit.SECONDS);
                     }
                 }))
-                .compose(addPosts(fetchDirectionDown))
+                .compose(sortAndFilterNewPosts())
                 .subscribe(items -> {
-                    updateCurrentPosts();
+                    if (fetchDirectionDown) {
+                        // Fetched next posts => Add it to the bottom
+                        int position = allPosts.size();
+                        allPosts.addAll(items);
+                        view.loadingItemRangeInserted(position, items.size());
+                    } else {
+                        // Fetched new posts => Add it to top
+                        allPosts.addAll(0, items);
+                        view.loadingItemRangeInserted(0, items.size());
+                    }
                     PsLog.v("Finished with " + items.size() + " Posts");
                     databaseHelper.insertPosts(items);
                 }, e -> {
@@ -223,6 +249,18 @@ public class PostPresenter {
                                 "Der Fehler wurde den Entwicklern gemeldet");
                     }
                 });
+    }
+
+    /**
+     * This is the callback for the database fetching method
+     * It also starts fetching of newer posts
+     *
+     * @param posts Sorted ViewItems that are directly passed to the view
+     */
+    public void addNewPostsToView(List<ViewItem> posts) {
+        allPosts.addAll(posts);
+        view.freshLoadingCompleted();
+        fetchNewPosts();
     }
 
     /**
@@ -265,23 +303,23 @@ public class PostPresenter {
      * @param post Post object to check
      * @return boolean shouldFilter
      */
-    private boolean filterWrongPosts(Post post, boolean fetchDirectionDown, Date date) {
+    private boolean filterWrongPosts(Post post, boolean fetchDirectionDown) {
         boolean shouldFilter;
         if (fetchDirectionDown) {
-            shouldFilter = post.getDate().before(date);
-            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is after last date:  " +
-                        " Titel: " + post.getTitle() +
-                        " Datum: " + post.getDate() +
-                        " letzter (ältester) Post Datum: " + date);
-            }
-        } else {
-            shouldFilter = post.getDate().after(date);
+            shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
                 PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
-                        "\n letzter (neuster) Post: Datum: " + date);
+                        " letzter (ältester) Post Datum: " + getLastPostDate());
+            }
+        } else {
+            shouldFilter = post.getDate().after(getFirstPostDate());
+            if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
+                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before after date:  " +
+                        " Titel: " + post.getTitle() +
+                        " Datum: " + post.getDate() +
+                        "\n letzter (neuster) Post: Datum: " + getFirstPostDate());
             }
         }
         return shouldFilter;

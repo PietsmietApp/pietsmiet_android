@@ -1,7 +1,9 @@
 package de.pscom.pietsmiet.view;
 
 public interface MainActivityView {
-    void loadingCompleted();
+    void freshLoadingCompleted();
+
+    void loadingItemRangeInserted(int startPosition, int itemCount);
 
     void noNetworkError();
 

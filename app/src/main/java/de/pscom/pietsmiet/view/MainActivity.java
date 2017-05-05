@@ -273,7 +273,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                     clearCache();
                     CLEAR_CACHE_FLAG = false;
                 } else {
-                    postPresenter.updateCurrentPosts();
+                    postPresenter.updateSettingsFilters();
                     scrollListener.resetState();
                 }
             }
@@ -294,6 +294,15 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 .subscribe(ignored -> {
                             if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
                             if (adapter != null) adapter.notifyDataSetChanged();
+                        }
+                );
+    }
+
+    public void updateAdapterItemRange(int startPosition, int size) {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            if (adapter != null) adapter.notifyItemRangeInserted(startPosition, size);
                         }
                 );
     }
@@ -396,8 +405,14 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
 
     @Override
-    public void loadingCompleted() {
+    public void freshLoadingCompleted() {
         updateAdapter();
+        setRefreshAnim(false);
+    }
+
+    @Override
+    public void loadingItemRangeInserted(int startPosition, int itemCount) {
+        updateAdapterItemRange(startPosition, itemCount);
         setRefreshAnim(false);
     }
 

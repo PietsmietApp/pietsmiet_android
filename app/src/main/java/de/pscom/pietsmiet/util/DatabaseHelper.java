@@ -136,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     throwable.printStackTrace();
                     db.close();
                 }, () -> {
-                    PsLog.v("Stored " + getPostsInDbCount() + " posts in db");
+                    PsLog.v("Db now contains " + getPostsInDbCount() + " posts");
                     db.close();
                 });
     }
@@ -218,11 +218,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                 })
                 .flatMapIterable(l -> l)
-                .compose(presenter.addPosts(false))
+                .compose(presenter.sortAndFilterNewPosts())
                 .subscribe(items -> {
                     PsLog.v("Loaded " + items.size() + " posts from DB");
-                    presenter.updateCurrentPosts();
-                    presenter.fetchNewPosts();
+                    presenter.addNewPostsToView(items);
                 }, e -> {
                     PsLog.e("Could not load posts from DB: ", e);
                     presenter.fetchNewPosts();

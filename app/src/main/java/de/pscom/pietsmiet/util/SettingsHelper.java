@@ -66,9 +66,8 @@ public class SettingsHelper {
     }
 
     public static boolean shouldLoadHDImages(Context c) {
-        if (intQualityLoadHDImages == TYPE_HD_ALWAYS) return true;
-        if (intQualityLoadHDImages == TYPE_HD_WIFI && NetworkUtil.isConnectedWifi(c)) return true;
-        return false;
+        return intQualityLoadHDImages == TYPE_HD_ALWAYS ||
+                (intQualityLoadHDImages == TYPE_HD_WIFI && new NetworkUtil(c).isConnectedWifi());
     }
 
     public static String getSharedPreferenceKeyForType(@PostType.AllTypes int type) {

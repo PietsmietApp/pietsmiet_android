@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
-    tools:context="de.pscom.pietsmiet.MainActivity">
+    tools:context="de.pscom.pietsmiet.view.MainActivity">
 
     <include layout="@layout/app_toolbar"/>
 

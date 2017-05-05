@@ -1,20 +1,15 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.view.MainActivity;
 import rx.Observable;
 
-abstract class MainPresenter {
-    final MainActivity view;
-    Post.PostBuilder postBuilder;
-    @SuppressWarnings("CanBeFinal")
-    List<Post> posts = new ArrayList<>();
+abstract class MainRepository {
+    protected final MainActivity view;
 
-    MainPresenter(MainActivity view) {
+    MainRepository(MainActivity view) {
         this.view = view;
     }
 
@@ -23,7 +18,7 @@ abstract class MainPresenter {
      *
      * @param dAfter Date
      */
-    public abstract Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dAfter);
+    public abstract Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dAfter, int numPosts);
 
     /**
      * Fetches all posts before a specific date. Until the given date.

@@ -5,7 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.util.NetworkUtil;
 
 /*
@@ -13,9 +13,6 @@ import de.pscom.pietsmiet.util.NetworkUtil;
  */
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
-
-
-    protected static final int LOAD_MORE_ITEMS_COUNT = 15;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private boolean FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
@@ -92,13 +89,13 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-            if(NetworkUtil.isConnected(view.getContext())) {
+            if(new NetworkUtil(view.getContext()).isConnected()) {
                 onLoadMore(totalItemCount, view);
                 loading = true;
                 FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
             } else {
                 if(!FLAG_SHOWED_NO_NETWORK_MESSAGE){
-                    ((MainActivity) view.getContext()).showSnackbar("Keine Netzwerkverbindung");
+                    ((MainActivity) view.getContext()).showMessage("Keine Netzwerkverbindung");
                     FLAG_SHOWED_NO_NETWORK_MESSAGE = true;
                 }
             }

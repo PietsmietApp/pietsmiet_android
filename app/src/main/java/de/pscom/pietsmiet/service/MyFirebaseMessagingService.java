@@ -31,7 +31,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Calendar;
 import java.util.Map;
 
-import de.pscom.pietsmiet.MainActivity;
+import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PsLog;
 

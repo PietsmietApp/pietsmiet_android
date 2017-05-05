@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet;
+package de.pscom.pietsmiet.view;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,6 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.squareup.leakcanary.LeakCanary;
+
+import de.pscom.pietsmiet.R;
 
 public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;

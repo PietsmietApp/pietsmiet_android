@@ -16,9 +16,6 @@
 #   public *;
 #}
 
-#libs
--keep class twitter4j.**  { *; }
--keep class facebook4j.**  { *; }
 # retrolambda
 -dontwarn java.lang.invoke.*
 # rxjava (Source: https://gist.github.com/kosiara/487868792fbd3214f9c9)

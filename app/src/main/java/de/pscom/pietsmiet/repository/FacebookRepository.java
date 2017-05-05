@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,12 +10,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -25,10 +25,10 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
-public class FacebookPresenter extends MainPresenter {
+public class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
-    public FacebookPresenter(MainActivity view) {
+    FacebookRepository(MainActivity view) {
         super(view);
         if (SecretConstants.facebookToken == null) {
             PsLog.w("No facebook secret or token specified");
@@ -75,13 +75,12 @@ public class FacebookPresenter extends MainPresenter {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    view.showSnackbar("Facebook konnte nicht geladen werden");
+                    view.showMessage("Facebook konnte nicht geladen werden");
                     return null;
                 })
                 .filter(response -> response != null)
                 .map(post -> {
-
-                    postBuilder = new Post.PostBuilder(FACEBOOK);
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(FACEBOOK);
                     try {
                         if (!(post.has("from") && post.getJSONObject("from").has("name") && post.has("created_time"))) {
                             return postBuilder;
@@ -124,8 +123,8 @@ public class FacebookPresenter extends MainPresenter {
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince) {
-        return parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), 50);
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dSince, int numPosts) {
+        return parsePosts("&since=" + String.valueOf(dSince.getTime() / 1000), numPosts);
     }
 
 

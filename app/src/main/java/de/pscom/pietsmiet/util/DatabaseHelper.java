@@ -8,13 +8,13 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.generic.ViewItem;
+import de.pscom.pietsmiet.presenter.PostPresenter;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -110,10 +110,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param posts Posts to store
      */
     @SuppressWarnings("WeakerAccess")
-    public void insertPosts(List<Post> posts) {
+    public void insertPosts(List<ViewItem> posts) {
         SQLiteDatabase db = getWritableDatabase();
         Observable.just(posts)
                 .flatMap(Observable::from)
+                .filter(post -> post instanceof Post)
+                .map(post -> (Post) post)
                 .observeOn(Schedulers.io())
                 .subscribeOn(Schedulers.io())
                 .subscribe(post -> {
@@ -134,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     throwable.printStackTrace();
                     db.close();
                 }, () -> {
-                    PsLog.v("Stored " + getPostsInDbCount() + " posts in db");
+                    PsLog.v("Db now contains " + getPostsInDbCount() + " posts");
                     db.close();
                 });
     }
@@ -163,14 +165,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Loads all post objects from the database and displays it
      * Clears the database if it's too old
      *
-     * @param context For loading the drawable & displaying the post after finished loading
+     * @param presenter For notifiying on finished load
      */
     @SuppressWarnings("WeakerAccess")
-    public void displayPostsFromCache(MainActivity context) {
-        if (context == null) {
-            return;
-        }
-
+    public void displayPostsFromCache(PostPresenter presenter) {
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
@@ -179,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("SELECT * FROM " + TABLE_POSTS + " " +
                 "WHERE " + POSTS_COLUMN_TIME + " > " + time + " " +
                 "ORDER BY " + POSTS_COLUMN_TIME + " DESC ", null);
-        PostManager pm = context.postManager;
+
         Observable.just(res)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -215,18 +213,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.close();
                         db.close();
                     }
+                    this.close();
                     return toReturn;
 
                 })
+                .flatMapIterable(l -> l)
+                .compose(presenter.sortAndFilterNewPosts())
                 .subscribe(items -> {
-                    this.close();
                     PsLog.v("Loaded " + items.size() + " posts from DB");
-                    pm.addPosts(items);
+                    presenter.addNewPostsToView(items);
                 }, e -> {
-                    this.close();
                     PsLog.e("Could not load posts from DB: ", e);
-                    pm.fetchNewPosts();
-                }, pm::fetchNewPosts);
+                    presenter.fetchNewPosts();
+                });
     }
 
 }

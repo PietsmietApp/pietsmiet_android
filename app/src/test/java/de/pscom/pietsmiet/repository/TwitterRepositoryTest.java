@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 
@@ -19,23 +19,23 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
-public class TwitterPresenterTest extends MainTestPresenter {
+public class TwitterRepositoryTest extends MainTestPresenter {
     @Override
-    public TwitterPresenter preparePresenter() throws Exception {
+    public TwitterRepository preparePresenter() throws Exception {
         SecretConstants.twitterSecret = "s";
         SettingsHelper.stringTwitterBearer = "totallyValidBearerYo";
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("twitter_response.json")));
-        TwitterPresenter presenter = new TwitterPresenter(mMockContext);
+        TwitterRepository presenter = new TwitterRepository(mMockContext);
         presenter.apiInterface = getRetrofit(mockWebServer).create(TwitterApiInterface.class);
         return presenter;
     }
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        TwitterPresenter presenter = preparePresenter();
+        TwitterRepository presenter = preparePresenter();
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
+        presenter.fetchPostsSinceObservable(new Date(), 50)
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();

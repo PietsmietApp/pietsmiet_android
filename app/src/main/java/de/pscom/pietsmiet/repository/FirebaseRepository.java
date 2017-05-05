@@ -1,15 +1,15 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -21,11 +21,11 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
-public class FirebasePresenter extends MainPresenter {
+public class FirebaseRepository extends MainRepository {
     private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
     FirebaseApiInterface apiInterface;
 
-    public FirebasePresenter(MainActivity view) {
+    FirebaseRepository(MainActivity view) {
         super(view);
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
@@ -42,7 +42,7 @@ public class FirebasePresenter extends MainPresenter {
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof SocketTimeoutException) {
                         PsLog.w("Firebase Timeout", error);
-                        view.showSnackbar("Firebase Timeout, neuer Versuch...");
+                        view.showMessage("Firebase Timeout, neuer Versuch...");
                         return Observable.just(null);
                     }
                     // Unrelated error, throw it
@@ -50,7 +50,7 @@ public class FirebasePresenter extends MainPresenter {
                 }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    view.showSnackbar("Pietsmiet.de konnte nicht geladen werden");
+                    view.showMessage("Pietsmiet.de konnte nicht geladen werden");
                     return null;
                 })
                 .filter(result -> result != null)
@@ -74,11 +74,16 @@ public class FirebasePresenter extends MainPresenter {
                         default:
                             type = -1;
                     }
-                    postBuilder = new Post.PostBuilder(type);
-                    if(!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) return postBuilder;
-                    if(!SettingsHelper.boolCategoryPietcast && type == PIETCAST) return postBuilder;
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(type);
+                    if (!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) {
+                        return postBuilder;
+                    } else if (!SettingsHelper.boolCategoryPietcast && type == PIETCAST) {
+                        return postBuilder;
+                    }
                     postBuilder = new Post.PostBuilder(type);
                     postBuilder.title(item.title);
                     postBuilder.description(item.desc);
@@ -89,7 +94,7 @@ public class FirebasePresenter extends MainPresenter {
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         return parsePostsFromDb(apiInterface.getAll());
 
     }

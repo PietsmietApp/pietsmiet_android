@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import java.util.List;
 
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.generic.Post.PostBuilder;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -19,18 +18,19 @@ import rx.observers.TestSubscriber;
 
 import static junit.framework.Assert.assertTrue;
 
+
 @RunWith(MockitoJUnitRunner.class)
-public class FirebasePresenterTest extends MainTestPresenter {
+public class FirebaseRepositoryTest extends MainTestPresenter {
 
     @Override
-    public FirebasePresenter preparePresenter() throws Exception {
+    public FirebaseRepository preparePresenter() throws Exception {
         SettingsHelper.boolCategoryPietsmietVideos = true;
         SettingsHelper.boolCategoryPietsmietNews = true;
         SettingsHelper.boolCategoryPietsmietUploadplan = true;
         SettingsHelper.boolCategoryPietcast = true;
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("firebase_response.json")));
-        FirebasePresenter presenter = new FirebasePresenter(mMockContext);
+        FirebaseRepository presenter = new FirebaseRepository(mMockContext);
 
         presenter.apiInterface = getRetrofit(mockWebServer).create(FirebaseApiInterface.class);
         return presenter;
@@ -38,11 +38,11 @@ public class FirebasePresenterTest extends MainTestPresenter {
 
     @Test
     public void fetchPostsSinceObservable() throws Exception {
-        FirebasePresenter presenter = preparePresenter();
+        FirebaseRepository presenter = preparePresenter();
 
         TestSubscriber<Post> testSubscriber = new TestSubscriber<>();
-        presenter.fetchPostsSinceObservable(new Date())
-                .map(PostBuilder::build)
+        presenter.fetchPostsSinceObservable(new Date(), 50)
+                .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();
         for (Throwable tr : testSubscriber.getOnErrorEvents()) {

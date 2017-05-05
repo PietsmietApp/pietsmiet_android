@@ -1,4 +1,4 @@
-package de.pscom.pietsmiet.presenter;
+package de.pscom.pietsmiet.repository;
 
 import java.net.HttpURLConnection;
 import java.text.ParseException;
@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.pscom.pietsmiet.MainActivity;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
 import de.pscom.pietsmiet.model.twitterApi.TwitterRoot;
@@ -16,6 +15,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
+import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
-public class TwitterPresenter extends MainPresenter {
+public class TwitterRepository extends MainRepository {
     public static Post firstTweet, lastTweet;
     TwitterApiInterface apiInterface;
     private final String query = "from:pietsmiet, " +
@@ -36,7 +36,7 @@ public class TwitterPresenter extends MainPresenter {
             "OR from:br4mm3n " +
             "exclude:replies";
 
-    public TwitterPresenter(MainActivity view) {
+    TwitterRepository(MainActivity view) {
         super(view);
         if (SecretConstants.twitterSecret == null) {
             PsLog.w("No twitter secret specified");
@@ -72,12 +72,12 @@ public class TwitterPresenter extends MainPresenter {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    view.showSnackbar("Twitter konnte nicht geladen werden");
+                    view.showMessage("Twitter konnte nicht geladen werden");
                     return null;
                 })
                 .filter(status -> status != null)
                 .map(status -> {
-                    postBuilder = new Post.PostBuilder(PostType.TWITTER);
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(PostType.TWITTER);
                     try {
                         postBuilder.description(status.text)
                                 .date(getTwitterDate(status.createdAt))
@@ -91,7 +91,7 @@ public class TwitterPresenter extends MainPresenter {
                         }
                     } catch (ParseException e) {
                         //todo
-                        PsLog.w("you suck", e);
+                        PsLog.w("Twitter Date parsing failed", e);
                     }
                     return postBuilder;
                 });
@@ -150,12 +150,12 @@ public class TwitterPresenter extends MainPresenter {
 
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore) {
+    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         Observable<TwitterRoot> obs;
         if (firstTweet != null) {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince("Bearer " + bearer, query, 50, firstTweet.getId()));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince("Bearer " + bearer, query, numPosts, firstTweet.getId()));
         } else {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, 50));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, numPosts));
         }
         return parseTweets(obs);
     }

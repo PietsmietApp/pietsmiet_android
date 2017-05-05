@@ -330,9 +330,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private void clearCache() {
         DatabaseHelper.getInstance(this).clearDB();
         postPresenter.clearPosts();
+        updateAdapter();
         scrollListener.resetState();
         CacheUtil.trimCache(this);
-        scrollListener.resetState();
         fabToTop.hide();
         postPresenter.fetchNewPosts();
     }
@@ -394,11 +394,12 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SETTINGS) {
             SettingsHelper.loadAllSettings(this);
-            // Update adapter to refresh timestamps
-            updateAdapter();
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();
                 showMessage("Cache gelöscht");
+            } else {
+                // Update adapter to refresh timestamps
+                updateAdapter();
             }
         }
     }

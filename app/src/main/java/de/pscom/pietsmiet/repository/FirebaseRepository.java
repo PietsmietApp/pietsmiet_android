@@ -22,7 +22,6 @@ import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class FirebaseRepository extends MainRepository {
-    private static final String FIREBASE_URL = "https://pietsmiet-de5ff.firebaseio.com";
     FirebaseApiInterface apiInterface;
 
     FirebaseRepository(MainActivity view) {
@@ -30,7 +29,7 @@ public class FirebaseRepository extends MainRepository {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(FIREBASE_URL)
+                .baseUrl(SettingsHelper.stringFirebaseDbUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(rxAdapter)
                 .build();

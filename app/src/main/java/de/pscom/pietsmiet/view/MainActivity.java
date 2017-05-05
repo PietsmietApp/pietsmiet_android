@@ -31,6 +31,7 @@ import de.pscom.pietsmiet.repository.PostRepositoryImpl;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
+import de.pscom.pietsmiet.util.FirebaseUtil;
 import de.pscom.pietsmiet.util.NetworkUtil;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
@@ -146,34 +147,8 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
 
-
-        if (BuildConfig.DEBUG) {
-            FirebaseMessaging.getInstance().subscribeToTopic("test2");
-            FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(false);
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("test2");
-        }
-        if (SettingsHelper.boolUploadplanNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
-        }
-        if (SettingsHelper.boolVideoNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic("video");
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
-        }
-        if (SettingsHelper.boolNewsNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic("news");
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
-        }
-        if (SettingsHelper.boolPietcastNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic("pietcast");
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic("pietcast");
-        }
-
+        FirebaseUtil.loadRemoteConfig(this);
+        FirebaseUtil.setupTopicSubscriptions(this.getApplicationContext());
 
         new SecretConstants(this);
 

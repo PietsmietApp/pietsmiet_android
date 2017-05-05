@@ -3,8 +3,6 @@ package de.pscom.pietsmiet.util;
 import android.support.compat.BuildConfig;
 import android.util.Log;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -93,8 +91,7 @@ public class PsLog {
                 !(tr instanceof SocketTimeoutException) &&
                 !(tr instanceof UnknownHostException) &&
                 !(tr instanceof SSLException)) {
-            FirebaseCrash.log(getTag() + " " + message + ": " + Log.getStackTraceString(tr));
-            FirebaseCrash.report(tr);
+            FirebaseUtil.reportError(getTag() + " " + message, tr);
         }
         Log.e(getTag(), message, tr);
     }

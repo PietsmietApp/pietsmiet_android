@@ -11,6 +11,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSM
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSMIET_VIDEOS;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_YOUTUBE_VIDEOS;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_FIREBASE_DB_URL;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
@@ -39,6 +40,7 @@ public class SettingsHelper {
     public static boolean boolCategoryFacebook;
 
     public static String stringTwitterBearer;
+    public static String stringFirebaseDbUrl;
 
     public static int intQualityLoadHDImages;
     public static final int TYPE_HD_NEVER = 0;
@@ -53,6 +55,7 @@ public class SettingsHelper {
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
         stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, null);
+        stringFirebaseDbUrl = getSharedPreferenceString(context, KEY_FIREBASE_DB_URL, "https://pietsmiet-de5ff.firebaseio.com/new/");
         intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_ALWAYS);
 
         // SWITCHES

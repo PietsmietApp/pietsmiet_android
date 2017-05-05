@@ -27,6 +27,8 @@ public class SharedPreferenceHelper {
     public static final String KEY_CATEGORY_TWITTER = "KEY_CATEGORY_TWITTER";
     public static final String KEY_CATEGORY_FACEBOOK = "KEY_CATEGORY_FACEBOOK";
 
+    public static final String KEY_FIREBASE_DB_URL = "KEY_FIREBASE_DB_URL";
+
     private final static String PREF_FILE = "PREF";
 
     /**

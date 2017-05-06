@@ -197,7 +197,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         super.onResume();
         SettingsHelper.loadAllSettings(this);
         // Update adapter to refresh timestamps
-        updateAdapter();
+        refreshAdapter();
     }
 
     private void setupRecyclerView() {
@@ -264,12 +264,21 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         toggle.syncState();
     }
 
-    public void updateAdapter() {
+    public void refreshAdapter() {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
                             if (recyclerView != null) recyclerView.getRecycledViewPool().clear();
                             if (adapter != null) adapter.notifyDataSetChanged();
+                        }
+                );
+    }
+
+    public void scrollToTop() {
+        Observable.just("")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(ignored -> {
+                            if (recyclerView != null) recyclerView.scrollToPosition(0);
                         }
                 );
     }
@@ -306,7 +315,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private void clearCache() {
         DatabaseHelper.getInstance(this).clearDB();
         postPresenter.clearPosts();
-        updateAdapter();
+        refreshAdapter();
         scrollListener.resetState();
         CacheUtil.trimCache(this);
         fabToTop.hide();
@@ -375,7 +384,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 showMessage(getString(R.string.info_cleared_cache));
             } else {
                 // Update adapter to refresh timestamps
-                updateAdapter();
+                refreshAdapter();
             }
         }
     }
@@ -383,14 +392,21 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
     @Override
     public void freshLoadingCompleted() {
-        updateAdapter();
+        refreshAdapter();
         setRefreshAnim(false);
     }
 
     @Override
-    public void loadingItemRangeInserted(int startPosition, int itemCount) {
+    public void loadingNextCompleted(int startPosition, int itemCount) {
         updateAdapterItemRange(startPosition, itemCount);
         setRefreshAnim(false);
+    }
+
+    @Override
+    public void loadingNewCompleted(int itemCount) {
+        updateAdapterItemRange(0, itemCount);
+        setRefreshAnim(false);
+        scrollToTop();
     }
 
     @Override

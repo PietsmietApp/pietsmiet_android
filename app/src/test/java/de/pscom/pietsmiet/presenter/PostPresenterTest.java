@@ -51,7 +51,7 @@ public class PostPresenterTest {
 
     @Before
     public void setUp() {
-        presenter = new PostPresenter(view, repository, databaseHelper, networkUtil);
+        presenter = new PostPresenter(view, repository, databaseHelper, networkUtil, context);
         RxJavaHooks.setOnIOScheduler(scheduler -> Schedulers.trampoline());
         SettingsHelper.boolCategoryPietsmietNews = true;
         SettingsHelper.boolCategoryPietsmietUploadplan = true;
@@ -77,7 +77,7 @@ public class PostPresenterTest {
         presenter.fetchNewPosts();
 
         verify(view).loadingStarted();
-        verify(view).loadingItemRangeInserted(0, 2);
+        verify(view).loadingNewCompleted(2);
 
         verify(view, never()).loadingFailed(anyString());
         verify(view, never()).freshLoadingCompleted();
@@ -96,7 +96,7 @@ public class PostPresenterTest {
         presenter.fetchNextPosts();
 
         verify(view).loadingStarted();
-        verify(view).loadingItemRangeInserted(1, 2);
+        verify(view).loadingNextCompleted(1, 2);
 
         verify(view, never()).loadingFailed(anyString());
         verify(view, never()).freshLoadingCompleted();

@@ -255,11 +255,11 @@ public class PostPresenter {
                         // Fetched next posts => Add it to the bottom
                         int position = allPosts.size();
                         allPosts.addAll(items);
-                        view.loadingItemRangeInserted(position, items.size());
+                        view.loadingNextCompleted(position, items.size());
                     } else {
                         // Fetched new posts => Add it to top
                         allPosts.addAll(0, items);
-                        view.loadingItemRangeInserted(0, items.size());
+                        view.loadingNewCompleted(items.size());
                     }
                     PsLog.v("Finished with " + items.size() + " Posts");
                     databaseHelper.insertPosts(items);

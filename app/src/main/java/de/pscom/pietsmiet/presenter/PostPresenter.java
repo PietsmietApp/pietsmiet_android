@@ -251,7 +251,11 @@ public class PostPresenter {
                 .compose(sortAndFilterNewPosts())
                 .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
                 .subscribe(items -> {
-                    if (fetchDirectionDown) {
+                    if (allPosts.isEmpty()){
+                        // First loading, call notifyDataSetChanged to avoid crashes
+                        allPosts.addAll(items);
+                        view.freshLoadingCompleted();
+                    } else if (fetchDirectionDown) {
                         // Fetched next posts => Add it to the bottom
                         int position = allPosts.size();
                         allPosts.addAll(items);

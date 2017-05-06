@@ -55,7 +55,6 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value);
     }
 
     /**
@@ -69,7 +68,6 @@ public class SharedPreferenceHelper {
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(key, value);
         editor.apply();
-        FirebaseAnalytics.getInstance(context).setUserProperty(((key.length() > 24) ? key.substring(0, 24) : key), value + "");
     }
 
     /**

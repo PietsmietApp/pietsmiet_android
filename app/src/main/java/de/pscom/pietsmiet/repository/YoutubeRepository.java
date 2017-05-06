@@ -10,6 +10,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeItem;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeRoot;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeSnippet;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;
@@ -72,27 +73,29 @@ class YoutubeRepository extends MainRepository {
                 .filter(result -> result != null)
                 .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
-                .doOnNext(item -> {
-
+                .map(item -> {
                     if (item.getId() != null) {
                         String videoID = item.getId().getVideoId();
                         if (videoID != null && !videoID.isEmpty()) {
                             postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
                         }
                     }
+                    return item;
                 })
                 .map(YoutubeItem::getSnippet)
                 .map(snippet -> {
-                    postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
-                    postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
-                    postBuilder.title(snippet.getTitle());
-                    try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
-                        postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
-                    } catch (ParseException e) {
-                        // Post will be automatically filtered as it's null (when no date in postbuilder is given)
-                        PsLog.w("YouTube date parsing error", e);
-                        view.showMessage(view.getString(R.string.error_youtube_loading_partial));
+                    if(snippet != null) {
+                        postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
+                        postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
+                        postBuilder.title(snippet.getTitle());
+                        try {
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+                            postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
+                        } catch (ParseException e) {
+                            // Post will be automatically filtered as it's null (when no date in postbuilder is given)
+                            PsLog.w("YouTube date parsing error", e);
+                            view.showMessage(view.getString(R.string.error_youtube_loading_partial));
+                        }
                     }
                     return postBuilder;
                 });

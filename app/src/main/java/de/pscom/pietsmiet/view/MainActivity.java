@@ -23,6 +23,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.customtabsclient.CustomTabActivityHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
 import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
@@ -31,6 +32,7 @@ import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.FirebaseUtil;
+import de.pscom.pietsmiet.util.LinkUtil;
 import de.pscom.pietsmiet.util.NetworkUtil;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
@@ -53,9 +55,10 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SE
 public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
-    private static final String url_feedback = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
-    private static final String url_pietstream = "https://www.twitch.tv/pietsmiet";
-    private static final String twitch_channel_id_pietstream = "pietsmiet";
+    private static final String URL_FEEDBACK = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
+    private static final String URL_PIETSTREAM = "https://www.twitch.tv/pietsmiet";
+    private static final String TWITCH_CHANNEL_ID_PIETSTREAM = "pietsmiet";
+    private CustomTabActivityHelper mCustomTabActivityHelper;
 
     private boolean CLEAR_CACHE_FLAG = false;
 
@@ -77,6 +80,8 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         setContentView(R.layout.activity_main);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
+
+        mCustomTabActivityHelper = new CustomTabActivityHelper();
 
         postPresenter = new PostPresenter(this,
                 new PostRepositoryImpl(this),
@@ -167,7 +172,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
      * Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
-        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(twitch_channel_id_pietstream);
+        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(TWITCH_CHANNEL_ID_PIETSTREAM);
         obsTTV.subscribe((stream) -> {
             if (stream != null) {
                 pietstream_banner.setVisible(true);
@@ -182,6 +187,18 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         super.onDestroy();
         if (postPresenter != null) postPresenter.stopSubscriptions();
         if (refreshLayout != null) refreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mCustomTabActivityHelper.bindCustomTabsService(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mCustomTabActivityHelper.unbindCustomTabsService(this);
     }
 
     @Override
@@ -351,9 +368,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 }
                 break;
             case R.id.nav_feedback:
-                Intent i_Browser = new Intent(Intent.ACTION_VIEW);
-                i_Browser.setData(Uri.parse(url_feedback));
-                startActivity(i_Browser);
+                LinkUtil.openUrl(this, URL_FEEDBACK);
                 break;
             case R.id.nav_help:
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
@@ -363,7 +378,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 break;
             case R.id.nav_pietstream_banner:
                 Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
-                i_TwitchBrowser.setData(Uri.parse(url_pietstream));
+                i_TwitchBrowser.setData(Uri.parse(URL_PIETSTREAM));
                 startActivity(i_TwitchBrowser);
                 break;
             default:

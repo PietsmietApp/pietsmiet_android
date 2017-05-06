@@ -1,8 +1,5 @@
 package de.pscom.pietsmiet.adapters;
 
-import android.content.ActivityNotFoundException;
-import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -21,8 +18,8 @@ import java.util.Locale;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
+import de.pscom.pietsmiet.util.LinkUtil;
 import de.pscom.pietsmiet.util.PostType.AllTypes;
-import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.TimeUtils;
 import de.pscom.pietsmiet.view.MainActivity;
@@ -219,19 +216,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
 
                 // Open card externally on click
-                holder.itemView.setOnClickListener(ignored -> {
-                            try {
-                                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-                                builder.setToolbarColor(ContextCompat.getColor(context, R.color.colorPrimary));
-                                CustomTabsIntent customTabsIntent = builder.build();
-                                customTabsIntent.launchUrl(context, Uri.parse(currentItem.getUrl()));
-                            } catch (ActivityNotFoundException | NullPointerException e) {
-                                PsLog.w("Cannot open browser intent. Url was: " + currentItem.getUrl());
-                                //Error Notification
-                                context.showMessage(context.getString(R.string.error_url_opening_failed));
-                            }
-                        }
-                );
+                holder.itemView.setOnClickListener(ignored -> LinkUtil.openUrl(context, currentItem.getUrl()));
                 break;
         }
 

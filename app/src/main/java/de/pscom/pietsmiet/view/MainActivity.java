@@ -19,7 +19,6 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
@@ -133,12 +132,12 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                     .setPositiveButton(R.string.yes, (dialog, id) -> {
                         boolVideoNotification = true;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
-                        FirebaseMessaging.getInstance().subscribeToTopic("video");
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, true);
                     })
                     .setNegativeButton(R.string.no, (dialog, id) -> {
                         boolVideoNotification = false;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
-                        FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
                     });
             builder.create().show();
 

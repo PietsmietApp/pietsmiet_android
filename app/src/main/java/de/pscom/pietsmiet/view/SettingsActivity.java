@@ -8,12 +8,15 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.util.FirebaseUtil;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
@@ -52,7 +55,7 @@ public class SettingsActivity extends BaseActivity {
         qualityLoadHDImagesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position < 3) {
+                if (position < 3) {
                     SharedPreferenceHelper.setSharedPreferenceInt(SettingsActivity.this, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, position);
                 } else {
                     ((Spinner) view).setSelection(0);
@@ -67,38 +70,22 @@ public class SettingsActivity extends BaseActivity {
 
         notifyUploadplanSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_UPLOADPLAN_SETTING, isChecked);
-            if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic("uploadplan");
-            } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("uploadplan");
-            }
+            FirebaseUtil.setFirebaseTopicSubscription(TOPIC_UPLOADPLAN, isChecked);
         });
 
         notifyVideoSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
-            if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic("video");
-            } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("video");
-            }
+            FirebaseUtil.setFirebaseTopicSubscription(TOPIC_VIDEO, isChecked);
         });
 
         notifyNewsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_NEWS_SETTING, isChecked);
-            if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic("news");
-            } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("news");
-            }
+            FirebaseUtil.setFirebaseTopicSubscription(TOPIC_NEWS, isChecked);
         });
 
         notifyPietcastSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_PIETCAST_SETTING, isChecked);
-            if (isChecked) {
-                FirebaseMessaging.getInstance().subscribeToTopic("pietcast");
-            } else {
-                FirebaseMessaging.getInstance().unsubscribeFromTopic("pietcast");
-            }
+            FirebaseUtil.setFirebaseTopicSubscription(TOPIC_PIETCAST, isChecked);
         });
     }
 

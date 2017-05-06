@@ -14,11 +14,11 @@ import de.pscom.pietsmiet.BuildConfig;
 public abstract class FirebaseUtil {
     private static final String PARAM_FIREBASE_DB_URL = "FIREBASE_DB_URL";
 
-    private static final String TOPIC_VIDEO = "video";
-    private static final String TOPIC_UPLOADPLAN = "uploadplan";
-    private static final String TOPIC_NEWS = "news";
-    private static final String TOPIC_PIETCAST = "pietcast";
-    private static final String TOPIC_TEST = "test2";
+    public static final String TOPIC_VIDEO = "video";
+    public static final String TOPIC_UPLOADPLAN = "uploadplan";
+    public static final String TOPIC_NEWS = "news";
+    public static final String TOPIC_PIETCAST = "pietcast";
+    public static final String TOPIC_TEST = "test2";
 
 
     public static void loadRemoteConfig(Activity context) {
@@ -39,31 +39,22 @@ public abstract class FirebaseUtil {
     }
 
     public static void setupTopicSubscriptions(Context context) {
+        setFirebaseTopicSubscription(TOPIC_TEST, BuildConfig.DEBUG);
+        setFirebaseTopicSubscription(TOPIC_UPLOADPLAN, SettingsHelper.boolUploadplanNotification);
+        setFirebaseTopicSubscription(TOPIC_NEWS, SettingsHelper.boolNewsNotification);
+        setFirebaseTopicSubscription(TOPIC_VIDEO, SettingsHelper.boolVideoNotification);
+        setFirebaseTopicSubscription(TOPIC_PIETCAST, SettingsHelper.boolPietcastNotification);
+
         if (BuildConfig.DEBUG) {
-            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_TEST);
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_TEST);
         }
-        if (SettingsHelper.boolUploadplanNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_UPLOADPLAN);
+    }
+
+    public static void setFirebaseTopicSubscription(String topic, boolean subscribe) {
+        if (subscribe) {
+            FirebaseMessaging.getInstance().subscribeToTopic(topic);
         } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_UPLOADPLAN);
-        }
-        if (SettingsHelper.boolVideoNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_VIDEO);
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_VIDEO);
-        }
-        if (SettingsHelper.boolNewsNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_NEWS);
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_NEWS);
-        }
-        if (SettingsHelper.boolPietcastNotification) {
-            FirebaseMessaging.getInstance().subscribeToTopic(TOPIC_PIETCAST);
-        } else {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(TOPIC_PIETCAST);
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
         }
     }
 

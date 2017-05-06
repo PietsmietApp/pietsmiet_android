@@ -161,14 +161,14 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         break;
                     case YOUTUBE:
                         resPostTypeImage = R.drawable.ic_youtube_light_logo;
-                        setupImageViews(holder.wideImage, currentItem, holder);
+                        setupImageViews(holder.wideImage, currentItem);
                         break;
                     case TWITTER:
                         resPostTypeImage = R.drawable.ic_twitter_social_icon_circle_white_24dp;
                         holder.line.setVisibility(VISIBLE);
                         holder.username.setVisibility(VISIBLE);
                         holder.username.setText("@" + currentItem.getUsername()); // TODO: 23.04.2017
-                        setupImageViews(holder.wideImage, currentItem, holder);
+                        setupImageViews(holder.wideImage, currentItem);
                         // Setup text for social media
                         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                             holder.text.setVisibility(VISIBLE);
@@ -177,7 +177,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         break;
                     case FACEBOOK:
                         resPostTypeImage = R.drawable.ic_facebook_white;
-                        setupImageViews(holder.wideImage, currentItem, holder);
+                        setupImageViews(holder.wideImage, currentItem);
                         // Setup text for social media
                         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
                             holder.text.setVisibility(VISIBLE);
@@ -238,7 +238,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
-    private void setupImageViews(ImageView view, Post currentItem, CardViewHolder holder) {
+    private void setupImageViews(ImageView view, Post currentItem) {
         if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
             Glide.with(context)
                     .load((SettingsHelper.shouldLoadHDImages(context) ?

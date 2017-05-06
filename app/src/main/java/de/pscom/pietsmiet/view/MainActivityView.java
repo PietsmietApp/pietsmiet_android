@@ -11,7 +11,7 @@ public interface MainActivityView {
 
     void loadingStarted();
 
-    void loadingFailed(String message);
+    void loadingFailed(String message, boolean fetchDirectionDown);
 
     void showMessage(String message);
 }

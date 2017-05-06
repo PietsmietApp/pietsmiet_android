@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
-public class FacebookRepository extends MainRepository {
+class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
     FacebookRepository(MainActivity view) {

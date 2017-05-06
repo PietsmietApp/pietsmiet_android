@@ -244,7 +244,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                SettingsHelper.loadAllSettings(getBaseContext()); //todo too much everytime?
+                SettingsHelper.loadAllSettings(getBaseContext());
                 if (CLEAR_CACHE_FLAG) {
                     clearCache();
                     CLEAR_CACHE_FLAG = false;
@@ -300,16 +300,29 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 });
     }
 
-    public void showMessage(String message, int length) {
+    public void showMessage(String message, int length, boolean retryLoadingButton, boolean fetchDirectionDown) {
         Observable.just(message)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(msg -> {
                     if (findViewById(R.id.main_layout) != null) {
-                        Snackbar.make(findViewById(R.id.main_layout), msg, length).show();
+                        Snackbar sb = Snackbar.make(findViewById(R.id.main_layout), msg, length);
+                        if(retryLoadingButton) sb.setAction(R.string.info_retry, (view) -> {
+                            scrollListener.resetState();
+                            if (fetchDirectionDown) {
+                                postPresenter.fetchNextPosts();
+                            } else {
+                                postPresenter.fetchNewPosts();
+                            }
+                        });
+                        sb.show();
                     } else {
                         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    public void showMessage(String message, int length) {
+        showMessage(message, length, false, false);
     }
 
     private void clearCache() {
@@ -421,13 +434,13 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     }
 
     @Override
-    public void loadingFailed(String message) {
-        showMessage(message, Snackbar.LENGTH_INDEFINITE);
+    public void loadingFailed(String message, boolean fetchDirectionDown) {
+        showMessage(message, Snackbar.LENGTH_INDEFINITE, true, fetchDirectionDown);
         setRefreshAnim(false);
     }
 
     @Override
     public void showMessage(String message) {
-        showMessage(message, Snackbar.LENGTH_LONG);
+        showMessage(message, Snackbar.LENGTH_LONG, false, false);
     }
 }

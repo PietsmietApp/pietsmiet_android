@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet.repository;
 
-import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
-public class FirebaseRepository extends MainRepository {
+class FirebaseRepository extends MainRepository {
     FirebaseApiInterface apiInterface;
 
     FirebaseRepository(MainActivity view) {
@@ -42,15 +41,6 @@ public class FirebaseRepository extends MainRepository {
 
     private Observable<Post.PostBuilder> parsePostsFromDb(Observable<Map<String, Map<String, FirebaseItem>>> obs) {
         return Observable.defer(() -> obs)
-                .retryWhen(throwable -> throwable.flatMap(error -> {
-                    if (error instanceof SocketTimeoutException) {
-                        PsLog.w("Firebase Timeout", error);
-                        view.showMessage(view.getString(R.string.error_firebase_timeout));
-                        return Observable.just(null);
-                    }
-                    // Unrelated error, throw it
-                    return Observable.error(error);
-                }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
                     view.showMessage(view.getString(R.string.error_firebase_loading));

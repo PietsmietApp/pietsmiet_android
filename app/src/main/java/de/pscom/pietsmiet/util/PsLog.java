@@ -4,6 +4,7 @@ import android.support.compat.BuildConfig;
 import android.util.Log;
 
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -92,6 +93,7 @@ public class PsLog {
                 !(tr instanceof SocketTimeoutException) &&
                 !(tr instanceof UnknownHostException) &&
                 !(tr instanceof ConnectException) &&
+                !(tr instanceof NoRouteToHostException) &&
                 !(tr instanceof SSLException)) {
             FirebaseUtil.reportError(getTag() + " " + message, tr);
         }

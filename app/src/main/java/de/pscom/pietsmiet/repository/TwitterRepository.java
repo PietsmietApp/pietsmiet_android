@@ -27,7 +27,7 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
-public class TwitterRepository extends MainRepository {
+public class TwitterRepository extends MainRepository { //todo make package only
     public static Post firstTweet, lastTweet;
     TwitterApiInterface apiInterface;
     private final String query = "from:pietsmiet, " +

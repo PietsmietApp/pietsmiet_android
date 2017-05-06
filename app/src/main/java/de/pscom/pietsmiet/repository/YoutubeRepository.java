@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
 import de.pscom.pietsmiet.model.youtubeApi.YoutubeItem;
@@ -65,7 +66,7 @@ public class YoutubeRepository extends MainRepository {
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
-                    view.showMessage("Youtube konnte nicht geladen werden");
+                    view.showMessage(view.getString(R.string.error_youtube_loading));
                     return null;
                 })
                 .filter(result -> result != null)
@@ -91,7 +92,7 @@ public class YoutubeRepository extends MainRepository {
                     } catch (ParseException e) {
                         // Post will be automatically filtered as it's null (when no date in postbuilder is given)
                         PsLog.w("YouTube date parsing error", e);
-                        view.showMessage("Einige Youtube-Posts konnte nicht geladen werden");
+                        view.showMessage(view.getString(R.string.error_youtube_loading_partial));
                     }
                     return postBuilder;
                 });

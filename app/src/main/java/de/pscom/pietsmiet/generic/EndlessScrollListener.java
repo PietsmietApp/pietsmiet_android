@@ -5,6 +5,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.util.NetworkUtil;
 
@@ -95,7 +96,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
                 FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
             } else {
                 if(!FLAG_SHOWED_NO_NETWORK_MESSAGE){
-                    ((MainActivity) view.getContext()).showMessage("Keine Netzwerkverbindung");
+                    ((MainActivity) view.getContext()).showMessage(view.getContext().getString(R.string.error_no_network));
                     FLAG_SHOWED_NO_NETWORK_MESSAGE = true;
                 }
             }

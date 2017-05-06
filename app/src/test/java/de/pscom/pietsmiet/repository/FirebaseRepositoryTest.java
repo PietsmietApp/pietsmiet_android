@@ -28,6 +28,7 @@ public class FirebaseRepositoryTest extends MainTestPresenter {
         SettingsHelper.boolCategoryPietsmietNews = true;
         SettingsHelper.boolCategoryPietsmietUploadplan = true;
         SettingsHelper.boolCategoryPietcast = true;
+        SettingsHelper.stringFirebaseDbUrl = "http://localhost";
         MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.enqueue(new MockResponse().setBody(TestUtils.getResource("firebase_response.json")));
         FirebaseRepository presenter = new FirebaseRepository(mMockContext);

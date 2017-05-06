@@ -18,7 +18,7 @@ public class AboutActivity extends BaseActivity {
         setupToolbar(getString(R.string.drawer_support));
 
         TextView version = (TextView) findViewById(R.id.tv_app_version);
-        version.setText("Version: " + BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-dev" : ""));
+        version.setText(getString(R.string.about_version, BuildConfig.VERSION_NAME + (BuildConfig.DEBUG ? "-dev" : "")));
 
         LibsSupportFragment fragment = new LibsBuilder()
                 .supportFragment();

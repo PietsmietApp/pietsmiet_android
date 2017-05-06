@@ -4,6 +4,7 @@ import java.net.SocketTimeoutException;
 import java.util.Date;
 import java.util.Map;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
@@ -16,6 +17,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
@@ -27,7 +32,6 @@ public class FirebaseRepository extends MainRepository {
     FirebaseRepository(MainActivity view) {
         super(view);
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(SettingsHelper.stringFirebaseDbUrl)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -41,7 +45,7 @@ public class FirebaseRepository extends MainRepository {
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof SocketTimeoutException) {
                         PsLog.w("Firebase Timeout", error);
-                        view.showMessage("Firebase Timeout, neuer Versuch...");
+                        view.showMessage(view.getString(R.string.error_firebase_timeout));
                         return Observable.just(null);
                     }
                     // Unrelated error, throw it
@@ -49,7 +53,7 @@ public class FirebaseRepository extends MainRepository {
                 }))
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
-                    view.showMessage("Pietsmiet.de konnte nicht geladen werden");
+                    view.showMessage(view.getString(R.string.error_firebase_loading));
                     return null;
                 })
                 .filter(result -> result != null)
@@ -58,16 +62,16 @@ public class FirebaseRepository extends MainRepository {
                 .map(item -> {
                     int type;
                     switch (item.scope) {
-                        case "uploadplan":
+                        case TOPIC_UPLOADPLAN:
                             type = UPLOADPLAN;
                             break;
-                        case "news":
+                        case TOPIC_NEWS:
                             type = NEWS;
                             break;
-                        case "pietcast":
+                        case TOPIC_PIETCAST:
                             type = PIETCAST;
                             break;
-                        case "video":
+                        case TOPIC_VIDEO:
                             type = PS_VIDEO;
                             break;
                         default:
@@ -75,13 +79,13 @@ public class FirebaseRepository extends MainRepository {
                     }
                     Post.PostBuilder postBuilder = new Post.PostBuilder(type);
                     if (!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) {
-                        return postBuilder;
+                        return postBuilder.empty();
                     } else if (!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) {
-                        return postBuilder;
+                        return postBuilder.empty();
                     } else if (!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) {
-                        return postBuilder;
+                        return postBuilder.empty();
                     } else if (!SettingsHelper.boolCategoryPietcast && type == PIETCAST) {
-                        return postBuilder;
+                        return postBuilder.empty();
                     }
                     postBuilder = new Post.PostBuilder(type);
                     postBuilder.title(item.title);

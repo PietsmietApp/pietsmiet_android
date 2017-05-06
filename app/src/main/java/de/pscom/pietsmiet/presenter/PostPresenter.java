@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.presenter;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 
 import java.text.SimpleDateFormat;
@@ -10,6 +11,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.DateTag;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
@@ -40,6 +42,7 @@ public class PostPresenter {
     private final PostRepository postRepository;
     private final DatabaseHelper databaseHelper;
     private final NetworkUtil networkUtil;
+    private final Context context;
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
@@ -48,11 +51,16 @@ public class PostPresenter {
     private Subscription subLoadingPosts;
     private Subscription subUpdatePosts;
 
-    public PostPresenter(MainActivityView view, PostRepository postRepository, DatabaseHelper databaseHelper, NetworkUtil networkUtil) {
+    public PostPresenter(MainActivityView view,
+                         PostRepository postRepository,
+                         DatabaseHelper databaseHelper,
+                         NetworkUtil networkUtil,
+                         Context context) {
         this.view = view;
         this.postRepository = postRepository;
         this.databaseHelper = databaseHelper;
         this.networkUtil = networkUtil;
+        this.context = context;
     }
 
     /**
@@ -78,7 +86,7 @@ public class PostPresenter {
                     allPosts.addAll(list);
                 }, throwable -> {
                     PsLog.e("Couldn't update current posts: ", throwable);
-                    view.loadingFailed("Posts konnten nicht aktualisiert werden");
+                    view.loadingFailed(context.getString(R.string.error_updating_posts));
                 }, view::freshLoadingCompleted);
     }
 
@@ -235,7 +243,7 @@ public class PostPresenter {
                 .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
                     if (attempt == 2) throw Exceptions.propagate(throwable);
                     else {
-                        view.loadingFailed("Kritischer Fehler. Ein neuer Ladeversuch wird gestartet...");
+                        view.loadingFailed(context.getString(R.string.error_loading_all_retry));
                         PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
                         return Observable.timer(3L, TimeUnit.SECONDS);
                     }
@@ -258,10 +266,10 @@ public class PostPresenter {
                 }, e -> {
                     if (e instanceof TimeoutException) {
                         PsLog.w("Laden dauerte zu lange, Abbruch...");
-                        view.loadingFailed("Konnte Posts nicht laden (Timeout)");
+                        view.loadingFailed(context.getString(R.string.error_loading_all_timeout));
                     } else {
                         PsLog.e("Kritischer Fehler beim Laden: ", e);
-                        view.loadingFailed("Kritischer Fehler beim Laden. " +
+                        view.loadingFailed(context.getString(R.string.error_loading_all) +
                                 "Der Fehler wurde den Entwicklern gemeldet");
                     }
                 });

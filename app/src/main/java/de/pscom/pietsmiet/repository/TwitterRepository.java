@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
 import de.pscom.pietsmiet.model.twitterApi.TwitterRoot;
@@ -72,7 +73,7 @@ public class TwitterRepository extends MainRepository {
                 .flatMapIterable(root -> root.statuses)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Twitter", err);
-                    view.showMessage("Twitter konnte nicht geladen werden");
+                    view.showMessage(view.getString(R.string.error_twitter_loading));
                     return null;
                 })
                 .filter(status -> status != null)
@@ -124,7 +125,8 @@ public class TwitterRepository extends MainRepository {
                                     throw Exceptions.propagate(new Throwable("Twitter did not return a bearer, critical!"));
                                 }
                             });
-                });
+                })
+                .map(bearer -> "Bearer " + bearer);
     }
 
     /**
@@ -153,9 +155,9 @@ public class TwitterRepository extends MainRepository {
     public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         Observable<TwitterRoot> obs;
         if (firstTweet != null) {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince("Bearer " + bearer, query, numPosts, firstTweet.getId()));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince(bearer, query, numPosts, firstTweet.getId()));
         } else {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, numPosts));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweets(bearer, query, numPosts));
         }
         return parseTweets(obs);
     }
@@ -164,9 +166,9 @@ public class TwitterRepository extends MainRepository {
     public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
         Observable<TwitterRoot> obs;
         if (lastTweet != null) {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweetsUntil("Bearer " + bearer, query, numPosts, lastTweet.getId() - 1));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweetsUntil(bearer, query, numPosts, lastTweet.getId() - 1));
         } else {
-            obs = getToken().flatMap(bearer -> apiInterface.getTweets("Bearer " + bearer, query, numPosts));
+            obs = getToken().flatMap(bearer -> apiInterface.getTweets(bearer, query, numPosts));
         }
 
         return parseTweets(obs);

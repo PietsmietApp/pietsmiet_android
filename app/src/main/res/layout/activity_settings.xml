@@ -98,7 +98,7 @@
                 android:layout_toStartOf="@+id/qualityLoadHDImagesSpinner"
                 android:gravity="center_vertical"
                 android:paddingStart="16dp"
-                android:text="@string/quality_hd_images_spinner_label"
+                android:text="@string/settings_image_quality_label"
                 android:textColor="@android:color/black" />
 
             <Spinner

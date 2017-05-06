@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
@@ -75,7 +76,7 @@ public class FacebookRepository extends MainRepository {
                 .flatMapIterable(l -> l)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Facebook", err);
-                    view.showMessage("Facebook konnte nicht geladen werden");
+                    view.showMessage(view.getString(R.string.error_facebook_loading));
                     return null;
                 })
                 .filter(response -> response != null)

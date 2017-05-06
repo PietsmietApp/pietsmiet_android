@@ -167,6 +167,7 @@ public class Post extends ViewItem {
 
     @SuppressWarnings("UnusedReturnValue")
     public static class PostBuilder {
+        private boolean empty = false;
         private String title;
         private int postType;
         @Nullable
@@ -185,6 +186,11 @@ public class Post extends ViewItem {
 
         public PostBuilder(@PostType.AllTypes int postType) {
             this.postType = postType;
+        }
+
+        public PostBuilder empty(){
+            empty = true;
+            return this;
         }
 
         public PostBuilder description(@Nullable String description) {
@@ -233,6 +239,9 @@ public class Post extends ViewItem {
         }
 
         public Post build() {
+            if (empty){
+                return null;
+            }
             if (title == null || title.isEmpty()) {
                 PsLog.e("Title is not given");
                 return null;

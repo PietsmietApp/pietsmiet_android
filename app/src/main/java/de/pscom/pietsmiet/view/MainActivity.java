@@ -78,9 +78,11 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
-        postPresenter = new PostPresenter(this, new PostRepositoryImpl(this),
+        postPresenter = new PostPresenter(this,
+                new PostRepositoryImpl(this),
                 DatabaseHelper.getInstance(this.getApplicationContext()),
-                new NetworkUtil(this.getApplicationContext()));
+                new NetworkUtil(this.getApplicationContext()),
+                this.getApplicationContext());
 
         setupRecyclerView();
         setupDrawer();
@@ -128,7 +130,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         if (boolAppFirstRun) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.dialog_video_notification_message)
+            builder.setMessage(R.string.dialog_video_notification)
                     .setPositiveButton(R.string.yes, (dialog, id) -> {
                         boolVideoNotification = true;
                         SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
@@ -370,7 +372,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             SettingsHelper.loadAllSettings(this);
             if (resultCode == RESULT_CLEAR_CACHE) {
                 clearCache();
-                showMessage("Cache gelöscht");
+                showMessage(getString(R.string.info_cleared_cache));
             } else {
                 // Update adapter to refresh timestamps
                 updateAdapter();
@@ -393,7 +395,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
     @Override
     public void noNetworkError() {
-        showMessage("Keine Netzwerkverbindung");
+        showMessage(getString(R.string.error_no_network));
         scrollListener.resetState();
     }
 

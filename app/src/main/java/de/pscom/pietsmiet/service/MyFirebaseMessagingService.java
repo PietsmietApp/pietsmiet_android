@@ -31,12 +31,16 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Calendar;
 import java.util.Map;
 
-import de.pscom.pietsmiet.view.MainActivity;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.view.MainActivity;
 
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
+import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
@@ -64,17 +68,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PsLog.d("Message data payload: " + data);
         int type;
         switch (data.get("topic")) {
-            case "news":
+            case TOPIC_NEWS:
                 type = NEWS;
                 PsLog.v("hi");
                 break;
-            case "uploadplan":
+            case TOPIC_UPLOADPLAN:
                 type = UPLOADPLAN;
                 break;
-            case "pietcast":
+            case TOPIC_PIETCAST:
                 type = PIETCAST;
                 break;
-            case "video":
+            case TOPIC_VIDEO:
                 type = PS_VIDEO;
                 break;
             default:
@@ -121,7 +125,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationBuilder.setContentIntent(clickIntent);
             notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp, getString(R.string.notification_open_url), urlIntent);
         }
-        
+
         if (messageBody != null) {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
             notificationBuilder.setContentText(Html.fromHtml(messageBody));

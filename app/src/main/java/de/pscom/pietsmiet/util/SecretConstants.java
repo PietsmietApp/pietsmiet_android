@@ -34,8 +34,8 @@ public class SecretConstants {
             youtubeAPIkey = properties.getProperty("youtubeAPIkey");
             twitchClientId = properties.getProperty("twitchClientId");
         } catch (IOException e) {
-            PsLog.w("You haven't included a '/app/src/main/assets/secrets.properties' file in your project with the API-Keys!\n" +
-                    "=> Twitter, Facebook & Youtube won't work");
+            PsLog.e("You haven't included a '/app/src/main/assets/secrets.properties' file in your project with the API-Keys!\n" +
+                    "=> Twitter, Facebook, Twitch & Youtube won't work");
         }
     }
 

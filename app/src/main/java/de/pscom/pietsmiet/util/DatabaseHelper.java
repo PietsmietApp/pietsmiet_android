@@ -64,6 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * Creates the default table
+     *
      * @param db SQLiteDatabase link
      */
     @Override
@@ -85,10 +86,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *  Called if the database was updated eg from an older version / after an update.
-     *  Resets the database.
+     * Called if the database was updated eg from an older version / after an update.
+     * Resets the database.
+     *
      * @param db SQLiteDatabase current database link
-     * @param i int
+     * @param i  int
      * @param i1 int
      */
     @Override
@@ -98,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *  Deletes the table TABLE_POSTS.
+     * Deletes the table TABLE_POSTS.
      */
     private void deleteTable() {
         getWritableDatabase().delete(TABLE_POSTS, null, null);
@@ -142,7 +144,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *  Returns the amount of posts currently stored in the database.
+     * Returns the amount of posts currently stored in the database.
+     *
      * @return int Count posts stored in the database.
      */
     private int getPostsInDbCount() {
@@ -154,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     /**
-     *  Clears the entire Database.
+     * Clears the entire Database.
      */
     public void clearDB() {
         deleteTable();
@@ -219,6 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 })
                 .flatMapIterable(l -> l)
                 .compose(presenter.sortAndFilterNewPosts())
+                .compose(presenter.addDateTags(PostPresenter.LOAD_TYPE.NEW))
                 .subscribe(items -> {
                     PsLog.v("Loaded " + items.size() + " posts from DB");
                     presenter.addNewPostsToView(items);

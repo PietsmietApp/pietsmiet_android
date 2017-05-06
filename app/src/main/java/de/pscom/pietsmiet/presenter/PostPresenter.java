@@ -57,7 +57,7 @@ public class PostPresenter {
 
     /**
      * Sorts allPosts and removes Posts that are not allowed with the current filter settings
-     * It also removes and readds all DateTags so there are no DateTags with no posts
+     * It also removes and readds all DateTags so there are no DateTags with no posts below them
      * <p>
      * It calls adapter.notifyDataSetChanged because we don't know which items changed
      */
@@ -69,9 +69,10 @@ public class PostPresenter {
                 .subscribeOn(Schedulers.io())
                 .flatMap(Observable::from)
                 .filter(viewItem -> viewItem.getType() == ViewItem.TYPE_POST)
-                .filter(post -> SettingsHelper.getSettingsValueForType(((Post) post).getPostType()))
+                .map(item -> (Post) item)
+                .filter(post -> SettingsHelper.getSettingsValueForType(post.getPostType()))
                 .toList()
-                .compose(addDateTags())
+                .compose(addDateTags(LOAD_TYPE.NEW))
                 .subscribe(list -> {
                     allPosts.clear();
                     allPosts.addAll(list);
@@ -83,11 +84,11 @@ public class PostPresenter {
 
     /**
      * Takes an Observable of new posts (from APIs or database), removes duplicates,
-     * makes sure they are allowed (current Filter settings), sorts them and adds date tags
+     * makes sure they are allowed (current Filter settings) and sorts them
      *
      * @return An Observable of a List of ViewItems that can be passed to the view
      */
-    public Observable.Transformer<Post, List<ViewItem>> sortAndFilterNewPosts() {
+    public Observable.Transformer<Post, List<Post>> sortAndFilterNewPosts() {
         return observable -> observable.map(l -> l)
                 .distinct()
                 .filter(post -> SettingsHelper.getSettingsValueForType(post.getPostType()))
@@ -97,8 +98,7 @@ public class PostPresenter {
                     if (post.getPostType() == TWITTER && (TwitterRepository.lastTweet == null || TwitterRepository.lastTweet.getId() > post.getId()))
                         TwitterRepository.lastTweet = post;
                 })
-                .toSortedList()
-                .compose(addDateTags());
+                .toSortedList();
     }
 
     /**
@@ -106,19 +106,34 @@ public class PostPresenter {
      *
      * @return A Observable of a List with ViewItems
      */
-    private Observable.Transformer<List<? extends ViewItem>, List<ViewItem>> addDateTags() {
+    public Observable.Transformer<List<Post>, List<ViewItem>> addDateTags(LOAD_TYPE fetchDirection) {
         return listObservable -> listObservable.map(list -> {
             List<ViewItem> viewItems = new ArrayList<>();
             viewItems.addAll(list);
             if (list.isEmpty()) return viewItems;
 
+            // Avoid that some date tags aren't show if the loading starts at a new day
+            if (fetchDirection == LOAD_TYPE.DOWN && getLastPost() != null) {
+                // Fetching down => Add the last post (from allPosts) to the top to compare
+                list.add(0, getLastPost());
+            } else if (fetchDirection == LOAD_TYPE.UP && getFirstPost() != null) {
+                //Fetching up => Add the first post (from allPosts) to the bottom to compare
+                list.add(getFirstPost());
+            }
+
             SimpleDateFormat dayFormatter = new SimpleDateFormat("dd", Locale.getDefault());
             Date lastPostDate = list.get(0).getDate();
-            for (ViewItem vi : list) {
-                if (vi.getDate().before(lastPostDate)) {
-                    if (!dayFormatter.format(vi.getDate()).equals(dayFormatter.format(lastPostDate)))
-                        viewItems.add(viewItems.indexOf(vi), new DateTag(vi.getDate()));
-                    lastPostDate = vi.getDate();
+            for (Post post : list) {
+                if (post.getDate().before(lastPostDate)) {
+                    if (!dayFormatter.format(post.getDate()).equals(dayFormatter.format(lastPostDate))) {
+                        if (viewItems.contains(post)) {
+                            viewItems.add(viewItems.indexOf(post), new DateTag(post.getDate()));
+                        } else if (post == getFirstPost()) {
+                            // Add the dateTag to the bottom of the list
+                            viewItems.add(new DateTag(post.getDate()));
+                        }
+                    }
+                    lastPostDate = post.getDate();
                 }
             }
 
@@ -226,6 +241,7 @@ public class PostPresenter {
                     }
                 }))
                 .compose(sortAndFilterNewPosts())
+                .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
                 .subscribe(items -> {
                     if (fetchDirectionDown) {
                         // Fetched next posts => Add it to the bottom
@@ -323,5 +339,11 @@ public class PostPresenter {
             }
         }
         return shouldFilter;
+    }
+
+    public enum LOAD_TYPE {
+        DOWN,
+        UP,
+        NEW
     }
 }

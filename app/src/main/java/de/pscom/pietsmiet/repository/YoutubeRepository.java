@@ -7,9 +7,9 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeItem;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeRoot;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeItem;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeRoot;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;

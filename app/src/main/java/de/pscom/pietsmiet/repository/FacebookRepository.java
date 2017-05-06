@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.facebookApi.FacebookApiInterface;
+import de.pscom.pietsmiet.json_model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;

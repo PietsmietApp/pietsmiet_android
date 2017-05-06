@@ -8,9 +8,9 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.twitterApi.TwitterApiInterface;
-import de.pscom.pietsmiet.model.twitterApi.TwitterRoot;
-import de.pscom.pietsmiet.model.twitterApi.TwitterUser;
+import de.pscom.pietsmiet.json_model.twitterApi.TwitterApiInterface;
+import de.pscom.pietsmiet.json_model.twitterApi.TwitterRoot;
+import de.pscom.pietsmiet.json_model.twitterApi.TwitterUser;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;

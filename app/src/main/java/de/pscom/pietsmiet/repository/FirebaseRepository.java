@@ -6,8 +6,8 @@ import java.util.Map;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
-import de.pscom.pietsmiet.model.firebaseApi.FirebaseItem;
+import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseApiInterface;
+import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivity;

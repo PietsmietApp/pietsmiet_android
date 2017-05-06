@@ -22,9 +22,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
-import de.pscom.pietsmiet.adapters.CardViewAdapter;
+import de.pscom.pietsmiet.adapter.CardViewAdapter;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
-import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
+import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;

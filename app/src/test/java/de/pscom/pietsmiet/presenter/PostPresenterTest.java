@@ -79,7 +79,7 @@ public class PostPresenterTest {
         verify(view).loadingStarted();
         verify(view).loadingNewCompleted(2);
 
-        verify(view, never()).loadingFailed(anyString());
+        verify(view, never()).loadingFailed(anyString(), false);
         verify(view, never()).freshLoadingCompleted();
     }
 
@@ -98,7 +98,7 @@ public class PostPresenterTest {
         verify(view).loadingStarted();
         verify(view).loadingNextCompleted(1, 2);
 
-        verify(view, never()).loadingFailed(anyString());
+        verify(view, never()).loadingFailed(anyString(), true);
         verify(view, never()).freshLoadingCompleted();
     }
 

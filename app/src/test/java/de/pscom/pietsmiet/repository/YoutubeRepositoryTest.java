@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import okhttp3.mockwebserver.MockResponse;

@@ -3,12 +3,12 @@ package de.pscom.pietsmiet.presenter;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import de.pscom.pietsmiet.R;
@@ -25,7 +25,6 @@ import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivityView;
 import rx.Observable;
 import rx.Subscription;
-import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.NEWS;
@@ -70,7 +69,7 @@ public class PostPresenter {
      * It calls adapter.notifyDataSetChanged because we don't know which items changed
      */
     public void updateSettingsFilters() {
-        List<ViewItem> lVItem = new ArrayList<>(); // todo investigate might fix concurrent modification error
+        List<ViewItem> lVItem = new ArrayList<>();
         lVItem.addAll(allPosts);
         subUpdatePosts = Observable.just(lVItem)
                 .observeOn(Schedulers.io())
@@ -86,7 +85,7 @@ public class PostPresenter {
                     allPosts.addAll(list);
                 }, throwable -> {
                     PsLog.e("Couldn't update current posts: ", throwable);
-                    view.loadingFailed(context.getString(R.string.error_updating_posts));
+                    view.showMessage(context.getString(R.string.error_updating_posts));
                 }, view::freshLoadingCompleted);
     }
 
@@ -240,18 +239,14 @@ public class PostPresenter {
                 .filter(post -> filterWrongPosts(post, fetchDirectionDown))
                 .sorted()
                 .take(numPosts)
-                .retryWhen(attempts -> attempts.zipWith(Observable.range(1, 2), (throwable, attempt) -> {
-                    if (attempt == 2) throw Exceptions.propagate(throwable);
-                    else {
-                        view.loadingFailed(context.getString(R.string.error_loading_all_retry));
-                        PsLog.w("Krititischer Fehler, neuer Versuch: ", throwable);
-                        return Observable.timer(3L, TimeUnit.SECONDS);
-                    }
-                }))
                 .compose(sortAndFilterNewPosts())
                 .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
                 .subscribe(items -> {
-                    if (fetchDirectionDown) {
+                    if (allPosts.isEmpty()){
+                        // First loading, call notifyDataSetChanged to avoid crashes
+                        allPosts.addAll(items);
+                        view.freshLoadingCompleted();
+                    } else if (fetchDirectionDown) {
                         // Fetched next posts => Add it to the bottom
                         int position = allPosts.size();
                         allPosts.addAll(items);
@@ -264,13 +259,14 @@ public class PostPresenter {
                     PsLog.v("Finished with " + items.size() + " Posts");
                     databaseHelper.insertPosts(items);
                 }, e -> {
-                    if (e instanceof TimeoutException) {
+                    if (e instanceof TimeoutException || e instanceof SocketTimeoutException) {
+                        // todo reachable?
                         PsLog.w("Laden dauerte zu lange, Abbruch...");
-                        view.loadingFailed(context.getString(R.string.error_loading_all_timeout));
+                        view.loadingFailed(context.getString(R.string.error_loading_all_timeout), fetchDirectionDown);
                     } else {
                         PsLog.e("Kritischer Fehler beim Laden: ", e);
                         view.loadingFailed(context.getString(R.string.error_loading_all) +
-                                "Der Fehler wurde den Entwicklern gemeldet");
+                                context.getString(R.string.error_loading_all_report_send), fetchDirectionDown);
                     }
                 });
     }

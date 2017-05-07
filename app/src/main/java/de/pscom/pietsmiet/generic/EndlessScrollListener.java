@@ -25,16 +25,16 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
     // True if we are still waiting for the last set of data to load.
     private boolean loading = true;
 
-    public EndlessScrollListener(LinearLayoutManager layoutManager) {
+    protected EndlessScrollListener(LinearLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
     }
 
-    public EndlessScrollListener(GridLayoutManager layoutManager) {
+    protected EndlessScrollListener(GridLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }
 
-    public EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
+    protected EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }

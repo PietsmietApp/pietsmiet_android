@@ -9,7 +9,7 @@ import java.util.List;
 
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.firebaseApi.FirebaseApiInterface;
+import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import okhttp3.mockwebserver.MockResponse;

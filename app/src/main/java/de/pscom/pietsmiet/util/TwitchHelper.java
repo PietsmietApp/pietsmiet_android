@@ -1,9 +1,9 @@
 package de.pscom.pietsmiet.util;
 
 
-import de.pscom.pietsmiet.model.twitchApi.Twitch;
-import de.pscom.pietsmiet.model.twitchApi.TwitchApiInterface;
-import de.pscom.pietsmiet.model.twitchApi.TwitchStream;
+import de.pscom.pietsmiet.json_model.twitchApi.Twitch;
+import de.pscom.pietsmiet.json_model.twitchApi.TwitchApiInterface;
+import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;

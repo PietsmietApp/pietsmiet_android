@@ -7,9 +7,10 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeApiInterface;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeItem;
-import de.pscom.pietsmiet.model.youtubeApi.YoutubeRoot;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeItem;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeRoot;
+import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeSnippet;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;
@@ -21,7 +22,7 @@ import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
-public class YoutubeRepository extends MainRepository {
+class YoutubeRepository extends MainRepository {
     private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
 
     YoutubeApiInterface apiInterface;
@@ -62,7 +63,6 @@ public class YoutubeRepository extends MainRepository {
 
 
     private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
-        final Post.PostBuilder postBuilder = new Post.PostBuilder(YOUTUBE);
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
@@ -72,27 +72,28 @@ public class YoutubeRepository extends MainRepository {
                 .filter(result -> result != null)
                 .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
-                .doOnNext(item -> {
-
+                .map(item -> {
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(YOUTUBE);
                     if (item.getId() != null) {
                         String videoID = item.getId().getVideoId();
                         if (videoID != null && !videoID.isEmpty()) {
                             postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
                         }
                     }
-                })
-                .map(YoutubeItem::getSnippet)
-                .map(snippet -> {
-                    postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
-                    postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
-                    postBuilder.title(snippet.getTitle());
-                    try {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
-                        postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
-                    } catch (ParseException e) {
-                        // Post will be automatically filtered as it's null (when no date in postbuilder is given)
-                        PsLog.w("YouTube date parsing error", e);
-                        view.showMessage(view.getString(R.string.error_youtube_loading_partial));
+                    YoutubeSnippet snippet = item.getSnippet();
+
+                    if(snippet != null) {
+                        postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
+                        postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
+                        postBuilder.title(snippet.getTitle());
+                        try {
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+                            postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
+                        } catch (ParseException e) {
+                            // Post will be automatically filtered as it's null (when no date in postbuilder is given)
+                            PsLog.w("YouTube date parsing error", e);
+                            view.showMessage(view.getString(R.string.error_youtube_loading_partial));
+                        }
                     }
                     return postBuilder;
                 });

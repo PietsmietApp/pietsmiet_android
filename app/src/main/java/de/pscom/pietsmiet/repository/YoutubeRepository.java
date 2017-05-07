@@ -63,7 +63,6 @@ class YoutubeRepository extends MainRepository {
 
 
     private Observable<Post.PostBuilder> fetchData(Observable<YoutubeRoot> call) {
-        final Post.PostBuilder postBuilder = new Post.PostBuilder(YOUTUBE);
         return Observable.defer(() -> call)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't fetch Youtube: ", err);
@@ -74,16 +73,15 @@ class YoutubeRepository extends MainRepository {
                 .flatMapIterable(YoutubeRoot::getItems)
                 .filter(result -> result != null)
                 .map(item -> {
+                    Post.PostBuilder postBuilder = new Post.PostBuilder(YOUTUBE);
                     if (item.getId() != null) {
                         String videoID = item.getId().getVideoId();
                         if (videoID != null && !videoID.isEmpty()) {
                             postBuilder.url("http://www.youtube.com/watch?v=" + videoID);
                         }
                     }
-                    return item;
-                })
-                .map(YoutubeItem::getSnippet)
-                .map(snippet -> {
+                    YoutubeSnippet snippet = item.getSnippet();
+
                     if(snippet != null) {
                         postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
                         postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());

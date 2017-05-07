@@ -27,6 +27,7 @@ import rx.schedulers.Schedulers;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -79,7 +80,7 @@ public class PostPresenterTest {
         verify(view).loadingStarted();
         verify(view).loadingNewCompleted(2);
 
-        verify(view, never()).loadingFailed(anyString(), false);
+        verify(view, never()).loadingFailed(anyString(), anyBoolean());
         verify(view, never()).freshLoadingCompleted();
     }
 
@@ -98,7 +99,7 @@ public class PostPresenterTest {
         verify(view).loadingStarted();
         verify(view).loadingNextCompleted(1, 2);
 
-        verify(view, never()).loadingFailed(anyString(), true);
+        verify(view, never()).loadingFailed(anyString(), anyBoolean());
         verify(view, never()).freshLoadingCompleted();
     }
 

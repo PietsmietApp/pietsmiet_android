@@ -216,7 +216,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 }
 
                 // Open card externally on click
-                holder.itemView.setOnClickListener(ignored -> LinkUtil.openUrl(context, currentItem.getUrl()));
+                holder.itemView.setOnClickListener(ignored -> {
+                    if (currentType == FACEBOOK || currentType == TWITTER || currentType == YOUTUBE) {
+                        LinkUtil.openUrlExternally(context, currentItem.getUrl());
+                    } else {
+                        LinkUtil.openUrl(context, currentItem.getUrl());
+                    }
+                });
                 break;
         }
 

@@ -1,7 +1,6 @@
 package de.pscom.pietsmiet.view;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -323,7 +322,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 .subscribe(msg -> {
                     if (findViewById(R.id.main_layout) != null) {
                         Snackbar sb = Snackbar.make(findViewById(R.id.main_layout), msg, length);
-                        if(retryLoadingButton) sb.setAction(R.string.info_retry, (view) -> {
+                        if (retryLoadingButton) sb.setAction(R.string.info_retry, (view) -> {
                             scrollListener.resetState();
                             if (fetchDirectionDown) {
                                 postPresenter.fetchNextPosts();
@@ -390,9 +389,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                 break;
             case R.id.nav_pietstream_banner:
-                Intent i_TwitchBrowser = new Intent(Intent.ACTION_VIEW);
-                i_TwitchBrowser.setData(Uri.parse(URL_PIETSTREAM));
-                startActivity(i_TwitchBrowser);
+                LinkUtil.openUrlExternally(this, URL_PIETSTREAM);
                 break;
             default:
                 return false;

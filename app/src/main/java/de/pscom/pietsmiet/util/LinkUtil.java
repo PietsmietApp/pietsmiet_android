@@ -24,4 +24,12 @@ public abstract class LinkUtil {
             PsLog.e("Cannot open url. Url was: " + url);
         }
     }
+
+    public static void openUrlExternally(Activity context, String url) {
+        try {
+            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        } catch (ActivityNotFoundException | NullPointerException e) {
+            PsLog.e("Cannot open url. Url was: " + url);
+        }
+    }
 }

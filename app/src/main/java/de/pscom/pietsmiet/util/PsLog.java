@@ -10,6 +10,8 @@ import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLException;
 
+import okhttp3.internal.http2.StreamResetException;
+
 
 /**
  * Source: https://github.com/ccrama/Slide/blob/master/app/src/main/java/me/ccrama/redditslide/util/LogUtil.java
@@ -94,6 +96,7 @@ public class PsLog {
                 !(tr instanceof UnknownHostException) &&
                 !(tr instanceof ConnectException) &&
                 !(tr instanceof NoRouteToHostException) &&
+                !(tr instanceof StreamResetException) &&
                 !(tr instanceof SSLException)) {
             FirebaseUtil.reportError(getTag() + " " + message, tr);
         }

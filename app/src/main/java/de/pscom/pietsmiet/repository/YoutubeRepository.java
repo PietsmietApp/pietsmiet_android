@@ -4,11 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
-import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeItem;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeRoot;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeSnippet;
 import de.pscom.pietsmiet.util.PsLog;
@@ -82,12 +82,13 @@ class YoutubeRepository extends MainRepository {
                     }
                     YoutubeSnippet snippet = item.getSnippet();
 
-                    if(snippet != null) {
+                    if (snippet != null) {
                         postBuilder.thumbnailUrl(snippet.getThumbnails().getMedium().getUrl());
                         postBuilder.thumbnailHDUrl(snippet.getThumbnails().getMedium().getUrl());
                         postBuilder.title(snippet.getTitle());
                         try {
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+                            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                             postBuilder.date(dateFormat.parse(snippet.getPublishedAt()));
                         } catch (ParseException e) {
                             // Post will be automatically filtered as it's null (when no date in postbuilder is given)

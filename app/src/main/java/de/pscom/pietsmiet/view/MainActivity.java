@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private MenuItem pietstream_banner;
 
     public PostPresenter postPresenter;
+    private long exitTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,8 +158,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         new SecretConstants(this);
 
-        DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
-
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
                 PsLog.w("Uncaught Exception!", paramThrowable);
@@ -191,12 +190,20 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     protected void onStart() {
         super.onStart();
+        if (postPresenter.getPostsToDisplay().isEmpty()) {
+            // Load posts from db
+            DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
+        } else if ((exitTime - System.currentTimeMillis()) < (15 * 60 * 1000)) {
+            // Auto reload posts if going back to activity after more than 15 minutes
+            postPresenter.fetchNewPosts();
+        }
         mCustomTabActivityHelper.bindCustomTabsService(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        exitTime = System.currentTimeMillis();
         mCustomTabActivityHelper.unbindCustomTabsService(this);
     }
 

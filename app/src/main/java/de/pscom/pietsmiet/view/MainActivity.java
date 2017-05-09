@@ -193,7 +193,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         if (postPresenter.getPostsToDisplay().isEmpty()) {
             // Load posts from db
             DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
-        } else if ((exitTime - System.currentTimeMillis()) < (15 * 60 * 1000)) {
+        } else if ((exitTime - System.currentTimeMillis()) > (15 * 60 * 1000)) {
             // Auto reload posts if going back to activity after more than 15 minutes
             postPresenter.fetchNewPosts();
         }

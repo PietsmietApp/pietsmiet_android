@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
@@ -38,7 +39,8 @@ public class YoutubeRepositoryTest extends MainTestPresenter {
                 .map(Post.PostBuilder::build)
                 .subscribe(testSubscriber);
         List<Post> list = testSubscriber.getOnNextEvents();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         Post example1 = new Post.PostBuilder(PostType.YOUTUBE)
                 .title("Coole Mods für The Witcher 3")
                 .url("http://www.youtube.com/watch?v=" + "lioDf6uCyMk")

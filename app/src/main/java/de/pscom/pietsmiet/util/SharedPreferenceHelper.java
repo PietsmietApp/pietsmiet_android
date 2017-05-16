@@ -5,20 +5,27 @@ import android.content.SharedPreferences;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Source: https://github.com/nickescobedo/Android-Shared-Preferences-Helper/blob/master/SharedPreferenceHelper.java
  */
 @SuppressWarnings("SameParameterValue")
-public class SharedPreferenceHelper {
-    public static final String KEY_APP_FIRST_RUN = "KEY_APP_FIRST_RUN";
+public abstract class SharedPreferenceHelper {
+    private final static String PREF_FILE = "PREF";
 
+    // Settings
     public static final String KEY_NOTIFY_UPLOADPLAN_SETTING = "KEY_NOTIFY_UPLOADPLAN_SETTING";
     public static final String KEY_NOTIFY_VIDEO_SETTING = "KEY_NOTIFY_VIDEO_SETTING";
     public static final String KEY_NOTIFY_NEWS_SETTING = "KEY_NOTIFY_NEWS_SETTING";
     public static final String KEY_NOTIFY_PIETCAST_SETTING = "KEY_NOTIFY_PIETCAST_SETTING";
-    public static final String KEY_TWITTER_BEARER = "KEY_TWITTER_BEARER";
     public static final String KEY_QUALITY_IMAGE_LOAD_HD_SETTING = "KEY_QUALITY_IMAGE_LOAD_HD_SETTING";
+    public static final String KEY_VIDEO_NOTIF_BLACKLIST = "KEY_VIDEO_NOTIF_BLACKLIST";
 
+    // Categories
     public static final String KEY_CATEGORY_YOUTUBE_VIDEOS = "KEY_CATEGORY_YOUTUBE_VIDEOS";
     public static final String KEY_CATEGORY_PIETSMIET_VIDEOS = "KEY_CATEGORY_PIETSMIET_VIDEOS";
     public static final String KEY_CATEGORY_PIETSMIET_NEWS = "KEY_CATEGORY_PIETSMIET_NEWS";
@@ -27,16 +34,21 @@ public class SharedPreferenceHelper {
     public static final String KEY_CATEGORY_TWITTER = "KEY_CATEGORY_TWITTER";
     public static final String KEY_CATEGORY_FACEBOOK = "KEY_CATEGORY_FACEBOOK";
 
+    // Firebase Remote Config
     public static final String KEY_FIREBASE_DB_URL = "KEY_FIREBASE_DB_URL";
 
-    private final static String PREF_FILE = "PREF";
+    // Other
+    public static final String KEY_TWITTER_BEARER = "KEY_TWITTER_BEARER";
+    public static final String KEY_APP_FIRST_RUN = "KEY_APP_FIRST_RUN";
+
 
     /**
      * Set a integer shared preference
-     * @param key - Key to set shared preference
+     *
+     * @param key   - Key to set shared preference
      * @param value - Value for the key
      */
-    public static void setSharedPreferenceInt(Context context, String key, int value){
+    public static void setSharedPreferenceInt(Context context, String key, int value) {
         SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putInt(key, value);
@@ -54,6 +66,21 @@ public class SharedPreferenceHelper {
         SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString(key, value);
+        editor.apply();
+    }
+
+    /**
+     * Set a string list shared preference
+     *
+     * @param key    - Key to set shared preference
+     * @param values - Values for the key
+     */
+    public static void setSharedPreferenceList(Context context, String key, List<String> values) {
+        SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        Set<String> set = new HashSet<>();
+        set.addAll(values);
+        editor.putStringSet(key, set);
         editor.apply();
     }
 
@@ -86,11 +113,12 @@ public class SharedPreferenceHelper {
 
     /**
      * Get a integer shared preference
-     * @param key - Key to look up in shared preferences.
+     *
+     * @param key      - Key to look up in shared preferences.
      * @param defValue - Default value to be returned if shared preference isn't found.
      * @return value - String containing value of the shared preference if found.
      */
-    public static int getSharedPreferenceInt(Context context, String key, int defValue){
+    public static int getSharedPreferenceInt(Context context, String key, int defValue) {
         SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
         return settings.getInt(key, defValue);
     }
@@ -105,6 +133,21 @@ public class SharedPreferenceHelper {
     public static String getSharedPreferenceString(Context context, String key, String defValue) {
         SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
         return settings.getString(key, defValue);
+    }
+
+
+    /**
+     * Get a string list shared preference
+     *
+     * @param key - Key to look up in shared preferences.
+     * @return value - String containing value of the shared preference if found.
+     */
+    public static List<String> getSharedPreferenceList(Context context, String key) {
+        SharedPreferences settings = context.getSharedPreferences(PREF_FILE, 0);
+        Set<String> set = settings.getStringSet(key, new HashSet<>());
+        List<String> list = new ArrayList<>();
+        list.addAll(set);
+        return list;
     }
 
     /**

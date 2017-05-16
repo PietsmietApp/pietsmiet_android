@@ -328,7 +328,7 @@ public class PostPresenter {
         if (fetchDirectionDown) {
             shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                PsLog.w("A post in " + PostType.getName(post.getPostType(), context) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (ältester) Post Datum: " + getLastPostDate());
@@ -336,7 +336,7 @@ public class PostPresenter {
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before after date:  " +
+                PsLog.w("A post in " + PostType.getName(post.getPostType(), context) + " is before after date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         "\n letzter (neuster) Post: Datum: " + getFirstPostDate());

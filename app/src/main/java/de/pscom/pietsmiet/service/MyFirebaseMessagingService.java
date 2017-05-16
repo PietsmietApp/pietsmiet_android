@@ -32,6 +32,8 @@ import java.util.Calendar;
 import java.util.Map;
 
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.util.FilterUtil;
+import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.view.MainActivity;
 
@@ -49,7 +51,16 @@ import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
-    public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
+    public static final String EXTRA_GAME = "EXTRA_GAME";
+    public static final String EXTRA_NOTIF_ID = "EXTRA_NOTIF_ID";
+    public static final String KEY_UNSUBSCRIBE_CATEGORY = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE_CATEGORY";
+    public static final String KEY_UNSUBSCRIBE_GAME = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE_GAME";
+
+    private final String DATA_TOPIC = "topic";
+    private final String DATA_LINK = "link";
+    private final String DATA_TITLE = "title";
+    private final String DATA_MESSAGE = "message";
+    private final String DATA_GAME = "game";
 
     /**
      * Called when message is received.
@@ -58,7 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        PsLog.d("From: " + remoteMessage.getFrom());
+        PsLog.d("Message received from: " + remoteMessage.getFrom());
         // Check if message contains a data payload.
         Map<String, String> data = remoteMessage.getData();
         if (data.size() == 0) {
@@ -67,10 +78,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         PsLog.d("Message data payload: " + data);
         int type;
-        switch (data.get("topic")) {
+        switch (data.get(DATA_TOPIC)) {
             case TOPIC_NEWS:
                 type = NEWS;
-                PsLog.v("hi");
                 break;
             case TOPIC_UPLOADPLAN:
                 type = UPLOADPLAN;
@@ -80,25 +90,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 break;
             case TOPIC_VIDEO:
                 type = PS_VIDEO;
+                if (!FilterUtil.isGameAllowed(data.get(DATA_GAME), this)) {
+                    PsLog.v("Game is not allowed, not showing");
+                    return;
+                }
                 break;
             default:
-                PsLog.w("Falsche Kategorie " + data.get("topic"));
+                PsLog.w("Wrong type " + data.get(DATA_TOPIC));
                 return;
         }
-        // On notification click intent
-        Intent clickIntent = new Intent(this, MainActivity.class);
-        clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        clickIntent.putExtra(EXTRA_TYPE, type);
-        PendingIntent clickPIntent = PendingIntent.getActivity(this, type, clickIntent,
-                FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
-
-        // On action button click intent
-        Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-        urlIntent.setData(Uri.parse(data.get("link")));
-        PendingIntent urlPIntent = PendingIntent.getActivity(this, type, urlIntent,
-                FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
-
-        sendNotification(data.get("title"), data.get("message"), clickPIntent, urlPIntent, type);
+        sendNotification(data.get(DATA_TITLE), data.get(DATA_MESSAGE), type, data.get(DATA_LINK), data.get(DATA_GAME));
     }
 
     /**
@@ -106,37 +107,63 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, PendingIntent clickIntent, PendingIntent urlIntent, int type) {
-        Intent unsubscribeIntent = new Intent();
-        unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
-        unsubscribeIntent.putExtra(EXTRA_TYPE, type);
-        PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent,
-                FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
+    private void sendNotification(String title, String messageBody, int type, String link, String game) {
+        int notificationId;
+        if (type == UPLOADPLAN) {
+            // Override existing notifications by providing same id
+            notificationId = type;
+        } else {
+            // Use a non-existing id
+            notificationId = Calendar.getInstance().get(Calendar.SECOND);
+        }
+
+        Intent openInAppIntent = new Intent(this, MainActivity.class);
+        openInAppIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        openInAppIntent.putExtra(EXTRA_TYPE, type);
+        PendingIntent openInAppPIntent = PendingIntent.getActivity(this, type,
+                openInAppIntent, FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
+
+        Intent openUrlExternallyIntent = new Intent(Intent.ACTION_VIEW);
+        openUrlExternallyIntent.setData(Uri.parse(link));
+        PendingIntent openUrlExternallyPIntent = PendingIntent.getActivity(this, type,
+                openUrlExternallyIntent, FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
+
+        Intent unsubscribeCategoryIntent = new Intent();
+        unsubscribeCategoryIntent.setAction(KEY_UNSUBSCRIBE_CATEGORY);
+        unsubscribeCategoryIntent.putExtra(EXTRA_TYPE, type);
+        unsubscribeCategoryIntent.putExtra(EXTRA_NOTIF_ID, notificationId);
+        PendingIntent unsubscribeCategoryPIntent = PendingIntent.getBroadcast(this, (int) (Math.random() * 5000),
+                unsubscribeCategoryIntent, 0);
+
+        Intent unsubscribeGameIntent = new Intent();
+        unsubscribeGameIntent.setAction(KEY_UNSUBSCRIBE_GAME);
+        unsubscribeCategoryIntent.putExtra(EXTRA_GAME, game);
+        unsubscribeGameIntent.putExtra(EXTRA_NOTIF_ID, notificationId);
+        PendingIntent unsubscribeGamePIntent = PendingIntent.getBroadcast(this, (int) (Math.random() * 5000),
+                unsubscribeCategoryIntent, 0);
+
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                 .setContentTitle(title)
-                .addAction(R.drawable.ic_remove_black_24dp, getString(R.string.notification_unsubscribe), unsubscribePIntent)
-                .setGroup(type + "")
+                .addAction(R.drawable.ic_remove_black_24dp,
+                        getString(R.string.notification_unsubscribe_category, PostType.getName(type, this)),
+                        unsubscribeCategoryPIntent)
                 .setAutoCancel(true);
+
         if (type == PS_VIDEO) {
-            notificationBuilder.setContentIntent(urlIntent);
+            notificationBuilder.setContentIntent(openUrlExternallyPIntent);
+            notificationBuilder.addAction(R.drawable.ic_remove_black_24dp,
+                    getString(R.string.notification_unsubscribe_game), unsubscribeGamePIntent);
         } else {
-            notificationBuilder.setContentIntent(clickIntent);
-            notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp, getString(R.string.notification_open_url), urlIntent);
+            notificationBuilder.setContentIntent(openInAppPIntent);
+            notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp,
+                    getString(R.string.notification_open_url), openUrlExternallyPIntent);
         }
 
         if (messageBody != null) {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
             notificationBuilder.setContentText(Html.fromHtml(messageBody));
-        }
-
-        int notificationId;
-        if (type == UPLOADPLAN) {
-            // Override existing notifications by providing same Id
-            notificationId = type;
-        } else {
-            notificationId = Calendar.getInstance().get(Calendar.SECOND);
         }
 
         NotificationManager notificationManager =

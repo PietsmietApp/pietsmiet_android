@@ -1,5 +1,6 @@
 package de.pscom.pietsmiet.util;
 
+import android.content.Context;
 import android.support.annotation.IntDef;
 
 import java.lang.annotation.Retention;
@@ -40,22 +41,22 @@ public class PostType {
      * @param i Post type as int
      * @return String Name of Posttype
      */
-    public static String getName(@AllTypes int i) {
+    public static String getName(@AllTypes int i, Context c) {
         switch (i) {
             case PS_VIDEO:
-                return "Pietsmiet.de Videos";
+                return c.getString(R.string.type_video_ps);
             case YOUTUBE:
-                return "YouTube Videos";
+                return c.getString(R.string.type_youtube);
             case PIETCAST:
-                return "Pietcast";
+                return c.getString(R.string.type_pietcast);
             case TWITTER:
-                return "Twitter";
+                return c.getString(R.string.type_twitter);
             case FACEBOOK:
-                return "Facebook";
+                return c.getString(R.string.type_facebook);
             case UPLOADPLAN:
-                return "Uploadplan";
+                return c.getString(R.string.type_uploadplan);
             case NEWS:
-                return "News";
+                return c.getString(R.string.type_news);
             default:
                 return "Unbekannte Kategorie";
         }

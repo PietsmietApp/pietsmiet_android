@@ -38,8 +38,8 @@
     <string name="settings_header_quality">Qualität</string>
     <string name="settings_source_video">Quelle für Videos:</string>
     <string name="settings_image_quality_label">HD Bilder laden:</string>
-
-    <string name="notification_unsubscribe">Abbestellen</string>
+    <string name="notification_unsubscribe_category">%1$s abbestellen</string>
+    <string name="notification_unsubscribe_game">Spiel abbestellen</string>
     <string name="notification_open_url">Link öffnen</string>
 
     <string name="info_opening_url">Link wird geöffnet</string>

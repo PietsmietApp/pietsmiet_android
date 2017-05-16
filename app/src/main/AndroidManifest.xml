@@ -41,7 +41,10 @@
             android:name=".receiver.UnsubscribeReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="de.pscom.pietsmiet.KEY_UNSUBSCRIBE"/>
+                <action android:name="de.pscom.pietsmiet.KEY_UNSUBSCRIBE_GAME"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="de.pscom.pietsmiet.KEY_UNSUBSCRIBE_CATEGORY"/>
             </intent-filter>
         </receiver>
 

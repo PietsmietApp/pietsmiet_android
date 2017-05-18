@@ -6,6 +6,7 @@ import android.content.Context;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import de.pscom.pietsmiet.BuildConfig;
@@ -47,6 +48,7 @@ public abstract class FirebaseUtil {
 
         if (BuildConfig.DEBUG) {
             FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+            FirebasePerformance.getInstance().setPerformanceCollectionEnabled(false);
         }
     }
 

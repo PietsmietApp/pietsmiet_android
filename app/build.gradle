@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.google.firebase.firebase-perf'
 
 def storePw = hasProperty('RELEASE_STORE_PASSWORD') ? RELEASE_STORE_PASSWORD : System.getenv('RELEASE_STORE_PASSWORD')
 def keyPw = hasProperty('RELEASE_KEY_PASSWORD') ? RELEASE_KEY_PASSWORD : System.getenv('RELEASE_KEY_PASSWORD')
@@ -57,10 +58,11 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:customtabs:25.3.1'
 
-    compile 'com.google.firebase:firebase-core:10.2.4'
-    compile 'com.google.firebase:firebase-messaging:10.2.4'
-    compile 'com.google.firebase:firebase-crash:10.2.4'
-    compile 'com.google.firebase:firebase-config:10.2.4'
+    compile 'com.google.firebase:firebase-core:10.2.6'
+    compile 'com.google.firebase:firebase-messaging:10.2.6'
+    compile 'com.google.firebase:firebase-crash:10.2.6'
+    compile 'com.google.firebase:firebase-config:10.2.6'
+    compile 'com.google.firebase:firebase-perf:10.2.6'
 
     compile 'io.reactivex:rxjava:1.2.10'
     compile 'io.reactivex:rxandroid:1.2.1'

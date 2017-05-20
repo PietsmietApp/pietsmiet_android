@@ -21,6 +21,13 @@ public abstract class FirebaseUtil {
     public static final String TOPIC_PIETCAST = "pietcast";
     public static final String TOPIC_TEST = "test2";
 
+    public static final String EVENT_NEXT_COMPLETED = "next_loading_completed";
+    public static final String EVENT_NEW_COMPLETED = "new_loading_completed";
+    public static final String EVENT_FRESH_COMPLETED = "fresh_loading_completed";
+
+    public static final String PARAM_START_POSITION = "start_position";
+    public static final String PARAM_ITEM_COUNT = "item_count";
+
 
     public static void loadRemoteConfig(Activity context) {
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
@@ -39,17 +46,19 @@ public abstract class FirebaseUtil {
                 });
     }
 
-    public static void setupTopicSubscriptions(Context context) {
+    public static void disableCollectionOnDebug(Context context) {
+        if (BuildConfig.DEBUG) {
+            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
+            FirebasePerformance.getInstance().setPerformanceCollectionEnabled(false);
+        }
+    }
+
+    public static void setupTopicSubscriptions() {
         setFirebaseTopicSubscription(TOPIC_TEST, BuildConfig.DEBUG);
         setFirebaseTopicSubscription(TOPIC_UPLOADPLAN, SettingsHelper.boolUploadplanNotification);
         setFirebaseTopicSubscription(TOPIC_NEWS, SettingsHelper.boolNewsNotification);
         setFirebaseTopicSubscription(TOPIC_VIDEO, SettingsHelper.boolVideoNotification);
         setFirebaseTopicSubscription(TOPIC_PIETCAST, SettingsHelper.boolPietcastNotification);
-
-        if (BuildConfig.DEBUG) {
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
-            FirebasePerformance.getInstance().setPerformanceCollectionEnabled(false);
-        }
     }
 
     public static void setFirebaseTopicSubscription(String topic, boolean subscribe) {

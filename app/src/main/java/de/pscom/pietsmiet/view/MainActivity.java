@@ -154,7 +154,8 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         }
 
         FirebaseUtil.loadRemoteConfig(this);
-        FirebaseUtil.setupTopicSubscriptions(this.getApplicationContext());
+        FirebaseUtil.setupTopicSubscriptions();
+        FirebaseUtil.disableCollectionOnDebug(this.getApplicationContext());
 
         new SecretConstants(this);
 
@@ -426,12 +427,19 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     public void freshLoadingCompleted() {
         refreshAdapter();
         setRefreshAnim(false);
+
+        FirebaseAnalytics.getInstance(this).logEvent(FirebaseUtil.EVENT_FRESH_COMPLETED, new Bundle());
     }
 
     @Override
     public void loadingNextCompleted(int startPosition, int itemCount) {
         updateAdapterItemRange(startPosition, itemCount);
         setRefreshAnim(false);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseUtil.PARAM_START_POSITION, startPosition);
+        bundle.putInt(FirebaseUtil.PARAM_ITEM_COUNT, itemCount);
+        FirebaseAnalytics.getInstance(this).logEvent(FirebaseUtil.EVENT_NEXT_COMPLETED, bundle);
     }
 
     @Override
@@ -439,6 +447,10 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         updateAdapterItemRange(0, itemCount);
         setRefreshAnim(false);
         scrollToTop();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseUtil.PARAM_ITEM_COUNT, itemCount);
+        FirebaseAnalytics.getInstance(this).logEvent(FirebaseUtil.EVENT_NEW_COMPLETED, bundle);
     }
 
     @Override

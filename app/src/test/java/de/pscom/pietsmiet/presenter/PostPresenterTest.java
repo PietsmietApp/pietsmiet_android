@@ -131,9 +131,9 @@ public class PostPresenterTest {
 
     @Test
     public void testDuplicatePosts() {
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
-        Post post3 = new Post.PostBuilder(PostType.FACEBOOK).title("Piet").date(new Date(RANDOM_TIME)).build();
+        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
+        Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
+        Post post3 = new Post.PostBuilder(PostType.FACEBOOK).title("Piet").date(new Date()).build();
 
         Observable<Post> obs = Observable.just(post1, post2, post3);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
@@ -146,10 +146,10 @@ public class PostPresenterTest {
 
     @Test
     public void testSorting() {
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sepjö").date(new Date(RANDOM_TIME + 3000)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
-        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 20000)).build();
-        Post post4 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 30000)).build();
+        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sepjö").date(new Date(new Date().getTime() + 3000)).build();
+        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(new Date().getTime())).build();
+        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 20000)).build();
+        Post post4 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 30000)).build();
 
         Observable<Post> obs = Observable.just(post3, post1, post2, post4);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);

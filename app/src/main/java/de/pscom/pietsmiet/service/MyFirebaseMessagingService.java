@@ -137,10 +137,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Intent unsubscribeGameIntent = new Intent();
         unsubscribeGameIntent.setAction(KEY_UNSUBSCRIBE_GAME);
-        unsubscribeCategoryIntent.putExtra(EXTRA_GAME, game);
+        unsubscribeGameIntent.putExtra(EXTRA_GAME, game);
         unsubscribeGameIntent.putExtra(EXTRA_NOTIF_ID, notificationId);
         PendingIntent unsubscribeGamePIntent = PendingIntent.getBroadcast(this, (int) (Math.random() * 5000),
-                unsubscribeCategoryIntent, 0);
+                unsubscribeGameIntent, 0);
 
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -154,7 +154,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (type == PS_VIDEO) {
             notificationBuilder.setContentIntent(openUrlExternallyPIntent);
             notificationBuilder.addAction(R.drawable.ic_remove_black_24dp,
-                    getString(R.string.notification_unsubscribe_game), unsubscribeGamePIntent);
+                    getString(R.string.notification_unsubscribe_game),
+                    unsubscribeGamePIntent);
         } else {
             notificationBuilder.setContentIntent(openInAppPIntent);
             notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp,

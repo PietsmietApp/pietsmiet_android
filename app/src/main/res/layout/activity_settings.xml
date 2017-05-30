@@ -1,10 +1,10 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:nestedScrollingEnabled="true">
 
-    <include layout="@layout/app_toolbar" />
+    <include layout="@layout/app_toolbar"/>
 
     <ScrollView
         android:id="@+id/sv_settings"
@@ -28,7 +28,7 @@
                 android:text="@string/settings_header_notif"
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <Switch
                 android:id="@+id/notifyUploadplanSwitch"
@@ -38,29 +38,19 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_uploadplan"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
-            <Switch
-                android:id="@+id/notifyVideoSwitch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/notifyUploadplanSwitch"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:text="@string/type_video_ps"
-                android:theme="@style/Theme.SwitchTheme" />
 
             <Switch
                 android:id="@+id/notifyNewsSwitch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/notifyVideoSwitch"
+                android:layout_below="@+id/notifyUploadplanSwitch"
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_news"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
             <Switch
                 android:id="@+id/notifyPietcastSwitch"
@@ -71,13 +61,40 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_pietcast"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
+
+            <RelativeLayout
+                android:id="@+id/notifyVideoRl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/notifyPietcastSwitch"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/notifyVideoTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="2dp"
+                    android:text="@string/type_video_ps"
+                    android:textColor="@android:color/black"/>
+
+                <TextView
+                    android:id="@+id/notifyVideoState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/notifyVideoTitle"
+                    android:text="@string/settings_video_on_filter"/>
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/sectionQuality"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/notifyPietcastSwitch"
+                android:layout_below="@+id/notifyVideoRl"
                 android:paddingBottom="8dp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
@@ -85,7 +102,7 @@
                 android:text="@string/settings_header_quality"
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tvQualityHDImages"
@@ -99,7 +116,7 @@
                 android:gravity="center_vertical"
                 android:paddingStart="16dp"
                 android:text="@string/settings_image_quality_label"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"/>
 
             <Spinner
                 android:id="@+id/qualityLoadHDImagesSpinner"
@@ -109,7 +126,7 @@
                 android:layout_below="@+id/sectionQuality"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:entries="@array/qualityHDImagesSpinnerItems_array" />
+                android:entries="@array/qualityHDImagesSpinnerItems_array"/>
 
             <Button
                 android:id="@+id/btnClearCache"
@@ -119,7 +136,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="@string/settings_clear_cache" />
+                android:text="@string/settings_clear_cache"/>
 
         </RelativeLayout>
     </ScrollView>

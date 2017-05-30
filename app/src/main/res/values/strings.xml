@@ -41,6 +41,9 @@
     <string name="notification_unsubscribe_category">%1$s abbestellen</string>
     <string name="notification_unsubscribe_game">Spiel abbestellen</string>
     <string name="notification_open_url">Link öffnen</string>
+    <string name="settings_video_on">An</string>
+    <string name="settings_video_on_filter">An (mit Filtern)</string>
+    <string name="settings_video_off">Aus</string>
 
     <string name="info_opening_url">Link wird geöffnet</string>
     <string name="info_disabled_notif">Benachrichtigung für %1$s deaktiviert. Du kannst das in den Einstellungen rückgängig machen</string>

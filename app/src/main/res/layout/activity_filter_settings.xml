@@ -1,0 +1,28 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/app_toolbar"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?android:attr/actionBarSize">
+
+        <Switch
+            android:id="@+id/notifyVideoSwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="Aktiviert"
+            android:theme="@style/Theme.SwitchTheme"/>
+
+        <!-- todo add list of filters here with way to remove and add -->
+
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
+

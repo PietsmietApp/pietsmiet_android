@@ -10,12 +10,12 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.setSharedPreference
 
 public abstract class FilterUtil {
     public static boolean isGameAllowed(String game, Context context) {
-        if (game == null || game == "") return false;
+        if (game == null || game == "") return true;
 
         List<String> forbiddenWords = getSharedPreferenceList(context, KEY_VIDEO_NOTIF_BLACKLIST);
         for (String forbidden : forbiddenWords) {
             // If name of the game contains a forbidden name, it's not allowed
-            if (game.toLowerCase().contains(forbidden.toLowerCase())) return true; //FIXME FIXME FIXME FALSE!!!
+            if (game.toLowerCase().contains(forbidden.toLowerCase())) return false;
         }
         return true;
     }

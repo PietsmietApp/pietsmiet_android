@@ -1,10 +1,12 @@
 package de.pscom.pietsmiet.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 
@@ -16,22 +18,22 @@ import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
-import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
-import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_QUALITY_IMAGE_LOAD_HD_SETTING;
 
 
 public class SettingsActivity extends BaseActivity {
+
+    private final int REQUEST_FILTER_SETTINGS = 56;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Switch notifyUploadplanSwitch = (Switch) findViewById(R.id.notifyUploadplanSwitch);
-        Switch notifyVideoSwitch = (Switch) findViewById(R.id.notifyVideoSwitch);
+        RelativeLayout notifyVideoContainer = (RelativeLayout) findViewById(R.id.notifyVideoRl);
         Switch notifyNewsSwitch = (Switch) findViewById(R.id.notifyNewsSwitch);
         Switch notifyPietcastSwitch = (Switch) findViewById(R.id.notifyPietcastSwitch);
         Spinner qualityLoadHDImagesSpinner = (Spinner) findViewById(R.id.qualityLoadHDImagesSpinner);
@@ -42,7 +44,6 @@ public class SettingsActivity extends BaseActivity {
         SettingsHelper.loadAllSettings(this);
 
         notifyUploadplanSwitch.setChecked(SettingsHelper.boolUploadplanNotification);
-        notifyVideoSwitch.setChecked(SettingsHelper.boolVideoNotification);
         notifyNewsSwitch.setChecked(SettingsHelper.boolNewsNotification);
         notifyPietcastSwitch.setChecked(SettingsHelper.boolPietcastNotification);
         qualityLoadHDImagesSpinner.setSelection(SettingsHelper.intQualityLoadHDImages);
@@ -73,10 +74,8 @@ public class SettingsActivity extends BaseActivity {
             FirebaseUtil.setFirebaseTopicSubscription(TOPIC_UPLOADPLAN, isChecked);
         });
 
-        notifyVideoSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_VIDEO_SETTING, isChecked);
-            FirebaseUtil.setFirebaseTopicSubscription(TOPIC_VIDEO, isChecked);
-        });
+        notifyVideoContainer.setOnClickListener(v ->
+                startActivityForResult(new Intent(SettingsActivity.this, FilterSettingsActivity.class), REQUEST_FILTER_SETTINGS));
 
         notifyNewsSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             SharedPreferenceHelper.setSharedPreferenceBoolean(SettingsActivity.this, KEY_NOTIFY_NEWS_SETTING, isChecked);
@@ -95,5 +94,12 @@ public class SettingsActivity extends BaseActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_FILTER_SETTINGS) {
+            // todo change video notif state label
+        }
     }
 }

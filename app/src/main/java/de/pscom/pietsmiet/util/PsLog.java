@@ -3,6 +3,8 @@ package de.pscom.pietsmiet.util;
 import android.support.compat.BuildConfig;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -96,7 +98,8 @@ public class PsLog {
                 !(tr instanceof SocketException) &&
                 !(tr instanceof StreamResetException) &&
                 !(tr instanceof SSLException)) {
-            FirebaseUtil.reportError(getTag() + " " + message, tr);
+            Crashlytics.log(getTag() + " " + message);
+            Crashlytics.logException(tr);
         }
         Log.e(getTag(), message, tr);
     }

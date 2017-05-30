@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import de.pscom.pietsmiet.BuildConfig;
@@ -39,6 +41,7 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import de.pscom.pietsmiet.util.TwitchHelper;
+import io.fabric.sdk.android.Fabric;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -77,6 +80,10 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        CrashlyticsCore core = new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build();
+        Fabric.with(this, new Crashlytics.Builder().core(core).build());
+
         setContentView(R.layout.activity_main);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
@@ -158,13 +165,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         FirebaseUtil.disableCollectionOnDebug(this.getApplicationContext());
 
         new SecretConstants(this);
-
-        if (BuildConfig.DEBUG) {
-            Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
-                PsLog.w("Uncaught Exception!", paramThrowable);
-                System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
-            });
-        }
     }
 
     /**

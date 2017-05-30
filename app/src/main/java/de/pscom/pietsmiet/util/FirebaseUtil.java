@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
@@ -69,8 +68,4 @@ public abstract class FirebaseUtil {
         }
     }
 
-    public static void reportError(String message, Throwable tr) {
-        FirebaseCrash.log(message);
-        FirebaseCrash.report(tr);
-    }
 }

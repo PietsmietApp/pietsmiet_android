@@ -10,7 +10,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.setSharedPreference
 
 public abstract class FilterUtil {
     public static boolean isGameAllowed(String game, Context context) {
-        if (game == null || game == "") return true;
+        if (game == null) return true;
 
         List<String> forbiddenWords = getSharedPreferenceList(context, KEY_VIDEO_NOTIF_BLACKLIST);
         for (String forbidden : forbiddenWords) {

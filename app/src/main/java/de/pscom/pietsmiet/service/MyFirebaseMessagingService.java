@@ -153,9 +153,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         if (type == PS_VIDEO) {
             notificationBuilder.setContentIntent(openUrlExternallyPIntent);
-            notificationBuilder.addAction(R.drawable.ic_remove_black_24dp,
-                    getString(R.string.notification_unsubscribe_game),
-                    unsubscribeGamePIntent);
+            if (game != null) {
+                notificationBuilder.addAction(R.drawable.ic_remove_black_24dp,
+                        getString(R.string.notification_unsubscribe_game),
+                        unsubscribeGamePIntent);
+            }
         } else {
             notificationBuilder.setContentIntent(openInAppPIntent);
             notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp,

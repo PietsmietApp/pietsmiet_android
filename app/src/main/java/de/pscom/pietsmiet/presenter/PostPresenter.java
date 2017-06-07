@@ -19,7 +19,6 @@ import de.pscom.pietsmiet.repository.PostRepository;
 import de.pscom.pietsmiet.repository.TwitterRepository;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.NetworkUtil;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivityView;
@@ -27,11 +26,14 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
+import static de.pscom.pietsmiet.util.PostType.getName;
 
 public class PostPresenter {
     private static final int LOAD_MORE_ITEMS_COUNT = 25;
@@ -238,11 +240,11 @@ public class PostPresenter {
         subLoadingPosts = observable
                 .filter(post -> filterWrongPosts(post, fetchDirectionDown))
                 .sorted()
-                .take(numPosts)
+                .compose(customTake(fetchDirectionDown, numPosts))
                 .compose(sortAndFilterNewPosts())
                 .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
                 .subscribe(items -> {
-                    if (allPosts.isEmpty()){
+                    if (allPosts.isEmpty()) {
                         // First loading, call notifyDataSetChanged to avoid crashes
                         allPosts.addAll(items);
                         view.freshLoadingCompleted();
@@ -269,6 +271,33 @@ public class PostPresenter {
                                 context.getString(R.string.error_loading_all_report_send), fetchDirectionDown);
                     }
                 });
+    }
+
+    /**
+     * Custom take operator based on the fetch direction and filter settings
+     * <p>
+     * If only firebase db types are allowed, it takes (nearly) all of them to avoid redundant loading,
+     * because firebase always returns all posts
+     *
+     * @param fetchDirectionDown If true, it takes the first posts => We are loading from top to bottom in the APIs
+     *                           <p>
+     *                           If false and some posts are already displayed, the last posts
+     *                           => We are loading from bottom to top in the APIs
+     * @param numPosts           Number of posts to take
+     * @return Transformed Observable
+     */
+    private Observable.Transformer<Post, Post> customTake(boolean fetchDirectionDown, int numPosts) {
+        return listObservable -> {
+            if (!SettingsHelper.getSettingsValueForType(TWITTER) &&
+                    !SettingsHelper.getSettingsValueForType(FACEBOOK) &&
+                    !SettingsHelper.getSettingsValueForType(YOUTUBE)) {
+                // Only firebase posts are displayed, take nearly all.
+                // Reduce to 150 if the db should be very big to prevent possible OOMs
+                return listObservable.take(150);
+            } else if (!fetchDirectionDown && allPosts.size() > 0) {
+                return listObservable.takeLast(numPosts);
+            } else return listObservable.take(numPosts);
+        };
     }
 
     /**
@@ -328,7 +357,7 @@ public class PostPresenter {
         if (fetchDirectionDown) {
             shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before last date:  " +
+                PsLog.w("A post in " + getName(post.getPostType()) + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (ältester) Post Datum: " + getLastPostDate());
@@ -336,7 +365,7 @@ public class PostPresenter {
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + PostType.getName(post.getPostType()) + " is before after date:  " +
+                PsLog.w("A post in " + getName(post.getPostType()) + " is before after date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         "\n letzter (neuster) Post: Datum: " + getFirstPostDate());

@@ -36,8 +36,8 @@ import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 import static de.pscom.pietsmiet.util.PostType.getName;
 
 public class PostPresenter {
-    private static final int LOAD_MORE_ITEMS_COUNT = 25;
-    private static final int LOAD_NEW_ITEMS_COUNT = 50;
+    static final int LOAD_MORE_ITEMS_COUNT = 25;
+    static final int LOAD_NEW_ITEMS_COUNT = 50;
 
     private final MainActivityView view;
     private final PostRepository postRepository;

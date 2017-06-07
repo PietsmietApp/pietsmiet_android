@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -24,7 +25,9 @@ import rx.Observable;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 
+import static de.pscom.pietsmiet.presenter.PostPresenter.LOAD_NEW_ITEMS_COUNT;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -130,6 +133,38 @@ public class PostPresenterTest {
     }
 
     @Test
+    public void testTakeOperatorFreshLoading() {
+        List<Post> posts = getRandomPostsList(LOAD_NEW_ITEMS_COUNT + 5);
+
+        Observable<Post> obs = Observable.just(posts).flatMapIterable(l -> l);
+        when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
+
+        presenter.fetchNewPosts();
+
+        assertThat(presenter.getPostsToDisplay().size(), is(LOAD_NEW_ITEMS_COUNT));
+        assertThat(presenter.getPostsToDisplay().get(0), is(posts.get(posts.size() - 1)));
+    }
+
+    @Test
+    public void testTakeOperatorNewLoading() {
+        List<Post> posts = getRandomPostsList(LOAD_NEW_ITEMS_COUNT + 5);
+
+        presenter.getPostsToDisplay().add(new Post.PostBuilder(PostType.FACEBOOK)
+                .title("Sep")
+                .date(new Date(new Date().getTime() - 20000))
+                .build());
+
+        Observable<Post> obs = Observable.just(posts).flatMapIterable(l -> l);
+        when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
+
+        presenter.fetchNewPosts();
+
+        assertThat(presenter.getPostsToDisplay().size(), is(LOAD_NEW_ITEMS_COUNT + 1));
+        assertThat(presenter.getPostsToDisplay().get(LOAD_NEW_ITEMS_COUNT - 1), is(posts.get(0)));
+        assertThat(presenter.getPostsToDisplay().get(0), is(not(posts.get(posts.size() - 1))));
+    }
+
+    @Test
     public void testDuplicatePosts() {
         Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
         Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
@@ -218,5 +253,12 @@ public class PostPresenterTest {
         assertThat(presenter.getLastPostDate().getTime(), is(RANDOM_TIME - 5000 - 1000));
     }
 
+    private List<Post> getRandomPostsList(int size) {
+        List<Post> posts = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            posts.add(new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(new Date().getTime() + i * 1000)).build());
+        }
+        return posts;
+    }
 
 }

@@ -1,6 +1,6 @@
-# PietSmiet-App für Android [![version](https://img.shields.io/github/release/l3d00m/pietsmiet_android.svg)](https://github.com/l3d00m/pietsmiet_android/releases/latest)
+# PietSmiet-App für Android [![version](https://img.shields.io/github/release/PietsmietApp/pietsmiet_android.svg)](https://github.com/PietsmietApp/pietsmiet_android/releases/latest)
 
-`develop`: [![Build Status](https://travis-ci.org/l3d00m/pietsmiet_android.svg?branch=develop)](https://travis-ci.org/l3d00m/pietsmiet_android)  
+`develop`: [![Build Status](https://travis-ci.org/PietsmietApp/pietsmiet_android.svg?branch=develop)](https://travis-ci.org/PietsmietApp/pietsmiet_android)  
 
 <a href="https://play.google.com/store/apps/details?id=de.pscom.pietsmiet">
     <img alt="Jetzt bei Google Play"
@@ -23,8 +23,8 @@ This app is focused on performance and clean code. This is achieved by using ver
 
 SQLite is used to cache objects. The app communicates with the Twitter, Youtube & Facebook API for getting it's content. It also communicates with a Firebase Database where the data of pietsmiet.de is stored (Pietcast, Uploadplan, News, Videos). 
 
-The backend of the app (RSS fetching and HTML scraping of pietsmiet.de and storing in Firebase DB) is coded with python ([code here](https://github.com/l3d00m/pietsmiet_xposter)).
+The backend of the app (RSS fetching and HTML scraping of pietsmiet.de and storing in Firebase DB) is coded with python ([code here](https://github.com/PietsmietApp/pietsmiet_xposter)).
 
 ## Git Workflow
-**[`develop`](https://github.com/l3d00m/pietsmiet_android/tree/develop) branch:** Stable and buildable code. Travis automatically uploads a signed APK to Github releases when a new tag is pushed.  
+**[`develop`](https://github.com/PietsmietApp/pietsmiet_android/tree/develop) branch:** Stable and buildable code. Travis automatically uploads a signed APK to Github releases when a new tag is pushed.  
 **feature branches:** When a feature requires a lot of work, it has a separate branch that is merged (via PR) into `develop` as soon as the feature is complete  

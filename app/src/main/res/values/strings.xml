@@ -6,7 +6,7 @@
     <string name="drawer_einstellungen">Einstellungen</string>
     <string name="drawer_Feedback">Feedback</string>
     <string name="drawer_filter">Filter</string>
-    <string name="drawer_pietstream_banner">Pietstream</string>
+    <string name="drawer_pietstream_banner">PietStream</string>
     <string name="drawer_video_ps">PS.de Videos</string>
 
     <string name="about_text"><b><i>Entwickelt von</i></b>\n     l3d00m und saibotk (tkindanight)\n
@@ -36,7 +36,6 @@
     <string name="settings_header_others">Sonstige Einstellungen</string>
     <string name="settings_clear_cache">Cache löschen</string>
     <string name="settings_header_quality">Qualität</string>
-    <string name="settings_source_video">Quelle für Videos:</string>
     <string name="settings_image_quality_label">HD Bilder laden:</string>
 
     <string name="notification_unsubscribe">Abbestellen</string>
@@ -50,7 +49,7 @@
     <string name="error_url_opening_failed">URL konnte nicht geöffnet werden</string>
     <string name="error_no_network">Keine Netzwerkverbindung</string>
     <string name="error_facebook_loading">Facebook konnte nicht geladen werden</string>
-    <string name="error_firebase_timeout">Firebase nicht erreichbar.</string>
+    <string name="error_firebase_timeout">Pietsmiet.de nicht erreichbar.</string>
     <string name="error_firebase_loading">Pietsmiet.de konnte nicht geladen werden</string>
     <string name="error_updating_posts">Posts konnten nicht aktualisiert werden</string>
     <string name="error_loading_all_timeout">Konnte Posts nicht laden (Timeout)</string>

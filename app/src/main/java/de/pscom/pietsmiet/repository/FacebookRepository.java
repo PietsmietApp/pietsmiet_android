@@ -45,8 +45,7 @@ class FacebookRepository extends MainRepository {
 
         apiInterface = retrofit.create(FacebookApiInterface.class);
     }
-
-
+    
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
                 .filter(result -> result != null)
@@ -116,7 +115,7 @@ class FacebookRepository extends MainRepository {
         //Jay
         batch += "{\"method\":\"GET\",\"relative_url\":\"icetea3105" + strFetch + "},";
         //Sep
-        batch += "{\"method\":\"GET\",\"relative_url\":\"kessemak88" + strFetch + "},";
+        batch += "{\"method\":\"GET\",\"relative_url\":\"SepPietSmiet" + strFetch + "},";
         //Brammen
         batch += "{\"method\":\"GET\",\"relative_url\":\"br4mm3n" + strFetch + "}";
         batch += "]";

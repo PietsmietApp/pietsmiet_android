@@ -103,7 +103,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Deletes the table TABLE_POSTS.
      */
     private void deleteTable() {
-        getWritableDatabase().delete(TABLE_POSTS, null, null);
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_POSTS, null, null);
+        db.close();
     }
 
     /**
@@ -114,6 +116,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @SuppressWarnings("WeakerAccess")
     public void insertPosts(List<ViewItem> posts) {
         SQLiteDatabase db = getWritableDatabase();
+
         Observable.just(posts)
                 .flatMap(Observable::from)
                 .filter(post -> post instanceof Post)

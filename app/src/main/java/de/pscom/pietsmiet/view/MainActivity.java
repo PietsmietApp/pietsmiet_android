@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private static final String TWITCH_CHANNEL_ID_PIETSTREAM = "pietsmiet";
     private CustomTabActivityHelper mCustomTabActivityHelper;
 
-    private boolean CLEAR_CACHE_FLAG = false;
+    private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
     private CardViewAdapter adapter;
     private DrawerLayout mDrawer;
@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
                 checker.setOnCheckedChangeListener((view, check) -> {
                     if (check)
-                        CLEAR_CACHE_FLAG = true; //todo improve if for example a user just switched on off on -> dont clear cache
+                        CLEAR_CACHE_FLAG_DRAWER = true; //todo improve if for example a user just switched on off on -> dont clear cache
                     SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
                 });
             }
@@ -269,9 +269,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 SettingsHelper.loadAllSettings(getBaseContext());
-                if (CLEAR_CACHE_FLAG) {
+                if (CLEAR_CACHE_FLAG_DRAWER) {
                     clearCache();
-                    CLEAR_CACHE_FLAG = false;
+                    CLEAR_CACHE_FLAG_DRAWER = false;
                 } else {
                     postPresenter.updateSettingsFilters();
                     scrollListener.resetState();
@@ -356,7 +356,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         scrollListener.resetState();
         CacheUtil.trimCache(this);
         fabToTop.hide();
-        postPresenter.fetchNewPosts();
     }
 
     @Override

@@ -166,9 +166,10 @@ public class PostPresenterTest {
 
     @Test
     public void testDuplicatePosts() {
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
-        Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date()).build();
-        Post post3 = new Post.PostBuilder(PostType.FACEBOOK).title("Piet").date(new Date()).build();
+        Date testDate = new Date();
+        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(testDate).build();
+        Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(testDate).build();
+        Post post3 = new Post.PostBuilder(PostType.FACEBOOK).title("Piet").date(testDate).build();
 
         Observable<Post> obs = Observable.just(post1, post2, post3);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);

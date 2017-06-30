@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +48,7 @@ public class PostPresenter {
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
-    private List<ViewItem> allPosts = new ArrayList<>();
+    private List<ViewItem> allPosts = Collections.synchronizedList(new ArrayList<>());
 
     private Subscription subLoadingPosts;
     private Subscription subUpdatePosts;
@@ -161,7 +162,7 @@ public class PostPresenter {
      * @return First post in allPosts or null if empty
      */
     @Nullable
-    private synchronized Post getFirstPost() {
+    private Post getFirstPost() {
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {
                 if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
@@ -174,7 +175,7 @@ public class PostPresenter {
      * @return Last post in allPosts or null if empty
      */
     @Nullable
-    private synchronized Post getLastPost() {
+    private Post getLastPost() {
         Post lastPost = null;
         if (!allPosts.isEmpty()) {
             for (ViewItem vi : allPosts) {

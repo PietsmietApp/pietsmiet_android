@@ -64,6 +64,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder_, int position) {
         // Don't use int position to avoid crashes!
         if (holder_ == null) return;
+
         switch (holder_.getItemViewType()) {
             case ViewItem.TYPE_DATE_TAG:
                 DateTagCardViewHolder dtcvHolder = (DateTagCardViewHolder) holder_;
@@ -71,7 +72,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
             case ViewItem.TYPE_POST:
                 CardViewHolder holder = (CardViewHolder) holder_;
-                Post currentItem = (Post) items.get(holder.getAdapterPosition()); // todo errored
+                Post currentItem = (Post) items.get(holder.getLayoutPosition()); // todo errored fixed now?
                 @AllTypes int currentType = currentItem.getPostType();
 
                 // Set basic information (title, time, color)
@@ -163,7 +164,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         resPostTypeImage = R.drawable.ic_twitter_social_icon_circle_white_24dp;
                         holder.line.setVisibility(VISIBLE);
                         holder.username.setVisibility(VISIBLE);
-                        holder.username.setText("@" + currentItem.getUsername()); // TODO: 23.04.2017
+                        holder.username.setText(String.format("@%s", currentItem.getUsername()));
                         setupImageViews(holder.wideImage, currentItem);
                         // Setup text for social media
                         if (currentItem.getDescription() != null && !currentItem.getDescription().isEmpty()) {
@@ -225,7 +226,6 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 });
                 break;
         }
-
 
     }
 

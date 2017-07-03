@@ -1,7 +1,6 @@
 package de.pscom.pietsmiet.view;
 
 import android.content.Intent;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -21,8 +20,6 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,13 +63,18 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
     private CardViewAdapter adapter;
-    @BindView(R.id.dl_root) DrawerLayout mDrawer;
+    @BindView(R.id.dl_root)
+    DrawerLayout mDrawer;
 
-    @BindView(R.id.nav_view) NavigationView mNavigationView;
+    @BindView(R.id.nav_view)
+    NavigationView mNavigationView;
     public EndlessScrollListener scrollListener;
-    @BindView(R.id.swipeContainer) SwipeRefreshLayout refreshLayout;
-    @BindView(R.id.btnToTop) FloatingActionButton fabToTop;
-    @BindView(R.id.cardList) RecyclerView recyclerView;
+    @BindView(R.id.swipeContainer)
+    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.btnToTop)
+    FloatingActionButton fabToTop;
+    @BindView(R.id.cardList)
+    RecyclerView recyclerView;
     private MenuItem pietstream_banner;
 
     private PostPresenter postPresenter;
@@ -247,7 +249,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         // Iterate through every menu item and save it's state
         //todo improve if for example a user just switched on off on -> dont clear cache
-        for(Integer item : PostType.getPossibleTypes()) {
+        for (Integer item : PostType.getPossibleTypes()) {
             if (mNavigationView != null) {
                 Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
@@ -397,7 +399,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 }
                 break;
             case R.id.nav_feedback:
-            LinkUtil.openUrl(this, SettingsHelper.stringFeedbackUrl);
+                LinkUtil.openUrl(this, SettingsHelper.stringFeedbackUrl);
                 break;
             case R.id.nav_help:
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));

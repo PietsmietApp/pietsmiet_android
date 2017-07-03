@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapter.CardViewAdapter;
@@ -62,22 +64,23 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
     private CardViewAdapter adapter;
-    private DrawerLayout mDrawer;
+    @BindView(R.id.dl_root) DrawerLayout mDrawer;
 
-    private NavigationView mNavigationView;
+    @BindView(R.id.nav_view) NavigationView mNavigationView;
     public EndlessScrollListener scrollListener;
-    private SwipeRefreshLayout refreshLayout;
-    private FloatingActionButton fabToTop;
-    private RecyclerView recyclerView;
+    @BindView(R.id.swipeContainer) SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.btnToTop) FloatingActionButton fabToTop;
+    @BindView(R.id.cardList) RecyclerView recyclerView;
     private MenuItem pietstream_banner;
 
-    public PostPresenter postPresenter;
+    private PostPresenter postPresenter;
     private long exitTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
 
@@ -100,16 +103,14 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
         }
 
-        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
         refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
         // Top Button init
-        fabToTop = (FloatingActionButton) findViewById(R.id.btnToTop);
         fabToTop.setVisibility(View.INVISIBLE);
-        fabToTop.setOnClickListener(new View.OnClickListener() {
+        fabToTop.setOnClickListener(new View.OnClickListener() { //Butter Knife useful?
             @Override
             public void onClick(View v) {
                 if (((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition() < 85) {
@@ -225,7 +226,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     }
 
     private void setupRecyclerView() {
-        recyclerView = (RecyclerView) findViewById(R.id.cardList);
         adapter = new CardViewAdapter(postPresenter.getPostsToDisplay(), this);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -247,8 +247,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
         pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
-
-        mDrawer = (DrawerLayout) findViewById(R.id.dl_root);
 
         for (Integer item : PostType.getPossibleTypes()) {
             // Iterate through every menu item and save it's state

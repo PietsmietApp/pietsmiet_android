@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet.util;
 
-import android.app.Activity;
 import android.content.Context;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -13,7 +12,6 @@ import de.pscom.pietsmiet.BuildConfig;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class FirebaseUtil {
-    private static final String PARAM_FIREBASE_DB_URL = "FIREBASE_DB_URL";
 
     public static final String TOPIC_VIDEO = "video";
     public static final String TOPIC_UPLOADPLAN = "uploadplan";
@@ -29,21 +27,9 @@ public abstract class FirebaseUtil {
     public static final String PARAM_ITEM_COUNT = "item_count";
 
 
-    public static void loadRemoteConfig(Activity context) {
+    public static void loadRemoteConfig() {
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        mFirebaseRemoteConfig.fetch()
-                .addOnCompleteListener(context, task -> {
-                    if (task.isSuccessful()) {
-                        mFirebaseRemoteConfig.activateFetched();
-
-                        String firebaseDbUrl = mFirebaseRemoteConfig.getString(PARAM_FIREBASE_DB_URL);
-                        if (firebaseDbUrl != null && firebaseDbUrl != "") {
-                            SharedPreferenceHelper.setSharedPreferenceString(
-                                    context, SharedPreferenceHelper.KEY_FIREBASE_DB_URL, firebaseDbUrl);
-                            SettingsHelper.loadAllSettings(context);
-                        }
-                    }
-                });
+        mFirebaseRemoteConfig.fetch();
     }
 
     public static void disableCollectionOnDebug(Context context) {

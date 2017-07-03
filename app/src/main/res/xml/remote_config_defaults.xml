@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>FIREBASE_DB_URL</key>
+        <value>https://pietsmiet-de5ff.firebaseio.com/new/</value>
+    </entry>
+
+    <entry>
+        <key>url_feedback</key>
+        <value>https://goo.gl/forms/3q4dEfOlFOTHKt2i2</value>
+    </entry>
+
+    <entry>
+        <key>url_pietstream</key>
+        <value>https://www.twitch.tv/pietsmiet</value>
+    </entry>
+
+    <entry>
+        <key>twitch_channel_id_pietstream</key>
+        <value>pietsmiet</value>
+    </entry>
+</defaultsMap>

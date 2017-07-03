@@ -1,6 +1,7 @@
 package de.pscom.pietsmiet.view;
 
 import android.content.Intent;
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +19,10 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,9 +61,6 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SE
 public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
-    private static final String URL_FEEDBACK = "https://goo.gl/forms/3q4dEfOlFOTHKt2i2";
-    private static final String URL_PIETSTREAM = "https://www.twitch.tv/pietsmiet";
-    private static final String TWITCH_CHANNEL_ID_PIETSTREAM = "pietsmiet";
     private CustomTabActivityHelper mCustomTabActivityHelper;
 
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
@@ -83,6 +85,15 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         ButterKnife.bind(this);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
+
+        // SETUP FIREBASE REMOTE CONFIG todo move to FButil?
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        mFirebaseRemoteConfig.activateFetched();
 
         mCustomTabActivityHelper = new CustomTabActivityHelper();
 
@@ -154,7 +165,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
 
-        FirebaseUtil.loadRemoteConfig(this);
+        FirebaseUtil.loadRemoteConfig();
         FirebaseUtil.setupTopicSubscriptions();
         FirebaseUtil.disableCollectionOnDebug(this.getApplicationContext());
 
@@ -166,20 +177,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
             });
         }
-    }
-
-    /**
-     * Reloads the stream status and updates the banner in the SideMenu
-     */
-    private void reloadTwitchBanner() {
-        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(TWITCH_CHANNEL_ID_PIETSTREAM);
-        obsTTV.subscribe((stream) -> {
-            if (stream != null) {
-                pietstream_banner.setVisible(true);
-            } else {
-                pietstream_banner.setVisible(false);
-            }
-        }, (err) -> PsLog.e("Could not update Twitch status", err));
     }
 
     @Override
@@ -248,8 +245,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         mNavigationView.setNavigationItemSelectedListener(this);
         pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
-        for (Integer item : PostType.getPossibleTypes()) {
-            // Iterate through every menu item and save it's state
+        // Iterate through every menu item and save it's state
+        //todo improve if for example a user just switched on off on -> dont clear cache
+        for(Integer item : PostType.getPossibleTypes()) {
             if (mNavigationView != null) {
                 Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
@@ -261,14 +259,14 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             }
         }
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 SettingsHelper.loadAllSettings(getBaseContext());
                 if (CLEAR_CACHE_FLAG_DRAWER) {
                     clearCache();
+                    postPresenter.fetchNewPosts();
                     CLEAR_CACHE_FLAG_DRAWER = false;
                 } else {
                     postPresenter.updateSettingsFilters();
@@ -303,6 +301,20 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                             if (recyclerView != null) recyclerView.scrollToPosition(0);
                         }
                 );
+    }
+
+    /**
+     * Reloads the stream status and updates the banner in the SideMenu
+     */
+    private void reloadTwitchBanner() {
+        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(SettingsHelper.stringTwitchChannelIDPietstream);
+        obsTTV.subscribe((stream) -> {
+            if (stream != null) {
+                pietstream_banner.setVisible(true);
+            } else {
+                pietstream_banner.setVisible(false);
+            }
+        }, (err) -> PsLog.e("Could not update Twitch status", err));
     }
 
     public void updateAdapterItemRange(int startPosition, int size) {
@@ -385,7 +397,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 }
                 break;
             case R.id.nav_feedback:
-                LinkUtil.openUrl(this, URL_FEEDBACK);
+            LinkUtil.openUrl(this, SettingsHelper.stringFeedbackUrl);
                 break;
             case R.id.nav_help:
                 startActivity(new Intent(MainActivity.this, AboutActivity.class));
@@ -394,7 +406,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 startActivityForResult(new Intent(MainActivity.this, SettingsActivity.class), REQUEST_SETTINGS);
                 break;
             case R.id.nav_pietstream_banner:
-                LinkUtil.openUrlExternally(this, URL_PIETSTREAM);
+                LinkUtil.openUrlExternally(this, SettingsHelper.stringPietstreamUrl);
                 break;
             default:
                 return false;

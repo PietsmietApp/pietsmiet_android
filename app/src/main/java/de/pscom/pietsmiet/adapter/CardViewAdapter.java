@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -26,6 +29,7 @@ import de.pscom.pietsmiet.view.MainActivity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
@@ -76,7 +80,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 @AllTypes int currentType = currentItem.getPostType();
 
                 // Set basic information (title, time, color)
-                Glide.clear(holder.wideImage);
+                Glide.with(context).clear(holder.wideImage);
                 holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
                 holder.title.setText(currentItem.getTitle());
                 holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor(context));
@@ -230,16 +234,18 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void setupImageViews(ImageView view, Post currentItem) {
+        RequestOptions options = new RequestOptions().centerCrop();
         if (currentItem.getThumbnailUrl() != null || currentItem.getThumbnailHDUrl() != null) {
             Glide.with(context)
                     .load((SettingsHelper.shouldLoadHDImages(context) ?
                             currentItem.getThumbnailHDUrl() :
                             currentItem.getThumbnailUrl()))
-                    .centerCrop()
+                    .apply(options)
+                    .transition(withCrossFade())
                     .into(view);
         } else {
             view.setVisibility(GONE);
-            Glide.clear(view);
+            Glide.with(context).clear(view);
         }
     }
 

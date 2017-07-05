@@ -8,13 +8,11 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseApiInterface;
 import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseItem;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.RetrofitHelper;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
@@ -24,22 +22,21 @@ import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietcast;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietNews;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietUploadplan;
+import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietVideos;
 
 class FirebaseRepository extends MainRepository {
     FirebaseApiInterface apiInterface;
 
     FirebaseRepository(MainActivity view) {
         super(view);
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(SettingsHelper.stringFirebaseDbUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(rxAdapter)
-                .build();
+        Retrofit retrofit = RetrofitHelper.getRetrofit(SettingsHelper.stringFirebaseDbUrl);
         apiInterface = retrofit.create(FirebaseApiInterface.class);
     }
 
-    private Observable<Post.PostBuilder> parsePostsFromDb(Observable<Map<String, Map<String, FirebaseItem>>> obs) {
+    private Observable<Post.PostBuilder> parsePostsFromDb(Observable<Map<String, FirebaseItem>> obs) {
         return Observable.defer(() -> obs)
                 .onErrorReturn(err -> {
                     PsLog.e("Couldn't load Firebase", err);
@@ -47,7 +44,6 @@ class FirebaseRepository extends MainRepository {
                     return null;
                 })
                 .filter(result -> result != null)
-                .flatMapIterable(Map::values)
                 .flatMapIterable(Map::values)
                 .map(item -> {
                     int type;
@@ -68,13 +64,13 @@ class FirebaseRepository extends MainRepository {
                             type = -1;
                     }
                     Post.PostBuilder postBuilder = new Post.PostBuilder(type);
-                    if (!SettingsHelper.boolCategoryPietsmietVideos && type == PS_VIDEO) {
+                    if (!boolCategoryPietsmietVideos && type == PS_VIDEO) {
                         return postBuilder.empty();
-                    } else if (!SettingsHelper.boolCategoryPietsmietUploadplan && type == UPLOADPLAN) {
+                    } else if (!boolCategoryPietsmietUploadplan && type == UPLOADPLAN) {
                         return postBuilder.empty();
-                    } else if (!SettingsHelper.boolCategoryPietsmietNews && type == NEWS) {
+                    } else if (!boolCategoryPietsmietNews && type == NEWS) {
                         return postBuilder.empty();
-                    } else if (!SettingsHelper.boolCategoryPietcast && type == PIETCAST) {
+                    } else if (!boolCategoryPietcast && type == PIETCAST) {
                         return postBuilder.empty();
                     }
                     postBuilder = new Post.PostBuilder(type);
@@ -88,13 +84,44 @@ class FirebaseRepository extends MainRepository {
 
     @Override
     public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
-        return parsePostsFromDb(apiInterface.getAll());
-
+        Observable<Map<String, FirebaseItem>> video = apiInterface.getScopeSince(TOPIC_VIDEO, dBefore.getTime());
+        Observable<Map<String, FirebaseItem>> uploadplan = apiInterface.getScopeSince(TOPIC_UPLOADPLAN, dBefore.getTime());
+        Observable<Map<String, FirebaseItem>> pietcast = apiInterface.getScopeSince(TOPIC_PIETCAST, dBefore.getTime());
+        Observable<Map<String, FirebaseItem>> news = apiInterface.getScopeSince(TOPIC_NEWS, dBefore.getTime());
+        if (!boolCategoryPietsmietVideos) {
+            video = Observable.empty();
+        }
+        if (!boolCategoryPietsmietUploadplan) {
+            uploadplan = Observable.empty();
+        }
+        if (!boolCategoryPietsmietNews) {
+            news = Observable.empty();
+        }
+        if (!boolCategoryPietcast) {
+            pietcast = Observable.empty();
+        }
+        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
     }
 
 
     @Override
     public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
-        return parsePostsFromDb(apiInterface.getAll());
+        Observable<Map<String, FirebaseItem>> video = apiInterface.getScopeUntil(TOPIC_VIDEO, dAfter.getTime(), numPosts);
+        Observable<Map<String, FirebaseItem>> uploadplan = apiInterface.getScopeUntil(TOPIC_UPLOADPLAN, dAfter.getTime(), numPosts);
+        Observable<Map<String, FirebaseItem>> pietcast = apiInterface.getScopeUntil(TOPIC_PIETCAST, dAfter.getTime(), numPosts);
+        Observable<Map<String, FirebaseItem>> news = apiInterface.getScopeUntil(TOPIC_NEWS, dAfter.getTime(), numPosts);
+        if (!boolCategoryPietsmietVideos) {
+            video = Observable.empty();
+        }
+        if (!boolCategoryPietsmietUploadplan) {
+            uploadplan = Observable.empty();
+        }
+        if (!boolCategoryPietsmietNews) {
+            news = Observable.empty();
+        }
+        if (!boolCategoryPietcast) {
+            pietcast = Observable.empty();
+        }
+        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
     }
 }

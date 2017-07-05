@@ -27,13 +27,11 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
 import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 import static de.pscom.pietsmiet.util.PostType.getName;
 
 public class PostPresenter {
@@ -277,8 +275,6 @@ public class PostPresenter {
     /**
      * Custom take operator based on the fetch direction and filter settings
      * <p>
-     * If only firebase db types are allowed, it takes (nearly) all of them to avoid redundant loading,
-     * because firebase always returns all posts
      *
      * @param fetchDirectionDown If true, it takes the first posts => We are loading from top to bottom in the APIs
      *                           <p>
@@ -289,13 +285,7 @@ public class PostPresenter {
      */
     private Observable.Transformer<Post, Post> customTake(boolean fetchDirectionDown, int numPosts) {
         return listObservable -> {
-            if (!SettingsHelper.getSettingsValueForType(TWITTER) &&
-                    !SettingsHelper.getSettingsValueForType(FACEBOOK) &&
-                    !SettingsHelper.getSettingsValueForType(YOUTUBE)) {
-                // Only firebase posts are displayed, take nearly all.
-                // Reduce to 150 if the db should be very big to prevent possible OOMs
-                return listObservable.take(150);
-            } else if (!fetchDirectionDown && allPosts.size() > 0) {
+            if (!fetchDirectionDown && allPosts.size() > 0) {
                 return listObservable.takeLast(numPosts);
             } else return listObservable.take(numPosts);
         };

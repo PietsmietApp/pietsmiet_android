@@ -17,9 +17,9 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
+import com.bumptech.glide.util.FixedPreloadSizeProvider;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +28,7 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapter.CardViewAdapter;
 import de.pscom.pietsmiet.customtabsclient.CustomTabActivityHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
@@ -87,15 +88,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         ButterKnife.bind(this);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
-
-        // SETUP FIREBASE REMOTE CONFIG todo move to FButil?
-        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
-                .build();
-        mFirebaseRemoteConfig.setConfigSettings(configSettings);
-        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
-        mFirebaseRemoteConfig.activateFetched();
 
         mCustomTabActivityHelper = new CustomTabActivityHelper();
 

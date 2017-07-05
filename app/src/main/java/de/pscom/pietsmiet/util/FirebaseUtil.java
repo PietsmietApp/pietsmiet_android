@@ -7,8 +7,10 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import de.pscom.pietsmiet.BuildConfig;
+import de.pscom.pietsmiet.R;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class FirebaseUtil {
@@ -29,7 +31,17 @@ public abstract class FirebaseUtil {
 
     public static void loadRemoteConfig() {
         FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        mFirebaseRemoteConfig.fetch();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        mFirebaseRemoteConfig.setConfigSettings(configSettings);
+        mFirebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+
+        mFirebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                mFirebaseRemoteConfig.activateFetched();
+            }
+        });
     }
 
     public static void disableCollectionOnDebug(Context context) {

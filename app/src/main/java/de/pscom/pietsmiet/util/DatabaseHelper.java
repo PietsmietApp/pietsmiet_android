@@ -105,7 +105,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void deleteTable() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(TABLE_POSTS, null, null);
-        db.close();
+        this.close();
     }
 
     /**
@@ -139,10 +139,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     db.replace(TABLE_POSTS, null, contentValues);
                 }, (throwable) -> {
                     throwable.printStackTrace();
-                    db.close();
+                    this.close();
                 }, () -> {
                     PsLog.v("Db now contains " + getPostsInDbCount() + " posts");
-                    db.close();
+                    this.close();
                 });
     }
 
@@ -154,7 +154,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private int getPostsInDbCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         long cnt = DatabaseUtils.queryNumEntries(db, TABLE_POSTS);
-        db.close();
+        this.close();
         return (int) Math.max(Math.min(Integer.MAX_VALUE, cnt), Integer.MIN_VALUE);
     }
 
@@ -164,7 +164,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void clearDB() {
         deleteTable();
-        this.close();
     }
 
     /**

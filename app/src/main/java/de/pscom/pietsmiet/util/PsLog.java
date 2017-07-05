@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import javax.net.ssl.SSLException;
 
 import okhttp3.internal.http2.StreamResetException;
+import retrofit2.HttpException;
 
 
 /**
@@ -95,6 +96,7 @@ public class PsLog {
                 !(tr instanceof UnknownHostException) &&
                 !(tr instanceof SocketException) &&
                 !(tr instanceof StreamResetException) &&
+                !(tr instanceof HttpException) &&
                 !(tr instanceof SSLException)) {
             FirebaseUtil.reportError(getTag() + " " + message, tr);
         }

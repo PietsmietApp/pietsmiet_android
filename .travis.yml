@@ -28,5 +28,5 @@ deploy:
   file: app/build/outputs/apk/app-release.apk
   skip_cleanup: true
   on:
-    repo: l3d00m/pietsmiet_android
+    repo: PietsmietApp/pietsmiet_android
     tags: true

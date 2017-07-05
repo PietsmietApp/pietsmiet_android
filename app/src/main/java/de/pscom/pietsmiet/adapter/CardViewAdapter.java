@@ -10,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.text.SimpleDateFormat;
@@ -158,7 +156,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         break;
                     case PS_VIDEO:
                         resPostTypeImage = R.drawable.ic_ondemand_video_white_24dp;
-                        holder.wideImage.setVisibility(GONE);
+                        setupImageViews(holder.wideImage, currentItem);
                         break;
                     case YOUTUBE:
                         resPostTypeImage = R.drawable.ic_youtube_light_logo;

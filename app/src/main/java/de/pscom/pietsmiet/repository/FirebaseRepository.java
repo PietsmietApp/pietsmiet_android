@@ -78,6 +78,8 @@ class FirebaseRepository extends MainRepository {
                     postBuilder.description(item.desc);
                     postBuilder.date(new Date(item.date));
                     postBuilder.url(item.link);
+                    postBuilder.thumbnailHDUrl(item.image_url);
+                    postBuilder.thumbnailUrl(item.image_url);
                     return postBuilder;
                 });
     }

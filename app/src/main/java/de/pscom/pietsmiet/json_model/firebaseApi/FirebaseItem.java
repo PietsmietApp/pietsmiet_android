@@ -1,22 +1,18 @@
 package de.pscom.pietsmiet.json_model.firebaseApi;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class FirebaseItem {
     @SerializedName("date")
-    @Expose
     public Long date;
     @SerializedName("desc")
-    @Expose
     public String desc;
     @SerializedName("link")
-    @Expose
     public String link;
+    @SerializedName("image_url")
+    public String image_url;
     @SerializedName("scope")
-    @Expose
     public String scope;
     @SerializedName("title")
-    @Expose
     public String title;
 }

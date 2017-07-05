@@ -161,9 +161,11 @@ public class PostPresenter {
      */
     @Nullable
     private Post getFirstPost() {
-        if (!allPosts.isEmpty()) {
-            for (ViewItem vi : allPosts) {
-                if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
+        synchronized (allPosts) {
+            if (!allPosts.isEmpty()) {
+                for (ViewItem vi : allPosts) {
+                    if (vi.getType() == ViewItem.TYPE_POST) return (Post) vi;
+                }
             }
         }
         return null;
@@ -175,9 +177,11 @@ public class PostPresenter {
     @Nullable
     private Post getLastPost() {
         Post lastPost = null;
-        if (!allPosts.isEmpty()) {
-            for (ViewItem vi : allPosts) {
-                if (vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
+        synchronized (allPosts) {
+            if (!allPosts.isEmpty()) {
+                for (ViewItem vi : allPosts) {
+                    if (vi.getType() == ViewItem.TYPE_POST) lastPost = (Post) vi;
+                }
             }
         }
         return lastPost;

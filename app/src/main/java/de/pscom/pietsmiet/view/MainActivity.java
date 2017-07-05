@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.pscom.pietsmiet.R;
@@ -56,14 +58,18 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SE
 public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
+    private static final int MAX_TWITCH_CHECK_TIME_DIFF = 5 * 60 * 1000;
+    private static final int MAX_INACTIVITY_TIME_TO_RELOAD = 15 * 60 * 60 * 1000;
+
     private CustomTabActivityHelper mCustomTabActivityHelper;
 
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
+    private Date lastDateCheckedTwitch; //
+
     private CardViewAdapter adapter;
     @BindView(R.id.dl_root)
     DrawerLayout mDrawer;
-
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
     public EndlessScrollListener scrollListener;
@@ -179,7 +185,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         if (postPresenter.getPostsToDisplay().isEmpty()) {
             // Load posts from db
             DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
-        } else if ((exitTime - System.currentTimeMillis()) > (15 * 60 * 60 * 1000)) {
+        } else if ((exitTime - System.currentTimeMillis()) > MAX_INACTIVITY_TIME_TO_RELOAD) {
             // Auto reload posts if going back to activity after more than 15 minutes
             postPresenter.fetchNewPosts();
         }
@@ -294,14 +300,17 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
      * Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
-        Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(SettingsHelper.stringTwitchChannelIDPietstream);
-        obsTTV.subscribe((stream) -> {
-            if (stream != null) {
-                pietstream_banner.setVisible(true);
-            } else {
-                pietstream_banner.setVisible(false);
-            }
-        }, (err) -> PsLog.e("Could not update Twitch status", err));
+        if(lastDateCheckedTwitch == null || (new Date().getTime() - lastDateCheckedTwitch.getTime()) > MAX_TWITCH_CHECK_TIME_DIFF) {
+            lastDateCheckedTwitch = new Date(); //todo GC ok? everytime a new Object? Efficiency?
+            Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(SettingsHelper.stringTwitchChannelIDPietstream);
+            obsTTV.subscribe((stream) -> {
+                if (stream != null) {
+                    pietstream_banner.setVisible(true);
+                } else {
+                    pietstream_banner.setVisible(false);
+                }
+            }, (err) -> PsLog.e("Could not update Twitch status", err));
+        }
     }
 
     public void updateAdapterItemRange(int startPosition, int size) {

@@ -13,22 +13,21 @@ import de.pscom.pietsmiet.json_model.twitterApi.TwitterRoot;
 import de.pscom.pietsmiet.json_model.twitterApi.TwitterUser;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.RetrofitHelper;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.HttpException;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.exceptions.Exceptions;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
 public class TwitterRepository extends MainRepository { //todo make package only
     public static Post firstTweet, lastTweet;
+    private static final String TWITTER_API_URL = "https://api.twitter.com";
     TwitterApiInterface apiInterface;
     private final String query = "from:pietsmiet, " +
             "OR from:kessemak2, " +
@@ -43,15 +42,9 @@ public class TwitterRepository extends MainRepository { //todo make package only
             PsLog.w("No twitter secret specified");
             return;
         }
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.twitter.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(rxAdapter)
-                .build();
 
+        Retrofit retrofit = RetrofitHelper.getRetrofit(TWITTER_API_URL);
         apiInterface = retrofit.create(TwitterApiInterface.class);
-        getToken();
     }
 
 

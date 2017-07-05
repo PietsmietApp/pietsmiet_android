@@ -15,14 +15,12 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.facebookApi.FacebookApiInterface;
 import de.pscom.pietsmiet.util.DrawableFetcher;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.RetrofitHelper;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.exceptions.Exceptions;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
 
@@ -35,14 +33,7 @@ class FacebookRepository extends MainRepository {
             PsLog.w("No facebook secret or token specified");
             return;
         }
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://graph.facebook.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(rxAdapter)
-                .build();
-
+        Retrofit retrofit = RetrofitHelper.getRetrofit("https://graph.facebook.com");
         apiInterface = retrofit.create(FacebookApiInterface.class);
     }
     

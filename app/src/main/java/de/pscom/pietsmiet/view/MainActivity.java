@@ -17,22 +17,19 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
-import com.bumptech.glide.util.FixedPreloadSizeProvider;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapter.CardViewAdapter;
 import de.pscom.pietsmiet.customtabsclient.CustomTabActivityHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
-import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
 import de.pscom.pietsmiet.service.MyFirebaseMessagingService;
+import de.pscom.pietsmiet.stetho.StethoHelper;
 import de.pscom.pietsmiet.util.CacheUtil;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.FirebaseUtil;
@@ -85,6 +82,13 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FirebaseUtil.disableCollectionOnDebug(this.getApplicationContext());
+        StethoHelper.init(this);
+
+        FirebaseUtil.loadRemoteConfig();
+        FirebaseUtil.setupTopicSubscriptions();
+
         ButterKnife.bind(this);
         SettingsHelper.loadAllSettings(this);
         setupToolbar(null);
@@ -159,18 +163,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
 
-        FirebaseUtil.loadRemoteConfig();
-        FirebaseUtil.setupTopicSubscriptions();
-        FirebaseUtil.disableCollectionOnDebug(this.getApplicationContext());
-
         new SecretConstants(this);
-
-        if (BuildConfig.DEBUG) {
-            Thread.setDefaultUncaughtExceptionHandler((paramThread, paramThrowable) -> {
-                PsLog.w("Uncaught Exception!", paramThrowable);
-                System.exit(2); //Prevents the service/app from reporting to firebase crash reporting!
-            });
-        }
     }
 
     @Override

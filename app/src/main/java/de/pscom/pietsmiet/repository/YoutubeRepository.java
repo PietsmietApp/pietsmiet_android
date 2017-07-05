@@ -12,18 +12,16 @@ import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeRoot;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeSnippet;
 import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.util.RetrofitHelper;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
 class YoutubeRepository extends MainRepository {
-    private static final String urlYTAPI = "https://www.googleapis.com/youtube/v3/";
+    private static final String YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/";
 
     YoutubeApiInterface apiInterface;
 
@@ -33,14 +31,7 @@ class YoutubeRepository extends MainRepository {
             PsLog.w("No Youtube API-key or token specified");
             return;
         }
-        RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlYTAPI)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(rxAdapter)
-                .build();
-
+        Retrofit retrofit = RetrofitHelper.getRetrofit(YOUTUBE_API_URL);
         apiInterface = retrofit.create(YoutubeApiInterface.class);
     }
 

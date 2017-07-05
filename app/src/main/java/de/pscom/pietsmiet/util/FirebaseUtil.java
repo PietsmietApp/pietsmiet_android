@@ -45,10 +45,9 @@ public abstract class FirebaseUtil {
     }
 
     public static void disableCollectionOnDebug(Context context) {
-        if (BuildConfig.DEBUG) {
-            FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(false);
-            FirebasePerformance.getInstance().setPerformanceCollectionEnabled(false);
-        }
+        FirebaseAnalytics.getInstance(context).setAnalyticsCollectionEnabled(!BuildConfig.DEBUG);
+        FirebasePerformance.getInstance().setPerformanceCollectionEnabled(!BuildConfig.DEBUG);
+        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG);
     }
 
     public static void setupTopicSubscriptions() {

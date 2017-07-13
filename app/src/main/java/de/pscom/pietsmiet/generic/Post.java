@@ -1,43 +1,51 @@
 package de.pscom.pietsmiet.generic;
 
-import android.graphics.Color;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 
 import java.util.Date;
 
+import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 
-import static de.pscom.pietsmiet.util.ColorUtils.Default;
-import static de.pscom.pietsmiet.util.ColorUtils.Facebook;
-import static de.pscom.pietsmiet.util.ColorUtils.PietSmiet;
-import static de.pscom.pietsmiet.util.ColorUtils.Twitter;
-import static de.pscom.pietsmiet.util.ColorUtils.Youtube;
 import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.util.PostType.NEWS;
 import static de.pscom.pietsmiet.util.PostType.PIETCAST;
+import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
 import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.VIDEO;
+import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
-public class Post implements Comparable<Post> {
+public class Post extends ViewItem {
     @Nullable
     private String description;
     private String title;
     private int postType;
     @Nullable
     private Drawable thumbnail;
+    @Nullable
+    private String thumbnailUrl;
+    @Nullable
+    private String thumbnailHDUrl;
+    @Nullable
+    private String username;
+    
     private long api_ID;
-    private Date datetime;
     private int duration;
     private String url;
+    private boolean isThumbnailHD = false;
 
     private Post(PostBuilder builder) {
+        super(ViewItem.TYPE_POST);
         description = builder.description;
         title = builder.title;
         postType = builder.postType;
-        thumbnail = builder.thumbnail;
+        thumbnailUrl = builder.thumbnailUrl;
+        thumbnailHDUrl = builder.thumbnailHDUrl;
+        username = builder.username;
         datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
@@ -49,17 +57,30 @@ public class Post implements Comparable<Post> {
         return this.thumbnail;
     }
 
-    public boolean hasThumbnail() {
-        return thumbnail != null;
+    public void setThumbnail(@Nullable Drawable thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public boolean isThumbnailHD() { return isThumbnailHD; }
+
+    public void setIsThumbnailHD(boolean isHD) { this.isThumbnailHD = isHD; }
+
+    @Nullable
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    @Nullable
+    public String getThumbnailHDUrl() {
+        return thumbnailHDUrl;
     }
 
     public int getPostType() {
         return postType;
     }
 
-    public Date getDate() {
-        return datetime;
-    }
+    @Nullable
+    public String getUsername() { return username; }
 
     @Nullable
     public String getDescription() {
@@ -82,44 +103,33 @@ public class Post implements Comparable<Post> {
         return url;
     }
 
-    public void setUrl(String url) {
-        if (url != null && !url.isEmpty()) {
-            if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                url = "http://" + url;
-            }
-            this.url = url;
-        }
-    }
-
-
     //UPPER_CASE: PostType constants
     //CamelCase: ColorUtils constants
-    public int getBackgroundColor() {
-        String hexColor;
+    public int getBackgroundColor(Context c) {
+        int hexColor;
         switch (postType) {
-            case VIDEO:
-                hexColor = Youtube;
+            case PS_VIDEO:
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
+                break;
+            case YOUTUBE:
+                hexColor = ContextCompat.getColor(c, R.color.youtube);
                 break;
             case UPLOADPLAN:
+            case NEWS:
             case PIETCAST:
-                hexColor = PietSmiet;
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
                 break;
             case FACEBOOK:
-                hexColor = Facebook;
+                hexColor = ContextCompat.getColor(c, R.color.facebook);
                 break;
             case TWITTER:
-                hexColor = Twitter;
+                hexColor = ContextCompat.getColor(c, R.color.twitter);
                 break;
             default:
-                hexColor = Default;
+                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
                 break;
         }
-        return Color.parseColor(hexColor);
-    }
-
-    @Override
-    public int compareTo(@NonNull Post item) {
-        return item.getDate().compareTo(this.getDate());
+        return hexColor;
     }
 
     @Override
@@ -157,23 +167,39 @@ public class Post implements Comparable<Post> {
 
     @SuppressWarnings("UnusedReturnValue")
     public static class PostBuilder {
+        private boolean empty = false;
         private String title;
         private int postType;
         @Nullable
         private String description;
         @Nullable
-        private Drawable thumbnail;
+        private String thumbnailUrl;
+        @Nullable
+        private String thumbnailHDUrl;
+        @Nullable
+        private String username;
         private long api_ID;
         private Date date;
         private int duration;
         private String url;
 
+
         public PostBuilder(@PostType.AllTypes int postType) {
             this.postType = postType;
         }
 
+        public PostBuilder empty(){
+            empty = true;
+            return this;
+        }
+
         public PostBuilder description(@Nullable String description) {
             this.description = description;
+            return this;
+        }
+
+        public PostBuilder username(@Nullable String username) {
+            this.username = username;
             return this;
         }
 
@@ -182,8 +208,13 @@ public class Post implements Comparable<Post> {
             return this;
         }
 
-        public PostBuilder thumbnail(@Nullable Drawable thumbnail) {
-            this.thumbnail = thumbnail;
+        public PostBuilder thumbnailUrl(@Nullable String thumbnailUrl) {
+            this.thumbnailUrl = thumbnailUrl;
+            return this;
+        }
+
+        public PostBuilder thumbnailHDUrl(@Nullable String thumbnailHDUrl) {
+            this.thumbnailHDUrl = thumbnailHDUrl;
             return this;
         }
 
@@ -208,6 +239,9 @@ public class Post implements Comparable<Post> {
         }
 
         public Post build() {
+            if (empty){
+                return null;
+            }
             if (title == null || title.isEmpty()) {
                 PsLog.e("Title is not given");
                 return null;
@@ -216,12 +250,13 @@ public class Post implements Comparable<Post> {
                 PsLog.e("Date is not given");
                 return null;
             }
-            if ((description == null || description.isEmpty()) && thumbnail == null) {
-                PsLog.e("No thumbnail and no description given");
-                return null;
-            }
             if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
                 PsLog.e("Uploadplan with no description");
+                return null;
+            }
+
+            if(!PostType.getPossibleTypes().contains(postType)){
+                PsLog.e("Not a valid type!");
                 return null;
             }
             return new Post(this);

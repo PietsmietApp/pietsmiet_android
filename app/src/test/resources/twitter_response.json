@@ -1,0 +1,1106 @@
+{
+  "statuses": [
+    {
+      "created_at": "Fri Apr 21 05:31:15 +0000 2017",
+      "id": 855292827059666945,
+      "id_str": "855292827059666945",
+      "text": "Sammy schl\u00e4ft noch eine Runde \ud83d\ude0d\nGuten Morgen! \ud83e\udd17 https:\/\/t.co\/9VFhTcZeqW",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          
+        ],
+        "urls": [
+          
+        ],
+        "media": [
+          {
+            "id": 855292792863469568,
+            "id_str": "855292792863469568",
+            "indices": [
+              48,
+              71
+            ],
+            "media_url": "http:\/\/pbs.twimg.com\/media\/C96cQ3mUMAAW32g.jpg",
+            "media_url_https": "https:\/\/pbs.twimg.com\/media\/C96cQ3mUMAAW32g.jpg",
+            "url": "https:\/\/t.co\/9VFhTcZeqW",
+            "display_url": "pic.twitter.com\/9VFhTcZeqW",
+            "expanded_url": "https:\/\/twitter.com\/kessemak2\/status\/855292827059666945\/photo\/1",
+            "type": "photo",
+            "sizes": {
+              "small": {
+                "w": 544,
+                "h": 680,
+                "resize": "fit"
+              },
+              "large": {
+                "w": 1638,
+                "h": 2048,
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": 150,
+                "h": 150,
+                "resize": "crop"
+              },
+              "medium": {
+                "w": 960,
+                "h": 1200,
+                "resize": "fit"
+              }
+            }
+          }
+        ]
+      },
+      "extended_entities": {
+        "media": [
+          {
+            "id": 855292792863469568,
+            "id_str": "855292792863469568",
+            "indices": [
+              48,
+              71
+            ],
+            "media_url": "http:\/\/pbs.twimg.com\/media\/C96cQ3mUMAAW32g.jpg",
+            "media_url_https": "https:\/\/pbs.twimg.com\/media\/C96cQ3mUMAAW32g.jpg",
+            "url": "https:\/\/t.co\/9VFhTcZeqW",
+            "display_url": "pic.twitter.com\/9VFhTcZeqW",
+            "expanded_url": "https:\/\/twitter.com\/kessemak2\/status\/855292827059666945\/photo\/1",
+            "type": "photo",
+            "sizes": {
+              "small": {
+                "w": 544,
+                "h": 680,
+                "resize": "fit"
+              },
+              "large": {
+                "w": 1638,
+                "h": 2048,
+                "resize": "fit"
+              },
+              "thumb": {
+                "w": 150,
+                "h": 150,
+                "resize": "crop"
+              },
+              "medium": {
+                "w": 960,
+                "h": 1200,
+                "resize": "fit"
+              }
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "de",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"http:\/\/twitter.com\/download\/android\" rel=\"nofollow\"\u003eTwitter for Android\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 832560607,
+        "id_str": "832560607",
+        "name": "SEP \ud83c\udfce\ufe0f Pietsmiet",
+        "screen_name": "kessemak2",
+        "location": "K\u00f6ln, Nordrhein-Westfalen",
+        "description": "Youtuber aka Let's Player bei @Pietsmiet :)  Head of Sepj\u00f6 and SepsBr\u00e4uner \ud83d\ude0e Cologne \nhttps:\/\/t.co\/AQmXeaVHGa",
+        "url": "https:\/\/t.co\/SG498ykFca",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/SG498ykFca",
+                "expanded_url": "http:\/\/www.pietsmiet.de",
+                "display_url": "pietsmiet.de",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/AQmXeaVHGa",
+                "expanded_url": "http:\/\/youtube.com\/PietSmiet",
+                "display_url": "youtube.com\/PietSmiet",
+                "indices": [
+                  86,
+                  109
+                ]
+              }
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 99870,
+        "friends_count": 54,
+        "listed_count": 137,
+        "created_at": "Wed Sep 19 04:36:25 +0000 2012",
+        "favourites_count": 7491,
+        "utc_offset": -25200,
+        "time_zone": "Pacific Time (US & Canada)",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 5874,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "000000",
+        "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/832560607\/1487917871",
+        "profile_link_color": "1B95E0",
+        "profile_sidebar_border_color": "000000",
+        "profile_sidebar_fill_color": "000000",
+        "profile_text_color": "000000",
+        "profile_use_background_image": false,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "is_quote_status": false,
+      "retweet_count": 9,
+      "favorite_count": 474,
+      "favorited": false,
+      "retweeted": false,
+      "possibly_sensitive": false,
+      "lang": "de"
+    },
+    {
+      "created_at": "Thu Apr 20 19:20:55 +0000 2017",
+      "id": 855139232565907457,
+      "id_str": "855139232565907457",
+      "text": "F\u00fcr alle Nachtschw\u00e4rmer :-P\nHeute in der Bat(h)cave unterwegs!\nhttps:\/\/t.co\/Nt32YtPxMK",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          
+        ],
+        "urls": [
+          {
+            "url": "https:\/\/t.co\/Nt32YtPxMK",
+            "expanded_url": "http:\/\/www.pietsmiet.de\/gallery\/categories\/37-pietsmietde\/25298-for-the-king-9",
+            "display_url": "pietsmiet.de\/gallery\/catego\u2026",
+            "indices": [
+              63,
+              86
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "de",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"https:\/\/about.twitter.com\/products\/tweetdeck\" rel=\"nofollow\"\u003eTweetDeck\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 832560607,
+        "id_str": "832560607",
+        "name": "SEP \ud83c\udfce\ufe0f Pietsmiet",
+        "screen_name": "kessemak2",
+        "location": "K\u00f6ln, Nordrhein-Westfalen",
+        "description": "Youtuber aka Let's Player bei @Pietsmiet :)  Head of Sepj\u00f6 and SepsBr\u00e4uner \ud83d\ude0e Cologne \nhttps:\/\/t.co\/AQmXeaVHGa",
+        "url": "https:\/\/t.co\/SG498ykFca",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/SG498ykFca",
+                "expanded_url": "http:\/\/www.pietsmiet.de",
+                "display_url": "pietsmiet.de",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/AQmXeaVHGa",
+                "expanded_url": "http:\/\/youtube.com\/PietSmiet",
+                "display_url": "youtube.com\/PietSmiet",
+                "indices": [
+                  86,
+                  109
+                ]
+              }
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 99870,
+        "friends_count": 54,
+        "listed_count": 137,
+        "created_at": "Wed Sep 19 04:36:25 +0000 2012",
+        "favourites_count": 7491,
+        "utc_offset": -25200,
+        "time_zone": "Pacific Time (US & Canada)",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 5874,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "000000",
+        "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/832560607\/1487917871",
+        "profile_link_color": "1B95E0",
+        "profile_sidebar_border_color": "000000",
+        "profile_sidebar_fill_color": "000000",
+        "profile_text_color": "000000",
+        "profile_use_background_image": false,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "is_quote_status": false,
+      "retweet_count": 1,
+      "favorite_count": 140,
+      "favorited": false,
+      "retweeted": false,
+      "possibly_sensitive": false,
+      "lang": "de"
+    },
+    {
+      "created_at": "Thu Apr 20 18:55:05 +0000 2017",
+      "id": 855132730228658177,
+      "id_str": "855132730228658177",
+      "text": "Die zweite Folge UNGL\u00dcCKSRAD grad am schneiden. Durch euer Feedback muss ich sagen ist es noch besser und \u00fcbersichtlicher geworden! \ud83d\ude0e",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          
+        ],
+        "urls": [
+          
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "de",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"https:\/\/about.twitter.com\/products\/tweetdeck\" rel=\"nofollow\"\u003eTweetDeck\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 832560607,
+        "id_str": "832560607",
+        "name": "SEP \ud83c\udfce\ufe0f Pietsmiet",
+        "screen_name": "kessemak2",
+        "location": "K\u00f6ln, Nordrhein-Westfalen",
+        "description": "Youtuber aka Let's Player bei @Pietsmiet :)  Head of Sepj\u00f6 and SepsBr\u00e4uner \ud83d\ude0e Cologne \nhttps:\/\/t.co\/AQmXeaVHGa",
+        "url": "https:\/\/t.co\/SG498ykFca",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/SG498ykFca",
+                "expanded_url": "http:\/\/www.pietsmiet.de",
+                "display_url": "pietsmiet.de",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/AQmXeaVHGa",
+                "expanded_url": "http:\/\/youtube.com\/PietSmiet",
+                "display_url": "youtube.com\/PietSmiet",
+                "indices": [
+                  86,
+                  109
+                ]
+              }
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 99870,
+        "friends_count": 54,
+        "listed_count": 137,
+        "created_at": "Wed Sep 19 04:36:25 +0000 2012",
+        "favourites_count": 7491,
+        "utc_offset": -25200,
+        "time_zone": "Pacific Time (US & Canada)",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 5874,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "000000",
+        "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/832560607\/1487917871",
+        "profile_link_color": "1B95E0",
+        "profile_sidebar_border_color": "000000",
+        "profile_sidebar_fill_color": "000000",
+        "profile_text_color": "000000",
+        "profile_use_background_image": false,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "is_quote_status": false,
+      "retweet_count": 8,
+      "favorite_count": 549,
+      "favorited": false,
+      "retweeted": false,
+      "lang": "de"
+    },
+    {
+      "created_at": "Thu Apr 20 18:54:04 +0000 2017",
+      "id": 855132476380938240,
+      "id_str": "855132476380938240",
+      "text": "Lol https:\/\/t.co\/J6LSnSKrxZ",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          
+        ],
+        "urls": [
+          {
+            "url": "https:\/\/t.co\/J6LSnSKrxZ",
+            "expanded_url": "https:\/\/twitter.com\/_michid_\/status\/855130814551646210",
+            "display_url": "twitter.com\/_michid_\/statu\u2026",
+            "indices": [
+              4,
+              27
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "und",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"http:\/\/twitter.com\/download\/iphone\" rel=\"nofollow\"\u003eTwitter for iPhone\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 109850283,
+        "id_str": "109850283",
+        "name": "Piet",
+        "screen_name": "PietSmiet",
+        "location": "Osnabrooklyn",
+        "description": "Passionen: Videospiele, YouTube, gesunder Menschenverstand.",
+        "url": "https:\/\/t.co\/AQmXeaVHGa",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/AQmXeaVHGa",
+                "expanded_url": "http:\/\/youtube.com\/PietSmiet",
+                "display_url": "youtube.com\/PietSmiet",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 252443,
+        "friends_count": 309,
+        "listed_count": 420,
+        "created_at": "Sat Jan 30 14:01:16 +0000 2010",
+        "favourites_count": 8809,
+        "utc_offset": 7200,
+        "time_zone": "Bern",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 10612,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "C0DEED",
+        "profile_background_image_url": "http:\/\/pbs.twimg.com\/profile_background_images\/71072664\/body_bg.gif",
+        "profile_background_image_url_https": "https:\/\/pbs.twimg.com\/profile_background_images\/71072664\/body_bg.gif",
+        "profile_background_tile": true,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/847155217984577536\/8JA1LgT-_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/847155217984577536\/8JA1LgT-_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/109850283\/1479899856",
+        "profile_link_color": "ABB8C2",
+        "profile_sidebar_border_color": "C0DEED",
+        "profile_sidebar_fill_color": "DDEEF6",
+        "profile_text_color": "333333",
+        "profile_use_background_image": true,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "is_quote_status": true,
+      "quoted_status_id": 855130814551646210,
+      "quoted_status_id_str": "855130814551646210",
+      "quoted_status": {
+        "created_at": "Thu Apr 20 18:47:28 +0000 2017",
+        "id": 855130814551646210,
+        "id_str": "855130814551646210",
+        "text": "@PietSmiet Da will man Mods runterladen und sieht pl\u00f6tzlich den komischen Snob :D https:\/\/t.co\/Es0rm7iU2i",
+        "truncated": false,
+        "entities": {
+          "hashtags": [
+            
+          ],
+          "symbols": [
+            
+          ],
+          "user_mentions": [
+            {
+              "screen_name": "PietSmiet",
+              "name": "Piet",
+              "id": 109850283,
+              "id_str": "109850283",
+              "indices": [
+                0,
+                10
+              ]
+            }
+          ],
+          "urls": [
+            
+          ],
+          "media": [
+            {
+              "id": 855130316872314880,
+              "id_str": "855130316872314880",
+              "indices": [
+                82,
+                105
+              ],
+              "media_url": "http:\/\/pbs.twimg.com\/media\/C94IfhXXcAAl8sX.jpg",
+              "media_url_https": "https:\/\/pbs.twimg.com\/media\/C94IfhXXcAAl8sX.jpg",
+              "url": "https:\/\/t.co\/Es0rm7iU2i",
+              "display_url": "pic.twitter.com\/Es0rm7iU2i",
+              "expanded_url": "https:\/\/twitter.com\/_MichiD_\/status\/855130814551646210\/photo\/1",
+              "type": "photo",
+              "sizes": {
+                "thumb": {
+                  "w": 150,
+                  "h": 150,
+                  "resize": "crop"
+                },
+                "small": {
+                  "w": 680,
+                  "h": 614,
+                  "resize": "fit"
+                },
+                "medium": {
+                  "w": 1046,
+                  "h": 945,
+                  "resize": "fit"
+                },
+                "large": {
+                  "w": 1046,
+                  "h": 945,
+                  "resize": "fit"
+                }
+              }
+            }
+          ]
+        },
+        "extended_entities": {
+          "media": [
+            {
+              "id": 855130316872314880,
+              "id_str": "855130316872314880",
+              "indices": [
+                82,
+                105
+              ],
+              "media_url": "http:\/\/pbs.twimg.com\/media\/C94IfhXXcAAl8sX.jpg",
+              "media_url_https": "https:\/\/pbs.twimg.com\/media\/C94IfhXXcAAl8sX.jpg",
+              "url": "https:\/\/t.co\/Es0rm7iU2i",
+              "display_url": "pic.twitter.com\/Es0rm7iU2i",
+              "expanded_url": "https:\/\/twitter.com\/_MichiD_\/status\/855130814551646210\/photo\/1",
+              "type": "photo",
+              "sizes": {
+                "thumb": {
+                  "w": 150,
+                  "h": 150,
+                  "resize": "crop"
+                },
+                "small": {
+                  "w": 680,
+                  "h": 614,
+                  "resize": "fit"
+                },
+                "medium": {
+                  "w": 1046,
+                  "h": 945,
+                  "resize": "fit"
+                },
+                "large": {
+                  "w": 1046,
+                  "h": 945,
+                  "resize": "fit"
+                }
+              }
+            }
+          ]
+        },
+        "metadata": {
+          "iso_language_code": "und",
+          "result_type": "recent"
+        },
+        "source": "\u003ca href=\"http:\/\/twitter.com\" rel=\"nofollow\"\u003eTwitter Web Client\u003c\/a\u003e",
+        "in_reply_to_status_id": null,
+        "in_reply_to_status_id_str": null,
+        "in_reply_to_user_id": 109850283,
+        "in_reply_to_user_id_str": "109850283",
+        "in_reply_to_screen_name": "PietSmiet",
+        "user": {
+          "id": 2391635843,
+          "id_str": "2391635843",
+          "name": "Michael D.",
+          "screen_name": "_MichiD_",
+          "location": "",
+          "description": "Michael hei\u00dft nicht Fels.",
+          "url": null,
+          "entities": {
+            "description": {
+              "urls": [
+                
+              ]
+            }
+          },
+          "protected": false,
+          "followers_count": 7,
+          "friends_count": 47,
+          "listed_count": 1,
+          "created_at": "Fri Mar 07 18:07:36 +0000 2014",
+          "favourites_count": 1496,
+          "utc_offset": null,
+          "time_zone": null,
+          "geo_enabled": false,
+          "verified": false,
+          "statuses_count": 869,
+          "lang": "de",
+          "contributors_enabled": false,
+          "is_translator": false,
+          "is_translation_enabled": false,
+          "profile_background_color": "C0DEED",
+          "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+          "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+          "profile_background_tile": false,
+          "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/610398943135039488\/Q45iFtLL_normal.jpg",
+          "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/610398943135039488\/Q45iFtLL_normal.jpg",
+          "profile_link_color": "1DA1F2",
+          "profile_sidebar_border_color": "C0DEED",
+          "profile_sidebar_fill_color": "DDEEF6",
+          "profile_text_color": "333333",
+          "profile_use_background_image": true,
+          "has_extended_profile": false,
+          "default_profile": true,
+          "default_profile_image": false,
+          "following": false,
+          "follow_request_sent": false,
+          "notifications": false,
+          "translator_type": "none"
+        },
+        "geo": null,
+        "coordinates": null,
+        "place": null,
+        "contributors": null,
+        "is_quote_status": false,
+        "retweet_count": 6,
+        "favorite_count": 143,
+        "favorited": false,
+        "retweeted": false,
+        "possibly_sensitive": false,
+        "lang": "de"
+      },
+      "retweet_count": 16,
+      "favorite_count": 493,
+      "favorited": false,
+      "retweeted": false,
+      "possibly_sensitive": false,
+      "lang": "und"
+    },
+    {
+      "created_at": "Thu Apr 20 18:00:19 +0000 2017",
+      "id": 855118947947094020,
+      "id_str": "855118947947094020",
+      "text": "RT @JayPietsmiet: Habt ihr eigentlich schon unsere beiden Videos aus dem BvB Stadion gesehen? :-)\nhttps:\/\/t.co\/yx7tGIcfiK \nhttps:\/\/t.co\/Iix\u2026",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          {
+            "screen_name": "JayPietsmiet",
+            "name": "Jay",
+            "id": 120150508,
+            "id_str": "120150508",
+            "indices": [
+              3,
+              16
+            ]
+          }
+        ],
+        "urls": [
+          {
+            "url": "https:\/\/t.co\/yx7tGIcfiK",
+            "expanded_url": "https:\/\/youtu.be\/_47EJR7gIi4",
+            "display_url": "youtu.be\/_47EJR7gIi4",
+            "indices": [
+              98,
+              121
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "de",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"https:\/\/about.twitter.com\/products\/tweetdeck\" rel=\"nofollow\"\u003eTweetDeck\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 832560607,
+        "id_str": "832560607",
+        "name": "SEP \ud83c\udfce\ufe0f Pietsmiet",
+        "screen_name": "kessemak2",
+        "location": "K\u00f6ln, Nordrhein-Westfalen",
+        "description": "Youtuber aka Let's Player bei @Pietsmiet :)  Head of Sepj\u00f6 and SepsBr\u00e4uner \ud83d\ude0e Cologne \nhttps:\/\/t.co\/AQmXeaVHGa",
+        "url": "https:\/\/t.co\/SG498ykFca",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/SG498ykFca",
+                "expanded_url": "http:\/\/www.pietsmiet.de",
+                "display_url": "pietsmiet.de",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/AQmXeaVHGa",
+                "expanded_url": "http:\/\/youtube.com\/PietSmiet",
+                "display_url": "youtube.com\/PietSmiet",
+                "indices": [
+                  86,
+                  109
+                ]
+              }
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 99870,
+        "friends_count": 54,
+        "listed_count": 137,
+        "created_at": "Wed Sep 19 04:36:25 +0000 2012",
+        "favourites_count": 7491,
+        "utc_offset": -25200,
+        "time_zone": "Pacific Time (US & Canada)",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 5874,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "000000",
+        "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/802791488371486720\/VCqvePIU_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/832560607\/1487917871",
+        "profile_link_color": "1B95E0",
+        "profile_sidebar_border_color": "000000",
+        "profile_sidebar_fill_color": "000000",
+        "profile_text_color": "000000",
+        "profile_use_background_image": false,
+        "has_extended_profile": true,
+        "default_profile": false,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "retweeted_status": {
+        "created_at": "Thu Apr 20 17:17:09 +0000 2017",
+        "id": 855108085156896769,
+        "id_str": "855108085156896769",
+        "text": "Habt ihr eigentlich schon unsere beiden Videos aus dem BvB Stadion gesehen? :-)\nhttps:\/\/t.co\/yx7tGIcfiK \nhttps:\/\/t.co\/IixwPIuPOE",
+        "truncated": false,
+        "entities": {
+          "hashtags": [
+            
+          ],
+          "symbols": [
+            
+          ],
+          "user_mentions": [
+            
+          ],
+          "urls": [
+            {
+              "url": "https:\/\/t.co\/yx7tGIcfiK",
+              "expanded_url": "https:\/\/youtu.be\/_47EJR7gIi4",
+              "display_url": "youtu.be\/_47EJR7gIi4",
+              "indices": [
+                80,
+                103
+              ]
+            },
+            {
+              "url": "https:\/\/t.co\/IixwPIuPOE",
+              "expanded_url": "https:\/\/youtu.be\/I5nbGv7k6VU",
+              "display_url": "youtu.be\/I5nbGv7k6VU",
+              "indices": [
+                105,
+                128
+              ]
+            }
+          ]
+        },
+        "metadata": {
+          "iso_language_code": "de",
+          "result_type": "recent"
+        },
+        "source": "\u003ca href=\"http:\/\/twitter.com\" rel=\"nofollow\"\u003eTwitter Web Client\u003c\/a\u003e",
+        "in_reply_to_status_id": null,
+        "in_reply_to_status_id_str": null,
+        "in_reply_to_user_id": null,
+        "in_reply_to_user_id_str": null,
+        "in_reply_to_screen_name": null,
+        "user": {
+          "id": 120150508,
+          "id_str": "120150508",
+          "name": "Jay",
+          "screen_name": "JayPietsmiet",
+          "location": "",
+          "description": "Let's Player von Pietsmiet und fertig studierter Tierarzt. Galileo-Stammgast und begnadeter BvB-Fan :D #PietSmietBer\u00fchrt",
+          "url": "https:\/\/t.co\/F1GzJOb9eM",
+          "entities": {
+            "url": {
+              "urls": [
+                {
+                  "url": "https:\/\/t.co\/F1GzJOb9eM",
+                  "expanded_url": "http:\/\/www.pietsmiet.de\/",
+                  "display_url": "pietsmiet.de",
+                  "indices": [
+                    0,
+                    23
+                  ]
+                }
+              ]
+            },
+            "description": {
+              "urls": [
+                
+              ]
+            }
+          },
+          "protected": false,
+          "followers_count": 120216,
+          "friends_count": 314,
+          "listed_count": 152,
+          "created_at": "Fri Mar 05 16:25:30 +0000 2010",
+          "favourites_count": 1307,
+          "utc_offset": 7200,
+          "time_zone": "Bern",
+          "geo_enabled": false,
+          "verified": true,
+          "statuses_count": 8209,
+          "lang": "de",
+          "contributors_enabled": false,
+          "is_translator": false,
+          "is_translation_enabled": false,
+          "profile_background_color": "C0DEED",
+          "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+          "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+          "profile_background_tile": false,
+          "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/805464518474264576\/KV6LWRDf_normal.jpg",
+          "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/805464518474264576\/KV6LWRDf_normal.jpg",
+          "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/120150508\/1479900042",
+          "profile_link_color": "1DA1F2",
+          "profile_sidebar_border_color": "C0DEED",
+          "profile_sidebar_fill_color": "DDEEF6",
+          "profile_text_color": "333333",
+          "profile_use_background_image": true,
+          "has_extended_profile": true,
+          "default_profile": true,
+          "default_profile_image": false,
+          "following": true,
+          "follow_request_sent": false,
+          "notifications": false,
+          "translator_type": "none"
+        },
+        "geo": null,
+        "coordinates": null,
+        "place": null,
+        "contributors": null,
+        "is_quote_status": false,
+        "retweet_count": 4,
+        "favorite_count": 170,
+        "favorited": false,
+        "retweeted": false,
+        "possibly_sensitive": false,
+        "lang": "de"
+      },
+      "is_quote_status": false,
+      "retweet_count": 4,
+      "favorite_count": 0,
+      "favorited": false,
+      "retweeted": false,
+      "possibly_sensitive": false,
+      "lang": "de"
+    },
+    {
+      "created_at": "Thu Apr 20 17:17:09 +0000 2017",
+      "id": 855108085156896769,
+      "id_str": "855108085156896769",
+      "text": "Habt ihr eigentlich schon unsere beiden Videos aus dem BvB Stadion gesehen? :-)\nhttps:\/\/t.co\/yx7tGIcfiK \nhttps:\/\/t.co\/IixwPIuPOE",
+      "truncated": false,
+      "entities": {
+        "hashtags": [
+          
+        ],
+        "symbols": [
+          
+        ],
+        "user_mentions": [
+          
+        ],
+        "urls": [
+          {
+            "url": "https:\/\/t.co\/yx7tGIcfiK",
+            "expanded_url": "https:\/\/youtu.be\/_47EJR7gIi4",
+            "display_url": "youtu.be\/_47EJR7gIi4",
+            "indices": [
+              80,
+              103
+            ]
+          },
+          {
+            "url": "https:\/\/t.co\/IixwPIuPOE",
+            "expanded_url": "https:\/\/youtu.be\/I5nbGv7k6VU",
+            "display_url": "youtu.be\/I5nbGv7k6VU",
+            "indices": [
+              105,
+              128
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "iso_language_code": "de",
+        "result_type": "recent"
+      },
+      "source": "\u003ca href=\"http:\/\/twitter.com\" rel=\"nofollow\"\u003eTwitter Web Client\u003c\/a\u003e",
+      "in_reply_to_status_id": null,
+      "in_reply_to_status_id_str": null,
+      "in_reply_to_user_id": null,
+      "in_reply_to_user_id_str": null,
+      "in_reply_to_screen_name": null,
+      "user": {
+        "id": 120150508,
+        "id_str": "120150508",
+        "name": "Jay",
+        "screen_name": "JayPietsmiet",
+        "location": "",
+        "description": "Let's Player von Pietsmiet und fertig studierter Tierarzt. Galileo-Stammgast und begnadeter BvB-Fan :D #PietSmietBer\u00fchrt",
+        "url": "https:\/\/t.co\/F1GzJOb9eM",
+        "entities": {
+          "url": {
+            "urls": [
+              {
+                "url": "https:\/\/t.co\/F1GzJOb9eM",
+                "expanded_url": "http:\/\/www.pietsmiet.de\/",
+                "display_url": "pietsmiet.de",
+                "indices": [
+                  0,
+                  23
+                ]
+              }
+            ]
+          },
+          "description": {
+            "urls": [
+              
+            ]
+          }
+        },
+        "protected": false,
+        "followers_count": 120216,
+        "friends_count": 314,
+        "listed_count": 152,
+        "created_at": "Fri Mar 05 16:25:30 +0000 2010",
+        "favourites_count": 1307,
+        "utc_offset": 7200,
+        "time_zone": "Bern",
+        "geo_enabled": false,
+        "verified": true,
+        "statuses_count": 8209,
+        "lang": "de",
+        "contributors_enabled": false,
+        "is_translator": false,
+        "is_translation_enabled": false,
+        "profile_background_color": "C0DEED",
+        "profile_background_image_url": "http:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_image_url_https": "https:\/\/abs.twimg.com\/images\/themes\/theme1\/bg.png",
+        "profile_background_tile": false,
+        "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/805464518474264576\/KV6LWRDf_normal.jpg",
+        "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/805464518474264576\/KV6LWRDf_normal.jpg",
+        "profile_banner_url": "https:\/\/pbs.twimg.com\/profile_banners\/120150508\/1479900042",
+        "profile_link_color": "1DA1F2",
+        "profile_sidebar_border_color": "C0DEED",
+        "profile_sidebar_fill_color": "DDEEF6",
+        "profile_text_color": "333333",
+        "profile_use_background_image": true,
+        "has_extended_profile": true,
+        "default_profile": true,
+        "default_profile_image": false,
+        "following": true,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
+      },
+      "geo": null,
+      "coordinates": null,
+      "place": null,
+      "contributors": null,
+      "is_quote_status": false,
+      "retweet_count": 4,
+      "favorite_count": 170,
+      "favorited": false,
+      "retweeted": false,
+      "possibly_sensitive": false,
+      "lang": "de"
+    }
+  ],
+  "search_metadata": {
+    "completed_in": 0.08,
+    "max_id": 855292827059666945,
+    "max_id_str": "855292827059666945",
+    "next_results": "?max_id=855108085156896768&q=from%3Apietsmiet%2C%20OR%20from%3Akessemak2%2C%20OR%20from%3Ajaypietsmiet%2C%20OR%20from%3Abrosator%2C%20OR%20from%3Abr4mm3n%20exclude%3Areplies&count=6&include_entities=1&result_type=recent",
+    "query": "from%3Apietsmiet%2C+OR+from%3Akessemak2%2C+OR+from%3Ajaypietsmiet%2C+OR+from%3Abrosator%2C+OR+from%3Abr4mm3n+exclude%3Areplies",
+    "refresh_url": "?since_id=855292827059666945&q=from%3Apietsmiet%2C%20OR%20from%3Akessemak2%2C%20OR%20from%3Ajaypietsmiet%2C%20OR%20from%3Abrosator%2C%20OR%20from%3Abr4mm3n%20exclude%3Areplies&result_type=recent&include_entities=1",
+    "count": 6,
+    "since_id": 0,
+    "since_id_str": "0"
+  }
+}

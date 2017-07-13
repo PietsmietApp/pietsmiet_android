@@ -1,15 +1,18 @@
 package de.pscom.pietsmiet.util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
-import org.mcsoxford.rss.MediaThumbnail;
-import org.mcsoxford.rss.RSSItem;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,57 +21,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
 
-import facebook4j.Post;
-import twitter4j.MediaEntity;
-import twitter4j.Status;
+import de.pscom.pietsmiet.R;
+import rx.Single;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class DrawableFetcher {
 
     /**
      * @param post A facebook posting
-     * @return The drawable from the post, if available
+     * @return The full drawable from the post, if available
      */
-    @Nullable
-    public static Drawable getDrawableFromPost(@Nullable Post post) {
+    public static String getThumbnailUrlFromFacebook(@Nullable JSONObject post, boolean isHD) throws JSONException {
         if (post != null) {
-            URL imageUrl = post.getPicture();
-            if (imageUrl != null) {
-                return getDrawableFromUrl(imageUrl.toString());
+            if (!isHD && post.has("picture") && post.get("picture") != null) {
+                return post.get("picture").toString();
             }
-        }
-        return null;
-    }
-
-    /**
-     * @param rssItem A rss item
-     * @return The drawable from the item, if available
-     */
-    @Nullable
-    public static Drawable getDrawableFromRss(@Nullable RSSItem rssItem) {
-        if (rssItem != null) {
-            List<MediaThumbnail> thumbs = rssItem.getThumbnails();
-            if (thumbs != null
-                    && thumbs.size() > 0
-                    && thumbs.get(0) != null
-                    && thumbs.get(0).getUrl() != null) {
-                return getDrawableFromUrl(thumbs.get(0).getUrl().toString());
-            }
-        }
-        return null;
-    }
-
-    /**
-     * @param status A tweet
-     * @return The drawable from the tweet, if available
-     */
-    @Nullable
-    public static Drawable getDrawableFromTweet(@Nullable Status status) {
-        if (status != null) {
-            MediaEntity[] mediaEntities = status.getMediaEntities();
-            if (mediaEntities != null && mediaEntities.length > 0 && mediaEntities[0].getMediaURL() != null) {
-                return getDrawableFromUrl(mediaEntities[0].getMediaURL() + ":thumb");
+            if (isHD && post.has("full_picture") && post.get("full_picture") != null) {
+                return post.get("full_picture").toString();
             }
         }
         return null;
@@ -79,10 +50,13 @@ public class DrawableFetcher {
      * @return A BitmapDrawable from the url
      */
     @Nullable
-    public static Drawable getDrawableFromUrl(@NonNull String url) {
+    private static Drawable getDrawableFromUrl(@NonNull String url) {
         try {
             InputStream is = (InputStream) new URL(url).getContent();
-            Drawable toReturn = BitmapDrawable.createFromStream(is, "src name");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bitmap = BitmapFactory.decodeStream(is, null, options);
+            Drawable toReturn = new BitmapDrawable(Resources.getSystem(), bitmap);
             if (toReturn.getMinimumHeight() > 0 && toReturn.getMinimumWidth() > 0) {
                 return toReturn;
             }
@@ -90,6 +64,83 @@ public class DrawableFetcher {
             PsLog.w("Couldn't fetch thumbnail: " + e.toString());
         }
         return null;
+    }
+
+    public static void loadThumbnailIntoView(de.pscom.pietsmiet.generic.Post post, Context c, ImageView view) {
+        if (view != null) {
+            view.setImageResource(R.drawable.ic_cached_black_24dp);
+            view.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            view.setScaleX(1.5f);
+            view.setScaleY(1.5f);
+            view.setAnimation(AnimationUtils.loadAnimation(c, R.anim.loading_animation));
+            view.animate();
+        }
+        if (post == null) return;
+        boolean loadHD = SettingsHelper.shouldLoadHDImages(c);
+        Single.just(loadHD)
+                .subscribeOn(Schedulers.io())
+                .map(boolLoadHD -> {
+                    Drawable drawable = null;
+
+                    if (post.getThumbnailHDUrl() != null) {
+                        String pathThumbHdFile = c.getCacheDir().getAbsolutePath() + "/" + post.getThumbnailHDUrl().hashCode();
+                        // Try finding cached HD image
+                        if (new File(pathThumbHdFile).exists()) {
+                            drawable = loadDrawableFromFile(c, pathThumbHdFile);
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(true);
+                                return drawable;
+                            }
+                        }
+
+                        // Try loading HD image because boolLoadHD == true
+                        if (boolLoadHD) {
+                            drawable = getDrawableFromUrl(post.getThumbnailHDUrl());
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(true);
+                                saveDrawableToFile(drawable, c, post.getThumbnailHDUrl().hashCode() + "");
+
+                                if (post.getThumbnailUrl() != null) {
+                                    //todo delete sd image if exists cause hd exists
+                                }
+                                return drawable;
+                            }
+                        }
+                    }
+
+                    if (post.getThumbnailUrl() != null) {
+                        String pathThumbFile = c.getCacheDir().getAbsolutePath() + "/" + post.getThumbnailUrl().hashCode();
+                        // Try finding cached SD image
+                        if (new File(pathThumbFile).exists()) {
+                            drawable = loadDrawableFromFile(c, pathThumbFile);
+                            if (drawable != null) {
+                                post.setIsThumbnailHD(false);
+                                return drawable;
+                            }
+                        }
+
+                        drawable = getDrawableFromUrl(post.getThumbnailUrl());
+                        if (drawable != null) {
+                            post.setIsThumbnailHD(false);
+                            saveDrawableToFile(drawable, c, post.getThumbnailUrl().hashCode() + "");
+                            return drawable;
+                        }
+                    }
+                    return null;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(drawable -> {
+                    if (drawable != null) {
+                        if (view != null) {
+                            view.setAnimation(null);
+                            view.setScaleX(1f);
+                            view.setScaleY(1f);
+                            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                            view.setImageDrawable(drawable);
+                        }
+                        post.setThumbnail(drawable);
+                    }
+                }, Throwable::printStackTrace);
     }
 
     /**
@@ -106,7 +157,7 @@ public class DrawableFetcher {
         try {
             Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
             File path = context.getCacheDir();
-            out = new FileOutputStream(path.getAbsolutePath() + fileName);
+            out = new FileOutputStream(path.getAbsolutePath() + "/" + fileName);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             // PNG is a lossless format, the compression factor (100) is ignored; it's just for saving
         } catch (Exception e) {
@@ -133,11 +184,14 @@ public class DrawableFetcher {
      * @param fileName Filename
      * @return BitmapDrawable from the file
      */
-    public static Drawable loadDrawableFromFile(Context context, String fileName) {
+    private static Drawable loadDrawableFromFile(Context context, String fileName) {
         Bitmap bitmap;
 
         File path = context.getCacheDir();
-        File f = new File(path.getAbsolutePath() + fileName);
+        File f = new File(path.getAbsolutePath() + "/" + fileName);
+
+        if (!f.exists()) return null;
+
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         try {
@@ -148,6 +202,5 @@ public class DrawableFetcher {
         }
         return null;
     }
-
 
 }

@@ -5,10 +5,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
+import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.view.MainActivity;
+import de.pscom.pietsmiet.util.NetworkUtil;
 
-    public final int loadMoreItemsCount = 15;
-    RecyclerView.LayoutManager mLayoutManager;
+/*
+ * Source/Inspiration: https://github.com/codepath/android_guides/wiki/Endless-Scrolling-with-AdapterViews-and-RecyclerView
+ */
+
+public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    private boolean FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     private int visibleThreshold = 10;
@@ -17,21 +25,21 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
     // True if we are still waiting for the last set of data to load.
     private boolean loading = true;
 
-    public EndlessScrollListener(LinearLayoutManager layoutManager) {
+    protected EndlessScrollListener(LinearLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
     }
 
-    public EndlessScrollListener(GridLayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
-    }
-
-    public EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
+    protected EndlessScrollListener(GridLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
         visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
     }
 
-    public int getLastVisibleItem(int[] lastVisibleItemPositions) {
+    protected EndlessScrollListener(StaggeredGridLayoutManager layoutManager) {
+        this.mLayoutManager = layoutManager;
+        visibleThreshold = visibleThreshold * layoutManager.getSpanCount();
+    }
+
+    private int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
         for (int i = 0; i < lastVisibleItemPositions.length; i++) {
             if (i == 0) {
@@ -82,8 +90,16 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         // If we do need to reload some more data, we execute onLoadMore to fetch the data.
         // threshold should reflect how many total columns there are too
         if (!loading && (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-            onLoadMore(totalItemCount, view);
-            loading = true;
+            if(new NetworkUtil(view.getContext()).isConnected()) {
+                onLoadMore(totalItemCount, view);
+                loading = true;
+                FLAG_SHOWED_NO_NETWORK_MESSAGE = false;
+            } else {
+                if(!FLAG_SHOWED_NO_NETWORK_MESSAGE){
+                    ((MainActivity) view.getContext()).showMessage(view.getContext().getString(R.string.error_no_network));
+                    FLAG_SHOWED_NO_NETWORK_MESSAGE = true;
+                }
+            }
         }
     }
 

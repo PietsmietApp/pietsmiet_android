@@ -6,23 +6,39 @@
 
     <include layout="@layout/app_toolbar"/>
 
-    <FrameLayout
-        android:id="@+id/fragment"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="200dp">
+        android:layout_height="match_parent">
 
-    </FrameLayout>
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:autoLink="web"
+            android:theme="@style/Theme.SwitchTheme"
+            android:paddingStart="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
+            android:text="@string/about_text"
+            android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="145dp"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:autoLink="web"
-        android:paddingStart="10dp"
-        android:paddingTop="20dp"
-        android:text="@string/about_text"
-        android:textSize="16sp"/>
+        <FrameLayout
+            android:id="@+id/fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/textView" />
+
+        <TextView
+            android:id="@+id/tv_app_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fragment"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginEnd="12dp" />
+
+    </RelativeLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

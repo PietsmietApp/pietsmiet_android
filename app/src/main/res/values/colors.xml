@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#74b62a</color>
-    <color name="colorPrimaryDark">#183B0C</color>
-    <color name="colorAccent">#b5f0a0</color>
+    <color name="colorPrimary">#2e7d32</color>
+    <color name="colorSecondary">#1875d1</color>
+    <color name="colorPrimaryDark">#005005</color>
+    <color name="colorAccent">#1875d1</color>
+
     <color name="pietsmiet">#74b62a</color>
+    <color name="twitch">#6441a5</color>
+    <color name="twitter">#1da1f2</color>
+    <color name="youtube">#cd201f</color>
+    <color name="facebook">#3b5998</color>
+    <color name="feed_background_light">#DDDDDD</color>
+    <color name="username_twitter_light">#b8e2fa</color>
+
+    <color name="date_tag_text">#757575</color>
 </resources>

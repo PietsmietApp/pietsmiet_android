@@ -11,7 +11,7 @@
 
     <include layout="@layout/app_toolbar"/>
 
-    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <de.pscom.pietsmiet.generic.SwipeRefreshBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </de.pscom.pietsmiet.generic.SwipeRefreshBarLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btnToTop"

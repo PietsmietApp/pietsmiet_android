@@ -27,6 +27,7 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapter.CardViewAdapter;
 import de.pscom.pietsmiet.customtabsclient.CustomTabActivityHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.generic.SwipeRefreshBarLayout;
 import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
@@ -74,7 +75,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     NavigationView mNavigationView;
     public EndlessScrollListener scrollListener;
     @BindView(R.id.swipeContainer)
-    SwipeRefreshLayout refreshLayout;
+    SwipeRefreshBarLayout refreshLayout;
     @BindView(R.id.btnToTop)
     FloatingActionButton fabToTop;
     @BindView(R.id.cardList)
@@ -119,7 +120,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         }
 
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
-        refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
+        //refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 

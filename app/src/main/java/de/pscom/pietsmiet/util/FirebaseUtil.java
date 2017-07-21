@@ -19,7 +19,7 @@ public abstract class FirebaseUtil {
     public static final String TOPIC_UPLOADPLAN = "uploadplan";
     public static final String TOPIC_NEWS = "news";
     public static final String TOPIC_PIETCAST = "pietcast";
-    public static final String TOPIC_TEST = "test";
+    public static final String TOPIC_TEST = "test_neu";
 
     public static final String EVENT_NEXT_COMPLETED = "next_loading_completed";
     public static final String EVENT_NEW_COMPLETED = "new_loading_completed";

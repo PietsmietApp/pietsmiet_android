@@ -93,10 +93,10 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         StethoHelper.init(this);
 
         FirebaseUtil.loadRemoteConfig();
-        FirebaseUtil.setupTopicSubscriptions();
-
         ButterKnife.bind(this);
         SettingsHelper.loadAllSettings(this);
+        FirebaseUtil.setupTopicSubscriptions();
+
         setupToolbar(null);
 
         mCustomTabActivityHelper = new CustomTabActivityHelper();

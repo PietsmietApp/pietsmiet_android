@@ -22,9 +22,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -85,6 +87,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PsLog.w("Falsche Kategorie " + data.get("topic"));
                 return;
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, type);
+        FirebaseAnalytics.getInstance(this).logEvent("notification_received", bundle);
+
         // On notification click intent
         Intent clickIntent = new Intent(this, MainActivity.class);
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

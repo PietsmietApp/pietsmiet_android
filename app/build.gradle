@@ -94,7 +94,7 @@ dependencies {
     androidTestCompile 'org.hamcrest:hamcrest-library:1.4-atlassian-1'
     testCompile 'junit:junit:4.12'
     testCompile 'org.json:json:20170516'
-    testCompile 'commons-io:commons-io:20030203.000550'
+    testCompile 'commons-io:commons-io:2.5'
 }
 // http://stackoverflow.com/a/42095944/4026792
 def gitBranch() {

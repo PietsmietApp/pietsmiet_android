@@ -116,6 +116,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
             FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
+            updatePostsCategoriesFromDrawer();
         }
 
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
@@ -256,15 +257,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                SettingsHelper.loadAllSettings(getBaseContext());
-                if (CLEAR_CACHE_FLAG_DRAWER) {
-                    clearCache();
-                    postPresenter.fetchNewPosts();
-                    CLEAR_CACHE_FLAG_DRAWER = false;
-                } else {
-                    postPresenter.updateSettingsFilters();
-                    scrollListener.resetState();
-                }
+                updatePostsCategoriesFromDrawer();
             }
 
             @Override
@@ -294,6 +287,18 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                             if (recyclerView != null) recyclerView.scrollToPosition(0);
                         }
                 );
+    }
+
+    private void updatePostsCategoriesFromDrawer(){
+        SettingsHelper.loadAllSettings(getBaseContext());
+        if (CLEAR_CACHE_FLAG_DRAWER) {
+            clearCache();
+            postPresenter.fetchNewPosts();
+            CLEAR_CACHE_FLAG_DRAWER = false;
+        } else {
+            postPresenter.updateSettingsFilters();
+            scrollListener.resetState();
+        }
     }
 
     /**

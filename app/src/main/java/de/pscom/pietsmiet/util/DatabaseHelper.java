@@ -1,6 +1,5 @@
 package de.pscom.pietsmiet.util;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import de.pscom.pietsmiet.BuildConfig;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.presenter.PostPresenter;
@@ -36,12 +36,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String POSTS_COLUMN_TIME = "time";
     private static final String POSTS_COLUMN_DURATION = "duration";
 
-    // MAX_AGE_DAYS defines the maxium age of the stored posts, before it gets cleared
+    // MAX_AGE_DAYS defines the maximum age of the stored posts, before it gets cleared
     private static final int MAX_AGE_DAYS = 5;
     private static DatabaseHelper sInstance;
-
-    @SuppressLint("SimpleDateFormat")
-    //private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
     public static synchronized DatabaseHelper getInstance(Context context) {
@@ -141,7 +138,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     throwable.printStackTrace();
                     this.close();
                 }, () -> {
-                    PsLog.v("Db now contains " + getPostsInDbCount() + " posts");
+                    if (BuildConfig.DEBUG) {
+                        PsLog.v("Db now contains " + getPostsInDbCount() + " posts");
+                    } else {
+                        PsLog.v("Posts stored in DB");
+                    }
                     this.close();
                 });
     }
@@ -170,7 +171,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Loads all post objects from the database and displays it
      * Clears the database if it's too old
      *
-     * @param presenter For notifiying on finished load
+     * @param presenter For notifying on finished load
      */
     @SuppressWarnings("WeakerAccess")
     public void displayPostsFromCache(PostPresenter presenter) {

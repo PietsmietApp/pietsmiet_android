@@ -65,7 +65,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
-    private Date lastDateCheckedTwitch; //
+    private Date lastDateCheckedTwitch;
 
     private CardViewAdapter adapter;
     @BindView(R.id.dl_root)

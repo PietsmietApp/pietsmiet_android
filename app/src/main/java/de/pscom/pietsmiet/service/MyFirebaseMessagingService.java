@@ -30,7 +30,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Calendar;
 import java.util.Map;
 
 import de.pscom.pietsmiet.R;
@@ -52,6 +51,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     public static final String EXTRA_TYPE = "EXTRA_TYPE";
     public static final String KEY_UNSUBSCRIBE = "de.pscom.pietsmiet.KEY_UNSUBSCRIBE";
+    public static final String EXTRA_NOTIF_ID = "EXTRA_NOTIF_ID";
+    private static final String DATA_TOPIC = "topic";
+    private static final String DATA_MESSAGE = "message";
+    private static final String DATA_TITLE = "title";
+    private static final String DATA_LINK = "link";
 
     /**
      * Called when message is received.
@@ -60,7 +64,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        PsLog.d("From: " + remoteMessage.getFrom());
+        PsLog.d("Firebase notification received for: " + remoteMessage.getFrom());
         // Check if message contains a data payload.
         Map<String, String> data = remoteMessage.getData();
         if (data.size() == 0) {
@@ -69,10 +73,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
         PsLog.d("Message data payload: " + data);
         int type;
-        switch (data.get("topic")) {
+        switch (data.get(DATA_TOPIC)) {
             case TOPIC_NEWS:
                 type = NEWS;
-                PsLog.v("hi");
                 break;
             case TOPIC_UPLOADPLAN:
                 type = UPLOADPLAN;
@@ -84,7 +87,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 type = PS_VIDEO;
                 break;
             default:
-                PsLog.w("Falsche Kategorie " + data.get("topic"));
+                PsLog.w("Wrong type! Is " + data.get(DATA_TOPIC));
                 return;
         }
 
@@ -92,6 +95,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, type);
         FirebaseAnalytics.getInstance(this).logEvent("notification_received", bundle);
 
+        String title = data.get(DATA_TITLE);
+        String message = data.get(DATA_MESSAGE);
+        String link = data.get(DATA_LINK);
+
+        int notificationId;
+        if (type == UPLOADPLAN) {
+            // Override existing notifications by providing same Id
+            notificationId = type;
+        } else {
+            // Create a unique notification id for each video,
+            // this is a workaround for duplicate notifications
+            notificationId = title.hashCode() + message.hashCode() + link.hashCode() + type;
+        }
+
+        sendNotification(title, message, link, type, notificationId);
+    }
+
+    /**
+     * Create and show a simple notification containing the received FCM message.
+     *
+     * @param messageBody FCM message body received.
+     */
+    private void sendNotification(String title, String messageBody, String link, int type, int notificationId) {
         // On notification click intent
         Intent clickIntent = new Intent(this, MainActivity.class);
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -101,22 +127,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // On action button click intent
         Intent urlIntent = new Intent(Intent.ACTION_VIEW);
-        urlIntent.setData(Uri.parse(data.get("link")));
+        urlIntent.setData(Uri.parse(link));
         PendingIntent urlPIntent = PendingIntent.getActivity(this, type, urlIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
-        sendNotification(data.get("title"), data.get("message"), clickPIntent, urlPIntent, type);
-    }
-
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
-     */
-    private void sendNotification(String title, String messageBody, PendingIntent clickIntent, PendingIntent urlIntent, int type) {
         Intent unsubscribeIntent = new Intent();
         unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
         unsubscribeIntent.putExtra(EXTRA_TYPE, type);
+        unsubscribeIntent.putExtra(EXTRA_NOTIF_ID, notificationId);
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
@@ -124,26 +142,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                 .setContentTitle(title)
                 .addAction(R.drawable.ic_remove_black_24dp, getString(R.string.notification_unsubscribe), unsubscribePIntent)
-                .setGroup(type + "")
                 .setAutoCancel(true);
+
         if (type == PS_VIDEO) {
-            notificationBuilder.setContentIntent(urlIntent);
+            notificationBuilder.setContentIntent(urlPIntent);
         } else {
-            notificationBuilder.setContentIntent(clickIntent);
-            notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp, getString(R.string.notification_open_url), urlIntent);
+            notificationBuilder.setContentIntent(clickPIntent);
+            notificationBuilder.addAction(R.drawable.ic_open_in_browser_black_24dp, getString(R.string.notification_open_url), urlPIntent);
         }
 
         if (messageBody != null) {
             notificationBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(Html.fromHtml(messageBody)));
             notificationBuilder.setContentText(Html.fromHtml(messageBody));
-        }
-
-        int notificationId;
-        if (type == UPLOADPLAN) {
-            // Override existing notifications by providing same Id
-            notificationId = type;
-        } else {
-            notificationId = Calendar.getInstance().get(Calendar.SECOND);
         }
 
         NotificationManager notificationManager =

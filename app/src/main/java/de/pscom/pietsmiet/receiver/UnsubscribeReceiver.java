@@ -12,6 +12,7 @@ import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
+import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.EXTRA_NOTIF_ID;
 import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.EXTRA_TYPE;
 import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.KEY_UNSUBSCRIBE;
 import static de.pscom.pietsmiet.util.PostType.NEWS;
@@ -24,35 +25,36 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPL
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 
 public class UnsubscribeReceiver extends BroadcastReceiver {
-    @SuppressWarnings("StringEquality")
     @Override
     public void onReceive(Context context, Intent intent) {
+        PsLog.v("Received unsubscribe intent from " + intent.getAction() +
+                " with notif id " + intent.getIntExtra(EXTRA_NOTIF_ID, -1));
+
+        NotificationManager notifManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // Delete notification
+        notifManager.cancel(intent.getIntExtra(EXTRA_NOTIF_ID, -1));
+
         if (intent.getAction() == KEY_UNSUBSCRIBE) {
             int type = intent.getIntExtra(EXTRA_TYPE, -1);
-            NotificationManager notifManager =
-                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             //Unsubscribe from category & cancel the notification
             switch (type) {
                 case PIETCAST:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_PIETCAST, false);
-                    notifManager.cancel(PIETCAST);
                     break;
                 case UPLOADPLAN:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, false);
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_UPLOADPLAN, false);
-                    notifManager.cancel(UPLOADPLAN);
                     break;
                 case NEWS:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_NEWS, false);
-                    notifManager.cancel(NEWS);
                     break;
                 case PS_VIDEO:
                     SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
-                    notifManager.cancel(PS_VIDEO);
                     break;
                 default:
                     PsLog.w("Wrong or empty topic");

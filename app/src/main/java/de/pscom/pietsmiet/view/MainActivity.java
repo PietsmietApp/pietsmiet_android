@@ -42,6 +42,7 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
+import de.pscom.pietsmiet.util.TimeUtils;
 import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -58,14 +59,14 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SE
 public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
     public static final int RESULT_CLEAR_CACHE = 17;
     public static final int REQUEST_SETTINGS = 16;
-    private static final int MAX_TWITCH_CHECK_TIME_DIFF = 5 * 60 * 1000;
-    private static final int MAX_INACTIVITY_TIME_TO_RELOAD = 15 * 60 * 60 * 1000;
+    private static final long MAX_TWITCH_CHECK_TIME_DIFF = 5 * TimeUtils.MINUTE_MILLIS;
+    private static final long MAX_INACTIVITY_TIME_TO_RELOAD = 15 * TimeUtils.MINUTE_MILLIS;
 
     private CustomTabActivityHelper mCustomTabActivityHelper;
 
     private boolean CLEAR_CACHE_FLAG_DRAWER = false;
 
-    private Date lastDateCheckedTwitch;
+    private long lastDateCheckedTwitch;
 
     private CardViewAdapter adapter;
     @BindView(R.id.dl_root)
@@ -109,15 +110,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         setupRecyclerView();
         setupDrawer();
-
-        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
-        if (PostType.getDrawerIdForType(category) != -1) {
-            Bundle bundle = new Bundle();
-            bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
-            FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
-            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
-            updatePostsCategoriesFromDrawer();
-        }
 
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
         refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
@@ -169,7 +161,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             boolAppFirstRun = false;
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
-
         new SecretConstants(this);
     }
 
@@ -183,11 +174,25 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     protected void onStart() {
         super.onStart();
-        if (postPresenter.getPostsToDisplay().isEmpty()) {
+        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
+        if (PostType.getDrawerIdForType(category) != -1) {
+            // As this code is onStart, remove the intent to avoid that it'll execute again
+            getIntent().removeExtra(MyFirebaseMessagingService.EXTRA_TYPE);
+            // Log an event to firebase
+            Bundle bundle = new Bundle();
+            bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
+            FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
+            // Select the category in the drawer (this will update sharedPrefs too)
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
+            // Update settings from sharedPrefs
+            SettingsHelper.loadAllSettings(getBaseContext());
+            // Fetch posts based on the new settings
+            postPresenter.fetchNewPosts();
+        } else if (postPresenter.getPostsToDisplay().isEmpty()) {
             // Load posts from db
             DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
         } else if ((exitTime - System.currentTimeMillis()) > MAX_INACTIVITY_TIME_TO_RELOAD) {
-            // Auto reload posts if going back to activity after more than 15 minutes
+            // Auto reload posts if going back to activity after the time specified in MAX_INACTIVITY_TIME_TO_RELOAD
             postPresenter.fetchNewPosts();
         }
         mCustomTabActivityHelper.bindCustomTabsService(this);
@@ -289,7 +294,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 );
     }
 
-    private void updatePostsCategoriesFromDrawer(){
+    private void updatePostsCategoriesFromDrawer() {
         SettingsHelper.loadAllSettings(getBaseContext());
         if (CLEAR_CACHE_FLAG_DRAWER) {
             clearCache();
@@ -305,8 +310,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
      * Reloads the stream status and updates the banner in the SideMenu
      */
     private void reloadTwitchBanner() {
-        if(lastDateCheckedTwitch == null || (new Date().getTime() - lastDateCheckedTwitch.getTime()) > MAX_TWITCH_CHECK_TIME_DIFF) {
-            lastDateCheckedTwitch = new Date(); //todo GC ok? everytime a new Object? Efficiency?
+        long current = new Date().getTime();
+        if ((current - lastDateCheckedTwitch) > MAX_TWITCH_CHECK_TIME_DIFF) {
+            lastDateCheckedTwitch = current;
             Observable<TwitchStream> obsTTV = new TwitchHelper().getStreamStatus(SettingsHelper.stringTwitchChannelIDPietstream);
             obsTTV.subscribe((stream) -> {
                 if (stream != null) {
@@ -354,10 +360,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                         Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                     }
                 });
-    }
-
-    public void showMessage(String message, int length) {
-        showMessage(message, length, false, false);
     }
 
     private void clearCache() {

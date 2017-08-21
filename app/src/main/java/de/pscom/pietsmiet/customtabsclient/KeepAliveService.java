@@ -14,10 +14,10 @@ package de.pscom.pietsmiet.customtabsclient;
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-        import android.app.Service;
-        import android.content.Intent;
-        import android.os.Binder;
-        import android.os.IBinder;
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
 
 /**
  * Empty service used by the custom tab to bind to, raising the application's importance.

@@ -128,11 +128,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 }
                 fabToTop.hide(new FloatingActionButton.OnVisibilityChangedListener() {
                     @Override
-                    public void onShown(FloatingActionButton fab) {
-                        super.onShown(fab);
-                    }
-
-                    @Override
                     public void onHidden(FloatingActionButton fab) {
                         super.onHidden(fab);
                         fab.setVisibility(View.INVISIBLE);
@@ -275,7 +270,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         toggle.syncState();
     }
 
-    public void refreshAdapter() {
+    private void refreshAdapter() {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
@@ -285,7 +280,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 );
     }
 
-    public void scrollToTop() {
+    private void scrollToTop() {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
@@ -324,7 +319,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         }
     }
 
-    public void updateAdapterItemRange(int startPosition, int size) {
+    private void updateAdapterItemRange(int startPosition, int size) {
         Observable.just("")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(ignored -> {
@@ -333,7 +328,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 );
     }
 
-    public void setRefreshAnim(boolean val) {
+    private void setRefreshAnim(boolean val) {
         Observable.just(val)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bool -> {

@@ -37,6 +37,10 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".customtabsclient.KeepAliveService"
+            android:exported="true"/>
+
         <receiver
             android:name=".receiver.UnsubscribeReceiver"
             android:exported="false">

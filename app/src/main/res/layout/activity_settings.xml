@@ -1,10 +1,10 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:nestedScrollingEnabled="true">
 
-    <include layout="@layout/app_toolbar" />
+    <include layout="@layout/app_toolbar"/>
 
     <ScrollView
         android:id="@+id/sv_settings"
@@ -13,7 +13,7 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="?android:attr/actionBarSize"
             android:nestedScrollingEnabled="false">
 
@@ -28,7 +28,7 @@
                 android:text="@string/settings_header_notif"
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <Switch
                 android:id="@+id/notifyUploadplanSwitch"
@@ -38,7 +38,7 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_uploadplan"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
             <Switch
                 android:id="@+id/notifyVideoSwitch"
@@ -49,7 +49,7 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_video_ps"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
             <Switch
                 android:id="@+id/notifyNewsSwitch"
@@ -60,7 +60,7 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_news"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
             <Switch
                 android:id="@+id/notifyPietcastSwitch"
@@ -71,7 +71,7 @@
                 android:gravity="center_vertical"
                 android:padding="16dp"
                 android:text="@string/type_pietcast"
-                android:theme="@style/Theme.SwitchTheme" />
+                android:theme="@style/Theme.SwitchTheme"/>
 
             <TextView
                 android:id="@+id/sectionQuality"
@@ -85,7 +85,7 @@
                 android:text="@string/settings_header_quality"
                 android:textColor="?attr/colorAccent"
                 android:textSize="14sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tvQualityHDImages"
@@ -99,7 +99,7 @@
                 android:gravity="center_vertical"
                 android:paddingStart="16dp"
                 android:text="@string/settings_image_quality_label"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"/>
 
             <Spinner
                 android:id="@+id/qualityLoadHDImagesSpinner"
@@ -109,7 +109,7 @@
                 android:layout_below="@+id/sectionQuality"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:entries="@array/qualityHDImagesSpinnerItems_array" />
+                android:entries="@array/qualityHDImagesSpinnerItems_array"/>
 
             <Button
                 android:id="@+id/btnClearCache"
@@ -119,7 +119,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:gravity="center"
-                android:text="@string/settings_clear_cache" />
+                android:text="@string/settings_clear_cache"/>
 
         </RelativeLayout>
     </ScrollView>

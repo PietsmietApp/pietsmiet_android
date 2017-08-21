@@ -1,7 +1,5 @@
 package de.pscom.pietsmiet.generic;
 
-import android.support.annotation.NonNull;
-
 import java.util.Date;
 
 public class DateTag extends ViewItem {

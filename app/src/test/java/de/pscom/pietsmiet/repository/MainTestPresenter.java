@@ -17,11 +17,10 @@ abstract class MainTestPresenter {
 
     protected  Retrofit getRetrofit(MockWebServer mockWebServer) {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.create();
-        Retrofit retrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
                 .baseUrl(mockWebServer.url("").toString())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(rxAdapter)
                 .build();
-        return retrofit;
     }
 }

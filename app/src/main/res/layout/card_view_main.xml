@@ -28,7 +28,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_toStartOf="@+id/ivPostTypeLogo"
-                android:paddingRight="10dp">
+                android:paddingEnd="10dp">
 
                 <TextView
                     android:id="@+id/tvTitle"
@@ -37,7 +37,7 @@
                     android:layout_alignParentStart="false"
                     android:layout_alignParentTop="true"
                     android:layout_marginBottom="15dp"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginStart="15dp"
                     android:layout_marginTop="15dp"
                     android:text="Jay"
                     android:textAppearance="?android:attr/textAppearanceLarge"
@@ -51,8 +51,8 @@
                     android:layout_alignBottom="@+id/tvTitle"
                     android:layout_alignTop="@+id/tvTitle"
                     android:layout_centerVertical="false"
-                    android:layout_marginLeft="5dp"
-                    android:layout_toRightOf="@+id/tvTitle"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@+id/tvTitle"
                     android:text="|"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="@android:color/white"
@@ -79,8 +79,8 @@
                 android:layout_height="25dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
                 android:scaleType="fitCenter"
                 card_view:srcCompat="@drawable/ic_twitter_social_icon_circle_white_24dp" />
         </RelativeLayout>
@@ -114,7 +114,7 @@
                 android:layout_height="20dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="15dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
                 android:layout_marginTop="15dp"
                 android:src="@drawable/ic_access_time_white_24dp" />
 
@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:layout_toEndOf="@+id/ivTimeIcon"
                 android:text="1 h"
                 android:textColor="@android:color/white"

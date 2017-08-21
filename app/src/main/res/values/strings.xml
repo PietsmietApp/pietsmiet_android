@@ -33,7 +33,6 @@
     <string name="type_video_ps">Videos</string>
 
     <string name="settings_header_notif">Benachrichtigungen für Pietsmiet.de</string>
-    <string name="settings_header_others">Sonstige Einstellungen</string>
     <string name="settings_clear_cache">Cache löschen</string>
     <string name="settings_header_quality">Qualität</string>
     <string name="settings_image_quality_label">HD Bilder laden:</string>
@@ -41,7 +40,6 @@
     <string name="notification_unsubscribe">Abbestellen</string>
     <string name="notification_open_url">Link öffnen</string>
 
-    <string name="info_opening_url">Link wird geöffnet</string>
     <string name="info_disabled_notif">Benachrichtigung für %1$s deaktiviert. Du kannst das in den Einstellungen rückgängig machen</string>
     <string name="info_cleared_cache">Cache gelöscht</string>
     <string name="info_retry">Erneut versuchen</string>

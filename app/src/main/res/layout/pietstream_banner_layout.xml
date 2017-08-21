@@ -13,7 +13,7 @@
         android:id="@+id/imageView"
         android:layout_width="34dp"
         android:layout_height="34dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
         android:src="@android:drawable/presence_video_online"
         app:srcCompat="@android:drawable/presence_video_online"
         tools:ignore="ContentDescription" />

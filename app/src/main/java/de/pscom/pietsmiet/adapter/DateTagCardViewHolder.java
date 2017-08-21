@@ -11,6 +11,6 @@ public class DateTagCardViewHolder extends RecyclerView.ViewHolder {
 
     public DateTagCardViewHolder(View itemView) {
         super(itemView);
-        tvDate = (TextView) itemView.findViewById(R.id.tvDate);
+        tvDate = itemView.findViewById(R.id.tvDate);
     }
 }

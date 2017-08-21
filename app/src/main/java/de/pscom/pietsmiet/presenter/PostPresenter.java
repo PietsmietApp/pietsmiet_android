@@ -46,7 +46,7 @@ public class PostPresenter {
 
     // All posts loaded
     @SuppressWarnings("CanBeFinal")
-    private List<ViewItem> allPosts = Collections.synchronizedList(new ArrayList<>());
+    private final List<ViewItem> allPosts = Collections.synchronizedList(new ArrayList<>());
 
     private Subscription subLoadingPosts;
     private Subscription subUpdatePosts;

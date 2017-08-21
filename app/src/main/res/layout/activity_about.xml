@@ -16,18 +16,18 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="?attr/actionBarSize"
             android:autoLink="web"
-            android:theme="@style/Theme.SwitchTheme"
+            android:paddingBottom="10dp"
             android:paddingStart="10dp"
             android:paddingTop="20dp"
-            android:paddingBottom="10dp"
             android:text="@string/about_text"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:theme="@style/Theme.SwitchTheme"/>
 
         <FrameLayout
             android:id="@+id/fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/textView" />
+            android:layout_below="@+id/textView"/>
 
         <TextView
             android:id="@+id/tv_app_version"
@@ -36,7 +36,7 @@
             android:layout_above="@+id/fragment"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="12dp"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginEnd="12dp"/>
 
     </RelativeLayout>
 

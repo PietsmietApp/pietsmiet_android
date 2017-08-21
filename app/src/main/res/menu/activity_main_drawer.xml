@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_pietstream_banner"
         android:visible="false"
-        app:actionLayout="@layout/pietstream_banner_layout" />
+        app:actionLayout="@layout/pietstream_banner_layout"/>
     <item android:title="@string/drawer_filter">
         <menu>
             <item
@@ -26,7 +26,7 @@
                 android:id="@+id/nav_twitter"
                 android:icon="@drawable/ic_twitter_social_square_white"
                 android:title="@string/type_twitter"
-                app:actionLayout="@layout/widget_switch" />
+                app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_upload_plan"
                 android:icon="@drawable/ic_assignment_white_24dp"
@@ -36,12 +36,12 @@
                 android:id="@+id/nav_ps_news"
                 android:icon="@drawable/ic_rss_feed_white_24dp"
                 android:title="@string/type_news"
-                app:actionLayout="@layout/widget_switch" />
+                app:actionLayout="@layout/widget_switch"/>
             <item
                 android:id="@+id/nav_pietcast"
                 android:icon="@drawable/ic_radio_white_24dp"
                 android:title="@string/type_pietcast"
-                app:actionLayout="@layout/widget_switch" />
+                app:actionLayout="@layout/widget_switch"/>
         </menu>
     </item>
 
@@ -55,7 +55,7 @@
             <item
                 android:id="@+id/nav_feedback"
                 android:icon="@drawable/ic_open_in_browser_black_24dp"
-                android:title="@string/drawer_Feedback" />
+                android:title="@string/drawer_Feedback"/>
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/ic_help_black_24dp"

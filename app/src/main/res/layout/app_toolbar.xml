@@ -15,7 +15,7 @@
         android:background="@color/colorPrimary"
         android:elevation="4dp"
         android:theme="@style/AppTheme.AppBarOverlay"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
+        app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
 </android.support.design.widget.AppBarLayout>
 

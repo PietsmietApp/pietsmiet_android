@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="30dp"
-    android:layout_marginLeft="8.5dp"
-    android:layout_marginRight="8.5dp"
-    android:layout_marginTop="30dp"
-    android:orientation="horizontal">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:layout_marginLeft="8.5dp"
+                android:layout_marginRight="8.5dp"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
 
     <View
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:layout_centerVertical="true"
         android:layout_gravity="start"
         android:layout_toStartOf="@+id/tvDate"
-        android:background="@color/date_tag_text" />
+        android:background="@color/date_tag_text"/>
 
     <TextView
         android:id="@+id/tvDate"
@@ -29,7 +29,7 @@
         android:textAlignment="center"
         android:textColor="@color/date_tag_text"
         android:textSize="14.5dp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <View
         android:layout_width="match_parent"
@@ -38,5 +38,5 @@
         android:layout_centerVertical="true"
         android:layout_gravity="end"
         android:layout_toEndOf="@+id/tvDate"
-        android:background="@color/date_tag_text" />
+        android:background="@color/date_tag_text"/>
 </RelativeLayout>

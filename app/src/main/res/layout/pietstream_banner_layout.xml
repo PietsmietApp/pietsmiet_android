@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/twitch"
-    android:gravity="center_vertical|center_horizontal"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:weightSum="1">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/twitch"
+              android:gravity="center_vertical|center_horizontal"
+              android:theme="@style/ThemeOverlay.AppCompat.Dark"
+              android:weightSum="1">
 
     <ImageView
         android:id="@+id/imageView"
@@ -16,7 +16,7 @@
         android:layout_marginEnd="10dp"
         android:src="@android:drawable/presence_video_online"
         app:srcCompat="@android:drawable/presence_video_online"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"/>
 
     <TextView
         android:id="@+id/tv_ps_banner"
@@ -27,5 +27,5 @@
         android:textAlignment="center"
         android:textColor="@android:color/white"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 </LinearLayout>

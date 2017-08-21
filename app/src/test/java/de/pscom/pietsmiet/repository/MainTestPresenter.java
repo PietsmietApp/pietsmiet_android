@@ -15,7 +15,7 @@ abstract class MainTestPresenter {
     public abstract <T extends MainRepository> T preparePresenter() throws Exception;
 
 
-    protected  Retrofit getRetrofit(MockWebServer mockWebServer) {
+    protected Retrofit getRetrofit(MockWebServer mockWebServer) {
         RxJavaCallAdapterFactory rxAdapter = RxJavaCallAdapterFactory.create();
         return new Retrofit.Builder()
                 .baseUrl(mockWebServer.url("").toString())

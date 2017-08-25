@@ -1,6 +1,8 @@
 package de.pscom.pietsmiet.view;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,8 +53,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
-import static de.pscom.pietsmiet.util.SettingsHelper.boolAppFirstRun;
-import static de.pscom.pietsmiet.util.SettingsHelper.boolVideoNotification;
 import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
@@ -137,26 +138,52 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         });
         // End Top Button init
 
-        if (boolAppFirstRun) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(R.string.dialog_video_notification)
-                    .setPositiveButton(R.string.yes, (dialog, id) -> {
-                        boolVideoNotification = true;
-                        SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
-                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, true);
-                    })
-                    .setNegativeButton(R.string.no, (dialog, id) -> {
-                        boolVideoNotification = false;
-                        SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
-                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
-                    });
-            builder.create().show();
+        if (SettingsHelper.boolAppFirstRun) {
+            displayNotificationSelection();
+            displayChinesePhoneWarning(this);
 
             // Set AppFirstRun to false //todo maybe position this in OnDestroy / OnPause, because of logic
-            boolAppFirstRun = false;
+            SettingsHelper.boolAppFirstRun = false;
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
         new SecretConstants(this);
+    }
+
+    private void displayNotificationSelection() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_video_notification)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    SettingsHelper.boolVideoNotification = true;
+                    SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
+                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, true);
+                })
+                .setNegativeButton(R.string.no, (dialog, id) -> {
+                    SettingsHelper.boolVideoNotification = false;
+                    SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
+                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
+                });
+        builder.create().show();
+    }
+
+
+    private static void displayChinesePhoneWarning(Context context) {
+        String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ENGLISH).replace(" ", "");
+        String message = null;
+        if (manufacturer.contains("vivo") || manufacturer.contains("oppo") || manufacturer.contains("zte")) {
+            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_other));
+        } else if (manufacturer.contains("xiaomi")) {
+            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_xiaomi));
+        } else if (manufacturer.contains("oneplus")) {
+            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_oneplus));
+        }
+        if (message != null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(message)
+                    .setNeutralButton(R.string.close, (dialog, id) -> {
+                    });
+            builder.create().show();
+        }
+
     }
 
     @Override

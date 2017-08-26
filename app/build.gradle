@@ -17,6 +17,7 @@ android {
         }
     }
     defaultConfig {
+        multiDexEnabled true
         applicationId "de.pscom.pietsmiet"
         minSdkVersion 19
         targetSdkVersion 26

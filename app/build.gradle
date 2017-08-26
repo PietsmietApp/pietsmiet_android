@@ -17,7 +17,6 @@ android {
         }
     }
     defaultConfig {
-        multiDexEnabled true
         applicationId "de.pscom.pietsmiet"
         minSdkVersion 19
         targetSdkVersion 26
@@ -85,9 +84,9 @@ dependencies {
     debugCompile 'com.facebook.stetho:stetho:1.5.0'
     debugCompile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.2'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
     testCompile 'org.robolectric:robolectric:3.4.2'
     testCompile 'org.mockito:mockito-core:2.8.47'

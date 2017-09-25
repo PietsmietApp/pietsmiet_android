@@ -4,6 +4,12 @@ import android.content.Context;
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_DISPLAY_NOTIF_QUESTION;
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_FEEDBACK_URL;
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_FIREBASE_DB_URL;
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_PARAM_TRUE;
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_PIETSTREAM_URL;
+import static de.pscom.pietsmiet.util.FirebaseUtil.CONFIG_TWITCH_CHANNEL_ID;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_FACEBOOK;
@@ -13,6 +19,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSM
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETSMIET_VIDEOS;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_TWITTER;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_YOUTUBE_VIDEOS;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFICATION_QUESTION_SHOWN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
@@ -25,6 +32,7 @@ import static de.pscom.pietsmiet.util.SharedPreferenceHelper.getSharedPreference
 
 public class SettingsHelper {
     public static boolean boolAppFirstRun;
+    public static boolean boolNotificationQuestionShown;
 
     public static boolean boolUploadplanNotification;
     public static boolean boolVideoNotification;
@@ -45,29 +53,27 @@ public class SettingsHelper {
     public static String stringFeedbackUrl;
     public static String stringPietstreamUrl;
     public static String stringTwitchChannelIDPietstream;
+    public static boolean stringShouldShowNotifQuestion;
 
     public static int intQualityLoadHDImages;
-    public static final int TYPE_HD_NEVER = 0;
-    public static final int TYPE_HD_WIFI = 1;
-    public static final int TYPE_HD_ALWAYS = 2;
+    private static final int TYPE_HD_NEVER = 0;
+    private static final int TYPE_HD_WIFI = 1;
+    private static final int TYPE_HD_ALWAYS = 2;
 
     public static void loadAllSettings(Context context) {
-        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-
+        // General purpose
         boolAppFirstRun = getSharedPreferenceBoolean(context, KEY_APP_FIRST_RUN, true);
+        boolNotificationQuestionShown = getSharedPreferenceBoolean(context, KEY_NOTIFICATION_QUESTION_SHOWN, false);
 
+        // Settings
         boolUploadplanNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, true);
         boolVideoNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
         boolNewsNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
         boolPietcastNotification = getSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
         stringTwitterBearer = getSharedPreferenceString(context, KEY_TWITTER_BEARER, null);
-        stringFirebaseDbUrl = mFirebaseRemoteConfig.getString("FIREBASE_DB_URL");
-        stringFeedbackUrl = mFirebaseRemoteConfig.getString("url_feedback");
-        stringPietstreamUrl = mFirebaseRemoteConfig.getString("url_pietstream");
-        stringTwitchChannelIDPietstream = mFirebaseRemoteConfig.getString("twitch_channel_id_pietstream");
         intQualityLoadHDImages = getSharedPreferenceInt(context, KEY_QUALITY_IMAGE_LOAD_HD_SETTING, TYPE_HD_ALWAYS);
 
-        // SWITCHES
+        // Drawer categories
         boolCategoryYoutubeVideos = getSharedPreferenceBoolean(context, KEY_CATEGORY_YOUTUBE_VIDEOS, false);
         boolCategoryPietsmietVideos = getSharedPreferenceBoolean(context, KEY_CATEGORY_PIETSMIET_VIDEOS, true);
         boolCategoryPietsmietNews = getSharedPreferenceBoolean(context, KEY_CATEGORY_PIETSMIET_NEWS, true);
@@ -75,6 +81,14 @@ public class SettingsHelper {
         boolCategoryPietcast = getSharedPreferenceBoolean(context, KEY_CATEGORY_PIETCAST, true);
         boolCategoryTwitter = getSharedPreferenceBoolean(context, KEY_CATEGORY_TWITTER, true);
         boolCategoryFacebook = getSharedPreferenceBoolean(context, KEY_CATEGORY_FACEBOOK, true);
+
+        // Remote config
+        FirebaseRemoteConfig mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        stringFirebaseDbUrl = mFirebaseRemoteConfig.getString(CONFIG_FIREBASE_DB_URL);
+        stringFeedbackUrl = mFirebaseRemoteConfig.getString(CONFIG_FEEDBACK_URL);
+        stringPietstreamUrl = mFirebaseRemoteConfig.getString(CONFIG_PIETSTREAM_URL);
+        stringTwitchChannelIDPietstream = mFirebaseRemoteConfig.getString(CONFIG_TWITCH_CHANNEL_ID);
+        stringShouldShowNotifQuestion = (mFirebaseRemoteConfig.getString(CONFIG_DISPLAY_NOTIF_QUESTION) == CONFIG_PARAM_TRUE);
     }
 
     public static boolean shouldLoadHDImages(Context c) {

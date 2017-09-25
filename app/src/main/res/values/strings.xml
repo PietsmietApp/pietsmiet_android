@@ -17,10 +17,12 @@
 
     <string name="dialog_video_notification">Möchtest du Benachrichtigungen zu neuen Videos von pietsmiet.de erhalten?</string>
     <string name="dialog_chinese_phone_general">Du benutzt ein Gerät eines chinesischen Herstellers.
-        Damit du zuverlässig Benachrichtigungen empfangen kannst, befolge die folgenden Schritte:\n%1$s</string>
+        Damit du zuverlässiger Benachrichtigungen empfangen kannst, befolge die folgenden Schritte:\n%1$s</string>
     <string name="dialog_chinese_phone_xiaomi">Öffne die App \"Security\" -> Berechtigungen -> Autostart -> \"Pietsmiet Community App\" aktivieren</string>
     <string name="dialog_chinese_phone_oneplus">Einstellungen deines Geräts -> Akku -> Akku-Leistungsoptimierungen -> \"Pietsmiet Community App\" deaktivieren</string>
-    <string name="dialog_chinese_phone_other">Akku-Leistungsoptimierungen in den Gerät-Einstellungen deaktivieren, falls du keine Benachrichtigungen bekommen solltest.</string>
+    <string name="dialog_chinese_phone_other">Akku-Leistungsoptimierungen in deinen Gerät-Einstellungen deaktivieren.</string>
+    <string name="dialog_notification_problem_question">Funktionierten die Benachrichtigungen in der letzten Woche bei dir?</string>
+    <string name="dialog_thanks_feedback">Danke für dein Feedback!</string>
 
     <string name="yes">Ja</string>
     <string name="no">Nein</string>

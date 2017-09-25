@@ -14,19 +14,35 @@ import de.pscom.pietsmiet.R;
 
 @SuppressWarnings("WeakerAccess")
 public abstract class FirebaseUtil {
-
+    // Topics for FCM subscription
     public static final String TOPIC_VIDEO = "video";
     public static final String TOPIC_UPLOADPLAN = "uploadplan";
     public static final String TOPIC_NEWS = "news";
     public static final String TOPIC_PIETCAST = "pietcast";
     public static final String TOPIC_TEST = "test_neu";
 
+    // Events for analytics
     public static final String EVENT_NEXT_COMPLETED = "next_loading_completed";
     public static final String EVENT_NEW_COMPLETED = "new_loading_completed";
+    public static final String EVENT_NOTIFICATION_FAILING = "notification_failing_user";
+    public static final String EVENT_NOTIFICATION_CLICKED = "notification_clicked";
     public static final String EVENT_FRESH_COMPLETED = "fresh_loading_completed";
 
+    // Params for analytics
     public static final String PARAM_START_POSITION = "start_position";
     public static final String PARAM_ITEM_COUNT = "item_count";
+    public static final String PARAM_DEVICE = "device";
+    public static final String PARAM_MANUFACTURER = "manufacturer";
+
+    // Config variables for remote config
+    public static final String CONFIG_DISPLAY_NOTIF_QUESTION = "display_notification_question";
+    public static final String CONFIG_TWITCH_CHANNEL_ID = "twitch_channel_id_pietstream";
+    public static final String CONFIG_FEEDBACK_URL = "url_feedback";
+    public static final String CONFIG_PIETSTREAM_URL = "url_pietstream";
+    public static final String CONFIG_FIREBASE_DB_URL = "FIREBASE_DB_URL";
+
+    // Params for remote config
+    public static final String CONFIG_PARAM_TRUE = "true";
 
 
     public static void loadRemoteConfig() {

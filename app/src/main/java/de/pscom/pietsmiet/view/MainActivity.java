@@ -50,11 +50,13 @@ import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
+import static de.pscom.pietsmiet.util.FirebaseUtil.EVENT_NOTIFICATION_CLICKED;
 import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
 import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
 import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
 import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
+import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFICATION_QUESTION_SHOWN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
 
 public class MainActivity extends BaseActivity implements MainActivityView, NavigationView.OnNavigationItemSelectedListener {
@@ -113,7 +115,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         setupDrawer();
 
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
-        refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
+        refreshLayout.setProgressViewOffset(false, -130, 80);
         refreshLayout.setColorSchemeColors(R.color.pietsmiet);
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
@@ -140,18 +142,26 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         if (SettingsHelper.boolAppFirstRun) {
             displayNotificationSelection();
-            displayChinesePhoneWarning(this);
-
-            // Set AppFirstRun to false //todo maybe position this in OnDestroy / OnPause, because of logic
+            if (isChinesePhone()) {
+                // Display the chinese phone warning for all _new_ chinese phone installs
+                displayChinesePhoneInfo(this);
+                SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFICATION_QUESTION_SHOWN, true);
+            }
+            // Set AppFirstRun to false
             SettingsHelper.boolAppFirstRun = false;
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
+        } else if (!SettingsHelper.boolNotificationQuestionShown && hasAnyNotificationsEnabled()) {
+            if (isChinesePhone() || SettingsHelper.stringShouldShowNotifQuestion) {
+                // Ask the user if they had any troubles with notifications and log it to firebase
+                showNotificationFailingQuestion(this);
+            }
         }
         new SecretConstants(this);
     }
 
     private void displayNotificationSelection() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_video_notification)
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.dialog_video_notification)
                 .setPositiveButton(R.string.yes, (dialog, id) -> {
                     SettingsHelper.boolVideoNotification = true;
                     SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, true);
@@ -161,29 +171,58 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                     SettingsHelper.boolVideoNotification = false;
                     SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_NOTIFY_VIDEO_SETTING, false);
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
-                });
-        builder.create().show();
+                }).create().show();
+    }
+
+    private static void showNotificationFailingQuestion(Context context) {
+        new AlertDialog.Builder(context)
+                .setMessage(R.string.dialog_notification_problem_question)
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    // Display chinese phone info if is failing
+                    if (isChinesePhone()) displayChinesePhoneInfo(context);
+                    // Log event to firebase
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FirebaseUtil.PARAM_MANUFACTURER, Build.MANUFACTURER);
+                    bundle.putString(FirebaseUtil.PARAM_DEVICE, Build.PRODUCT);
+                    FirebaseAnalytics.getInstance(context).logEvent(FirebaseUtil.EVENT_NOTIFICATION_FAILING, bundle);
+                    // Thank you toast
+                    Toast.makeText(context, R.string.dialog_thanks_feedback, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton(R.string.no, (dialog, id) ->
+                        Toast.makeText(context, R.string.dialog_thanks_feedback, Toast.LENGTH_SHORT).show())
+                .create().show();
+        SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFICATION_QUESTION_SHOWN, true);
+        SettingsHelper.boolNotificationQuestionShown = true;
     }
 
 
-    private static void displayChinesePhoneWarning(Context context) {
+    private static boolean isChinesePhone() {
+        String manu = Build.MANUFACTURER.toLowerCase(Locale.ENGLISH).replace(" ", "");
+        return manu.contains("vivo") || manu.contains("oppo") ||
+                manu.contains("zte") || manu.contains("xiaomi") ||
+                manu.contains("oneplus");
+    }
+
+
+    private static boolean hasAnyNotificationsEnabled() {
+        return SettingsHelper.boolNewsNotification || SettingsHelper.boolPietcastNotification ||
+                SettingsHelper.boolUploadplanNotification || SettingsHelper.boolVideoNotification;
+    }
+
+    private static void displayChinesePhoneInfo(Context context) {
         String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ENGLISH).replace(" ", "");
-        String message = null;
-        if (manufacturer.contains("vivo") || manufacturer.contains("oppo") || manufacturer.contains("zte")) {
-            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_other));
-        } else if (manufacturer.contains("xiaomi")) {
+        String message;
+        if (manufacturer.contains("xiaomi")) {
             message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_xiaomi));
         } else if (manufacturer.contains("oneplus")) {
             message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_oneplus));
+        } else {
+            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_other));
         }
-        if (message != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage(message)
-                    .setNeutralButton(R.string.close, (dialog, id) -> {
-                    });
-            builder.create().show();
-        }
-
+        new AlertDialog.Builder(context)
+                .setMessage(message)
+                .setNeutralButton(R.string.close, (dialog, id) -> {
+                }).create().show();
     }
 
     @Override
@@ -203,7 +242,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             // Log an event to firebase
             Bundle bundle = new Bundle();
             bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
-            FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
+            FirebaseAnalytics.getInstance(this).logEvent(EVENT_NOTIFICATION_CLICKED, bundle);
             // Select the category in the drawer (this will update sharedPrefs too)
             onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
             // Update settings from sharedPrefs

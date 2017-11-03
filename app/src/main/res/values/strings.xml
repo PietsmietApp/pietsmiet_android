@@ -63,6 +63,8 @@
     <string name="error_twitter_loading">Twitter konnte nicht geladen werden</string>
     <string name="error_youtube_loading">Youtube konnte nicht geladen werden</string>
     <string name="error_youtube_loading_partial">Einige Youtube-Posts konnte nicht geladen werden</string>
+    <string name="channel_default_name">Default</string>
+    <string name="channel_default_description">This is the main notification channel. For now all notifications use this channel.</string>
 
     <string-array name="qualityHDImagesSpinnerItems_array">
         <item>Niemals</item>

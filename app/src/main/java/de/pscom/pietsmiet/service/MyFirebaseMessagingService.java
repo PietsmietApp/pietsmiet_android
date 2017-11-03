@@ -1,6 +1,6 @@
 package de.pscom.pietsmiet.service;
 
-/**
+/*
  * Copyright 2016 Google Inc. All Rights Reserved.
  * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
 
@@ -30,6 +32,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import de.pscom.pietsmiet.R;
@@ -110,6 +113,79 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         sendNotification(title, message, link, type, notificationId);
+        sendStackNotification(type);
+    }
+
+    /** Sends a summary notification if api is higher or equal to 23.
+     *  @param notif_type type / category of the notification.
+     */
+    private void sendStackNotification(int notif_type) {
+        if (Build.VERSION.SDK_INT >= 23) {
+            int stack_notif_id = 1000 + notif_type;
+
+            ArrayList<StatusBarNotification> groupedNotifications = new ArrayList<>();
+
+            NotificationManager notificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            for (StatusBarNotification sbn : notificationManager.getActiveNotifications()) {
+                if( sbn.getNotification().getGroup().equals(Integer.toString(notif_type)) && sbn.getId() != stack_notif_id ) {
+                    groupedNotifications.add(sbn);
+                }
+            }
+
+            if (groupedNotifications.size() > 1) {
+                NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
+                for (StatusBarNotification activeSbn : groupedNotifications) {
+                    String stackNotificationLine = activeSbn.getNotification().extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();
+                    if (stackNotificationLine != null) {
+                        inbox.addLine(stackNotificationLine);
+                    }
+                }
+                // On notification click intent
+                Intent clickIntent = new Intent(this, MainActivity.class);
+                clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                clickIntent.putExtra(EXTRA_TYPE, notif_type);
+                PendingIntent clickPIntent = PendingIntent.getActivity(this, notif_type, clickIntent,
+                        FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
+
+                NotificationCompat.Builder nBuilderSum = new NotificationCompat.Builder(this, "Default")
+                        .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
+                        .setContentIntent(clickPIntent)
+                        .setGroup(Integer.toString(notif_type))
+                        .setGroupSummary(true)
+                        .setAutoCancel(true);
+
+                switch (notif_type) { // TODO: put in string file + translation?
+                    case PS_VIDEO:
+                        nBuilderSum.setContentTitle("Neue Videos online")
+                                   .setContentText(String.format("%d neue Videos", groupedNotifications.size()));
+                        inbox.setSummaryText(String.format("%d neue Videos", groupedNotifications.size()));
+                        break;
+                    case UPLOADPLAN:
+                        nBuilderSum.setContentTitle("Neue Uploadpläne online")
+                                   .setContentText(String.format("%d neue Uploadpläne", groupedNotifications.size()));
+                        inbox.setSummaryText(String.format("%d neue Uploadpläne", groupedNotifications.size()));
+                        break;
+                    case NEWS:
+                        nBuilderSum.setContentTitle("Neue News online")
+                                   .setContentText(String.format("%d neue News", groupedNotifications.size()));
+                        inbox.setSummaryText(String.format("%d neue News", groupedNotifications.size()));
+                        break;
+                    case PIETCAST:
+                        nBuilderSum.setContentTitle("Neue Pietcasts online")
+                                   .setContentText(String.format("%d neue Pietcasts", groupedNotifications.size()));
+                        inbox.setSummaryText(String.format("%d neue Pietcasts", groupedNotifications.size()));
+                        break;
+                    default:
+                        nBuilderSum.setContentTitle("Neue Benachrichtigungen")
+                                   .setContentText(String.format("%d neue", groupedNotifications.size()));
+                        inbox.setSummaryText(String.format("%d neue Benachrichtigungen", groupedNotifications.size()));
+                }
+                nBuilderSum.setStyle(inbox);
+                notificationManager.notify(stack_notif_id, nBuilderSum.build());
+            }
+        }
     }
 
     /**
@@ -138,10 +214,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "Default")
                 .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                 .setContentTitle(title)
+                .setGroup(Integer.toString(type))
                 .addAction(R.drawable.ic_remove_black_24dp, getString(R.string.notification_unsubscribe), unsubscribePIntent)
+                .setOnlyAlertOnce( true )
                 .setAutoCancel(true);
 
         if (type == PS_VIDEO) {
@@ -158,6 +236,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
         notificationManager.notify(notificationId, notificationBuilder.build());
     }
 }

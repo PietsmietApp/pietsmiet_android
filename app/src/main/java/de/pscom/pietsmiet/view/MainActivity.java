@@ -1,7 +1,10 @@
 package de.pscom.pietsmiet.view;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -109,12 +112,13 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                 new NetworkUtil(this.getApplicationContext()),
                 this.getApplicationContext());
 
+        setupNotificationChannels();
         setupRecyclerView();
         setupDrawer();
 
         refreshLayout.setOnRefreshListener(() -> postPresenter.fetchNewPosts());
         refreshLayout.setProgressViewOffset(false, -130, 80); //todo Find another way. Just added to support Android 4.x
-        refreshLayout.setColorSchemeColors(R.color.pietsmiet);
+        refreshLayout.setColorSchemeColors(getResources().getColor(R.color.pietsmiet));
         refreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.pietsmiet, R.color.colorPrimaryDark);
 
         // Top Button init
@@ -147,6 +151,24 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             SharedPreferenceHelper.setSharedPreferenceBoolean(this, KEY_APP_FIRST_RUN, false);
         }
         new SecretConstants(this);
+    }
+
+    private void setupNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            String id = "Default";
+            CharSequence name = getString(R.string.channel_default_name);
+            String description = getString(R.string.channel_default_description);
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+            mChannel.setDescription(description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(getResources().getColor(R.color.pietsmiet));
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
     }
 
     private void displayNotificationSelection() {
@@ -267,7 +289,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
         // Iterate through every menu item and save it's state
-        //todo improve if for example a user just switched on off on -> dont clear cache
         for (Integer item : PostType.getPossibleTypes()) {
             if (mNavigationView != null) {
                 Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();

@@ -113,13 +113,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         sendNotification(title, message, link, type, notificationId);
-        sendStackNotification(type);
+        sendStackNotification(type, message);
     }
 
-    /** Sends a summary notification if api is higher or equal to 23.
+    /** Sends a summary notification if the api is higher or equal to 23.
      *  @param notif_type type / category of the notification.
      */
-    private void sendStackNotification(int notif_type) {
+    private void sendStackNotification(int notif_type, String new_notif_text) {
         if (Build.VERSION.SDK_INT >= 23) {
             int stack_notif_id = 1000 + notif_type;
 
@@ -127,21 +127,41 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             NotificationManager notificationManager =
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            boolean sum_notif_spawned = false;
+            int notif_counter = 0;
 
             for (StatusBarNotification sbn : notificationManager.getActiveNotifications()) {
-                if( sbn.getNotification().getGroup().equals(Integer.toString(notif_type)) && sbn.getId() != stack_notif_id ) {
+                if( sbn.getNotification().getGroup().equals(Integer.toString(notif_type)) ) {
                     groupedNotifications.add(sbn);
+                    if(sbn.getId() == stack_notif_id) sum_notif_spawned = true;
                 }
             }
 
-            if (groupedNotifications.size() > 1) {
+            if (groupedNotifications.size() > 1 && !sum_notif_spawned || groupedNotifications.size() > 0 && sum_notif_spawned ) {
                 NotificationCompat.InboxStyle inbox = new NotificationCompat.InboxStyle();
-                for (StatusBarNotification activeSbn : groupedNotifications) {
-                    String stackNotificationLine = activeSbn.getNotification().extras.getCharSequence(NotificationCompat.EXTRA_TEXT).toString();
-                    if (stackNotificationLine != null) {
-                        inbox.addLine(stackNotificationLine);
-                    }
+                if( sum_notif_spawned ) {
+                    inbox.addLine(new_notif_text);
+                    notif_counter++;
                 }
+                for (StatusBarNotification activeSbn : groupedNotifications) {
+                    if ( !sum_notif_spawned || activeSbn.getId() != stack_notif_id ) {
+                        CharSequence stackNotificationLine = activeSbn.getNotification().extras.getCharSequence(NotificationCompat.EXTRA_TEXT);
+                        if (stackNotificationLine != null) {
+                            inbox.addLine(stackNotificationLine);
+                            notif_counter++;
+                        }
+                    } else if ( activeSbn.getId() == stack_notif_id ) {
+                        CharSequence[] stackNotificationLineArray = activeSbn.getNotification().extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES);
+                        if (stackNotificationLineArray != null) {
+                            for(CharSequence line : stackNotificationLineArray) {
+                                inbox.addLine(line);
+                                notif_counter++;
+                            }
+                        }
+                    }
+
+                }
+
                 // On notification click intent
                 Intent clickIntent = new Intent(this, MainActivity.class);
                 clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -159,28 +179,28 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 switch (notif_type) { // TODO: put in string file + translation?
                     case PS_VIDEO:
                         nBuilderSum.setContentTitle("Neue Videos online")
-                                   .setContentText(String.format("%d neue Videos", groupedNotifications.size()));
-                        inbox.setSummaryText(String.format("%d neue Videos", groupedNotifications.size()));
+                                   .setContentText(String.format("%d neue Videos", notif_counter));
+                        inbox.setSummaryText(String.format("%d neue Videos", notif_counter));
                         break;
                     case UPLOADPLAN:
                         nBuilderSum.setContentTitle("Neue Uploadpläne online")
-                                   .setContentText(String.format("%d neue Uploadpläne", groupedNotifications.size()));
-                        inbox.setSummaryText(String.format("%d neue Uploadpläne", groupedNotifications.size()));
+                                   .setContentText(String.format("%d neue Uploadpläne", notif_counter));
+                        inbox.setSummaryText(String.format("%d neue Uploadpläne", notif_counter));
                         break;
                     case NEWS:
                         nBuilderSum.setContentTitle("Neue News online")
-                                   .setContentText(String.format("%d neue News", groupedNotifications.size()));
-                        inbox.setSummaryText(String.format("%d neue News", groupedNotifications.size()));
+                                   .setContentText(String.format("%d neue News", notif_counter));
+                        inbox.setSummaryText(String.format("%d neue News", notif_counter));
                         break;
                     case PIETCAST:
                         nBuilderSum.setContentTitle("Neue Pietcasts online")
-                                   .setContentText(String.format("%d neue Pietcasts", groupedNotifications.size()));
-                        inbox.setSummaryText(String.format("%d neue Pietcasts", groupedNotifications.size()));
+                                   .setContentText(String.format("%d neue Pietcasts", notif_counter));
+                        inbox.setSummaryText(String.format("%d neue Pietcasts", notif_counter));
                         break;
                     default:
                         nBuilderSum.setContentTitle("Neue Benachrichtigungen")
-                                   .setContentText(String.format("%d neue", groupedNotifications.size()));
-                        inbox.setSummaryText(String.format("%d neue Benachrichtigungen", groupedNotifications.size()));
+                                   .setContentText(String.format("%d neue", notif_counter));
+                        inbox.setSummaryText(String.format("%d neue Benachrichtigungen", notif_counter));
                 }
                 nBuilderSum.setStyle(inbox);
                 notificationManager.notify(stack_notif_id, nBuilderSum.build());

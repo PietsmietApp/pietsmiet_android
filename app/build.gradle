@@ -74,9 +74,9 @@ dependencies {
 
     compile 'com.mikepenz:aboutlibraries:6.0.0'
 
-    compile 'com.github.bumptech.glide:glide:4.3.0'
+    compile 'com.github.bumptech.glide:glide:4.3.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
-    compile('com.github.bumptech.glide:recyclerview-integration:4.3.0') {
+    compile('com.github.bumptech.glide:recyclerview-integration:4.3.1') {
         // Excludes the support library because it's already included by Glide.
         transitive = false
     }
@@ -88,8 +88,8 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
-    testCompile 'org.robolectric:robolectric:3.4.2'
-    testCompile 'org.mockito:mockito-core:2.11.0'
+    testCompile 'org.robolectric:robolectric:3.5.1'
+    testCompile 'org.mockito:mockito-core:2.12.0'
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
     androidTestCompile 'org.hamcrest:hamcrest-library:1.4-atlassian-1'
     testCompile 'junit:junit:4.12'

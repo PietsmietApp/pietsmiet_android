@@ -144,7 +144,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     notif_counter++;
                 }
                 for (StatusBarNotification activeSbn : groupedNotifications) {
-                    if ( !sum_notif_spawned || activeSbn.getId() != stack_notif_id ) {
+                    if ( !sum_notif_spawned ) {
                         CharSequence stackNotificationLine = activeSbn.getNotification().extras.getCharSequence(NotificationCompat.EXTRA_TEXT);
                         if (stackNotificationLine != null) {
                             inbox.addLine(stackNotificationLine);
@@ -154,8 +154,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         CharSequence[] stackNotificationLineArray = activeSbn.getNotification().extras.getCharSequenceArray(NotificationCompat.EXTRA_TEXT_LINES);
                         if (stackNotificationLineArray != null) {
                             for(CharSequence line : stackNotificationLineArray) {
-                                inbox.addLine(line);
-                                notif_counter++;
+                                if(new_notif_text != null && !line.toString().equals(new_notif_text)) {
+                                    inbox.addLine(line);
+                                    notif_counter++;
+                                }
                             }
                         }
                     }

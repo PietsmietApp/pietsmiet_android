@@ -144,7 +144,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
 
         if (SettingsHelper.boolAppFirstRun) {
             displayNotificationSelection();
-            displayChinesePhoneWarning(this);
 
             // Set AppFirstRun to false //todo maybe position this in OnDestroy / OnPause, because of logic
             SettingsHelper.boolAppFirstRun = false;
@@ -185,27 +184,6 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
                     FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
                 });
         builder.create().show();
-    }
-
-
-    private static void displayChinesePhoneWarning(Context context) {
-        String manufacturer = Build.MANUFACTURER.toLowerCase(Locale.ENGLISH).replace(" ", "");
-        String message = null;
-        if (manufacturer.contains("vivo") || manufacturer.contains("oppo") || manufacturer.contains("zte")) {
-            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_other));
-        } else if (manufacturer.contains("xiaomi")) {
-            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_xiaomi));
-        } else if (manufacturer.contains("oneplus")) {
-            message = context.getString(R.string.dialog_chinese_phone_general, context.getString(R.string.dialog_chinese_phone_oneplus));
-        }
-        if (message != null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage(message)
-                    .setNeutralButton(R.string.close, (dialog, id) -> {
-                    });
-            builder.create().show();
-        }
-
     }
 
     @Override

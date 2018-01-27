@@ -86,21 +86,21 @@ class FirebaseRepository extends MainRepository {
 
     @Override
     public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
-        Observable<Map<String, FirebaseItem>> video = apiInterface.getScopeSince(TOPIC_VIDEO, dBefore.getTime());
-        Observable<Map<String, FirebaseItem>> uploadplan = apiInterface.getScopeSince(TOPIC_UPLOADPLAN, dBefore.getTime());
-        Observable<Map<String, FirebaseItem>> pietcast = apiInterface.getScopeSince(TOPIC_PIETCAST, dBefore.getTime());
-        Observable<Map<String, FirebaseItem>> news = apiInterface.getScopeSince(TOPIC_NEWS, dBefore.getTime());
-        if (!boolCategoryPietsmietVideos) {
-            video = Observable.empty();
+        Observable<Map<String, FirebaseItem>> video = Observable.empty();
+        Observable<Map<String, FirebaseItem>> uploadplan = Observable.empty();
+        Observable<Map<String, FirebaseItem>> pietcast = Observable.empty();
+        Observable<Map<String, FirebaseItem>> news = Observable.empty();
+        if (boolCategoryPietsmietVideos) {
+            video = apiInterface.getScopeSince(TOPIC_VIDEO, dBefore.getTime());
         }
-        if (!boolCategoryPietsmietUploadplan) {
-            uploadplan = Observable.empty();
+        if (boolCategoryPietsmietUploadplan) {
+            uploadplan = apiInterface.getScopeSince(TOPIC_UPLOADPLAN, dBefore.getTime());;
         }
-        if (!boolCategoryPietsmietNews) {
-            news = Observable.empty();
+        if (boolCategoryPietsmietNews) {
+            news = apiInterface.getScopeSince(TOPIC_NEWS, dBefore.getTime());
         }
-        if (!boolCategoryPietcast) {
-            pietcast = Observable.empty();
+        if (boolCategoryPietcast) {
+            pietcast = apiInterface.getScopeSince(TOPIC_PIETCAST, dBefore.getTime());
         }
         return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
     }
@@ -108,21 +108,21 @@ class FirebaseRepository extends MainRepository {
 
     @Override
     public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
-        Observable<Map<String, FirebaseItem>> video = apiInterface.getScopeUntil(TOPIC_VIDEO, dAfter.getTime(), numPosts);
-        Observable<Map<String, FirebaseItem>> uploadplan = apiInterface.getScopeUntil(TOPIC_UPLOADPLAN, dAfter.getTime(), numPosts);
-        Observable<Map<String, FirebaseItem>> pietcast = apiInterface.getScopeUntil(TOPIC_PIETCAST, dAfter.getTime(), numPosts);
-        Observable<Map<String, FirebaseItem>> news = apiInterface.getScopeUntil(TOPIC_NEWS, dAfter.getTime(), numPosts);
-        if (!boolCategoryPietsmietVideos) {
-            video = Observable.empty();
+        Observable<Map<String, FirebaseItem>> video = Observable.empty();
+        Observable<Map<String, FirebaseItem>> uploadplan = Observable.empty();
+        Observable<Map<String, FirebaseItem>> pietcast = Observable.empty();
+        Observable<Map<String, FirebaseItem>> news = Observable.empty();
+        if (boolCategoryPietsmietVideos) {
+            video = apiInterface.getScopeUntil(TOPIC_VIDEO, dAfter.getTime(), numPosts);
         }
-        if (!boolCategoryPietsmietUploadplan) {
-            uploadplan = Observable.empty();
+        if (boolCategoryPietsmietUploadplan) {
+            uploadplan = apiInterface.getScopeUntil(TOPIC_UPLOADPLAN, dAfter.getTime(), numPosts);
         }
-        if (!boolCategoryPietsmietNews) {
-            news = Observable.empty();
+        if (boolCategoryPietsmietNews) {
+            news = apiInterface.getScopeUntil(TOPIC_NEWS, dAfter.getTime(), numPosts);
         }
-        if (!boolCategoryPietcast) {
-            pietcast = Observable.empty();
+        if (boolCategoryPietcast) {
+            pietcast = apiInterface.getScopeUntil(TOPIC_PIETCAST, dAfter.getTime(), numPosts);
         }
         return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
     }

@@ -194,7 +194,7 @@ public class PostPresenter {
      *
      * @return Date
      */
-    Date getFirstPostDate() {
+    public Date getFirstPostDate() {
         Post post = getFirstPost();
         return (post == null) ? new Date(new Date().getTime() - 864000000) : new Date(post.getDate().getTime() + 1000);
     }
@@ -205,7 +205,7 @@ public class PostPresenter {
      *
      * @return Date
      */
-    Date getLastPostDate() {
+    public Date getLastPostDate() {
         Post post = getLastPost();
         return (post == null) ? new Date() : new Date(post.getDate().getTime() - 1000);
     }
@@ -242,7 +242,12 @@ public class PostPresenter {
     private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, int numPosts) {
         subLoadingPosts = observable
                 .filter(post -> filterWrongPosts(post, fetchDirectionDown))
-                .sorted()
+                .toSortedList()
+                .map(x -> {
+                    postRepository.cachePosts(x);
+                    return x;
+                })
+                .flatMapIterable(x -> x)
                 .compose(customTake(fetchDirectionDown, numPosts))
                 .compose(sortAndFilterNewPosts())
                 .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
@@ -261,7 +266,7 @@ public class PostPresenter {
                         allPosts.addAll(0, items);
                         view.loadingNewCompleted(items.size());
                     }
-                    PsLog.v("Finished with " + items.size() + " Posts");
+                    PsLog.v("Finished with " + items.size() + " Elements (DateTags included!)");
                     databaseHelper.insertPosts(items);
                 }, e -> {
                     if (e instanceof TimeoutException || e instanceof SocketTimeoutException) {
@@ -322,7 +327,7 @@ public class PostPresenter {
     /**
      * Clears / unsubscribes all subscriptions
      * DONT CALL IT TOO OFTEN!
-     * Should be called if the App gets closed.
+     * Should be called when the App gets closed.
      */
     public void stopSubscriptions() {
         if (subLoadingPosts != null && !subLoadingPosts.isUnsubscribed())
@@ -336,8 +341,7 @@ public class PostPresenter {
      **/
     public void clearPosts() {
         allPosts.clear();
-        TwitterRepository.lastTweet = null;
-        TwitterRepository.firstTweet = null;
+        postRepository.clear();
     }
 
     /**

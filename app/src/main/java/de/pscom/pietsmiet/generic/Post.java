@@ -2,6 +2,7 @@ package de.pscom.pietsmiet.generic;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
@@ -19,7 +20,7 @@ import static de.pscom.pietsmiet.util.PostType.TWITTER;
 import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
 
-public class Post extends ViewItem {
+public class Post extends ViewItem implements Comparable<ViewItem> {
     @Nullable
     private String description;
     private String title;
@@ -163,6 +164,16 @@ public class Post extends ViewItem {
         if (this.getDate().getTime() != other.getDate().getTime()) return false;
         else if (this.getPostType() != other.getPostType()) return false;
         return true;
+    }
+
+    @Override
+    public int compareTo(@NonNull ViewItem post) {
+        if( post.getDate().getTime() > this.getDate().getTime() ) {
+            return 1;
+        } else if ( post.getDate().getTime() < this.getDate().getTime() ) {
+            return -1;
+        }
+        return 0;
     }
 
     @SuppressWarnings("UnusedReturnValue")

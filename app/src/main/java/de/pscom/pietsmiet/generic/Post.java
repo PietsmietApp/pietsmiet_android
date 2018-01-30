@@ -1,30 +1,23 @@
 package de.pscom.pietsmiet.generic;
-
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-
-import java.util.Date;
 
 import de.pscom.pietsmiet.R;
-import de.pscom.pietsmiet.util.PostType;
-import de.pscom.pietsmiet.util.PsLog;
+import de.pscom.pietsmiet.repository.FacebookRepository;
+import de.pscom.pietsmiet.repository.FirebaseRepository;
+import de.pscom.pietsmiet.repository.MainRepository;
+import java.util.Date;
 
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
+import de.pscom.pietsmiet.repository.TwitterRepository;
+import de.pscom.pietsmiet.repository.YoutubeRepository;
+import de.pscom.pietsmiet.util.PsLog;
 
 public class Post extends ViewItem implements Comparable<ViewItem> {
     @Nullable
     private String description;
     private String title;
-    private int postType;
+    private PostType postType;
     @Nullable
     private Drawable thumbnail;
     @Nullable
@@ -76,7 +69,7 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         return thumbnailHDUrl;
     }
 
-    public int getPostType() {
+    public PostType getPostType() {
         return postType;
     }
 
@@ -104,35 +97,6 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         return url;
     }
 
-    //UPPER_CASE: PostType constants
-    //CamelCase: ColorUtils constants
-    public int getBackgroundColor(Context c) {
-        int hexColor;
-        switch (postType) {
-            case PS_VIDEO:
-                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
-                break;
-            case YOUTUBE:
-                hexColor = ContextCompat.getColor(c, R.color.youtube);
-                break;
-            case UPLOADPLAN:
-            case NEWS:
-            case PIETCAST:
-                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
-                break;
-            case FACEBOOK:
-                hexColor = ContextCompat.getColor(c, R.color.facebook);
-                break;
-            case TWITTER:
-                hexColor = ContextCompat.getColor(c, R.color.twitter);
-                break;
-            default:
-                hexColor = ContextCompat.getColor(c, R.color.pietsmiet);
-                break;
-        }
-        return hexColor;
-    }
-
     @Override
     public int hashCode() {
         int result = 5;
@@ -140,7 +104,7 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         result = random * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = random * result + (getDescription() != null ? getDescription().hashCode() : 0);
         result = random * result + Long.valueOf(getDate().getTime()).intValue();
-        result = random * result + getPostType();
+        result = random * result + getPostType().ordinal();
         return result;
     }
 
@@ -180,7 +144,7 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
     public static class PostBuilder {
         private boolean empty = false;
         private String title;
-        private int postType;
+        private PostType postType;
         @Nullable
         private String description;
         @Nullable
@@ -195,7 +159,7 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         private String url;
 
 
-        public PostBuilder(@PostType.AllTypes int postType) {
+        public PostBuilder( PostType postType) {
             this.postType = postType;
         }
 
@@ -261,16 +225,51 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
                 PsLog.e("Date is not given");
                 return null;
             }
-            if (postType == UPLOADPLAN && (description == null || description.isEmpty())) {
+            if (postType == PostType.UPLOADPLAN && (description == null || description.isEmpty())) {
                 PsLog.e("Uploadplan with no description");
                 return null;
             }
 
-            if(!PostType.getPossibleTypes().contains(postType)){
+            if(postType == null){
                 PsLog.e("Not a valid type!");
                 return null;
             }
             return new Post(this);
+        }
+    }
+
+    public enum PostType {
+        YOUTUBE(YoutubeRepository.class, "Youtube", R.id.nav_video_yt, R.color.youtube),
+        PS_VIDEO(FirebaseRepository.class, "PS.de Videos", R.id.nav_video_ps, R.color.pietsmiet),
+        PIETCAST(FirebaseRepository.class, "Pietcast", R.id.nav_pietcast, R.color.pietsmiet),
+        TWITTER(TwitterRepository.class, "Twitter", R.id.nav_twitter, R.color.twitter),
+        FACEBOOK(FacebookRepository.class, "Facebook", R.id.nav_facebook, R.color.facebook),
+        UPLOADPLAN(FirebaseRepository.class, "Uploadplan", R.id.nav_upload_plan, R.color.pietsmiet),
+        NEWS(FirebaseRepository.class, "PS.de News", R.id.nav_ps_news, R.color.pietsmiet);
+        public final String name;
+        public final Class<? extends MainRepository> aClass;
+        public final int drawerId;
+        public final int colorId;
+
+        public static PostType getByDrawerId(int did) {
+            for (PostType p: values()) {
+                if(p.drawerId == did) return p;
+            }
+            return null;
+        }
+
+        /***
+         * Creates a PostType.
+         * @param aClass The Class Object
+         * @param name The name
+         * @param drawerId Resource drawer id
+         * @param colorId Resource color id
+         */
+        PostType(Class<? extends MainRepository> aClass, String name, int drawerId, int colorId) {
+            this.aClass = aClass;
+            this.name = name;
+            this.drawerId = drawerId;
+            this.colorId = colorId;
         }
     }
 }

@@ -14,20 +14,21 @@ import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import rx.Observable;
 
+import static de.pscom.pietsmiet.generic.Post.PostType;
+import static de.pscom.pietsmiet.generic.Post.PostType.NEWS;
+import static de.pscom.pietsmiet.generic.Post.PostType.PIETCAST;
+import static de.pscom.pietsmiet.generic.Post.PostType.PS_VIDEO;
+import static de.pscom.pietsmiet.generic.Post.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietcast;
 import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietNews;
 import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietUploadplan;
 import static de.pscom.pietsmiet.util.SettingsHelper.boolCategoryPietsmietVideos;
 
-class FirebaseRepository extends MainRepository {
+public class FirebaseRepository extends MainRepository {
     FirebaseApiInterface apiInterface;
 
     FirebaseRepository(MainActivity view) {
@@ -46,7 +47,7 @@ class FirebaseRepository extends MainRepository {
                 .filter(result -> result != null)
                 .flatMapIterable(Map::values)
                 .map(item -> {
-                    int type;
+                    PostType type;
                     switch (item.scope) {
                         case TOPIC_UPLOADPLAN:
                             type = UPLOADPLAN;
@@ -61,7 +62,7 @@ class FirebaseRepository extends MainRepository {
                             type = PS_VIDEO;
                             break;
                         default:
-                            type = -1;
+                            type = null;
                     }
                     Post.PostBuilder postBuilder = new Post.PostBuilder(type);
                     if (!boolCategoryPietsmietVideos && type == PS_VIDEO) {

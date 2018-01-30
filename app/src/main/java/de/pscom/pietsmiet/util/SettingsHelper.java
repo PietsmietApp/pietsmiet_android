@@ -4,7 +4,8 @@ import android.content.Context;
 
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
-import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
+import de.pscom.pietsmiet.generic.Post;
+
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_FACEBOOK;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_CATEGORY_PIETCAST;
@@ -82,42 +83,42 @@ public class SettingsHelper {
                 (intQualityLoadHDImages == TYPE_HD_WIFI && new NetworkUtil(c).isConnectedWifi());
     }
 
-    public static String getSharedPreferenceKeyForType(@PostType.AllTypes int type) {
+    public static String getSharedPreferenceKeyForType(Post.PostType type) {
         switch (type) {
-            case PostType.PS_VIDEO:
+            case PS_VIDEO:
                 return KEY_CATEGORY_PIETSMIET_VIDEOS;
-            case PostType.YOUTUBE:
+            case YOUTUBE:
                 return KEY_CATEGORY_YOUTUBE_VIDEOS;
-            case PostType.PIETCAST:
+            case PIETCAST:
                 return KEY_CATEGORY_PIETCAST;
-            case PostType.TWITTER:
+            case TWITTER:
                 return KEY_CATEGORY_TWITTER;
-            case PostType.FACEBOOK:
+            case FACEBOOK:
                 return KEY_CATEGORY_FACEBOOK;
-            case PostType.UPLOADPLAN:
+            case UPLOADPLAN:
                 return KEY_CATEGORY_PIETSMIET_UPLOADPLAN;
-            case PostType.NEWS:
+            case NEWS:
                 return KEY_CATEGORY_PIETSMIET_NEWS;
             default:
                 return "";
         }
     }
 
-    public static boolean getSettingsValueForType(@PostType.AllTypes int type) {
+    public static boolean getSettingsValueForType(Post.PostType type) {
         switch (type) {
-            case PostType.PS_VIDEO:
+            case PS_VIDEO:
                 return boolCategoryPietsmietVideos;
-            case PostType.YOUTUBE:
+            case YOUTUBE:
                 return boolCategoryYoutubeVideos;
-            case PostType.PIETCAST:
+            case PIETCAST:
                 return boolCategoryPietcast;
-            case PostType.TWITTER:
+            case TWITTER:
                 return boolCategoryTwitter;
-            case PostType.FACEBOOK:
+            case FACEBOOK:
                 return boolCategoryFacebook;
-            case PostType.UPLOADPLAN:
+            case UPLOADPLAN:
                 return boolCategoryPietsmietUploadplan;
-            case PostType.NEWS:
+            case NEWS:
                 return boolCategoryPietsmietNews;
             default:
                 return true;
@@ -125,8 +126,8 @@ public class SettingsHelper {
     }
 
 
-    public static boolean isOnlyType(@PostType.AllTypes int type) {
-        for (int i : getPossibleTypes()) {
+    public static boolean isOnlyType(Post.PostType type) {
+        for (Post.PostType i : Post.PostType.values()) {
             if (getSettingsValueForType(i) && i != type) return false;
         }
         return true;

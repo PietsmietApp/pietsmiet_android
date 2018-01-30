@@ -18,7 +18,6 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.repository.PostRepository;
 import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.NetworkUtil;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivityView;
 import rx.Observable;
@@ -70,9 +69,9 @@ public class PostPresenterTest {
 
     @Test
     public void testNewPostsItemRangeInserted() {
-        Post oldPost1 = new Post.PostBuilder(PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME - 5000)).build();
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
+        Post oldPost1 = new Post.PostBuilder(Post.PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME - 5000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
 
         Observable<Post> obs = Observable.just(post1, post2);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
@@ -89,9 +88,9 @@ public class PostPresenterTest {
 
     @Test
     public void testNextPostsItemRangeInserted() {
-        Post oldPost1 = new Post.PostBuilder(PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME + 5000)).build();
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
+        Post oldPost1 = new Post.PostBuilder(Post.PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME + 5000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
 
         Observable<Post> obs = Observable.just(post1, post2);
         when(repository.fetchNextPosts(any(Date.class), anyInt())).thenReturn(obs);
@@ -118,9 +117,9 @@ public class PostPresenterTest {
 
     @Test
     public void testUpdateSettingsFilters() {
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
-        Post post3 = new Post.PostBuilder(PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME + 5000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME)).build();
+        Post post3 = new Post.PostBuilder(Post.PostType.YOUTUBE).title("Spiel Des Lebens").date(new Date(RANDOM_TIME + 5000)).build();
 
         presenter.getPostsToDisplay().addAll(Arrays.asList(post1, post2, post3));
         SettingsHelper.boolCategoryFacebook = false;
@@ -149,7 +148,7 @@ public class PostPresenterTest {
     public void testTakeOperatorNewLoading() {
         List<Post> posts = getRandomPostsList(LOAD_NEW_ITEMS_COUNT + 5);
 
-        presenter.getPostsToDisplay().add(new Post.PostBuilder(PostType.FACEBOOK)
+        presenter.getPostsToDisplay().add(new Post.PostBuilder(Post.PostType.FACEBOOK)
                 .title("Sep")
                 .date(new Date(new Date().getTime() - 20000))
                 .build());
@@ -167,9 +166,9 @@ public class PostPresenterTest {
     @Test
     public void testDuplicatePosts() {
         Date testDate = new Date();
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(testDate).build();
-        Post post2 = new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(testDate).build();
-        Post post3 = new Post.PostBuilder(PostType.FACEBOOK).title("Piet").date(testDate).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(testDate).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(testDate).build();
+        Post post3 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Piet").date(testDate).build();
 
         Observable<Post> obs = Observable.just(post1, post2, post3);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
@@ -182,10 +181,10 @@ public class PostPresenterTest {
 
     @Test
     public void testSorting() {
-        Post post1 = new Post.PostBuilder(PostType.FACEBOOK).title("Sepjö").date(new Date(new Date().getTime() + 3000)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(new Date().getTime())).build();
-        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 20000)).build();
-        Post post4 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 30000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sepjö").date(new Date(new Date().getTime() + 3000)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Raging Harti Harti").date(new Date(new Date().getTime())).build();
+        Post post3 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 20000)).build();
+        Post post4 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(new Date().getTime() - 30000)).build();
 
         Observable<Post> obs = Observable.just(post3, post1, post2, post4);
         when(repository.fetchNewPosts(any(Date.class), anyInt())).thenReturn(obs);
@@ -198,10 +197,10 @@ public class PostPresenterTest {
 
     @Test
     public void testNewFiltering() {
-        Post firstPost = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 20000)).build();
+        Post firstPost = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 20000)).build();
 
-        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 30000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 30000)).build();
 
         presenter.getPostsToDisplay().add(firstPost);
 
@@ -216,10 +215,10 @@ public class PostPresenterTest {
 
     @Test
     public void testNextFiltering() {
-        Post lastPost = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 20000)).build();
+        Post lastPost = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 20000)).build();
 
-        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 30000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 30000)).build();
 
         presenter.getPostsToDisplay().add(lastPost);
 
@@ -234,9 +233,9 @@ public class PostPresenterTest {
 
     @Test
     public void testFirstPostDate() {
-        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
-        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
+        Post post3 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
 
         presenter.getPostsToDisplay().addAll(Arrays.asList(post1, post2, post3));
 
@@ -245,9 +244,9 @@ public class PostPresenterTest {
 
     @Test
     public void testLastPostDate() {
-        Post post1 = new Post.PostBuilder(PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
-        Post post2 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
-        Post post3 = new Post.PostBuilder(PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
+        Post post1 = new Post.PostBuilder(Post.PostType.TWITTER).title("Raging Harti Harti").date(new Date(RANDOM_TIME)).build();
+        Post post2 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 3000)).build();
+        Post post3 = new Post.PostBuilder(Post.PostType.TWITTER).title("Piet").date(new Date(RANDOM_TIME - 5000)).build();
 
         presenter.getPostsToDisplay().addAll(Arrays.asList(post1, post2, post3));
 
@@ -257,7 +256,7 @@ public class PostPresenterTest {
     private List<Post> getRandomPostsList(int size) {
         List<Post> posts = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            posts.add(new Post.PostBuilder(PostType.FACEBOOK).title("Sep").date(new Date(new Date().getTime() + i * 1000)).build());
+            posts.add(new Post.PostBuilder(Post.PostType.FACEBOOK).title("Sep").date(new Date(new Date().getTime() + i * 1000)).build());
         }
         return posts;
     }

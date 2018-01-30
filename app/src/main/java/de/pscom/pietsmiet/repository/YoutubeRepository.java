@@ -18,9 +18,9 @@ import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import rx.Observable;
 
-import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
+import static de.pscom.pietsmiet.generic.Post.PostType.YOUTUBE;
 
-class YoutubeRepository extends MainRepository {
+public class YoutubeRepository extends MainRepository {
     private static final String YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/";
 
     YoutubeApiInterface apiInterface;

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.pscom.pietsmiet.generic.Post;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivity;
@@ -64,7 +63,7 @@ public class PostRepositoryImpl implements PostRepository {
     public void cachePosts(List<Post> posts) {
         HashMap<Class<? extends MainRepository>, List<Post>> map = new HashMap<>();
         for (Post post : posts) {
-            Class<? extends MainRepository> x = PostTypeToRepository(post.getPostType());
+            Class<? extends MainRepository> x = post.getPostType().aClass;
             if(x != null) {
                 if(map.containsKey(x)) {
                     map.get(x).add(post);
@@ -77,27 +76,6 @@ public class PostRepositoryImpl implements PostRepository {
         }
         for (Class<? extends MainRepository> aClass : map.keySet()) {
             cache.storePosts(aClass, map.get(aClass));
-        }
-    }
-
-    private Class<? extends MainRepository> PostTypeToRepository(int i) {
-        switch (i) {
-            case PostType.FACEBOOK:
-                return FacebookRepository.class;
-            case PostType.TWITTER:
-                return TwitterRepository.class;
-            case PostType.YOUTUBE:
-                return YoutubeRepository.class;
-            case PostType.UPLOADPLAN:
-                return FirebaseRepository.class;
-            case PostType.NEWS:
-                return FirebaseRepository.class;
-            case PostType.PIETCAST:
-                return FirebaseRepository.class;
-            case PostType.PS_VIDEO:
-                return FirebaseRepository.class;
-            default:
-                return null;
         }
     }
 

@@ -12,7 +12,7 @@ import de.pscom.pietsmiet.generic.Post;
  * Created by saibotk on 26.01.2018
  */
 
-class CacheRepository implements ICacheRepository {
+public class CacheRepository implements ICacheRepository {
     private HashMap<Class<? extends MainRepository>, List<Post>> cache;
 
     /***

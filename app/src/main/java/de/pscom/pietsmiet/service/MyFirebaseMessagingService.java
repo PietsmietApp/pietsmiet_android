@@ -36,19 +36,20 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.view.MainActivity;
 
 import static android.app.PendingIntent.FLAG_ONE_SHOT;
 import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
+import static de.pscom.pietsmiet.generic.Post.PostType.NEWS;
+import static de.pscom.pietsmiet.generic.Post.PostType.PIETCAST;
+import static de.pscom.pietsmiet.generic.Post.PostType.PS_VIDEO;
+import static de.pscom.pietsmiet.generic.Post.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_NEWS;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_PIETCAST;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_UPLOADPLAN;
 import static de.pscom.pietsmiet.util.FirebaseUtil.TOPIC_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -75,7 +76,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             return;
         }
         PsLog.d("Message data payload: " + data);
-        int type;
+        Post.PostType type;
         switch (data.get(DATA_TOPIC)) {
             case TOPIC_NEWS:
                 type = NEWS;
@@ -95,7 +96,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         Bundle bundle = new Bundle();
-        bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, type);
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, type.ordinal());
         FirebaseAnalytics.getInstance(this).logEvent("notification_received", bundle);
 
         String title = data.get(DATA_TITLE);
@@ -105,11 +106,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         int notificationId;
         if (type == UPLOADPLAN) {
             // Override existing notifications by providing same Id
-            notificationId = type;
+            notificationId = type.ordinal();
         } else {
             // Create a unique notification id for each video,
             // this is a workaround for duplicate notifications
-            notificationId = title.hashCode() + message.hashCode() + link.hashCode() + type;
+            notificationId = title.hashCode() + message.hashCode() + link.hashCode() + type.ordinal();
         }
 
         sendNotification(title, message, link, type, notificationId);
@@ -119,9 +120,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /** Sends a summary notification if the api is higher or equal to 23.
      *  @param notif_type type / category of the notification.
      */
-    private void sendStackNotification(int notif_type, String new_notif_text) {
+    private void sendStackNotification(Post.PostType notif_type, String new_notif_text) {
         if (Build.VERSION.SDK_INT >= 23) {
-            int stack_notif_id = 1000 + notif_type;
+            int stack_notif_id = 1000 + notif_type.ordinal();
 
             ArrayList<StatusBarNotification> groupedNotifications = new ArrayList<>();
 
@@ -131,7 +132,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             int notif_counter = 0;
 
             for (StatusBarNotification sbn : notificationManager.getActiveNotifications()) {
-                if( sbn.getNotification().getGroup().equals(Integer.toString(notif_type)) ) {
+                if( sbn.getNotification().getGroup().equals(notif_type.name) ) {
                     groupedNotifications.add(sbn);
                     if(sbn.getId() == stack_notif_id) sum_notif_spawned = true;
                 }
@@ -168,13 +169,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 Intent clickIntent = new Intent(this, MainActivity.class);
                 clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 clickIntent.putExtra(EXTRA_TYPE, notif_type);
-                PendingIntent clickPIntent = PendingIntent.getActivity(this, notif_type, clickIntent,
+                PendingIntent clickPIntent = PendingIntent.getActivity(this, notif_type.ordinal(), clickIntent,
                         FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
                 NotificationCompat.Builder nBuilderSum = new NotificationCompat.Builder(this, "Default")
                         .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                         .setContentIntent(clickPIntent)
-                        .setGroup(Integer.toString(notif_type))
+                        .setGroup(notif_type.name)
                         .setGroupSummary(true)
                         .setAutoCancel(true);
 
@@ -215,31 +216,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, String link, int type, int notificationId) {
+    private void sendNotification(String title, String messageBody, String link, Post.PostType type, int notificationId) {
         // On notification click intent
         Intent clickIntent = new Intent(this, MainActivity.class);
         clickIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         clickIntent.putExtra(EXTRA_TYPE, type);
-        PendingIntent clickPIntent = PendingIntent.getActivity(this, type, clickIntent,
+        PendingIntent clickPIntent = PendingIntent.getActivity(this, type.ordinal(), clickIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
         // On action button click intent
         Intent urlIntent = new Intent(Intent.ACTION_VIEW);
         urlIntent.setData(Uri.parse(link));
-        PendingIntent urlPIntent = PendingIntent.getActivity(this, type, urlIntent,
+        PendingIntent urlPIntent = PendingIntent.getActivity(this, type.ordinal(), urlIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
         Intent unsubscribeIntent = new Intent();
         unsubscribeIntent.setAction(KEY_UNSUBSCRIBE);
         unsubscribeIntent.putExtra(EXTRA_TYPE, type);
         unsubscribeIntent.putExtra(EXTRA_NOTIF_ID, notificationId);
+        // TODO requestCode = 0 just works because there are no notifs for YT videos coming from the Firebase
         PendingIntent unsubscribePIntent = PendingIntent.getBroadcast(this, 0, unsubscribeIntent,
                 FLAG_ONE_SHOT | FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, "Default")
                 .setSmallIcon(R.drawable.ic_ps_app_controller_notext_white)
                 .setContentTitle(title)
-                .setGroup(Integer.toString(type))
+                .setGroup(type.name)
                 .addAction(R.drawable.ic_remove_black_24dp, getString(R.string.notification_unsubscribe), unsubscribePIntent)
                 .setOnlyAlertOnce( true )
                 .setAutoCancel(true);

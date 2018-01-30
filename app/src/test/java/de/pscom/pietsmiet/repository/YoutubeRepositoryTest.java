@@ -10,7 +10,6 @@ import java.util.TimeZone;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.youtubeApi.YoutubeApiInterface;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -41,13 +40,13 @@ public class YoutubeRepositoryTest extends MainTestPresenter {
         List<Post> list = testSubscriber.getOnNextEvents();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Post example1 = new Post.PostBuilder(PostType.YOUTUBE)
+        Post example1 = new Post.PostBuilder(Post.PostType.YOUTUBE)
                 .title("Coole Mods für The Witcher 3")
                 .url("http://www.youtube.com/watch?v=" + "lioDf6uCyMk")
                 .date(dateFormat.parse("2017-04-20T14:05:00.000Z"))
                 .build();
 
-        Post example2 = new Post.PostBuilder(PostType.YOUTUBE)
+        Post example2 = new Post.PostBuilder(Post.PostType.YOUTUBE)
                 .title("Es war mal verboten...")
                 .url("http://www.youtube.com/watch?v=" + "qScSGzfZEnM")
                 .date(dateFormat.parse("2017-04-12T13:05:00.000Z"))

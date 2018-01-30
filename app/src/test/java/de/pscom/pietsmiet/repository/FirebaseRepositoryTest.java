@@ -10,7 +10,6 @@ import java.util.List;
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.firebaseApi.FirebaseApiInterface;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -48,14 +47,14 @@ public class FirebaseRepositoryTest extends MainTestPresenter {
             System.out.println(tr.getMessage());
         }
 
-        Post example1 = new Post.PostBuilder(PostType.NEWS)
+        Post example1 = new Post.PostBuilder(Post.PostType.NEWS)
                 .title("Build Wars #6 - Wählt den Loser")
                 .url("http://www.pietsmiet.de/news/allgemein/1351-build-wars-6-waehlt-den-loser")
                 .date(new Date(1491123600000L))
                 .description("\n<p>Es kann nur einen Loser geben!</p>\n \n<p>Loser der letzten Ausgabe: <strong>Sep! </strong>Sein Verlierer-Gedicht dazu:</p>\n \n<p>Kox, Nutten, Heiterkeit<br/>wer ist denn da gemeint?<br/>Oh genau ihr wisst...  <a href=\"http://www.pietsmiet.de/news/allgemein/1351-build-wars-6-waehlt-den-loser\">Auf pietsmiet.de weiterlesen →</a>")
                 .build();
 
-        Post example2 = new Post.PostBuilder(PostType.PIETCAST)
+        Post example2 = new Post.PostBuilder(Post.PostType.PIETCAST)
                 .title("Peter heißt Podcast #35 – Wer ist eigentlich Sven?!")
                 .url("http://www.pietsmiet.de/pietcast/php-35/")
                 .date(new Date(1488377128000L))

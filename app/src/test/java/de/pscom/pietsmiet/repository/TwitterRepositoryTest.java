@@ -10,7 +10,6 @@ import java.util.Locale;
 import de.pscom.pietsmiet.TestUtils;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.twitterApi.TwitterApiInterface;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import okhttp3.mockwebserver.MockResponse;
@@ -44,14 +43,14 @@ public class TwitterRepositoryTest extends MainTestPresenter {
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
-        Post example1 = new Post.PostBuilder(PostType.TWITTER)
+        Post example1 = new Post.PostBuilder(Post.PostType.TWITTER)
                 .title("Piet")
                 .url("https://twitter.com/PietSmiet/status/855132476380938240")
                 .date(dateFormat.parse("Thu Apr 20 18:54:04 +0000 2017"))
                 .description("Lol https://t.co/J6LSnSKrxZ")
                 .build();
 
-        Post example2 = new Post.PostBuilder(PostType.TWITTER)
+        Post example2 = new Post.PostBuilder(Post.PostType.TWITTER)
                 .title("Sep")
                 .url("https://twitter.com/kessemak2/status/855292827059666945")
                 .date(dateFormat.parse("Fri Apr 21 05:31:15 +0000 2017"))

@@ -22,9 +22,9 @@ import retrofit2.Retrofit;
 import rx.Observable;
 import rx.exceptions.Exceptions;
 
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.generic.Post.PostType.FACEBOOK;
 
-class FacebookRepository extends MainRepository {
+public class FacebookRepository extends MainRepository {
     FacebookApiInterface apiInterface;
 
     FacebookRepository(MainActivity view) {

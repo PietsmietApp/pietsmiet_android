@@ -21,7 +21,7 @@ import rx.schedulers.Schedulers;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION_NUMBER = 6;
+    private static final int VERSION_NUMBER = 7;
     private static final String DATABASE_NAME = "PietSmiet.db";
     private static final String TABLE_POSTS = "posts";
     private static final String POSTS_COLUMN_ID = "id";
@@ -76,7 +76,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         POSTS_COLUMN_URL_THUMBNAIL + " TEXT," +
                         POSTS_COLUMN_URL_THUMBNAIL_HD + " TEXT," +
                         POSTS_COLUMN_USERNAME + " TEXT," +
-                        POSTS_COLUMN_TYPE + " INT," +
+                        POSTS_COLUMN_TYPE + " TEXT," +
                         POSTS_COLUMN_TIME + " INT," +
                         POSTS_COLUMN_DURATION + " INT)"
         );
@@ -130,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     contentValues.put(POSTS_COLUMN_URL, post.getUrl());
                     contentValues.put(POSTS_COLUMN_URL_THUMBNAIL, post.getThumbnailUrl());
                     contentValues.put(POSTS_COLUMN_URL_THUMBNAIL_HD, post.getThumbnailHDUrl());
-                    contentValues.put(POSTS_COLUMN_TYPE, post.getPostType());
+                    contentValues.put(POSTS_COLUMN_TYPE, post.getPostType().name());
                     contentValues.put(POSTS_COLUMN_TIME, post.getDate().getTime());
                     contentValues.put(POSTS_COLUMN_DURATION, post.getDuration());
                     db.replace(TABLE_POSTS, null, contentValues);
@@ -195,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         do {
                             int old_hashcode = cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_ID));
 
-                            Post.PostBuilder postBuilder = new Post.PostBuilder(cursor.getInt(cursor.getColumnIndex(POSTS_COLUMN_TYPE)))
+                            Post.PostBuilder postBuilder = new Post.PostBuilder(Post.PostType.valueOf(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TYPE))))
                                     .title(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_TITLE)))
                                     .id(cursor.getLong(cursor.getColumnIndex(POSTS_COLUMN_API_ID)))
                                     .description(cursor.getString(cursor.getColumnIndex(POSTS_COLUMN_DESC)))

@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -31,6 +32,7 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.adapter.CardViewAdapter;
 import de.pscom.pietsmiet.customtabsclient.CustomTabActivityHelper;
 import de.pscom.pietsmiet.generic.EndlessScrollListener;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.twitchApi.TwitchStream;
 import de.pscom.pietsmiet.presenter.PostPresenter;
 import de.pscom.pietsmiet.repository.PostRepositoryImpl;
@@ -41,7 +43,6 @@ import de.pscom.pietsmiet.util.DatabaseHelper;
 import de.pscom.pietsmiet.util.FirebaseUtil;
 import de.pscom.pietsmiet.util.LinkUtil;
 import de.pscom.pietsmiet.util.NetworkUtil;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.util.SettingsHelper;
@@ -51,9 +52,6 @@ import de.pscom.pietsmiet.util.TwitchHelper;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static de.pscom.pietsmiet.util.PostType.getDrawerIdForType;
-import static de.pscom.pietsmiet.util.PostType.getPossibleTypes;
-import static de.pscom.pietsmiet.util.PostType.getTypeForDrawerId;
 import static de.pscom.pietsmiet.util.SettingsHelper.isOnlyType;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_APP_FIRST_RUN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_VIDEO_SETTING;
@@ -194,16 +192,18 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     @Override
     protected void onStart() {
         super.onStart();
-        int category = getIntent().getIntExtra(MyFirebaseMessagingService.EXTRA_TYPE, -1);
-        if (PostType.getDrawerIdForType(category) != -1) {
+        Serializable serCategory = getIntent().getSerializableExtra(MyFirebaseMessagingService.EXTRA_TYPE);
+        if (serCategory instanceof Post.PostType) {
+            Post.PostType category = (Post.PostType) serCategory;
             // As this code is onStart, remove the intent to avoid that it'll execute again
             getIntent().removeExtra(MyFirebaseMessagingService.EXTRA_TYPE);
             // Log an event to firebase
             Bundle bundle = new Bundle();
-            bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category);
+            // TODO rework bundle to not have to send ints -> dont use ordinals -> they can change -> Error
+            bundle.putInt(FirebaseAnalytics.Param.ITEM_NAME, category.ordinal());
             FirebaseAnalytics.getInstance(this).logEvent("notification_clicked", bundle);
             // Select the category in the drawer (this will update sharedPrefs too)
-            onNavigationItemSelected(mNavigationView.getMenu().findItem(getDrawerIdForType(category)));
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(category.drawerId));
             // Update settings from sharedPrefs
             SettingsHelper.loadAllSettings(getBaseContext());
             // Fetch posts based on the new settings
@@ -265,9 +265,9 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         pietstream_banner = mNavigationView.getMenu().findItem(R.id.nav_pietstream_banner);
 
         // Iterate through every menu item and save it's state
-        for (Integer item : PostType.getPossibleTypes()) {
+        for (Post.PostType item : Post.PostType.values()) {
             if (mNavigationView != null) {
-                Switch checker = (Switch) mNavigationView.getMenu().findItem(getDrawerIdForType(item)).getActionView();
+                Switch checker = (Switch) mNavigationView.getMenu().findItem(item.drawerId).getActionView();
                 checker.setChecked(SettingsHelper.getSettingsValueForType(item));
                 checker.setOnCheckedChangeListener((view, check) -> {
                     if (check)
@@ -400,16 +400,17 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             case R.id.nav_ps_news:
             case R.id.nav_video_ps:
             case R.id.nav_video_yt:
-                if (((Switch) item.getActionView()).isChecked() && isOnlyType(getTypeForDrawerId(item.getItemId()))) {
-                    for (int z : getPossibleTypes()) {
-                        int id = getDrawerIdForType(z);
+                Post.PostType pt = Post.PostType.getByDrawerId(item.getItemId());
+                if (((Switch) item.getActionView()).isChecked() && (pt != null && isOnlyType(pt)) ) {
+                    for (Post.PostType z : Post.PostType.values()) {
+                        int id = z.drawerId;
                         Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
                         aSwitch.setChecked(true);
                         recyclerView.scrollToPosition(0);
                     }
                 } else {
-                    for (int i : getPossibleTypes()) {
-                        int id = getDrawerIdForType(i);
+                    for (Post.PostType i : Post.PostType.values()) {
+                        int id = i.drawerId;
                         Switch aSwitch = ((Switch) mNavigationView.getMenu().findItem(id).getActionView());
                         if (id == item.getItemId()) {
                             aSwitch.setChecked(true);

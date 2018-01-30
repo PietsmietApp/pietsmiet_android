@@ -8,10 +8,10 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
+import de.pscom.pietsmiet.generic.Post.PostBuilder;
 import de.pscom.pietsmiet.json_model.twitterApi.TwitterApiInterface;
 import de.pscom.pietsmiet.json_model.twitterApi.TwitterRoot;
 import de.pscom.pietsmiet.json_model.twitterApi.TwitterUser;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.RetrofitHelper;
 import de.pscom.pietsmiet.util.SecretConstants;
@@ -48,7 +48,7 @@ public class TwitterRepository extends MainRepository { //todo make package only
     }
 
 
-    private Observable<Post.PostBuilder> parseTweets(Observable<TwitterRoot> obs) {
+    private Observable<PostBuilder> parseTweets(Observable<TwitterRoot> obs) {
         return obs
                 .retryWhen(throwable -> throwable.flatMap(error -> {
                     if (error instanceof HttpException) {
@@ -71,7 +71,7 @@ public class TwitterRepository extends MainRepository { //todo make package only
                 })
                 .filter(status -> status != null)
                 .map(status -> {
-                    Post.PostBuilder postBuilder = new Post.PostBuilder(PostType.TWITTER);
+                    PostBuilder postBuilder = new PostBuilder(Post.PostType.TWITTER);
                     try {
                         postBuilder.description(status.text)
                                 .date(getTwitterDate(status.createdAt))
@@ -145,7 +145,7 @@ public class TwitterRepository extends MainRepository { //todo make package only
 
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
+    public Observable<PostBuilder> fetchPostsSinceObservable(Date dBefore, int numPosts) {
         Observable<TwitterRoot> obs;
         if (firstTweet != null) {
             obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince(bearer, query, numPosts, firstTweet.getId()));
@@ -156,7 +156,7 @@ public class TwitterRepository extends MainRepository { //todo make package only
     }
 
     @Override
-    public Observable<Post.PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
+    public Observable<PostBuilder> fetchPostsUntilObservable(Date dAfter, int numPosts) {
         Observable<TwitterRoot> obs;
         if (lastTweet != null) {
             obs = getToken().flatMap(bearer -> apiInterface.getTweetsUntil(bearer, query, numPosts, lastTweet.getId() - 1));

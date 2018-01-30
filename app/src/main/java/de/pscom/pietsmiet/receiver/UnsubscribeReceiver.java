@@ -6,19 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import java.io.Serializable;
+
 import de.pscom.pietsmiet.R;
+import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.util.FirebaseUtil;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SharedPreferenceHelper;
 
 import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.EXTRA_NOTIF_ID;
 import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.EXTRA_TYPE;
 import static de.pscom.pietsmiet.service.MyFirebaseMessagingService.KEY_UNSUBSCRIBE;
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_NEWS_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_PIETCAST_SETTING;
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_NOTIFY_UPLOADPLAN_SETTING;
@@ -33,35 +31,44 @@ public class UnsubscribeReceiver extends BroadcastReceiver {
         NotificationManager notifManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // Delete notification
-        notifManager.cancel(intent.getIntExtra(EXTRA_NOTIF_ID, -1));
+        if (notifManager != null) {
+            notifManager.cancel(intent.getIntExtra(EXTRA_NOTIF_ID, -1));
+        }
 
         if (intent.getAction() == KEY_UNSUBSCRIBE) {
-            int type = intent.getIntExtra(EXTRA_TYPE, -1);
+            Serializable ser = intent.getSerializableExtra(EXTRA_TYPE);
+            Post.PostType type = (ser instanceof Post.PostType ? (Post.PostType) ser : null );
 
             //Unsubscribe from category & cancel the notification
-            switch (type) {
-                case PIETCAST:
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
-                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_PIETCAST, false);
-                    break;
-                case UPLOADPLAN:
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, false);
-                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_UPLOADPLAN, false);
-                    break;
-                case NEWS:
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
-                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_NEWS, false);
-                    break;
-                case PS_VIDEO:
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
-                    FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
-                    break;
-                default:
-                    PsLog.w("Wrong or empty topic");
-                    break;
+            if (type != null) {
+                switch (type) {
+                    case PIETCAST:
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_PIETCAST_SETTING, false);
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_PIETCAST, false);
+                        break;
+                    case UPLOADPLAN:
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_UPLOADPLAN_SETTING, false);
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_UPLOADPLAN, false);
+                        break;
+                    case NEWS:
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_NEWS_SETTING, false);
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_NEWS, false);
+                        break;
+                    case PS_VIDEO:
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(context, KEY_NOTIFY_VIDEO_SETTING, false);
+                        FirebaseUtil.setFirebaseTopicSubscription(FirebaseUtil.TOPIC_VIDEO, false);
+                        break;
+                    default:
+                        PsLog.w("Wrong or empty topic");
+                        break;
+                }
+                Toast.makeText(context, context.getString(R.string.info_disabled_notif, type.name), Toast.LENGTH_LONG).show();
+            } else {
+                PsLog.e("Could not unsubsribe, type not valid!");
+                Toast.makeText(context, "Could not unsubsribe, type not valid!", Toast.LENGTH_LONG).show();
             }
 
-            Toast.makeText(context, context.getString(R.string.info_disabled_notif, PostType.getName(type)), Toast.LENGTH_LONG).show();
+
         } else {
             PsLog.i("Wrong intent received");
         }

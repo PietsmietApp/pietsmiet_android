@@ -20,7 +20,6 @@ import de.pscom.pietsmiet.R;
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.generic.ViewItem;
 import de.pscom.pietsmiet.util.LinkUtil;
-import de.pscom.pietsmiet.util.PostType.AllTypes;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.util.TimeUtils;
 import de.pscom.pietsmiet.view.MainActivity;
@@ -28,13 +27,12 @@ import de.pscom.pietsmiet.view.MainActivity;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
-import static de.pscom.pietsmiet.util.PostType.FACEBOOK;
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.YOUTUBE;
+import static de.pscom.pietsmiet.generic.Post.PostType.FACEBOOK;
+import static de.pscom.pietsmiet.generic.Post.PostType.NEWS;
+import static de.pscom.pietsmiet.generic.Post.PostType.PIETCAST;
+import static de.pscom.pietsmiet.generic.Post.PostType.TWITTER;
+import static de.pscom.pietsmiet.generic.Post.PostType.UPLOADPLAN;
+import static de.pscom.pietsmiet.generic.Post.PostType.YOUTUBE;
 
 public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -75,14 +73,14 @@ public class CardViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case ViewItem.TYPE_POST:
                 CardViewHolder holder = (CardViewHolder) holder_;
                 Post currentItem = (Post) items.get(holder.getLayoutPosition()); // todo errored fixed now?
-                @AllTypes int currentType = currentItem.getPostType();
+                Post.PostType currentType = currentItem.getPostType();
 
                 // Set basic information (title, time, color)
                 Glide.with(context).clear(holder.wideImage);
                 holder.time.setText(TimeUtils.getTimeSince(currentItem.getDate(), context));
                 holder.title.setText(currentItem.getTitle());
-                holder.headlineContainer.setBackgroundColor(currentItem.getBackgroundColor(context));
-                holder.text.setLinkTextColor(currentItem.getBackgroundColor(context));
+                holder.headlineContainer.setBackgroundColor(ContextCompat.getColor(context, currentItem.getPostType().colorId));
+                holder.text.setLinkTextColor(ContextCompat.getColor(context, currentItem.getPostType().colorId));
 
                 holder.time.setTextColor(ContextCompat.getColor(context, android.R.color.white));
                 holder.timeClockImage.setImageResource(R.drawable.ic_access_time_white_24dp);

@@ -30,10 +30,10 @@ public class TwitchHelper {
      * @return Observable<TwitchStream>
      */
     public Observable<TwitchStream> getStreamStatus(String channelId) {
-        return apiInterface.getStreamObject(channelId, SecretConstants.twitchClientId)
+        return apiInterface != null ? apiInterface.getStreamObject(channelId, SecretConstants.twitchClientId)
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(Twitch::getStream);
+                .map(Twitch::getStream) : Observable.empty();
     }
 
 }

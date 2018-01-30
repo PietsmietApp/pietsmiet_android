@@ -27,12 +27,11 @@ import rx.Observable;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 
-import static de.pscom.pietsmiet.util.PostType.NEWS;
-import static de.pscom.pietsmiet.util.PostType.PIETCAST;
-import static de.pscom.pietsmiet.util.PostType.PS_VIDEO;
-import static de.pscom.pietsmiet.util.PostType.TWITTER;
-import static de.pscom.pietsmiet.util.PostType.UPLOADPLAN;
-import static de.pscom.pietsmiet.util.PostType.getName;
+import static de.pscom.pietsmiet.generic.Post.PostType.NEWS;
+import static de.pscom.pietsmiet.generic.Post.PostType.PIETCAST;
+import static de.pscom.pietsmiet.generic.Post.PostType.PS_VIDEO;
+import static de.pscom.pietsmiet.generic.Post.PostType.TWITTER;
+import static de.pscom.pietsmiet.generic.Post.PostType.UPLOADPLAN;
 
 public class PostPresenter {
     static final int LOAD_MORE_ITEMS_COUNT = 25;
@@ -356,7 +355,7 @@ public class PostPresenter {
         if (fetchDirectionDown) {
             shouldFilter = post.getDate().before(getLastPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + getName(post.getPostType()) + " is before last date:  " +
+                PsLog.w("A post in " + post.getPostType().name + " is before last date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         " letzter (ältester) Post Datum: " + getLastPostDate());
@@ -364,7 +363,7 @@ public class PostPresenter {
         } else {
             shouldFilter = post.getDate().after(getFirstPostDate());
             if (!shouldFilter && post.getPostType() != UPLOADPLAN && post.getPostType() != PIETCAST && post.getPostType() != PS_VIDEO && post.getPostType() != NEWS) {
-                PsLog.w("A post in " + getName(post.getPostType()) + " is before after date:  " +
+                PsLog.w("A post in " + post.getPostType().name + " is before after date:  " +
                         " Titel: " + post.getTitle() +
                         " Datum: " + post.getDate() +
                         "\n letzter (neuster) Post: Datum: " + getFirstPostDate());

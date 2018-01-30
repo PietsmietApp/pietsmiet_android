@@ -9,7 +9,6 @@ import java.util.Locale;
 
 import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.json_model.facebookApi.FacebookApiInterface;
-import de.pscom.pietsmiet.util.PostType;
 import de.pscom.pietsmiet.util.SecretConstants;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -42,14 +41,14 @@ public class FacebookRepositoryTest extends MainTestPresenter {
             System.out.println(tr.getMessage());
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
-        Post example1 = new Post.PostBuilder(PostType.FACEBOOK)
+        Post example1 = new Post.PostBuilder(Post.PostType.FACEBOOK)
                 .title("Der Jay")
                 .url("http://www.facebook.com/" + "275192789211423_1550921351638554")
                 .date(dateFormat.parse("2017-04-13T07:48:46+0000"))
                 .description("Heute kommt was - wie ich finde -sehr unterhaltsames! :D Bin gespannt, was ihr dazu sagt! \nhttp://www.pietsmiet.de/news/uploadplan/1430-upload-plan-am-13-04-2017")
                 .build();
 
-        Post example2 = new Post.PostBuilder(PostType.FACEBOOK)
+        Post example2 = new Post.PostBuilder(Post.PostType.FACEBOOK)
                 .title("Sep Pietsmiet")
                 .url("http://www.facebook.com/" + "411585615549330_1499313376776543")
                 .date(dateFormat.parse("2017-04-18T08:16:14+0000"))

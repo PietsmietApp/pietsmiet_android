@@ -6,7 +6,7 @@ import de.pscom.pietsmiet.generic.Post;
 import de.pscom.pietsmiet.view.MainActivity;
 import rx.Observable;
 
-abstract class MainRepository {
+abstract public class MainRepository {
     protected final MainActivity view;
 
     MainRepository(MainActivity view) {

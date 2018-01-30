@@ -19,8 +19,8 @@ android {
         applicationId "de.pscom.pietsmiet"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 17
-        versionName "1.5.1"
+        versionCode 18
+        versionName "1.6b"
     }
     buildTypes {
         release {

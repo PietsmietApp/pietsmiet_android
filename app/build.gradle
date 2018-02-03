@@ -5,8 +5,9 @@ def storePw = hasProperty('RELEASE_STORE_PASSWORD') ? RELEASE_STORE_PASSWORD : S
 def keyPw = hasProperty('RELEASE_KEY_PASSWORD') ? RELEASE_KEY_PASSWORD : System.getenv('RELEASE_KEY_PASSWORD')
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    def globalConfiguration = rootProject.extensions.getByName("ext")
+    compileSdkVersion globalConfiguration.getAt("androidCompileSdkVersion")
+    buildToolsVersion globalConfiguration.getAt("androidBuildToolsVersion")
     signingConfigs {
         release {
             storeFile file('../pietsmiet_android.jks')
@@ -16,11 +17,12 @@ android {
         }
     }
     defaultConfig {
-        applicationId "de.pscom.pietsmiet"
-        minSdkVersion 19
-        targetSdkVersion 27
-        versionCode 18
-        versionName "1.6b"
+        minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
+        targetSdkVersion globalConfiguration.getAt("androidTargetSdkVersion")
+
+        applicationId globalConfiguration.getAt("androidApplicationId")
+        versionCode globalConfiguration.getAt("androidVersionCode")
+        versionName globalConfiguration.getAt("androidVersionName")
     }
     buildTypes {
         release {
@@ -47,17 +49,22 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile 'com.android.support:design:27.0.2'
-    compile 'com.android.support:cardview-v7:27.0.2'
-    compile 'com.android.support:recyclerview-v7:27.0.2'
-    compile 'com.android.support:customtabs:27.0.2'
+    compile project(':data')
+    compile project(':domain')
 
-    compile 'com.google.firebase:firebase-core:11.8.0'
-    compile 'com.google.firebase:firebase-messaging:11.8.0'
-    compile 'com.google.firebase:firebase-crash:11.8.0'
-    compile 'com.google.firebase:firebase-config:11.8.0'
-    compile 'com.google.firebase:firebase-perf:11.8.0'
+    def supportLibraryVersion = rootProject.ext.supportLibraryVersion
+    compile "com.android.support:appcompat-v7:${supportLibraryVersion}"
+    compile "com.android.support:design:${supportLibraryVersion}"
+    compile "com.android.support:cardview-v7:${supportLibraryVersion}"
+    compile "com.android.support:recyclerview-v7:${supportLibraryVersion}"
+    compile "com.android.support:customtabs:${supportLibraryVersion}"
+
+    def firebaseLibraryVersion = rootProject.ext.firebaseLibraryVersion
+    compile "com.google.firebase:firebase-core:${firebaseLibraryVersion}"
+    compile "com.google.firebase:firebase-messaging:${firebaseLibraryVersion}"
+    compile "com.google.firebase:firebase-crash:${firebaseLibraryVersion}"
+    compile "com.google.firebase:firebase-config:${firebaseLibraryVersion}"
+    compile "com.google.firebase:firebase-perf:${firebaseLibraryVersion}"
 
     compile 'io.reactivex:rxjava:1.3.4'
     compile 'io.reactivex:rxandroid:1.2.1'

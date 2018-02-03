@@ -1,0 +1,16 @@
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+ext {
+    //Android
+    androidBuildToolsVersion = "27.0.3"
+    androidMinSdkVersion = 19
+    androidTargetSdkVersion = 27
+    androidCompileSdkVersion = 27
+
+    supportLibraryVersion = '27.0.2'
+    firebaseLibraryVersion = '11.8.0'
+}

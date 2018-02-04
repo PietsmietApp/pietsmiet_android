@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 import rx.Observable;
 
 @SuppressWarnings("SameParameterValue")
-public interface TwitchApiInterface {
+interface TwitchApiInterface {
 
     @GET("streams/{id}")
     Observable<TwitchEntity> getStreamObject(@Path("id") String channelId, @Query("client_id") String clientId);

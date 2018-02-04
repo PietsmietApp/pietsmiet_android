@@ -7,7 +7,7 @@ import de.pscom.pietsmiet.data.firebase.model.FirebaseEntity;
 import de.pscom.pietsmiet.domain.Post;
 
 
-public class FirebaseMapper extends BaseMapper<Post, FirebaseEntity> {
+class FirebaseMapper extends BaseMapper<Post, FirebaseEntity> {
     @Override
     public Post transform(FirebaseEntity item) {
         Post post = new Post();

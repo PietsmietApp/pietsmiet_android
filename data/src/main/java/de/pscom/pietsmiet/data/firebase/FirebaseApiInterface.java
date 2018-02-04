@@ -3,13 +3,14 @@ package de.pscom.pietsmiet.data.firebase;
 import java.util.Map;
 
 import de.pscom.pietsmiet.data.firebase.model.FirebaseEntity;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rx.Observable;
+
 
 @SuppressWarnings("SameParameterValue")
-public interface FirebaseApiInterface {
+interface FirebaseApiInterface {
     // Get all scopes (with specific dates)
     @GET(".json")
     Observable<Map<String, Map<String, FirebaseEntity>>> getAll();

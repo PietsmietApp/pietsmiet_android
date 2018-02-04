@@ -1,8 +1,8 @@
 package de.pscom.pietsmiet.domain;
 
-import com.sun.istack.internal.Nullable;
-
 import java.util.Date;
+
+import io.reactivex.annotations.Nullable;
 
 public class Post {
     private String username;

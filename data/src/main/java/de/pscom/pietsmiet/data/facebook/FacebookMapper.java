@@ -12,7 +12,7 @@ import java.util.Locale;
 import de.pscom.pietsmiet.data.BaseMapper;
 import de.pscom.pietsmiet.domain.Post;
 
-public class FacebookMapper extends BaseMapper<Post, JSONObject> {
+class FacebookMapper extends BaseMapper<Post, JSONObject> {
     @Override
     public Post transform(JSONObject jsonObject) {
         Post post = new Post();

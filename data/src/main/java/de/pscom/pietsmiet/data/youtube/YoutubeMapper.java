@@ -10,7 +10,7 @@ import de.pscom.pietsmiet.data.youtube.model.YoutubeItem;
 import de.pscom.pietsmiet.data.youtube.model.YoutubeSnippet;
 import de.pscom.pietsmiet.domain.Post;
 
-public class YoutubeMapper extends BaseMapper<Post, YoutubeItem> {
+class YoutubeMapper extends BaseMapper<Post, YoutubeItem> {
     @Override
     public Post transform(YoutubeItem item) {
         //todo Error Handling

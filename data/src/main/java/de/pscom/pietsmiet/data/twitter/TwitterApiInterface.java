@@ -2,16 +2,16 @@ package de.pscom.pietsmiet.data.twitter;
 
 import de.pscom.pietsmiet.data.twitter.model.TwitterEntity;
 import de.pscom.pietsmiet.data.twitter.model.TwitterToken;
+import io.reactivex.Observable;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
-import rx.Observable;
 
 @SuppressWarnings("SameParameterValue")
-public interface TwitterApiInterface {
+interface TwitterApiInterface {
     @POST("oauth2/token")
     @FormUrlEncoded
     Observable<TwitterToken> getToken(@Header("Authorization") String authorization, @Field("grant_type") String body);

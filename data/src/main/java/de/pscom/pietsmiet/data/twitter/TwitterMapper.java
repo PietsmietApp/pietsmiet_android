@@ -11,7 +11,7 @@ import de.pscom.pietsmiet.data.twitter.model.TwitterUser;
 import de.pscom.pietsmiet.domain.Post;
 
 
-public class TwitterMapper extends BaseMapper<Post, TwitterStatus> {
+class TwitterMapper extends BaseMapper<Post, TwitterStatus> {
     //todo Error Handling
     @Override
     public Post transform(TwitterStatus status) {

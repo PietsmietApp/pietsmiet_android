@@ -36,7 +36,7 @@ public class FacebookRepository extends MainRepository {
         Retrofit retrofit = RetrofitHelper.getRetrofit("https://graph.facebook.com");
         apiInterface = retrofit.create(FacebookApiInterface.class);
     }
-    
+
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
                 .filter(result -> result != null)

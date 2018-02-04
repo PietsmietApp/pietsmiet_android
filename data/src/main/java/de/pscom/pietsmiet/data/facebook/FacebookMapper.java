@@ -9,10 +9,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import de.pscom.pietsmiet.data.BaseMapper;
 import de.pscom.pietsmiet.domain.Post;
 
+@Singleton
 class FacebookMapper extends BaseMapper<Post, JSONObject> {
+    @Inject
+    FacebookMapper() {
+    }
+
     @Override
     public Post transform(JSONObject jsonObject) {
         Post post = new Post();

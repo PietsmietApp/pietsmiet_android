@@ -2,12 +2,19 @@ package de.pscom.pietsmiet.data.firebase;
 
 import java.util.Date;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import de.pscom.pietsmiet.data.BaseMapper;
 import de.pscom.pietsmiet.data.firebase.model.FirebaseEntity;
 import de.pscom.pietsmiet.domain.Post;
 
-
+@Singleton
 class FirebaseMapper extends BaseMapper<Post, FirebaseEntity> {
+    @Inject
+    FirebaseMapper() {
+    }
+
     @Override
     public Post transform(FirebaseEntity item) {
         Post post = new Post();

@@ -5,13 +5,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import de.pscom.pietsmiet.data.BaseMapper;
 import de.pscom.pietsmiet.data.twitter.model.TwitterStatus;
 import de.pscom.pietsmiet.data.twitter.model.TwitterUser;
 import de.pscom.pietsmiet.domain.Post;
 
-
+@Singleton
 class TwitterMapper extends BaseMapper<Post, TwitterStatus> {
+    @Inject
+    TwitterMapper() {
+    }
+
     //todo Error Handling
     @Override
     public Post transform(TwitterStatus status) {

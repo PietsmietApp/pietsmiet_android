@@ -4,7 +4,6 @@ import java.util.Date;
 
 import de.pscom.pietsmiet.data.twitter.model.TwitterEntity;
 import de.pscom.pietsmiet.data.twitter.model.TwitterStatus;
-import de.pscom.pietsmiet.data.twitter.model.TwitterUser;
 import io.reactivex.Observable;
 
 
@@ -32,20 +31,6 @@ class TwitterCloudDataStore implements TwitterDataStore {
         return obs.flatMapIterable(root -> root.statuses);
     }
 
-    /*todo
-    retryWhen(throwable -> throwable.flatMap(error -> {
-        if (error instanceof HttpException) {
-            // Bearer is no longer valid; this happens rarely
-            if (((HttpException) error).code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                //PsLog.w("Not authenticated / wrong bearer. Retrying");
-                SettingsHelper.stringTwitterBearer = null;
-                return Observable.just(null);
-            }
-        }
-        // Unrelated error, throw it
-        return Observable.error(error);
-    }))*/
-
     @Override
     public Observable<TwitterStatus> oldPosts(Date lastPostDate, int numPosts) {
         Observable<TwitterEntity> obs;
@@ -58,27 +43,19 @@ class TwitterCloudDataStore implements TwitterDataStore {
         return obs.flatMapIterable(root -> root.statuses);
     }
 
-
-    /**
-     * @return A more human readable and static user name
-     */
-    private String getDisplayName(TwitterUser user) {
-        int userId = (int) Math.max(Math.min(Integer.MAX_VALUE, user.id), Integer.MIN_VALUE);
-        switch (userId) {
-            case 109850283:
-                return "Piet";
-            case 832560607:
-                return "Sep";
-            case 120150508:
-                return "Jay";
-            case 400567148:
-                return "Chris";
-            case 394250799:
-                return "Brammen";
-            default:
-                return user.screenName;
+     /*todo
+    retryWhen(throwable -> throwable.flatMap(error -> {
+        if (error instanceof HttpException) {
+            // Bearer is no longer valid; this happens rarely
+            if (((HttpException) error).code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                //PsLog.w("Not authenticated / wrong bearer. Retrying");
+                SettingsHelper.stringTwitterBearer = null;
+                return Observable.just(null);
+            }
         }
-    }
+        // Unrelated error, throw it
+        return Observable.error(error);
+    }))*/
 
     private Observable<String> getToken() {
         return Observable.just("")

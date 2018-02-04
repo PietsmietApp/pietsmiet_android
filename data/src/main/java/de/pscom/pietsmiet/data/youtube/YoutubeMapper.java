@@ -5,12 +5,21 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import de.pscom.pietsmiet.data.BaseMapper;
 import de.pscom.pietsmiet.data.youtube.model.YoutubeItem;
 import de.pscom.pietsmiet.data.youtube.model.YoutubeSnippet;
 import de.pscom.pietsmiet.domain.Post;
 
+@Singleton
 class YoutubeMapper extends BaseMapper<Post, YoutubeItem> {
+
+    @Inject
+    YoutubeMapper() {
+    }
+
     @Override
     public Post transform(YoutubeItem item) {
         //todo Error Handling

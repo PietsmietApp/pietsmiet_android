@@ -11,14 +11,16 @@ public class ViewItem implements Comparable<ViewItem>{
     protected Date datetime;
     private int type;
 
+    @NonNull
     public Date getDate() {
         return datetime;
     }
 
     public int getType() { return type; }
 
-    public ViewItem(int type) {
+    public ViewItem(int type, @NonNull Date date) {
         this.type = type;
+        this.datetime = date;
     }
 
     @Override

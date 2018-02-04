@@ -21,6 +21,7 @@ import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import rx.Observable;
 import rx.exceptions.Exceptions;
+import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.generic.Post.PostType.FACEBOOK;
 
@@ -39,6 +40,7 @@ public class FacebookRepository extends MainRepository {
     
     private Observable<Post.PostBuilder> parsePosts(String strTime, int numPosts) {
         return Observable.defer(() -> apiInterface.getFBRootObject(SecretConstants.facebookToken, false, getBatchString(strTime, numPosts)))
+                .observeOn(Schedulers.io())
                 .filter(result -> result != null)
                 .flatMapIterable(res -> res)
                 .map(root -> {

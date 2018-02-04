@@ -13,6 +13,9 @@ import de.pscom.pietsmiet.util.PsLog;
 import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivity;
 import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Schedulers;
 
 public class PostRepositoryImpl implements PostRepository {
@@ -47,7 +50,7 @@ public class PostRepositoryImpl implements PostRepository {
     private List<Post> filterDate(List<Post> posts, Long time, boolean up) {
         List<Post> tmp = new ArrayList<>();
         for (Post post : posts) {
-            if(up && post.getDate().getTime() < time || !up && post.getDate().getTime() > time) {
+            if(up && post.getDate().getTime() < time || !up && post.getDate().getTime() >= time) {
                 tmp.add(post);
             }
         }
@@ -107,38 +110,66 @@ public class PostRepositoryImpl implements PostRepository {
             lfiltered = filterDate(lfiltered, lastPostDate.getTime(), true);
         }
 
-        Observable<Post.PostBuilder> twitterObs = Observable.empty();
-        Observable<Post.PostBuilder> youtubeObs = Observable.empty();
+        Observable<Post> twitterObs = Observable.empty();
+        Observable<Post> youtubeObs = Observable.empty();
         Observable<Post> firebaseObs = Observable.empty();
-        Observable<Post.PostBuilder> facebookObs = Observable.empty();
-        Observable<Post> cachedObs = Observable.from(lfiltered).sorted();
+        Observable<Post> facebookObs = Observable.empty();
+        Observable<Post> cachedObs = Observable.from(lfiltered).observeOn(Schedulers.io()).sorted().distinct();
 
         int numToLoad = numPosts - postTwitter.size();
         if(numToLoad > 0 && SettingsHelper.boolCategoryTwitter) {
             PsLog.v("Twitter: Fetching " + numToLoad + " new Posts from API.");
-            twitterObs = new TwitterRepository(view).fetchPostsUntilObservable(lastPostDate, numToLoad);
+            Date dateToLoad = lastPostDate;
+            if(postTwitter.size() > 0)
+                dateToLoad = getOldestPost(postTwitter).getDate();
+            if (newestOfOldestPost != null) {
+                twitterObs = Observable.mergeDelayError(Observable.from(filterDate(postTwitter, newestOfOldestPost.getDate().getTime(), true)), manageEmittedPosts(new TwitterRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad)));
+            } else {
+                twitterObs = manageEmittedPosts(new TwitterRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad));
+            }
         }
 
         numToLoad = numPosts - postYoutube.size();
         if(numToLoad > 0 && SettingsHelper.boolCategoryYoutubeVideos) {
             PsLog.v("Youtube: Fetching " + numToLoad + " new Posts from API.");
-            youtubeObs = new YoutubeRepository(view).fetchPostsUntilObservable(lastPostDate, numToLoad);
+            Date dateToLoad = lastPostDate;
+            if(postYoutube.size() > 0)
+                dateToLoad = getOldestPost(postYoutube).getDate();
+            if (newestOfOldestPost != null) {
+                youtubeObs = Observable.mergeDelayError(Observable.from(filterDate(postYoutube, newestOfOldestPost.getDate().getTime(), true)), manageEmittedPosts(new YoutubeRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad)));
+            } else {
+                youtubeObs = manageEmittedPosts(new YoutubeRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad));
+            }
         }
         // TODO WRITE TESTS for Caching!!!
         // Fixme throwing away some already loaded Firebase posts because of the 4 streams merged together internally by the FirebaseRepo
         numToLoad = numPosts - postFirebase.size();
         if(numToLoad > 0 && (SettingsHelper.boolCategoryPietcast || SettingsHelper.boolCategoryPietsmietNews || SettingsHelper.boolCategoryPietsmietUploadplan || SettingsHelper.boolCategoryPietsmietVideos)) {
             PsLog.v("Firebase: Fetching " + numToLoad + " new Posts from API.");
-            firebaseObs = manageEmittedPosts( new FirebaseRepository(view).fetchPostsUntilObservable(lastPostDate, numToLoad) ).sorted().take(numToLoad);
+            Date dateToLoad = lastPostDate;
+            if(postFirebase.size() > 0)
+                dateToLoad = getOldestPost(postFirebase).getDate();
+            if (newestOfOldestPost != null) {
+                firebaseObs = Observable.mergeDelayError(Observable.from(filterDate(postFirebase, newestOfOldestPost.getDate().getTime(), true)), manageEmittedPosts(new FirebaseRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad)));
+            } else {
+                firebaseObs = manageEmittedPosts(new FirebaseRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad));
+            }
         }
 
         numToLoad = numPosts - postFacebook.size();
         if(numToLoad > 0 && SettingsHelper.boolCategoryFacebook) {
             PsLog.v("Facebook: Fetching " + numToLoad + " new Posts from API.");
-            facebookObs = new FacebookRepository(view).fetchPostsUntilObservable(lastPostDate, numToLoad);
+            Date dateToLoad = lastPostDate;
+            if(postFacebook.size() > 0)
+                dateToLoad = getOldestPost(postFacebook).getDate();
+            if (newestOfOldestPost != null) {
+                facebookObs = Observable.mergeDelayError(Observable.from(filterDate(postFacebook, newestOfOldestPost.getDate().getTime(), true)), manageEmittedPosts(new FacebookRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad)));
+            } else {
+                facebookObs = manageEmittedPosts(new FacebookRepository(view).fetchPostsUntilObservable(dateToLoad, numToLoad));
+            }
         }
 
-        return Observable.mergeDelayError( cachedObs, firebaseObs, manageEmittedPosts(Observable.mergeDelayError(twitterObs, youtubeObs, facebookObs)));
+        return Observable.mergeDelayError( cachedObs, firebaseObs, twitterObs, youtubeObs, facebookObs ).subscribeOn(Schedulers.io());
     }
 
     @Override
@@ -166,9 +197,14 @@ public class PostRepositoryImpl implements PostRepository {
     private Observable<Post> manageEmittedPosts(Observable<Post.PostBuilder> postObs) {
         return postObs
                 .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
                 .filter(postBuilder -> postBuilder != null)
                 .map(Post.PostBuilder::build)
-                .filter(post -> post != null);
+                .filter(post -> post != null)
+                .toSortedList()
+                .map(x -> {
+                    cachePosts(x);
+                    return x;
+                })
+                .flatMapIterable(UtilityFunctions.identity());
     }
 }

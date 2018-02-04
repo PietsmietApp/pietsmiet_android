@@ -22,6 +22,7 @@ import retrofit2.HttpException;
 import retrofit2.Retrofit;
 import rx.Observable;
 import rx.exceptions.Exceptions;
+import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.util.SharedPreferenceHelper.KEY_TWITTER_BEARER;
 
@@ -150,9 +151,10 @@ public class TwitterRepository extends MainRepository { //todo make package only
         if (firstTweet != null) {
             obs = getToken().flatMap(bearer -> apiInterface.getTweetsSince(bearer, query, numPosts, firstTweet.getId()));
         } else {
+            // TODO totally incorrect should load from bottom to top -> all posts newer than a specific date -> this currently just gets the numPost most recent posts.
             obs = getToken().flatMap(bearer -> apiInterface.getTweets(bearer, query, numPosts));
         }
-        return parseTweets(obs);
+        return parseTweets(obs.observeOn(Schedulers.io()));
     }
 
     @Override
@@ -164,7 +166,7 @@ public class TwitterRepository extends MainRepository { //todo make package only
             obs = getToken().flatMap(bearer -> apiInterface.getTweets(bearer, query, numPosts));
         }
 
-        return parseTweets(obs);
+        return parseTweets(obs.observeOn(Schedulers.io()));
     }
 
 }

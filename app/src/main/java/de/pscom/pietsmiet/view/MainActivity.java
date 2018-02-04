@@ -207,7 +207,11 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             // Update settings from sharedPrefs
             SettingsHelper.loadAllSettings(getBaseContext());
             // Fetch posts based on the new settings
-            postPresenter.fetchNewPosts();
+            if(postPresenter.getPostsToDisplay().size() > 0) {
+                postPresenter.fetchNewPosts();
+            } else {
+                postPresenter.fetchNextPosts();
+            }
         } else if (postPresenter.getPostsToDisplay().isEmpty()) {
             // Load posts from db
             DatabaseHelper.getInstance(this).displayPostsFromCache(postPresenter);
@@ -267,13 +271,16 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         // Iterate through every menu item and save it's state
         for (Post.PostType item : Post.PostType.values()) {
             if (mNavigationView != null) {
-                Switch checker = (Switch) mNavigationView.getMenu().findItem(item.drawerId).getActionView();
-                checker.setChecked(SettingsHelper.getSettingsValueForType(item));
-                checker.setOnCheckedChangeListener((view, check) -> {
-                    if (check)
-                        CLEAR_CACHE_FLAG_DRAWER = true; //todo improve if for example a user just switched on off on -> dont clear cache
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
-                });
+                MenuItem mi = mNavigationView.getMenu().findItem(item.drawerId);
+                if(mi != null) {
+                    Switch checker = (Switch) mi.getActionView();
+                    checker.setChecked(SettingsHelper.getSettingsValueForType(item));
+                    checker.setOnCheckedChangeListener((view, check) -> {
+                        if (check)
+                            CLEAR_CACHE_FLAG_DRAWER = true; //todo improve if for example a user just switched on off on -> dont clear cache
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(getBaseContext(), SettingsHelper.getSharedPreferenceKeyForType(item), checker.isChecked());
+                    });
+                }
             }
         }
 
@@ -317,7 +324,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
         SettingsHelper.loadAllSettings(getBaseContext());
         if (CLEAR_CACHE_FLAG_DRAWER) {
             clearCache();
-            postPresenter.fetchNewPosts();
+            postPresenter.fetchNextPosts();
             CLEAR_CACHE_FLAG_DRAWER = false;
         } else {
             postPresenter.updateSettingsFilters();
@@ -328,6 +335,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
     /**
      * Reloads the stream status and updates the banner in the SideMenu
      */
+    // TODO not the right place
     private void reloadTwitchBanner() {
         long current = new Date().getTime();
         if ((current - lastDateCheckedTwitch) > MAX_TWITCH_CHECK_TIME_DIFF) {

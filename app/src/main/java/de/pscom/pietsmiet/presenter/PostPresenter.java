@@ -97,7 +97,6 @@ public class PostPresenter {
      */
     public Observable.Transformer<Post, List<Post>> sortAndFilterNewPosts() {
         return observable -> observable.map(l -> l)
-                .distinct()
                 .filter(post -> SettingsHelper.getSettingsValueForType(post.getPostType()))
                 .doOnNext(post -> {
                     if (post.getPostType() == TWITTER && (TwitterRepository.firstTweet == null || TwitterRepository.firstTweet.getId() < post.getId()))
@@ -105,7 +104,7 @@ public class PostPresenter {
                     if (post.getPostType() == TWITTER && (TwitterRepository.lastTweet == null || TwitterRepository.lastTweet.getId() > post.getId()))
                         TwitterRepository.lastTweet = post;
                 })
-                .toSortedList();
+                .toList();
     }
 
     /**
@@ -195,7 +194,7 @@ public class PostPresenter {
      */
     public Date getFirstPostDate() {
         Post post = getFirstPost();
-        return (post == null) ? new Date(new Date().getTime() - 864000000) : new Date(post.getDate().getTime() + 1000);
+        return (post == null) ? new Date(new Date().getTime() - 864000000) : new Date(post.getDate().getTime());
     }
 
     /**
@@ -206,7 +205,7 @@ public class PostPresenter {
      */
     public Date getLastPostDate() {
         Post post = getLastPost();
-        return (post == null) ? new Date() : new Date(post.getDate().getTime() - 1000);
+        return (post == null) ? new Date() : post.getDate();
     }
 
     /**
@@ -240,13 +239,10 @@ public class PostPresenter {
 
     private void subscribeLoadedPosts(Observable<Post> observable, boolean fetchDirectionDown, int numPosts) {
         subLoadingPosts = observable
+                .observeOn(Schedulers.io())
                 .filter(post -> filterWrongPosts(post, fetchDirectionDown))
-                .toSortedList()
-                .map(x -> {
-                    postRepository.cachePosts(x);
-                    return x;
-                })
-                .flatMapIterable(x -> x)
+                .distinct()
+                .sorted()
                 .compose(customTake(fetchDirectionDown, numPosts))
                 .compose(sortAndFilterNewPosts())
                 .compose(addDateTags(fetchDirectionDown ? LOAD_TYPE.DOWN : LOAD_TYPE.UP))
@@ -293,7 +289,7 @@ public class PostPresenter {
      */
     private Observable.Transformer<Post, Post> customTake(boolean fetchDirectionDown, int numPosts) {
         return listObservable -> {
-            if (!fetchDirectionDown && allPosts.size() > 0) {
+            if (!fetchDirectionDown) {
                 return listObservable.takeLast(numPosts);
             } else return listObservable.take(numPosts);
         };
@@ -308,7 +304,11 @@ public class PostPresenter {
     public void addNewPostsToView(List<ViewItem> posts) {
         allPosts.addAll(posts);
         view.freshLoadingCompleted();
-        fetchNewPosts();
+        if (allPosts.size() > 0) {
+            fetchNewPosts();
+        } else {
+            fetchNextPosts();
+        }
     }
 
     /**

@@ -174,7 +174,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param presenter For notifying on finished load
      */
     @SuppressWarnings("WeakerAccess")
-    public void displayPostsFromCache(PostPresenter presenter) {
+    public void  displayPostsFromCache(PostPresenter presenter) {
         SQLiteDatabase db = this.getReadableDatabase();
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
         // Don't retrieve posts older than two days
@@ -231,7 +231,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     presenter.addNewPostsToView(items);
                 }, e -> {
                     PsLog.e("Could not load posts from DB: ", e);
-                    presenter.fetchNewPosts();
+                    presenter.fetchNextPosts();
                 });
     }
 

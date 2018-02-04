@@ -17,6 +17,7 @@ import de.pscom.pietsmiet.util.SecretConstants;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.generic.Post.PostType.YOUTUBE;
 
@@ -41,7 +42,7 @@ public class YoutubeRepository extends MainRepository {
         String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(dSince);
         Observable<YoutubeRoot> callObs = apiInterface.getPlaylistSinceDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
-        return fetchData(callObs);
+        return fetchData(callObs.observeOn(Schedulers.io()));
     }
 
     @Override
@@ -49,7 +50,7 @@ public class YoutubeRepository extends MainRepository {
         String dateFormatted = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(dUntil);
         Observable<YoutubeRoot> callObs = apiInterface.getPlaylistUntilDate(numPosts, SecretConstants.youtubeAPIkey, "UCqwGaUvq_l0RKszeHhZ5leA", dateFormatted);
 
-        return fetchData(callObs);
+        return fetchData(callObs.observeOn(Schedulers.io()));
     }
 
 

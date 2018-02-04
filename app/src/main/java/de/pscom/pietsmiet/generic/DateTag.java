@@ -5,8 +5,7 @@ import java.util.Date;
 public class DateTag extends ViewItem {
 
     public DateTag(Date date) {
-        super(ViewItem.TYPE_DATE_TAG);
-        this.datetime = date;
+        super(ViewItem.TYPE_DATE_TAG, date);
     }
 
 }

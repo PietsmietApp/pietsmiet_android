@@ -33,14 +33,13 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
     private boolean isThumbnailHD = false;
 
     private Post(PostBuilder builder) {
-        super(ViewItem.TYPE_POST);
+        super(ViewItem.TYPE_POST, builder.date);
         description = builder.description;
         title = builder.title;
         postType = builder.postType;
         thumbnailUrl = builder.thumbnailUrl;
         thumbnailHDUrl = builder.thumbnailHDUrl;
         username = builder.username;
-        datetime = builder.date;
         duration = builder.duration;
         url = builder.url;
         api_ID = builder.api_ID;
@@ -130,18 +129,8 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         return true;
     }
 
-    @Override
-    public int compareTo(@NonNull ViewItem post) {
-        if( post.getDate().getTime() > this.getDate().getTime() ) {
-            return 1;
-        } else if ( post.getDate().getTime() < this.getDate().getTime() ) {
-            return -1;
-        }
-        return 0;
-    }
-
     @SuppressWarnings("UnusedReturnValue")
-    public static class PostBuilder {
+    public static class PostBuilder implements Comparable<PostBuilder> {
         private boolean empty = false;
         private String title;
         private PostType postType;
@@ -159,13 +148,17 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
         private String url;
 
 
-        public PostBuilder( PostType postType) {
+        public PostBuilder( PostType postType ) {
             this.postType = postType;
         }
 
         public PostBuilder empty(){
             empty = true;
             return this;
+        }
+
+        public Date getDate() {
+            return date;
         }
 
         public PostBuilder description(@Nullable String description) {
@@ -235,6 +228,16 @@ public class Post extends ViewItem implements Comparable<ViewItem> {
                 return null;
             }
             return new Post(this);
+        }
+
+        @Override
+        public int compareTo(@NonNull PostBuilder post) {
+            if( post.getDate().getTime() > this.date.getTime() ) {
+                return 1;
+            } else if ( post.getDate().getTime() < this.getDate().getTime() ) {
+                return -1;
+            }
+            return 0;
         }
     }
 

@@ -13,6 +13,7 @@ import de.pscom.pietsmiet.util.SettingsHelper;
 import de.pscom.pietsmiet.view.MainActivity;
 import retrofit2.Retrofit;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import static de.pscom.pietsmiet.generic.Post.PostType;
 import static de.pscom.pietsmiet.generic.Post.PostType.NEWS;
@@ -92,18 +93,18 @@ public class FirebaseRepository extends MainRepository {
         Observable<Map<String, FirebaseItem>> pietcast = Observable.empty();
         Observable<Map<String, FirebaseItem>> news = Observable.empty();
         if (boolCategoryPietsmietVideos) {
-            video = apiInterface.getScopeSince(TOPIC_VIDEO, dBefore.getTime());
+            video = apiInterface.getScopeSince(TOPIC_VIDEO, dBefore.getTime()).sorted().takeLast(numPosts);
         }
         if (boolCategoryPietsmietUploadplan) {
-            uploadplan = apiInterface.getScopeSince(TOPIC_UPLOADPLAN, dBefore.getTime());;
+            uploadplan = apiInterface.getScopeSince(TOPIC_UPLOADPLAN, dBefore.getTime()).sorted().takeLast(numPosts);
         }
         if (boolCategoryPietsmietNews) {
-            news = apiInterface.getScopeSince(TOPIC_NEWS, dBefore.getTime());
+            news = apiInterface.getScopeSince(TOPIC_NEWS, dBefore.getTime()).sorted().takeLast(numPosts);
         }
         if (boolCategoryPietcast) {
-            pietcast = apiInterface.getScopeSince(TOPIC_PIETCAST, dBefore.getTime());
+            pietcast = apiInterface.getScopeSince(TOPIC_PIETCAST, dBefore.getTime()).sorted().takeLast(numPosts);
         }
-        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
+        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast).observeOn(Schedulers.io())).sorted().takeLast(numPosts);
     }
 
 
@@ -125,6 +126,6 @@ public class FirebaseRepository extends MainRepository {
         if (boolCategoryPietcast) {
             pietcast = apiInterface.getScopeUntil(TOPIC_PIETCAST, dAfter.getTime(), numPosts);
         }
-        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast));
+        return parsePostsFromDb(Observable.merge(video, news, uploadplan, pietcast).observeOn(Schedulers.io())).sorted().take(numPosts);
     }
 }

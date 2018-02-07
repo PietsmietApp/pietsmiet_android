@@ -155,7 +155,7 @@ public class MainActivity extends BaseActivity implements MainActivityView, Navi
             String id = "Default";
             CharSequence name = getString(R.string.channel_default_name);
             String description = getString(R.string.channel_default_description);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel mChannel = new NotificationChannel(id, name, importance);
             mChannel.setDescription(description);
             mChannel.enableLights(true);

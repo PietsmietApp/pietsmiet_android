@@ -2,25 +2,19 @@ package de.pscom.pietsmiet.data.facebook.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class FacebookEntity {
-    @SerializedName("code")
-    private int code;
-    @SerializedName("body")
-    private String body;
 
-    public int getCode() {
-        return code;
+    @SerializedName("data")
+    private List<FacebookData> data = null;
+
+    public List<FacebookData> getData() {
+        return data;
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public void setData(List<FacebookData> data) {
+        this.data = data;
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
 }

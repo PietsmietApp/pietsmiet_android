@@ -1,12 +1,11 @@
 # PietSmiet-App für Android [![version](https://img.shields.io/github/release/PietsmietApp/pietsmiet_android.svg)](https://github.com/PietsmietApp/pietsmiet_android/releases/latest)
 
-`develop`: [![Build Status](https://travis-ci.org/PietsmietApp/pietsmiet_android.svg?branch=develop)](https://travis-ci.org/PietsmietApp/pietsmiet_android)  
 
-<a href="https://play.google.com/store/apps/details?id=de.pscom.pietsmiet">
-    <img alt="Jetzt bei Google Play"
-        height="80"
-        src="https://play.google.com/intl/de_de/badges/images/generic/de_badge_web_generic.png" />
-</a>
+Feed with all social media posts          |  Sidebar with all possible categories
+:-------------------------:|:-------------------------:
+![222](https://user-images.githubusercontent.com/12055376/115765331-e6fa6400-a3a6-11eb-8fb1-c8e638ee064c.png) | ![ps1](https://user-images.githubusercontent.com/12055376/115765313-e2ce4680-a3a6-11eb-95d7-066a99b3a778.png)
+
+
 
 ## Funktionen
 
@@ -28,3 +27,4 @@ The backend of the app (RSS fetching and HTML scraping of pietsmiet.de and stori
 ## Git Workflow
 **[`develop`](https://github.com/PietsmietApp/pietsmiet_android/tree/develop) branch:** Stable and buildable code. Travis automatically uploads a signed APK to Github releases when a new tag is pushed.  
 **feature branches:** When a feature requires a lot of work, it has a separate branch that is merged (via PR) into `develop` as soon as the feature is complete  
+
